@@ -55,6 +55,15 @@ LLM4SCV_Repair/
    └─ figure.py
 ```
 
+## Model Configuration
+
+| Model | Description | Max_tokens | Training Data | Temp | Top_p | Freq_P |
+|---|---|---|---|---|---|---|
+| gpt-3.5-turbo-0125 | Optimized for efficiency and speed in general dialogue tasks. | 16k | Up to Sep 2021 | 0 | 1 | 0 |
+| gpt-4-0613 | Standard version of GPT-4, excels at complex reasoning. | 8k | Up to Sep 2021 | 0 | 1 | 0 |
+| DeepSeek-V3.2 | Features DSA and MoE architecture, optimized for long-context reasoning. | 160k | Up to Dec 2025 | 0 | 1 | 0 |
+| Qwen3-Coder-480B | An agentic MoE model (480B) specialized for autonomous coding tasks. | 256k | Up to Jul 2025 | 0 | 1 | 0 |
+
 ## What Each Folder Contains
 
 - **RQ1**: Experimental code and results for **LLM-only smart contract vulnerability repair**.
