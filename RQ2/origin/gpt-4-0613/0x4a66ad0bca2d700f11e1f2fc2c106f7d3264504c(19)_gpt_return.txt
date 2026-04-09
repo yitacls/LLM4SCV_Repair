@@ -1,0 +1,9 @@
+Here is the requested JSON detailing the vulnerability of the smart contract:
+
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],v[i]*1000000000000000000);",
+    "description": "The function 'transfer' contains a low-level call 'caddress.call()'. The return value of this call is not checked, thus failing to handle any exceptions that might occur during execution. This could lead to unexpected behavior, including the contract continuing to work even if an operation fails. To mitigate this issue, always check the return value of low-level calls."
+}
+```

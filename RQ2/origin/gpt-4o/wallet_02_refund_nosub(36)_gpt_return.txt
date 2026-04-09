@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(balances[msg.sender]);",
+    "description": "The refund function in the Wallet contract lacks proper access control. It allows any user to call the function and transfer funds from the contract to their address based solely on `msg.sender` without verifying additional permissions or constraints. This could enable unauthorized withdrawals and potential misuse of funds stored in the contract."
+}
+```

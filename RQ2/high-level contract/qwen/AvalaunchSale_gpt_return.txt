@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "AvalaunchSale",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "postponeSale",
+                "fix_info": "Fixed potential DoS by adding checks to prevent integer overflow and ensuring round existence before accessing",
+                "corrected_code": "    function postponeSale(\n        uint256 timeToShift\n    )\n    external\n    onlyAdmin\n    {\n        require(block.timestamp < roundIdToRound[roundIds[0]].startTime, \"1st round already started.\");\n        require(roundIds.length > 0, \"No rounds exist\");\n        \n        // Iterate through all registered rounds and postpone them\n        for(uint i = 0; i < roundIds.length; i++) {\n            require(roundIds[i] > 0, \"Invalid round ID\");\n            Round storage round = roundIdToRound[roundIds[i]];\n            // Postpone sale - prevent overflow\n            require(round.startTime + timeToShift >= round.startTime, \"Time shift overflow\");\n            round.startTime = round.startTime.add(timeToShift);\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "depositTokens",
+                "fix_info": "Fixed DoS vulnerability by adding proper checks before token transfer and preventing potential reverts",
+                "corrected_code": "    function depositTokens()\n    external\n    onlySaleOwner\n    {\n        require(sale.totalTokensSold == 0 && sale.token.balanceOf(address(this)) == 0, \"Deposit can be done only once\");\n        require(roundIds.length > 0, \"No rounds configured\");\n        require(block.timestamp < roundIdToRound[roundIds[0]].startTime, \"Deposit too late. Round already started.\");\n        \n        uint256 balanceBefore = sale.token.balanceOf(address(this));\n        sale.token.safeTransferFrom(msg.sender, address(this), sale.amountOfTokensToSell);\n        uint256 balanceAfter = sale.token.balanceOf(address(this));\n        \n        require(balanceAfter - balanceBefore == sale.amountOfTokensToSell, \"Token transfer failed\");\n        sale.tokensDeposited = true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

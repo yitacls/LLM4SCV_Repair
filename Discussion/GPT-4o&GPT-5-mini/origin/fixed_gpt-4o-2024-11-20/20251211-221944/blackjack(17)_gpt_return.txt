@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Deck",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "nonce",
+                "fix_info": "Added a nonce to ensure randomness is not predictable.",
+                "variable_code": "uint256 private nonce;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deal",
+                "fix_info": "Replaced insecure randomness sources with a more controlled and unpredictable mechanism using nonce and keccak256. Removed reliance on block attributes like block number, timestamp, and blockhash.",
+                "corrected_code": "function deal(address player, uint8 cardNumber) internal returns (uint8) {\n    nonce++; // Increment the nonce to ensure a unique input\n    return uint8(uint256(keccak256(abi.encodePacked(player, cardNumber, nonce, blockhash(block.number - 1)))) % 52);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "Line 1: function newTicket() external restricted { ... }",
+            "description": "The 'restricted' modifier lacks proper access control checks, potentially allowing unauthorized users to trigger the function. In Solidity 0.4.25, function visibility and modifiers should be carefully validated. Additionally, the function uses 'tx.origin' for authentication instead of 'msg.sender', making it vulnerable to phishing attacks where a malicious contract could call this function on behalf of a user, leading to unauthorized ticket issuance and potential bonus transfers."
+        },
+        {
+            "type": "access_control",
+            "location": "Line 4-11: if (players[tx.origin].referrer != address(0) && (players[tx.origin].tickets - players[tx.origin].checkpoint) % interval == 0) { ... }",
+            "description": "The condition for awarding bonuses relies on 'tx.origin' and a modulo operation, which could be manipulated. An attacker might call this function in a way that triggers the bonus condition unexpectedly, exploiting the 'interval' calculation. This could drain contract tokens via unauthorized 'token.transfer()' calls to 'tx.origin' and their referrer, especially if 'prize' is set too high or 'interval' too low, bypassing intended access controls."
+        }
+    ]
+}
+```

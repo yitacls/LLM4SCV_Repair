@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint lotterynumber = (uint(curhash)+block.timestamp)%(maxguess+1);",
+    "description": "The random number generation in the lottery logic is not secure. It uses a combination of current block's timestamp and a value 'curhash' which is not provided in the code snippet. This approach is vulnerable to manipulation by miners or external attackers leading to predictable outcomes and potential exploits."
+}
+```

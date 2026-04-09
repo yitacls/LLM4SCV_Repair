@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "withdrawDate = now + 2 days;",
+    "description": "The contract uses 'now' which is an alias for block.timestamp and can be manipulated by miners within a small range (typically up to 900 seconds). This allows miners to influence the withdrawDate, potentially allowing them to win the game by submitting a transaction with a favorable timestamp or preventing other players from winning by manipulating the timestamp to delay the game."
+}
+```

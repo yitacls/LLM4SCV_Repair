@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Replaced deprecated low-level send() call with transfer() which automatically reverts on failure, ensuring proper handling of ether transfers and preventing loss of funds in case of failed call",
+            "corrected_code": "function() external payable {\n    wallet.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

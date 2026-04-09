@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "MyAdvancedToken7",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow vulnerability",
+                "corrected_code": "function sell(uint256 amount) { require(balanceOf[msg.sender] >= amount); balanceOf[this] = balanceOf[this] + amount; balanceOf[msg.sender] = balanceOf[msg.sender] - amount; if (!msg.sender.send(amount * sellPrice)) revert(); else Transfer(msg.sender, this, amount); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

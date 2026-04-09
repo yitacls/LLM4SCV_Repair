@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Integer Overflow/Underflow",
+        "location": "Line: 'balanceOfOld[_to] += _value;' (in transferTokens function)",
+        "description": "In Solidity <0.8.0, arithmetic operations do not automatically check for overflow/underflow. The addition 'balanceOfOld[_to] += _value' could overflow if the sum exceeds uint256's maximum value (2^256 - 1). Similarly, 'balanceOfOld[_from] -= _value' could underflow if _value > balanceOfOld[_from]. Although there's a check for insufficient balance, other operations like 'payouts[_from] -= payoutDiff' and 'payouts[_to] += payoutDiff' using int256 could also overflow/underflow. This could allow malicious manipulation of token balances or payout accounting. Use SafeMath library or upgrade to Solidity >=0.8.0 with built-in overflow checks."
+    }
+}
+```

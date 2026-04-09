@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "SimplePriceOracle",
+    "contract_version": "^0.5.0",
+    "state_variables": [
+        {
+            "variable_name": "rentPrice",
+            "fix_info": "No change needed as the state variable definition is correct.",
+            "variable_code": "uint public rentPrice;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "setPrice",
+            "fix_info": "No issues were detected, so no changes are needed.",
+            "corrected_code": "function setPrice(uint _rentPrice) public onlyOwner {\n    rentPrice = _rentPrice;\n    emit RentPriceChanged(_rentPrice);\n}",
+            "change_type": "unchanged"
+        },
+        {
+            "function_name": "price",
+            "fix_info": "Fixed integer overflow/underflow by using SafeMath's `mul` function to safely perform multiplication.",
+            "corrected_code": "function price(string calldata /*name*/, uint /*expires*/, uint duration) external view returns (uint) {\n    return SafeMath.mul(duration, rentPrice);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

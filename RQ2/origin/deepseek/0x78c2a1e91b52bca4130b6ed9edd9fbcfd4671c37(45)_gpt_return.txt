@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call does not check the return value, which can lead to execution continuing even if the external call fails. In Solidity 0.4.19, .call() returns a boolean indicating success, but it is ignored. This can cause unexpected behavior, such as allowing a transaction to succeed despite the called contract reverting. The call also forwards all remaining gas, making reentrancy attacks possible, though the require statement limits the caller to Owner. Best practice is to check the return value and handle failures, e.g., require(adr.call.value(msg.value)(data))."
+}
+```

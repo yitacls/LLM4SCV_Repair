@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "IntegerOverflowSingleTransaction",
+        "contract_version": "^0.4.23",
+        "state_variables": [
+            {
+                "variable_name": "count",
+                "fix_info": "Variable already exists - no changes needed",
+                "variable_code": "uint256 count;",
+                "change_type": "none"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "underflowtostate",
+                "fix_info": "Added SafeMath library and require statement to prevent integer underflow when subtracting input from count",
+                "corrected_code": "function underflowtostate(uint256 input) public {\n    require(count >= input, \"Integer underflow: cannot subtract more than count\");\n    count -= input;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

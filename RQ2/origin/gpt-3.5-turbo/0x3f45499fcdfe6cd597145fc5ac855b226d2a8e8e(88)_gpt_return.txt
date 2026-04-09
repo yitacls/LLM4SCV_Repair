@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout);",
+    "description": "The usage of send() in a loop can lead to a denial-of-service vulnerability as the execution of the loop can be stalled indefinitely. It is recommended to use more robust error handling mechanisms like the 'withdraw' pattern to prevent such issues."
+}
+```  

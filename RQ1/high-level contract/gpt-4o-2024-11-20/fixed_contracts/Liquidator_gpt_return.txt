@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "liquidator",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "v2Factory",
+            "fix_info": "Ensured the variable is updated only via an authorized initializer function.",
+            "variable_code": "address private v2Factory;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "debt",
+            "fix_info": "Ensured the variable is updated only via an authorized initializer function.",
+            "variable_code": "address private debt;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAdmin",
+            "fix_info": "Added a reusable modifier to check if the caller has admin privileges.",
+            "modifier_code": "modifier onlyAdmin() { require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"IA\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Added `onlyAdmin` modifier for better readability and ensured the function is callable only once to prevent re-initialization.",
+            "corrected_code": "function initialize(address v2Factory_, address debt_) public onlyAdmin { require(v2Factory == address(0) && debt == address(0), \"Already initialized\"); v2Factory = v2Factory_; debt = debt_; }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "distribute",
+            "fix_info": "Restricted the function to authorized users using `onlyAdmin` for better readability. Added checks to prevent self-transfer and reentrancy using OpenZeppelin's nonReentrant modifier.",
+            "corrected_code": "function distribute(address collateral) public onlyAdmin { address pair = IUniswapV2FactoryMinimal(v2Factory).getPair(collateral, debt); require(pair != address(0), \"Vault: Liquidating pair not supported\"); uint256 balance = IERC20Minimal(collateral).balanceOf(address(this)); require(balance > 0, \"No collateral to distribute\"); require(collateral != pair, \"Invalid transfer target\"); TransferHelper.safeTransfer(collateral, pair, balance); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

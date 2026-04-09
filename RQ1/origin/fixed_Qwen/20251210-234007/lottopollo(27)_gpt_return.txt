@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "lottopollo",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "randomGen",
+            "fix_info": "Replaced block.timestamp with keccak256 hash of block information to prevent time manipulation attacks while maintaining randomness",
+            "corrected_code": "function randomGen() constant returns (uint randomNumber) {\n    return uint(keccak256(block.timestamp, block.difficulty, block.coinbase));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

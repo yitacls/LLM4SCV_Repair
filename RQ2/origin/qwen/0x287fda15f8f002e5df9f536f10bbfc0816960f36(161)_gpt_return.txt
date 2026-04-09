@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.send(msg.value);",
+    "description": "The fallback function lacks proper access control checks, allowing any caller to trigger the payment to owner and token transfer. In Solidity ^0.4.16, the send() function can fail silently, and there's no verification that the caller has sufficient balance or proper authorization to perform the token transfer operation. This could lead to unauthorized token minting or financial loss."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EtherLotto",
+    "contract_version": "^0.4.15",
+    "state_variables": [
+        {
+            "variable_name": "lastBlockHash",
+            "fix_info": "Added variable to store previous block hash for better randomness",
+            "variable_code": "bytes32 public lastBlockHash;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "play",
+            "fix_info": "Fixed TIME_MANIPULATION vulnerability by using block.blockhash instead of block.timestamp for randomness generation",
+            "corrected_code": "function play() payable {\n\n        // Participants must spend some fixed ether before playing lottery.\n        assert(msg.value == TICKET_AMOUNT);\n\n        // Increase pot for each participant.\n        pot += msg.value;\n\n        // Compute random value for selecting winner using block hash instead of timestamp\n        bytes32 rand = keccak256(block.blockhash(block.number - 1), msg.sender, pot);\n        var random = uint(rand) % 2;\n\n        // Distribution: 50% of participants will be winners.\n        if (random == 0) {\n\n            // Send fee to bank account.\n            bank.transfer(FEE_AMOUNT);\n\n            // Send jackpot to winner.\n            msg.sender.transfer(pot - FEE_AMOUNT);\n\n            // Restart jackpot.\n            pot = 0;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

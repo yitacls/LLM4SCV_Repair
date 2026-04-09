@@ -1,0 +1,34 @@
+[{
+    "contract_name": "SkaleBalances",
+    "contract_version": "^0.5.3",
+    "state_variables": [
+        {
+            "variable_name": "_NOT_ENTERED",
+            "fix_info": "Added reentrancy guard constants and status variable to prevent reentrant calls to sensitive functions.",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;\nuint256 private constant _ENTERED = 2;\nuint256 private _status;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a nonReentrant modifier to protect external entry points from reentrancy vulnerabilities.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"Reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Applied nonReentrant modifier to prevent reentrancy during token transfer and kept original checks-effects-interactions ordering.",
+            "corrected_code": "function withdrawBalance(address from, address to, uint amountOfTokens) external allow(\"DelegationService\") nonReentrant {\n    if (_timeLimit[from] != 0) {\n        require(_timeLimit[from] <= now, \"Bounty is locked\");\n        _timeLimit[from] = 0;\n    }\n\n    require(_bountyBalances[from] >= amountOfTokens, \"Not enough tokens on balance for withdrawing\");\n\n    // Effects\n    _bountyBalances[from] -= amountOfTokens;\n\n    // Interaction\n    SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));\n    require(skaleToken.transfer(to, amountOfTokens), \"Failed to transfer tokens\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "tokensReceived",
+            "fix_info": "Applied nonReentrant modifier to prevent reentrant interactions initiated by the token contract during token reception.",
+            "corrected_code": "function tokensReceived(\n    address operator,\n    address from,\n    address to,\n    uint256 amount,\n    bytes calldata userData,\n    bytes calldata operatorData\n)\n    external\n    allow(\"SkaleToken\")\n    nonReentrant\n{\n    // Decode intended recipient from userData and stash balance\n    address recipient = abi.decode(userData, (address));\n    stashBalance(recipient, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

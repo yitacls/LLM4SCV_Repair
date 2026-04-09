@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CERB_Coin",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for multiplication and addition operations",
+            "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner \n        {\n            if(tokensToMint > 0)\n            {\n                uint256 totalTokenToMint = tokensToMint.mul(10 ** 18);\n                balanceOf[owner] = balanceOf[owner].add(totalTokenToMint);\n                totalSupply = totalSupply.add(totalTokenToMint);\n                Transfer(0, owner, totalTokenToMint);\n            }\n        }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

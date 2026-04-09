@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization in the withdrawAll function, which is vulnerable to phishing attacks. An attacker can create a malicious contract that calls Phishable.withdrawAll(), and if the owner interacts with the attacker's contract, tx.origin will be the owner's address, allowing the attacker to bypass the ownership check and drain funds. Additionally, the function transfers the entire contract balance without proper access control checks beyond the flawed tx.origin verification."
+}
+```

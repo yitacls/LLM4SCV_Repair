@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "function changeOwner(address _newOwner) public",
+        "description": "The 'changeOwner' function lacks any access control modifier (such as 'onlyOwner') or require statement to restrict its execution to the current owner. In Solidity 0.4.15, this allows any arbitrary caller to change the contract's owner, potentially leading to unauthorized administrative actions like fund withdrawal or contract control takeover."
+    }
+}
+```

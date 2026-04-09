@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "Wallet",
+        "contract_version": "0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "reserveFundContract",
+                "fix_info": "Added state variable to store authorized ReserveFund contract address",
+                "variable_code": "address public reserveFundContract;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyReserveFundContract",
+                "fix_info": "Modified to properly validate caller is the authorized ReserveFund contract",
+                "modifier_code": "modifier onlyReserveFundContract() {\n        require(msg.sender == reserveFundContract, \"Caller is not the ReserveFund contract\");\n        _;\n    }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed access control vulnerability by removing tx.origin usage and adding proper authorization checks. Replaced tx.origin with msg.sender for secure source tracking.",
+                "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public {\n        require(_to != address(0x0), \"User address can not be empty\");\n        require(_deposited > 0, \"Package value must be > 0\");\n        \n        Balance storage balance = userWallets[_to];\n        bool firstDeposit = balance.totalDeposited <= 6000000;\n        \n        balance.deposited.push(_deposited);\n        uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n        uint profitSourceIncreaseAmount = _deposited * 8;\n        \n        balance.totalDeposited = balance.totalDeposited.add(_deposited);\n        balance.profitableBalance = balance.profitableBalance.add(profitableIncreaseAmount);\n        balance.profitSourceBalance = balance.profitSourceBalance.add(profitSourceIncreaseAmount);\n        \n        if (_source == 2) {\n            // Use msg.sender instead of tx.origin for secure source tracking\n            address sourceAddress = msg.sender;\n            \n            if (_to == sourceAddress) {\n                balance.profitBalance = balance.profitBalance.sub(_deposited);\n            } else {\n                Balance storage senderBalance = userWallets[sourceAddress];\n                require(senderBalance.profitBalance >= _deposited, \"Insufficient profit balance\");\n                senderBalance.profitBalance = senderBalance.profitBalance.sub(_deposited);\n            }\n            emit ProfitBalanceChanged(sourceAddress, _to, int(_deposited) * -1, 1);\n        }\n        \n        citizen.addF1DepositedToInviter(_to, _deposited);\n        addRewardToInviters(_to, _deposited, _source, _sourceAmount);\n        \n        if (firstDeposit) {\n            citizen.increaseInviterF1HaveJoinedPackage(_to);\n        }\n        \n        if (profitableIncreaseAmount > 0) {\n            emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n            emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setReserveFundContract",
+                "fix_info": "Added function to properly set and change the authorized ReserveFund contract address",
+                "corrected_code": "function setReserveFundContract(address _newReserveFundContract) public {\n        require(msg.sender == reserveFundContract || reserveFundContract == address(0), \"Not authorized to change ReserveFund contract\");\n        require(_newReserveFundContract != address(0), \"Invalid contract address\");\n        \n        address oldReserveFundContract = reserveFundContract;\n        reserveFundContract = _newReserveFundContract;\n        \n        emit ReserveFundContractChanged(oldReserveFundContract, _newReserveFundContract);\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

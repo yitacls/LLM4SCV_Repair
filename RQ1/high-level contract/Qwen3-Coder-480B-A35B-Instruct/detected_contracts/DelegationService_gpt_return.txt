@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function getAllDelegationRequests() external returns(uint[] memory) {\n        revert(\"Not implemented\");\n    }",
+        "description": "The function getAllDelegationRequests is declared but immediately reverts with \"Not implemented\". This makes the function effectively unusable and serves no practical purpose in the contract, constituting dead code."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint i = 0; i < shares.length; ++i) {\n            skaleToken.send(address(skaleBalances), shares[i].amount, abi.encode(shares[i].holder));\n\n            uint created = delegationController.getDelegation(shares[i].delegationId).created;\n            uint delegationStarted = timeHelpers.getNextMonthStartFromDate(created);\n            skaleBalances.lockBounty(shares[i].holder, timeHelpers.addMonths(delegationStarted, 3));\n        }",
+        "description": "The for loop in the distributeBounty function can potentially iterate over a large number of shares, leading to excessive gas consumption. If the number of shares exceeds the block gas limit, the transaction will fail, causing a DoS condition."
+    }
+]
+```

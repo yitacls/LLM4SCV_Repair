@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "The function uses 'tx.origin' for authorization in the balance check (line: '_value <= balances[tx.origin]'), but uses 'msg.sender' for the caller identity verification. This creates a mismatch where an attacker can craft a malicious contract that calls this function, making 'tx.origin' the victim's address (who initiated the transaction chain) while 'msg.sender' is the malicious contract address. If 'impl' is incorrectly set or compromised, this could allow unauthorized transfers from any 'tx.origin' that interacts with the attacker's contract. Additionally, using 'tx.origin' for authentication is generally discouraged as it can be manipulated in intermediate contract calls."
+}
+```

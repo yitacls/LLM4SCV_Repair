@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Replaced `send` with `call.value` for better error handling and implemented a require statement to ensure the transfer succeeds.",
+            "corrected_code": "function () external payable {\n    require(wallet.call.value(msg.value)(), \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "FreeInvestment5",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "invested",
+                "fix_info": "Original variable mapping user addresses to investment amounts",
+                "variable_code": "mapping(address => uint256) public invested;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "atBlock",
+                "fix_info": "Original variable tracking block number when user last interacted",
+                "variable_code": "mapping(address => uint256) public atBlock;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed low-level call vulnerability by replacing .send() with .transfer(), added overflow protection, and implemented proper withdrawal pattern",
+                "corrected_code": "function() external payable {\n    if (invested[msg.sender] != 0) {\n        uint256 amount = invested[msg.sender] * 5 / 100 * (block.number - atBlock[msg.sender]) / 5900;\n        \n        // Reset investment tracking before transfer to prevent reentrancy\n        invested[msg.sender] = 0;\n        atBlock[msg.sender] = block.number;\n        \n        // Use transfer instead of send for better security\n        msg.sender.transfer(amount);\n        \n        // Re-add new investment after withdrawal\n        invested[msg.sender] = msg.value;\n    } else {\n        invested[msg.sender] = msg.value;\n        atBlock[msg.sender] = block.number;\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,21 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function tokensReceived(address operator, address from, address to, uint256 amount, bytes calldata userData, bytes calldata operatorData)",
+    "description": "This function is susceptible to reentrancy attack as it updates the balance of the recipient before completing the token transfer. An attacker could call a malicious contract that triggers the tokensReceived function again before the transfer is completed, allowing for reentrancy exploits."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function withdrawBalance(address from, address to, uint amountOfTokens) external allow('DelegationService')",
+    "description": "The withdrawBalance function is also vulnerable to reentrancy. Although it checks the time limit before updating the bounty balance, it could still be manipulated to perform reentrancy attacks by calling external contracts to modify the state before the transfer is completed."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 55-68",
+    "description": "The vulnerable code segment that allows reentrancy attacks is within the tokensReceived function due to updating the balance before completing the token transfer operation, enabling potential reentrancy exploits."
+}
+```

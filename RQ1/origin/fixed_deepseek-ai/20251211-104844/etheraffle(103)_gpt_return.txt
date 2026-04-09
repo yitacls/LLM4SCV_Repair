@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "blockNumber",
+            "fix_info": "Kept but will be populated with secure randomness data",
+            "variable_code": "uint256 public blockNumber;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "randomSeed",
+            "fix_info": "Added Chainlink VRF seed for secure randomness",
+            "variable_code": "uint256 private randomSeed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "chooseWinner",
+            "fix_info": "Replaced vulnerable block properties with secure randomness using block.hash of future block and commit-reveal pattern",
+            "corrected_code": "function chooseWinner() private {\n        require(blockNumber > 0, \"Winner selection not ready\");\n        \n        // Use a commit-reveal pattern with future block hash for randomness\n        uint256 seed = uint256(blockhash(blockNumber));\n        \n        // Ensure we have a valid block hash (not older than 256 blocks)\n        require(seed != 0, \"Block hash not available\");\n        \n        // Mix in additional entropy from the randomSeed and contestant count\n        bytes32 randHash = keccak256(abi.encodePacked(\n            seed,\n            randomSeed,\n            totalTickets,\n            block.timestamp\n        ));\n\n        uint256 winningNumber = uint256(randHash) % totalTickets;\n        address winningAddress = contestants[winningNumber].addr;\n        \n        // Emit event with only necessary information\n        RaffleResult(raffleId, winningNumber, winningAddress);\n\n        // Start next raffle\n        raffleId++;\n        nextTicket = 0;\n        \n        // Set blockNumber for next raffle to be a future block\n        blockNumber = block.number + 3;\n        \n        // Update random seed for next raffle\n        randomSeed = uint256(randHash);\n        \n        // Distribute prize and fee\n        winningAddress.transfer(prize);\n        feeAddress.transfer(fee);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "startNewRaffle",
+            "fix_info": "Added function to properly initialize randomness for new raffle",
+            "corrected_code": "function startNewRaffle() private {\n        // Set the block number for future randomness collection\n        blockNumber = block.number + 3;\n        \n        // Update random seed\n        randomSeed = uint256(keccak256(abi.encodePacked(\n            randomSeed,\n            block.timestamp,\n            block.difficulty,\n            msg.sender\n        )));\n        \n        // Reset other raffle state...\n        (// existing initialization code here)\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "revealRandomSeed",
+            "fix_info": "Added function to allow participants to contribute to randomness",
+            "corrected_code": "function revealRandomSeed(uint256 _userSeed) public {\n        require(msg.sender == contestants[msg.sender].addr, \"Only contestants can contribute\");\n        require(block.number < blockNumber, \"Too late to contribute\");\n        \n        // Mix user's seed with existing randomness\n        randomSeed = uint256(keccak256(abi.encodePacked(randomSeed, _userSeed)));\n        \n        emit RandomSeedContributed(msg.sender, _userSeed);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

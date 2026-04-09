@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "hash = uint24(block.blockhash(player.blockNum));",
+    "description": "The contract uses block.blockhash of a past block to generate randomness for determining bet outcomes. This is vulnerable to manipulation by miners who can withhold blocks or influence which blocks get mined to affect the hash result. Additionally, block.blockhash returns 0 for blocks older than 256 blocks from the current block, creating predictable outcomes when the target block is outside this range. This allows miners or attackers to exploit the randomness for financial gain."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "_0xEtherToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferAnyERC20Token",
+            "fix_info": "Replaced insecure tx.origin check with secure msg.sender check using onlyOwner modifier",
+            "corrected_code": "function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {\n    return ERC20Interface(tokenAddress).transfer(owner, tokens);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

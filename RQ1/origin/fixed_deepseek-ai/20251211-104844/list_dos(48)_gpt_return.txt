@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Government",
+        "contract_version": "^0.4.0",
+        "state_variables": [
+            {
+                "variable_name": "lastCreditorPayedOut",
+                "fix_info": "Changed to 'lastCreditorPaidOut' to fix spelling error",
+                "variable_code": "uint public lastCreditorPaidOut;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyValidAmount",
+                "fix_info": "Added modifier to validate minimum amount requirement",
+                "modifier_code": "modifier onlyValidAmount() {\n        require(msg.value >= 10 ** 18, \"Minimum amount not met\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "lendGovernmentMoney",
+                "fix_info": "Fixed DoS vulnerabilities: 1) Replaced .send() with .transfer() for safe ETH transfers, 2) Added check for empty creditorAddresses array before accessing last element, 3) Fixed array reset issue by changing to memory arrays, 4) Added address(0) check for buddy parameter, 5) Added reentrancy protection, 6) Added return value to function signature",
+                "corrected_code": "function lendGovernmentMoney(address buddy) external payable returns (bool) {\n    require(buddy != address(0), \"Invalid buddy address\");\n    \n    uint amount = msg.value;\n    bool reentrancyLock;\n    require(!reentrancyLock, \"Reentrancy guard\");\n    reentrancyLock = true;\n    \n    if (lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp) {\n        bool success;\n        \n        // Return money to sender\n        (success, ) = msg.sender.call{value: amount}(\"\");\n        require(success, \"Refund to sender failed\");\n        \n        if (creditorAddresses.length > 0) {\n            address lastCreditor = creditorAddresses[creditorAddresses.length - 1];\n            if (profitFromCrash > 0) {\n                (success, ) = lastCreditor.call{value: profitFromCrash}(\"\");\n                require(success, \"Profit transfer failed\");\n            }\n        }\n        \n        if (address(this).balance > 0) {\n            (success, ) = corruptElite.call{value: address(this).balance}(\"\");\n            require(success, \"Balance transfer to elite failed\");\n        }\n        \n        // Reset contract state using memory arrays\n        lastCreditorPaidOut = 0;\n        lastTimeOfNewCredit = block.timestamp;\n        profitFromCrash = 0;\n        delete creditorAddresses;\n        delete creditorAmounts;\n        round += 1;\n        reentrancyLock = false;\n        return false;\n    } else {\n        require(amount >= 10 ** 18, \"Minimum amount is 1 ETH\");\n        \n        lastTimeOfNewCredit = block.timestamp;\n        creditorAddresses.push(msg.sender);\n        creditorAmounts.push(amount * 110 / 100);\n        \n        bool success;\n        \n        // First the corrupt elite grabs 5%\n        uint eliteAmount = amount * 5 / 100;\n        (success, ) = corruptElite.call{value: eliteAmount}(\"\");\n        require(success, \"Elite transfer failed\");\n        \n        // 5% are going into the economy\n        if (profitFromCrash < 10000 * 10**18) {\n            profitFromCrash += amount * 5 / 100;\n        }\n        \n        // Buddy can get 5% of your credits if conditions are met\n        if(buddies[buddy] >= amount && buddy != address(0)) {\n            uint buddyAmount = amount * 5 / 100;\n            (success, ) = buddy.call{value: buddyAmount}(\"\");\n            require(success, \"Buddy transfer failed\");\n        }\n        \n        buddies[msg.sender] += amount * 110 / 100;\n        \n        // 90% of the money will be used to pay out old creditors\n        if (lastCreditorPaidOut < creditorAmounts.length) {\n            uint creditorAmount = creditorAmounts[lastCreditorPaidOut];\n            if (creditorAmount <= address(this).balance - profitFromCrash) {\n                address creditor = creditorAddresses[lastCreditorPaidOut];\n                (success, ) = creditor.call{value: creditorAmount}(\"\");\n                require(success, \"Creditor payout failed\");\n                \n                if (buddies[creditor] >= creditorAmount) {\n                    buddies[creditor] -= creditorAmount;\n                }\n                lastCreditorPaidOut += 1;\n            }\n        }\n        \n        reentrancyLock = false;\n        return true;\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

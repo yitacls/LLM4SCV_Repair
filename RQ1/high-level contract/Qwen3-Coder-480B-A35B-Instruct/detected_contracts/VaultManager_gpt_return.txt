@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint overallPrice = uint(_getPriceOf(address(0x0))); \n// get desired supply and update \ndesiredSupply = totalSupply * 1e8 / overallPrice;",
+        "description": "The calculation of desiredSupply involves multiplication followed by division. If _getPriceOf returns a very small value for overallPrice, the multiplication totalSupply * 1e8 could overflow before the division occurs. Although Solidity 0.8+ has built-in overflow checks, this may cause unintended reverts or logic errors if not handled carefully, especially when overallPrice is near zero."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 debtValueAdjusted = debtValue / (10 ** cDecimals);",
+        "description": "Division by (10 ** cDecimals) can result in debtValueAdjusted being zero if debtValue is smaller than (10 ** cDecimals). This truncation to zero could bypass the MCR validation check in isValidCDP under certain conditions, potentially allowing under-collateralized positions."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 collateralValueTimes100Point00000 = collateralValue * 10000000;",
+        "description": "Multiplying collateralValue by 10000000 can lead to an overflow if collateralValue is sufficiently large. Even though Solidity 0.8+ has default overflow protection causing a revert, this operation should still be checked or use safe math to prevent unintended DoS or logic errors."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 value = price * amount_;",
+        "description": "Multiplying price by amount_ can overflow with extremely high values. While Solidity 0.8+ includes automatic overflow checks, such overflows will cause a revert rather than producing incorrect results. Still, the presence of this pattern without explicit handling (e.g., using SafeMath or require checks) may impact user experience during valid transactions."
+    }
+]
+```

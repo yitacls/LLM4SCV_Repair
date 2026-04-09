@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(success, ) = address(user).call{value: amount}(\"\");",
+    "description": "The specified line uses a low-level `address.call` to transfer Ether without restricting reentrant calls. This makes the contract vulnerable to reentrancy attacks, where a malicious contract being called can manipulate state changes or make recursive calls to exploit the contract during the execution of the transfer."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The `send()` call does not check its return value. In Solidity 0.4.25, `send()` returns `false` if the transfer fails (e.g., if the recipient is a contract that runs out of gas or reverts), but the return value is ignored. This can lead to a situation where the refund is not successfully sent to the purchaser, but the contract state is still updated (the `purchaser` is recorded as having purchased tokens, and `totalEarlyPurchaseRaised` is increased). This violates the intended logic where the refund must succeed before state changes. Always check the return value of `send()` or use `transfer()` (which automatically reverts on failure in newer Solidity versions)."
+}
+```

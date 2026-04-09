@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The `send()` function is used to refund excess ether to the purchaser without checking the return value. In Solidity 0.4.25, `send()` returns a boolean indicating success/failure and does NOT revert on failure. If the refund fails (e.g., if the purchaser is a contract with a fallback function that reverts or runs out of gas), the transaction will continue execution without the refund being properly processed, potentially causing loss of funds for the purchaser while the contract state is updated as if the refund succeeded."
+}
+```

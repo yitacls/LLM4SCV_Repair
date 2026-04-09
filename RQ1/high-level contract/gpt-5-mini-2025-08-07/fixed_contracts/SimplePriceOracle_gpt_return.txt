@@ -1,0 +1,21 @@
+[{
+    "contract_name": "SimplePriceOracle",
+    "contract_version": "^0.5.0",
+    "state_variables": [
+        {
+            "variable_name": "rentPrice",
+            "fix_info": "No change required; keeps storing rent in wei per second as before.",
+            "variable_code": "uint public rentPrice;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "price",
+            "fix_info": "Added an explicit overflow check before multiplication to prevent integer overflow while preserving original behavior.",
+            "corrected_code": "function price(string calldata /*name*/, uint /*expires*/, uint duration) external view returns(uint) {\n    // If either operand is zero the result is zero and overflow cannot occur.\n    if (duration == 0 || rentPrice == 0) {\n        return 0;\n    }\n    // Ensure multiplication won't overflow: rentPrice <= maxUint / duration\n    require(rentPrice <= uint(-1) / duration, \"Integer overflow\");\n    return duration * rentPrice;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

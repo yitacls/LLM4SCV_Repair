@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "ygo",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow/underflow",
+            "variable_code": "using SafeMath for uint256;\nmapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow/underflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and added validation for mintedAmount",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(mintedAmount > 0, \"Minted amount must be greater than 0\");\n    require(target != address(0), \"Invalid target address\");\n    \n    uint256 decimalsValue = 10 ** uint256(decimals);\n    uint256 _amount = mintedAmount.mul(decimalsValue);\n    \n    balanceOf[target] = balanceOf[target].add(_amount);\n    totalSupply = totalSupply.add(_amount);\n    \n    emit Transfer(this, target, _amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

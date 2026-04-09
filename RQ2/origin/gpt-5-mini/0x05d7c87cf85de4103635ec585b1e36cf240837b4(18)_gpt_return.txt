@@ -1,0 +1,9 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "Arithmetic (integer overflow / truncation)",
+      "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100)));",
+      "description": "The expression msg.value * MULTIPLIER is evaluated with unchecked integer arithmetic (Solidity ^0.4.25), so the multiplication can overflow modulo 2^256. After that the result is cast to uint128 which will silently truncate high-order bits if the value exceeds 2^128-1. In addition, the code multiplies before dividing by 100, so the intermediate product can overflow even when the final mathematically correct result would fit. Consequences include: (1) the recorded payout (third struct field) can be incorrect (too small or otherwise wrong) enabling attackers to manipulate recorded obligations; (2) silent wrapping/truncation can corrupt contract accounting and allow misappropriation or denial-of-service through incorrect queue entries; (3) unexpected behavior if downstream logic assumes accurate, non-wrapped values. Mitigations: use checked arithmetic (SafeMath in 0.4.x or upgrade to >=0.8.x), ensure the intermediate product cannot overflow (e.g., check bounds or compute (msg.value * MULTIPLIER) / 100 with overflow checks or rearrange as (msg.value / 100) * MULTIPLIER when safe), and validate that the final value fits into uint128 before casting."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "owned",
+    "contract_version": "1.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Changed tx.origin to msg.sender to prevent potential security vulnerabilities. tx.origin refers to the original external account that started the transaction, while msg.sender refers to the account that called the current function, which is more secure for access control.",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": []
+}]
+```

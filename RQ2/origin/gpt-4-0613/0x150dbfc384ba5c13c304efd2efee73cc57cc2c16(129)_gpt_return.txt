@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function newTicket() external restricted",
+    "description": "In the smart contract 'RefStorage', there is an access control vulnerability. The vulnerability lies in the 'newTicket' function which is restricted but does not have any explicit access control mechanisms like Ownable or specific address based restrictions. Due to the missing access control checks, an unauthorized address could interact with function 'newTicket' and increase the ticket count, potentially misusing or abusing the bonus allocation system."
+}
+```

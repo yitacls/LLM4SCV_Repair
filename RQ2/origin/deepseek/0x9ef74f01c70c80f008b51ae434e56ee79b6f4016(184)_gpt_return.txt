@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function depositEtherTokenAmount(IEtherToken etherToken, uint256 amount) external {\n\t\tetherToken.deposit.value(amount)();\n    }",
+    "description": "The function lacks access control and allows any external caller (external) to forcibly deposit Ether into the specified etherToken contract by sending an arbitrary amount of wei (value(amount)). This can lead to unauthorized token minting, potential token supply manipulation, or draining of the caller's Ether if the etherToken contract is malicious or compromised. In Solidity 0.4.x, .value()() is a low-level call that forwards Ether, and without proper access restrictions, any user can trigger it with any amount, posing a significant security risk."
+}
+```

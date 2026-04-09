@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function liabilityFinalized(ILiability _liability, uint256 _gas) external onlyLighthouse gasPriceEstimate returns (bool)",
+    "description": "The function uses tx.origin for minting tokens instead of msg.sender, which is vulnerable to phishing attacks. An attacker could trick a user into calling a malicious contract that invokes this function, causing the tokens to be minted to the user's address (tx.origin) rather than the intended caller (msg.sender). This breaks access control assumptions and allows unauthorized token minting through intermediate contracts."
+}
+```

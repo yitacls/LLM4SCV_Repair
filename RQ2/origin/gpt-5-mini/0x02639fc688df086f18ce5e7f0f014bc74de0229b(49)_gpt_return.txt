@@ -1,0 +1,5 @@
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization, which is insecure. An attacker can deploy a malicious intermediary contract and trick the owner (an EOA) into calling it; when that intermediary contract calls ERC20Standard.mint, tx.origin will still be the owner while msg.sender is the malicious contract, so the require(tx.origin == owner) check will pass and the attacker can cause unauthorized minting. Using tx.origin breaks composability and prevents legitimate contract owners from calling safely. Fix by using require(msg.sender == owner) or the standard Ownable/onlyOwner pattern (e.g., OpenZeppelin) and never rely on tx.origin for access control."
+}

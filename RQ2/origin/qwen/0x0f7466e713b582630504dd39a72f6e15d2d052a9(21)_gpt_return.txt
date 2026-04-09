@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100)))",
+    "description": "The multiplication operation msg.value*MULTIPLIER/100 can cause an arithmetic overflow when msg.value is large, leading to unexpected behavior or incorrect calculations. Since Solidity 0.4.25 does not have built-in overflow protection, this can result in wrapping to zero or incorrect deposit amounts being recorded."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;",
+    "description": "The calculation for `getout` uses integer division at multiple points (`/100` and `/5900`), which can lead to truncation of significant precision before the final multiplication. Additionally, the multiplication `invested[msg.sender]*25` may overflow if `invested[msg.sender]` is large enough, though this is less likely in practice given typical Ether values. The division by 5900 (blocks) assumes a fixed block time for payoff calculations, which may not accurately reflect real-world block production rates, potentially affecting the intended financial logic."
+}
+```

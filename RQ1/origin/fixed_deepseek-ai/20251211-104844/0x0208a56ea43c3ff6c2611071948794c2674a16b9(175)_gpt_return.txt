@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ERBIUMCOIN",
+    "contract_version": "0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Assuming owner state variable exists for the onlyOwner modifier to function correctly",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Fixed logic error - original code checked if sender WAS owner and reverted, but should check if sender IS NOT owner and revert. Also improved error handling.",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": []
+}]
+```

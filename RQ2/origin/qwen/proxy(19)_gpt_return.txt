@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(callee.delegatecall(_data));",
+    "description": "The function lacks proper access control mechanisms, allowing any caller to invoke delegatecall on arbitrary contracts. This enables unauthorized users to execute code in the context of the proxy contract, potentially leading to complete contract takeover. The delegatecall forwards the execution to the callee contract while maintaining the proxy's storage context, which can result in malicious manipulation of the contract's state and funds."
+}
+```

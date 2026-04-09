@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "Line: bool isSuccess = whale.send(stake);\nLine: bool isOtherSuccess = msg.sender.send(stake);",
+    "description": "The contract uses low-level calls via `.send()` which returns a boolean indicating success or failure, but the return value is stored in unused variables (isSuccess, isOtherSuccess) rather than being checked. In Solidity ^0.4.25, `.send()` can fail (e.g., if the recipient is a contract that runs out of gas, throws an error, or uses more than 2300 gas), and without checking the return value, the contract will continue execution as if the transfer succeeded. This can lead to inconsistent state where the contract believes funds were transferred when they were not, potentially locking funds or allowing unexpected behavior in `setFacts()` and event emissions."
+}
+```

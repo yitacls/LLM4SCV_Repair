@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ICO_Hold",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Added SafeMath to prevent arithmetic overflow when adding deposit amounts",
+            "corrected_code": "function deposit() public payable {\n        if (msg.value >= 0.5 ether) {\n            deposits[msg.sender] = deposits[msg.sender].add(msg.value);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

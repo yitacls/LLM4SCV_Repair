@@ -1,0 +1,7 @@
+```json
+{
+   "type": "access_control",
+   "location": "require(tx.origin == ownerOf(_tokenId));",
+   "description": "The line of code has a security vulnerability because it uses tx.origin for authorization. An attacker can trick a victim into calling this function, so the tx.origin will be the address of the victim. This way, the owner of the tokenId can be changed unsuspectedly. In more secure cases, msg.sender is used to check the legitimacy of the function caller."
+}
+```

@@ -1,0 +1,67 @@
+```json
+[
+    {
+        "contract_name": "Fidometa",
+        "contract_version": "0.8.11",
+        "state_variables": [
+            {
+                "variable_name": "_surcharge1",
+                "fix_info": "Removed shadowed variable in function parameters",
+                "variable_code": "uint256 public _surcharge1 = 5 * 10**8;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_approve",
+                "fix_info": "Renamed 'owner' parameter to avoid shadowing state variable",
+                "corrected_code": "    function _approve(\n        address ownerAccount,\n        address spender,\n        uint256 amount\n    ) private {\n        require(ownerAccount != address(0), \"BEP20: approve from the zero address\");\n        require(spender != address(0), \"BEP20: approve to the zero address\");\n        _allowances[ownerAccount][spender] = amount;\n        emit Approval(ownerAccount, spender, amount);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setCharges",
+                "fix_info": "Added parameter validation and removed unused variable",
+                "corrected_code": "    function setCharges(\n        uint256 community_charge,\n        uint256 ecoSysFee,\n        uint256 surcharge_1,\n        uint256 surcharge_2,\n        uint256 surcharge_3\n    ) external onlyOwner {\n        require(\n            community_charge <= (100 * 10**uint256(decimals)),\n            \"Community Charge % should be less than equal to 100%\"\n        );\n        require(\n            ecoSysFee <= (100 * 10**uint256(decimals)),\n            \"EcoSysFee % should be less than equal to 100%\"\n        );\n        require(\n            surcharge_1 <= (100 * 10**uint256(decimals)),\n            \"surcharge1 % should be less than equal to 100%\"\n        );\n        require(\n            surcharge_2 <= (100 * 10**uint256(decimals)),\n            \"surcharge2 % should be less than equal to 100%\"\n        );\n        require(\n            surcharge_3 <= (100 * 10**uint256(decimals)),\n            \"surcharge3 % should be less than equal to 100%\"\n        );\n        _community_charge = community_charge;\n        _ecoSysFee = ecoSysFee;\n        _surcharge1 = surcharge_1;\n        _surcharge2 = surcharge_2;\n        _surcharge3 = surcharge_3;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_getCurrentSupply",
+                "fix_info": "Added check for gas limit by caching array length",
+                "corrected_code": "    function _getCurrentSupply() private view returns (uint256, uint256) {\n        uint256 rSupply = _rTotal;\n        uint256 tSupply = _tTotal;\n        uint256 cacheLength = _excluded.length;\n        uint256 i = 0;\n        while (i < cacheLength) {\n            if (\n                _rOwned[_excluded[i]] > rSupply ||\n                _tOwned[_excluded[i]] > tSupply\n            ) return (_rTotal, _tTotal);\n            rSupply = rSupply.sub(_rOwned[_excluded[i]]);\n            tSupply = tSupply.sub(_tOwned[_excluded[i]]);\n            i++;\n        }\n        if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);\n        return (rSupply, tSupply);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "takeCharges",
+                "fix_info": "Removed unused variables and fixed assignment",
+                "corrected_code": "    function takeCharges(\n        uint256 tEcoSys,\n        uint256 tSurcharge1,\n        uint256 tSurcharge2,\n        uint256 tSurcharge3\n    ) private {\n        uint256 currentRate = _getRate();\n        if (tEcoSys > 0) {\n            uint256 rEcosys = tEcoSys.mul(currentRate);\n            _rOwned[_ecoSysWallet] = _rOwned[_ecoSysWallet].add(rEcosys);\n            if (_isExcludedFromEcoSysFee[_ecoSysWallet])\n                _tOwned[_ecoSysWallet] = _tOwned[_ecoSysWallet].add(tEcoSys);\n        }\n        if (tSurcharge1 > 0) {\n            uint256 rSurcharge1 = tSurcharge1.mul(currentRate);\n            _rOwned[_surcharge_1_Wallet] = _rOwned[_surcharge_1_Wallet].add(\n                rSurcharge1\n            );\n            if (_isExcludedFromSurcharge1[_surcharge_1_Wallet])\n                _tOwned[_surcharge_1_Wallet] = _tOwned[_surcharge_1_Wallet].add(\n                    tSurcharge1\n                );\n        }\n        if (tSurcharge2 > 0) {\n            uint256 rSurcharge2 = tSurcharge2.mul(currentRate);\n            _rOwned[_surcharge_2_Wallet] = _rOwned[_surcharge_2_Wallet].add(\n                rSurcharge2\n            );\n            if (_isExcludedFromSurcharge2[_surcharge_2_Wallet])\n                _tOwned[_surcharge_2_Wallet] = _tOwned[_surcharge_2_Wallet].add(\n                    tSurcharge2\n                );\n        }\n        if (tSurcharge3 > 0) {\n            uint256 rSurcharge3 = tSurcharge3.mul(currentRate);\n            _rOwned[_surcharge_3_Wallet] = _rOwned[_surcharge_3_Wallet].add(\n                rSurcharge3\n            );\n            if (_isExcludedFromSurcharge3[_surcharge_3_Wallet])\n                _tOwned[_surcharge_3_Wallet] = _tOwned[_surcharge_3_Wallet].add(\n                    tSurcharge3\n                );\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_tokenTransfer",
+                "fix_info": "Removed dead code branch",
+                "corrected_code": "    function _tokenTransfer(\n        address sender,\n        address recipient,\n        uint256 amount,\n        bool takeCommunityCharge,\n        bool takeEcosysFee,\n        bool takeSurcharge1,\n        bool takeSurcharge2,\n        bool takeSurcharge3\n    ) private {\n        if (!takeCommunityCharge) {\n            _previousCommunityCharge = _community_charge;\n            _community_charge = 0;\n        }\n\n        if (!takeEcosysFee) {\n            _previousEcoSysFee = _ecoSysFee;\n            _ecoSysFee = 0;\n        }\n\n        if (!takeSurcharge1) {\n            _previousSurcharge1 = _surcharge1;\n            _surcharge1 = 0;\n        }\n\n        if (!takeSurcharge2) {\n            _previousSurcharge2 = _surcharge2;\n            _surcharge2 = 0;\n        }\n\n        if (!takeSurcharge3) {\n            _previousSurcharge3 = _surcharge3;\n            _surcharge3 = 0;\n        }\n\n        if (\n            _isExcludedFromReward[sender] && !_isExcludedFromReward[recipient]\n        ) {\n            _transferFromExcluded(sender, recipient, amount);\n        } else if (\n            !_isExcludedFromReward[sender] && _isExcludedFromReward[recipient]\n        ) {\n            _transferToExcluded(sender, recipient, amount);\n        } else if (\n            !_isExcludedFromReward[sender] && !_isExcludedFromReward[recipient]\n        ) {\n            _transferStandard(sender, recipient, amount);\n        } else if (\n            _isExcludedFromReward[sender] && _isExcludedFromReward[recipient]\n        ) {\n            _transferBothExcluded(sender, recipient, amount);\n        }\n\n        if (!takeCommunityCharge) _community_charge = _previousCommunityCharge;\n        if (!takeEcosysFee) _ecoSysFee = _previousEcoSysFee;\n        if (!takeSurcharge1) _surcharge1 = _previousSurcharge1;\n        if (!takeSurcharge2) _surcharge2 = _previousSurcharge2;\n        if (!takeSurcharge3) _surcharge3 = _previousSurcharge3;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unlock",
+                "fix_info": "Fixed integer overflow risk by using SafeMath",
+                "corrected_code": "    function unlock(address target_) external {\n        require(target_ != address(0), \"Invalid target\");\n        require(_msgSender() == target_, \"Invalid target\");\n        uint256 startTime = locks[target_].startTime;\n        uint256 lockedToken = locks[target_].lockedToken;\n        uint256 remainedToken = locks[target_].remainedToken;\n        uint256 monthCount = locks[target_].monthCount;\n        uint256 initialLock = locks[target_].initialLock;\n        require(remainedToken != 0, \"All tokens are unlocked\");\n\n        require(\n            block.timestamp > startTime.add(initialLock.mul(1 days)),\n            \"UnLocking period is not opened\"\n        );\n        uint256 timePassed = block.timestamp.sub(\n            startTime.add(initialLock.mul(1 days))\n        );\n\n        uint256 monthNumber = (timePassed.add(uint256(30 days).sub(1))).div(\n            uint256(30 days)\n        );\n\n        uint256 remainedMonth = monthNumber.sub(monthCount);\n\n        if (remainedMonth > 5) remainedMonth = 5;\n        require(remainedMonth > 0, \"Releasable token till now is released\");\n\n        uint256 receivableToken = lockedToken.mul(remainedMonth.mul(20)).div(\n            100\n        );\n\n        locks[target_].monthCount = locks[target_].monthCount.add(remainedMonth);\n        locks[target_].remainedToken = locks[target_].remainedToken.sub(\n            receivableToken\n        );\n\n        if (locks[target_].remainedToken == 0) {\n            delete locks[target_];\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferWithLock",
+                "fix_info": "Removed unnecessary require statement",
+                "corrected_code": "    function transferWithLock(\n        address recipient,\n        uint256 tAmount,\n        uint256 initialLock\n    ) external onlyOwner {\n        require(recipient != address(0), \"Invalid target\");\n        require(\n            locks[recipient].lockedToken == 0,\n            \"This address is already in vesting period\"\n        );\n        _transfer(_msgSender(), recipient, tAmount);\n        locks[recipient] = LockDetails(\n            block.timestamp,\n            initialLock,\n            tAmount,\n            tAmount,\n            0\n        );\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_transferFromExcluded",
+                "fix_info": "Removed unused parameters",
+                "corrected_code": "    function _transferFromExcluded(\n        address sender,\n        address recipient,\n        uint256 tAmount\n    ) private {\n        MValues memory mvalues = _getValues(tAmount);\n        _tOwned[sender] = _tOwned[sender].sub(tAmount);\n        _rOwned[sender] = _rOwned[sender].sub(mvalues.rAmount);\n        _doTransfer(mvalues, sender, recipient);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

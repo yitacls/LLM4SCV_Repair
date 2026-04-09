@@ -1,0 +1,16 @@
+```json
+[{
+  "contract_name": "Admin",
+  "contract_version": "0.6.12",
+  "state_variables": [],
+  "modifiers": [],
+  "functions": [
+    {
+      "function_name": "removeAdmin",
+      "fix_info": "Fixed the vulnerability by limiting iteration to the `admins.length` to prevent an infinite loop if an invalid address is passed. Used explicit loop bounds and reorganized the logic to avoid issues with failed calls.",
+      "corrected_code": "function removeAdmin(address _adminAddress) external onlyAdmin {\n    // Admin has to exist\n    require(isAdmin[_adminAddress] == true, \"[RBAC] : Admin does not exist\");\n\n    uint adminCount = admins.length;\n    bool adminFound = false;\n\n    for (uint i = 0; i < adminCount; i++) {\n        if (admins[i] == _adminAddress) {\n            adminFound = true;\n\n            // Replace the current admin with the last one in the list\n            admins[i] = admins[adminCount - 1];\n\n            // Remove the last admin (now duplicated)\n            admins.pop();\n            break;\n        }\n    }\n\n    require(adminFound, \"[RBAC] : Passed admin address does not exist\");\n\n    // Update the mapping to reflect removal\n    isAdmin[_adminAddress] = false;\n}",
+      "change_type": "modified"
+    }
+  ]
+}]
+```

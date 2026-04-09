@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The 'tx.origin' should not be used for authentication controls as it can lead to vulnerabilities. An attacker can manipulate the 'tx.origin' to bypass access control mechanisms."
+        }
+    ]
+}
+```

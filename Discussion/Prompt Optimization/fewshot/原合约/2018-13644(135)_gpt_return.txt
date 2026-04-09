@@ -1,0 +1,27 @@
+```json
+[
+    {
+        "contract_name": "RoyalClassicCoin",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Add overflow check before updating balances and total supply.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner{
+    require(balances[target] + mintedAmount >= balances[target]);
+    require(totalSupply + mintedAmount >= totalSupply);
+    
+    balances[target] += mintedAmount;
+    totalSupply += mintedAmount;
+    
+    Transfer(0, owner, mintedAmount);
+    Transfer(owner, target, mintedAmount);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,21 @@
+[{
+    "contract_name": "YieldFarm",
+    "contract_version": "0.6.0",
+    "state_variables": [
+        {
+            "variable_name": "MAX_EPOCHS_PER_TX",
+            "fix_info": "Added a cap on the number of epochs processed per transaction to mitigate DoS via block gas limit when a user has many unharvested epochs.",
+            "variable_code": "uint128 public constant MAX_EPOCHS_PER_TX = 5;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "massHarvest",
+            "fix_info": "Limit the number of epochs processed per call to avoid DoS by block gas limit; handle epoch 0 safely; check ERC20 transfer return value.",
+            "corrected_code": "function massHarvest() external returns (uint){\n        uint totalDistributedValue = 0;\n        uint128 currentEpoch = _getEpochId();\n        // nothing to harvest yet\n        if (currentEpoch == 0) {\n            return 0;\n        }\n\n        // last completed epoch\n        uint128 epochId = currentEpoch - 1;\n        // force max number of epochs\n        if (epochId > uint128(NR_OF_EPOCHS)) {\n            epochId = uint128(NR_OF_EPOCHS);\n        }\n\n        uint128 last = lastEpochIdHarvested[msg.sender];\n        uint128 start = last + 1;\n        if (start > epochId) {\n            // nothing new to harvest\n            return 0;\n        }\n\n        // limit work per tx to avoid running out of gas\n        uint128 end = start + (MAX_EPOCHS_PER_TX - 1);\n        if (end > epochId) {\n            end = epochId;\n        }\n\n        uint128 epochsHarvested = end - last;\n\n        // process only up to MAX_EPOCHS_PER_TX epochs\n        for (uint128 i = start; i <= end; i++) {\n            totalDistributedValue = totalDistributedValue.add(_harvest(i));\n        }\n\n        emit MassHarvest(msg.sender, epochsHarvested, totalDistributedValue);\n\n        if (totalDistributedValue > 0) {\n            // check return value of ERC20 transferFrom\n            require(_bond.transferFrom(_communityVault, msg.sender, totalDistributedValue), \"Transfer failed\");\n        }\n\n        return totalDistributedValue;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

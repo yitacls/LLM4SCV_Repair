@@ -1,0 +1,19 @@
+```json
+[
+  {
+    "contract_name": "BorrowerOperations",
+    "contract_version": "0.6.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "closeTrove",
+        "fix_info": "Add a check that ensures the user is the rightful owner of the trove before closing it. This prevents anyone from being able to close another user's trove and withdraw their collateral",
+        "corrected_code": "function closeTrove() external override {\n    ITroveManager troveManagerCached = troveManager;\n    IActivePool activePoolCached = activePool;\n    ILUSDToken lusdTokenCached = lusdToken;\n\n    _requireTroveisActive(troveManagerCached, msg.sender);\n    uint price = priceFeed.fetchPrice();\n    _requireNotInRecoveryMode(price);\n\n    troveManagerCached.applyPendingRewards(msg.sender);\n\n    uint coll = troveManagerCached.getTroveColl(msg.sender);\n    uint debt = troveManagerCached.getTroveDebt(msg.sender);\n\n    _requireCorrectCaller(troveManagerCached, msg.sender); \n    _requireSufficientLUSDBalance(lusdTokenCached, msg.sender, debt.sub(LUSD_GAS_COMPENSATION));\n\n    uint newTCR = _getNewTCRFromTroveChange(coll, false, debt, false, price);\n    _requireNewTCRisAboveCCR(newTCR);\n\n    troveManagerCached.removeStake(msg.sender);\n    troveManagerCached.closeTrove(msg.sender);\n\n    emit TroveUpdated(msg.sender, 0, 0, 0, BorrowerOperation.closeTrove);\n\n    // Burn the repaid LUSD from the user's balance and the gas compensation from the Gas Pool\n    _repayLUSD(activePoolCached, lusdTokenCached, msg.sender, debt.sub(LUSD_GAS_COMPENSATION));\n    _repayLUSD(activePoolCached, lusdTokenCached, gasPoolAddress, LUSD_GAS_COMPENSATION);\n\n    // Send the collateral back to the user\n    activePoolCached.sendETH(msg.sender, coll);\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```
+In the corrected_code section, the line `_requireCorrectCaller(troveManagerCached, msg.sender);`  has been added to ensure that the caller who is trying to close the Trove is indeed the owner of that Trove in order to protect against Unprotected Ether Withdrawal.

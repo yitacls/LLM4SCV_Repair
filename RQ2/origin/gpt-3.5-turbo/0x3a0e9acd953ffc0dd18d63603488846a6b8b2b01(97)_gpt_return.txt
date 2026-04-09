@@ -1,0 +1,7 @@
+```json
+{
+    "type": "UNCHECKED_LL_CALLS",
+    "location": "_addr.call.value(_wei);",
+    "description": "This line uses the low-level call method without explicitly specifying the success condition. This can lead to vulnerabilities like re-entrancy attacks where the called contract can execute callback functions that modify state before the initial function completes."
+}
+```

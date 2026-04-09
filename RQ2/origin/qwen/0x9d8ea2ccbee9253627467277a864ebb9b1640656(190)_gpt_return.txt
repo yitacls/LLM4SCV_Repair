@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_to == tx.origin) {    // fault line\n    walletStore.setProfitBalance(_to, profitBalance.sub(_deposited));\n} else {\n    uint senderProfitBalance = getProfitBalance(tx.origin);\n    walletStore.setProfitBalance(tx.origin, senderProfitBalance.sub(_deposited));\n}",
+    "description": "The function uses `tx.origin` for authorization checks, which is vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract that forwards the call, making `tx.origin` point to the legitimate user. This allows unauthorized access or manipulation of the profit balance by exploiting the trust relationship based on `tx.origin` instead of `msg.sender`."
+}
+```

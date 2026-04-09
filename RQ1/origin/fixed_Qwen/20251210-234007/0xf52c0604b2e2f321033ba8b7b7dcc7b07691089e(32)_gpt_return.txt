@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Airdroper",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "spread",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and adding onlyOwner modifier. Also fixed reentrancy risk by moving balance update before external call.",
+            "corrected_code": "function spread(address _token, address[] _addresses, uint[] _amounts) public onlyOwner returns (bool) {\n    uint l = _addresses.length;\n    for (uint i = 0; i < l; i++) {\n        require(balances[_token][msg.sender] >= _amounts[i]);\n        balances[_token][msg.sender] = subtr(balances[_token][msg.sender], _amounts[i]);\n        require(_token.call(0xa9059cbb, _addresses[i], _amounts[i]));\n    }\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

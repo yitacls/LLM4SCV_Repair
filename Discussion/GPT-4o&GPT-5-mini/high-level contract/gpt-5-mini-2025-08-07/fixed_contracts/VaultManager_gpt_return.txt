@@ -1,0 +1,32 @@
+[{
+    "contract_name": "VaultManager",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "isValidCDP",
+            "fix_info": "Avoid potential overflow in intermediate arithmetic by adjusting scaling and adding explicit overflow checks; cast decimals to uint256 and guard multiplications.",
+            "corrected_code": "function isValidCDP(address collateral_, address debt_, uint256 cAmount_, uint256 dAmount_) public view override returns (bool) {\n    (uint256 collateralValueTimes100Point00000, uint256 debtValue) = _calculateValues(collateral_, debt_, cAmount_, dAmount_);\n\n    uint256 mcr = getMCR(collateral_);\n    uint8 cDecimals = IERC20Minimal(collateral_).decimals();\n\n    // scale debt value according to collateral decimals\n    uint256 denom = 10 ** uint256(cDecimals);\n    uint256 debtValueAdjusted = denom == 0 ? 0 : debtValue / denom;\n\n    // if the debt become obsolete\n    if (debtValueAdjusted == 0) {\n        return true;\n    }\n\n    // ensure multiplication debtValueAdjusted * mcr won't overflow when used in comparisons\n    require(mcr != 0, \"VAULTMANAGER: invalid MCR\");\n    require(debtValueAdjusted <= type(uint256).max / mcr, \"VAULTMANAGER: overflow\");\n\n    // compare safely\n    return collateralValueTimes100Point00000 / debtValueAdjusted >= mcr;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "isValidSupply",
+            "fix_info": "Prevent addition overflow by checking remaining allowed supply using subtraction with underflow guard; avoids relying on unchecked addition behavior.",
+            "corrected_code": "function isValidSupply(uint256 issueAmount_) public view override returns (bool) {\n    if (!rebaseActive) {\n        return true;\n    }\n    uint256 totalSupply = IERC20Minimal(stablecoin).totalSupply();\n    // if desiredSupply already below current totalSupply, no further issuance is allowed\n    if (desiredSupply < totalSupply) {\n        return false;\n    }\n    uint256 remaining = desiredSupply - totalSupply;\n    return issueAmount_ <= remaining;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_calculateValues",
+            "fix_info": "Add explicit overflow guard for multiplication by constant factor and handle zero collateral value early to avoid unnecessary checks.",
+            "corrected_code": "function _calculateValues(address collateral_, address debt_, uint256 cAmount_, uint256 dAmount_) internal view returns (uint256, uint256) {\n    uint256 collateralValue = getAssetValue(collateral_, cAmount_);\n    uint256 debtValue = getAssetValue(debt_, dAmount_);\n\n    if (collateralValue == 0) {\n        return (0, debtValue);\n    }\n\n    uint256 factor = 10000000;\n    require(collateralValue <= type(uint256).max / factor, \"VAULTMANAGER: collateral overflow\");\n    uint256 collateralValueTimes100Point00000 = collateralValue * factor;\n\n    return (collateralValueTimes100Point00000, debtValue);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getAssetValue",
+            "fix_info": "Prevent multiplication overflow when computing price * amount by checking operands before multiplication and return 0 early for zero price or amount.",
+            "corrected_code": "function getAssetValue(address asset_, uint256 amount_) public view override returns (uint256) {\n    if (amount_ == 0) {\n        return 0;\n    }\n    uint price = getAssetPrice(asset_);\n    if (price == 0) {\n        return 0;\n    }\n    require(price <= type(uint256).max / amount_, \"VAULTMANAGER: value overflow\");\n    uint256 value = price * amount_;\n    return value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

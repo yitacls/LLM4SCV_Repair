@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "HSNCoin",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with msg.sender for proper access control",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawEther",
+            "fix_info": "Replaced vulnerable tx.origin check with onlyOwner modifier to prevent unauthorized access and follow best practices",
+            "corrected_code": "function withdrawEther(uint256 amount) public onlyOwner {\n    owner.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

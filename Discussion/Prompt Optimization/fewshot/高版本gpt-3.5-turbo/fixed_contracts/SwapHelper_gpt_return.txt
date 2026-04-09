@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "SwapHelper",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcAmountToSwap",
+                "fix_info": "Prevent potential arithmetic overflow and underflow.",
+                "corrected_code": "function calcAmountToSwap(int24 tickPool, int24 tickLower, int24 tickUpper, uint256 amount0In, uint256 amount1In) internal pure returns (uint256 amountToSwap, bool token0In) {\n require(amount0In > 0 || amount1In > 0, 'Token amounts should be greater than 0');\n if (tickPool <= tickLower) {\n amountToSwap = amount0In;\n token0In = true;\n } else if (tickPool >= tickUpper) {\n amountToSwap = amount1In;\n token0In = false;\n } else {\n uint256 ratioE18 = getRatioFromRange(tickPool, tickLower, tickUpper);\n uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tickPool);\n uint256 valueX96 = (amount0In * (uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION) + (amount1In << FixedPoint96.RESOLUTION);\n uint256 amount1PostX96 = (ratioE18 * valueX96) / (ratioE18 + 1e18);\n token0In = !(amount1In >= (amount1PostX96 >> FixedPoint96.RESOLUTION));\n if (token0In) {\n amountToSwap = (((amount1PostX96 - (amount1In << FixedPoint96.RESOLUTION)) / sqrtPriceX96) << FixedPoint96.RESOLUTION) / sqrtPriceX96;\n } else {\n require(amount1In >= amount1PostX96 >> FixedPoint96.RESOLUTION, 'Potential underflow in amount calculation');\n amountToSwap = amount1In - (amount1PostX96 >> FixedPoint96.RESOLUTION);\n }\n }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

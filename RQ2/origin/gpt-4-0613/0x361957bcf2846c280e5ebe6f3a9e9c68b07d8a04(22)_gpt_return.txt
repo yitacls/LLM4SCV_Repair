@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "require(balanceOf[_to] + _value >= balanceOf[_to]);",
+    "description": "This line of code in the contract is vulnerable to an arithmetic overflow. An overflow occurs when an operation attempts to create a numeric value that is outside of the range that can be represented with a given number of bits. If this happens, it can result in unexpected behavior, leading to potential loss of funds or other security issues. It is suggested to use SafeMath library functions for arithmetic operations to avoid this issue."
+}
+```

@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "againstTokenRegister",
+    "contract_version": ">=0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "openMarketFee",
+            "fix_info": "No change needed - assumed to be properly declared elsewhere",
+            "variable_code": "",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "exists",
+            "fix_info": "No change needed - assumed to be properly declared elsewhere",
+            "variable_code": "",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "tokens",
+            "fix_info": "No change needed - assumed to be properly declared elsewhere",
+            "variable_code": "",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "createMarket",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or unchecked increment pattern. Added explicit check for market count overflow. Using Solidity 0.8+ overflow protection implicitly.",
+            "corrected_code": "function createMarket(address _token, address _tokenPair) public payable {\n    require(msg.value >= openMarketFee, \"Open Market Fee Very Low\");\n    require(exists[_token] && exists[_tokenPair], \"token or tokenPair not listed\");\n    require(!tokens[_token].markets[_tokenPair].exists, \"Market already exists\");\n    require(tokens[_token].tokenBase != _tokenPair, \"Not allowed token = tokenPair\");\n    \n    // Using Solidity 0.8+ overflow protection - arithmetic operations will revert on overflow\n    uint256 newMarketsCount = tokens[_token].marketsCount + 1;\n    \n    tokens[_token].marketsCount = newMarketsCount;\n    tokens[_token].marketIndex[newMarketsCount] = _tokenPair;\n    tokens[_token].markets[_tokenPair].tokenPair = _tokenPair;\n    tokens[_token].markets[_tokenPair].ordersCount = 0;\n    tokens[_token].markets[_tokenPair].donesCount = 0;\n    tokens[_token].markets[_tokenPair].exists = true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

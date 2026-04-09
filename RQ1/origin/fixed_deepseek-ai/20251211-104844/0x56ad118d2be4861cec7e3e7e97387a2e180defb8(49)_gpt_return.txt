@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "ERC20Standard",
+        "contract_version": ">=0.4.11 <0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added explicit visibility and address type for clarity",
+                "variable_code": "address public owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to restrict access to owner instead of using tx.origin",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mint",
+                "fix_info": "Replaced tx.origin with msg.sender + onlyOwner modifier, added overflow protection with SafeMath for older Solidity, removed redundant assert, and ensured proper access control",
+                "corrected_code": "function mint(uint256 amount) public onlyOwner {\n        require(totalSupply + amount >= totalSupply, \"Overflow detected\");\n        require(balances[msg.sender] + amount >= balances[msg.sender], \"Overflow detected\");\n        \n        balances[msg.sender] += amount;\n        totalSupply += amount;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

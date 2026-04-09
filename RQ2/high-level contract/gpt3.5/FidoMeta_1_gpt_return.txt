@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-119-Shadowing State Variables",
+            "location": "Function: _approve, Line: 124",
+            "description": "The function _approve is shadowing state variables owner, spender, and amount which can lead to confusion and unintended behavior."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Function: setCharges, Lines: 259 - 291",
+            "description": "The setCharges function sets new values for various charges like community_charge, ecoSysFee, surcharge1, surcharge2, and surcharge3 but the changes are reverted at the end of the function, making the changes have no actual effect."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Function: _getCurrentSupply, Lines: 590 - 784",
+            "description": "The loop in the _getCurrentSupply function could potentially exceed the block gas limit as it iterates through possibly a large number of excluded addresses."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Function: unlock, Line: 980",
+            "description": "The calculation of remainedMonth might result in underflow if the condition check later 'require(remainedMonth > 0, 'Releasable token till now is released')' is not properly handled."
+        }
+    ]
+}
+```

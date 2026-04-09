@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "BetBuyer",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "bounty",
+            "fix_info": "Changed bounty variable to use SafeMath for overflow protection",
+            "variable_code": "uint256 public bounty;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "safeAdd",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow",
+            "modifier_code": "library SafeMath {\n  function add(uint256 a, uint256 b) internal constant returns (uint256) {\n    uint256 c = a + b;\n    assert(c >= a);\n    return c;\n  }\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "add_to_bounty",
+            "fix_info": "Fixed arithmetic overflow vulnerability by implementing safe addition",
+            "corrected_code": "function add_to_bounty() payable {\n    if (msg.sender != developer) throw;\n    if (kill_switch) throw;\n    if (bought_tokens) throw;\n    \n    // Prevent overflow\n    if (bounty + msg.value < bounty) throw;\n    bounty += msg.value;\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

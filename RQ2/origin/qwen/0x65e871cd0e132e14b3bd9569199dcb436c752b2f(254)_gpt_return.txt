@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(bricks[_brickId].owner == 0x0 || bricks[_brickId].owner == tx.origin);",
+    "description": "The function uses tx.origin for access control which is vulnerable to phishing attacks. A malicious contract can trick the owner into calling the function, allowing unauthorized access. Additionally, the check only verifies ownership or empty ownership, but doesn't properly validate that only the legitimate owner can modify existing bricks. This could allow attackers to overwrite brick data by front-running or exploiting the ownership check logic."
+}
+```

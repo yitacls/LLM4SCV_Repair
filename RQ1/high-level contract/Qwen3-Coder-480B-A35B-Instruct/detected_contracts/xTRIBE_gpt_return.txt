@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function emitVotingBalances(address[] calldata accounts) external { ... }",
+        "description": "The function 'emitVotingBalances' emits voting balance changes for a list of accounts but does not restrict who can call it. This could allow an attacker to spam the event log or potentially manipulate off-chain systems that rely on these events, as there is no authentication or access control on this function."
+    }
+]
+```

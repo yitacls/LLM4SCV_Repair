@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "secondTarget.call.value(msg.value)();",
+    "description": "The low-level call to secondTarget does not check the return value, which means the function will continue execution even if the call fails. This can lead to loss of funds as the ether is sent but the intended operation may not have succeeded. The call should check the return value and handle failures appropriately, such as using require(secondTarget.call.value(msg.value)()) to revert the transaction if the call fails."
+}
+```

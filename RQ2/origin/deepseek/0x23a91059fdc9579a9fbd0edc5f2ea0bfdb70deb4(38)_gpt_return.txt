@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Reentrancy",
+        "location": "if(msg.sender.call.value(_am)()) { ... }",
+        "description": "The contract uses low-level call.value() to transfer Ether before updating the sender's balance (balances[msg.sender] -= _am). An attacker can create a malicious contract that recursively calls CashOut() in its fallback function, draining funds because the balance is only deducted after the external call completes. This violates the Checks-Effects-Interactions pattern."
+    }
+]
+```

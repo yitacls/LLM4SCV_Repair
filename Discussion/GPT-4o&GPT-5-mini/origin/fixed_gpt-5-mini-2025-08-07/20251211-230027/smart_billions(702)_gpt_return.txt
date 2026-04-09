@@ -1,0 +1,14 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Mixed the blockhash inputs using keccak256 to reduce predictability and condensed the entropy sources (also included block.difficulty and block.number). Preserved the original 10x24-bit layout in the lower 240 bits and retained the top 16-bit slot for (uint(_delta)/hashesSize). Note: on-chain blockhash-based randomness remains insecure; for strong randomness use commit-reveal or an oracle.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Mix the available blockhashes and additional block data into a single seed.\n    // This reduces straightforward predictability compared to simple concatenation.\n    bytes32 seed = keccak256(\n        block.blockhash(_lastb),\n        block.blockhash(_lastb + 1),\n        block.blockhash(_lastb + 2),\n        block.blockhash(_lastb + 3),\n        block.blockhash(_lastb + 4),\n        block.blockhash(_lastb + 5),\n        block.blockhash(_lastb + 6),\n        block.blockhash(_lastb + 7),\n        block.blockhash(_lastb + 8),\n        block.blockhash(_lastb + 9),\n        _delta,\n        block.difficulty,\n        block.number\n    );\n\n    // Use the lower 240 bits of the seed to represent the 10 x 24-bit chunks\n    // and keep the original placement of the delta-derived value in the top 16 bits.\n    uint lower240 = uint(seed) & ((uint(1) << 240) - 1);\n    uint top16 = (uint(_delta) / hashesSize) & 0xFFFF;\n\n    return lower240 | (top16 << 240);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

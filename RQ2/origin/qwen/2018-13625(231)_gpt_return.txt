@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;",
+    "description": "The mintlvlToken function is vulnerable to arithmetic overflow. In Solidity ^0.4.13, there are no automatic overflow checks. When mintedAmount is large enough, the addition operations (balanceOf[target] += mintedAmount and totalSupply += mintedAmount) could overflow, causing the values to wrap around to zero or a smaller number. This could result in incorrect balance tracking and total supply calculation. The vulnerability exists because the contract doesn't implement any overflow protection mechanisms like SafeMath library which was commonly used in older Solidity versions to prevent such issues."
+}
+```

@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 tokensSwaped = _exData.destAddr.getBalance(address(this)) - tokensBefore;",
+        "description": "The subtraction operation may underflow if the balance of destination tokens after the swap is less than the balance before the swap. This could happen in case of external transfers or other unexpected behavior, leading to incorrect calculation of swapped tokens."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint srcAmount = wdiv(_exData.destAmount, _exData.offchainData.price) + 1;",
+        "description": "The addition operation may overflow if the result of wdiv is close to the maximum value of uint256. Although unlikely, this could lead to an incorrect srcAmount being approved for the swap."
+    }
+]
+```

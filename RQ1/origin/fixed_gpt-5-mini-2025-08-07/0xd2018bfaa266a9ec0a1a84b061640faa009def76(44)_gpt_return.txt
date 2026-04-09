@@ -1,0 +1,14 @@
+[{
+    "contract_name": "Pie",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Check the return value of the low-level call and revert on failure to avoid silent failures (unchecked low-level calls). Preserve original functionality and access control.",
+            "corrected_code": "function Command(address adr, bytes data) public payable {\n    require(msg.sender == Owner);\n    // Ensure the low-level call success is checked to avoid silent failures\n    require(adr.call.value(msg.value)(data));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "This condition uses 'tx.origin' for authorization instead of 'msg.sender', making it vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract that calls this function, causing 'tx.origin' to equal the owner's address while 'msg.sender' is the attacker's contract address, allowing unauthorized minting."
+        }
+    ]
+}
+```

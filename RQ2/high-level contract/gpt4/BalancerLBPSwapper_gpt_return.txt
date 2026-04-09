@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "Function init(IWeightedPool _pool) - Lines 108-118",
+        "description": "The init function contains state variables that are dependent on the order of transaction execution. In particular, the variables related to pool, vault, pid, assets, initialWeights, and endWeights can be subject to front-running attacks when transactions are not mined in the order they were submitted."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "Function swap() - Lines 174-258",
+        "description": "Any external actor can call the swap function and subsequently invoke vault.exitPool and vault.joinPool which potentially can lead to unexpected state changes or asset transfers. It's important to ensure that only authorized actors are permitted to execute such critical functions. This vulnerability can be exploited by malicious actors to interact with or manipulate the Balancer pool in unintended ways."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balance += deposit;",
+    "description": "In Solidity 0.4.25, integer arithmetic operations do not automatically check for overflow/underflow. The addition operation 'balance += deposit;' can overflow if 'balance + deposit' exceeds the maximum value of uint256 (2^256 - 1), causing the value to wrap around to a small number. This can be exploited to manipulate account balances. This vulnerability was addressed in Solidity 0.8.0 with built-in overflow checks, or by using SafeMath library in earlier versions."
+}
+```

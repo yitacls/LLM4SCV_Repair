@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "function migrateDungeon(uint _id, uint _playerCount) external",
+        "description": "The function contains two major access control vulnerabilities: 1) The 'require' statement uses 'tx.origin' for authorization (0x47169f78750Be1e6ec2DEb2974458ac4F8751714), which makes the check vulnerable to phishing attacks where malicious contracts could trick the authorized address into calling this function. 2) The time check 'now < 1520694000' uses a hardcoded timestamp that will permanently expire after April 10, 2018, leaving the function permanently disabled. Additionally, the function lacks proper authentication/authorization mechanisms to ensure only authorized administrators can execute it."
+    }
+}
+```

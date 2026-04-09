@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "TokenSale",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Ensure `owner` remains set during contract deployment and used appropriately for access control.",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Restrict function access to the contract owner for secure access control.",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, 'Caller is not the owner'); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "addMeByRC",
+                "fix_info": "Replaced `tx.origin` check with `msg.sender` and added the `onlyOwner` modifier to secure the access control vulnerability.",
+                "corrected_code": "function addMeByRC() public onlyOwner { rc[msg.sender] = true; emit NewRC(msg.sender); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

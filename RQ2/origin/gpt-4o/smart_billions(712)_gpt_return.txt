@@ -1,0 +1,54 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return( ( uint(block.blockhash(_lastb  )) & 0xFFFFFF )",
+        "description": "The `block.blockhash` function is used to generate random values. However, blockhash values for the previous 256 blocks can be predicted by miners or anyone with the knowledge of past blocks, leading to potential manipulation or exploitation of the randomness."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+1)) & 0xFFFFFF ) << 24 )",
+        "description": "Similarly, using `block.blockhash` with `_lastb+1` allows attackers to predict the output of the function since the blockhash of a recent block is computationally determinable."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+2)) & 0xFFFFFF ) << 48 )",
+        "description": "Using `block.blockhash(_lastb+2)` inherits the issue of predictable randomness since blockhashes for a range of recent blocks can be known or controlled by miners."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+3)) & 0xFFFFFF ) << 72 )",
+        "description": "The use of `block.blockhash(_lastb+3)` also does not provide true randomness and is susceptible to miner manipulation or prediction for the same reasons."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+4)) & 0xFFFFFF ) << 96 )",
+        "description": "`block.blockhash(_lastb+4)` is similarly predictable and unreliable for secure randomness, possibly enabling exploitation by miners or other attackers."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+5)) & 0xFFFFFF ) << 120 )",
+        "description": "The use of `block.blockhash(_lastb+5)` for random number generation is flawed because it creates a predictable output, especially within recent block ranges."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+6)) & 0xFFFFFF ) << 144 )",
+        "description": "`block.blockhash(_lastb+6)` continues the pattern of vulnerability due to its reliance on a deterministic blockhash value."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+7)) & 0xFFFFFF ) << 168 )",
+        "description": "`block.blockhash(_lastb+7)` does not introduce true randomness and remains predictable in the context of Ethereum’s recent blockhash behavior."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+8)) & 0xFFFFFF ) << 192 )",
+        "description": "Similar to the prior cases, `block.blockhash(_lastb+8)` cannot be considered a source of secure randomness, as it is predictable for miners or observers."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+9)) & 0xFFFFFF ) << 216 )",
+        "description": "`block.blockhash(_lastb+9)` suffers from predictability issues, thereby making it unsuitable for secure random number generation."
+    }
+]
+```

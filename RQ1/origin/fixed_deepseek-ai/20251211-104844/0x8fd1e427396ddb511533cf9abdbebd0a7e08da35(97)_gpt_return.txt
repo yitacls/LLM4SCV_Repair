@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "TokenBank",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "No state variables were modified, only function was fixed",
+            "variable_code": "",
+            "change_type": ""
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes to modifiers were made",
+            "modifier_code": "",
+            "change_type": ""
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "WithdrawToHolder",
+            "fix_info": "1. Fixed unchecked low-level call by checking return value and handling failure properly\n2. Added reentrancy protection by updating state before external call (checks-effects-interactions pattern)\n3. Changed from unsafe .call.value() syntax to .transfer() for safer Ether transfers\n4. Added better validation of input parameters\n5. Fixed the condition logic to check the correct holder's balance\n6. Added explicit 'payable' requirements for the contract and function",
+            "corrected_code": "function WithdrawToHolder(address _addr, uint _wei) \n    public\n    onlyOwner\n    payable\n    {\n        require(_addr != address(0), \"Invalid address\");\n        require(_wei > 0, \"Amount must be greater than 0\");\n        require(Holders[_addr] >= _wei, \"Insufficient holder balance\");\n        \n        // Update state before external call (checks-effects-interactions pattern)\n        Holders[_addr] -= _wei;\n        \n        // Use transfer() instead of call.value() for safer Ether transfer\n        // transfer() automatically reverts on failure and has limited gas (2300)\n        _addr.transfer(_wei);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

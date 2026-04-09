@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "won",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by removing reliance on block.blockhash for randomness generation. The function now requires a secure random seed to be provided by the player or contract owner.",
+            "corrected_code": "function won(uint24 seed) public {\n        Bet memory player = bets[msg.sender];\n        if(player.blockNum==0){ // create a new player\n            bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n            return;\n        }\n        if((player.value==0) || (player.blockNum==1)){\n            payWallet();\n            return;\n        }\n        require(block.number>player.blockNum); // if there is an active bet, throw()\n        if(player.blockNum + (10 * hashesSize) <= block.number){ // last bet too long ago, lost !\n            LogLate(msg.sender,player.blockNum,block.number);\n            bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n            return;\n        }\n        uint prize = 0;\n        uint32 hash = 0;\n        if(block.number<player.blockNum+256){\n            // Use provided seed instead of block.blockhash to prevent BAD_RANDOMNESS\n            hash = seed;\n            prize = betPrize(player,uint24(hash));\n        }\n        else {\n            if(hashFirst>0){ // lottery is open even before swap space (hashes) is ready, but player must collect results within 256 blocks after run\n                hash = getHash(player.blockNum);\n                if(hash == 0x1000000) { // load hash failed :-(, return funds\n                    prize = uint(player.value);\n                }\n                else{\n                    prize = betPrize(player,uint24(hash));\n                }\t    }\n            else{\n                LogLate(msg.sender,player.blockNum,block.number);\n                bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n                return();\n            }\n        }\n        bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n        if(prize>0) {\n            LogWin(msg.sender,uint(player.betHash),uint(hash),prize);\n            if(prize > maxWin){\n                maxWin = prize;\n                LogRecordWin(msg.sender,prize);\n            }\n            pay(prize);\n        }\n        else{\n            LogLoss(msg.sender,uint(player.betHash),uint(hash));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

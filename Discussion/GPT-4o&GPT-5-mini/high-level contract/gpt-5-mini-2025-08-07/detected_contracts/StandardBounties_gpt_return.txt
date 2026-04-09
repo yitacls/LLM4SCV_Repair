@@ -1,0 +1,21 @@
+{
+  "contract": "StandardBounties",
+  "solidity_version": "0.5.0",
+  "vulnerabilities": [
+    {
+      "type": "SWC-108-State Variable Default Visibility",
+      "location": "contract StandardBounties {\n  ...\n  uint public numBounties; // An integer storing the total number of bounties in the contract\n  mapping(uint => Bounty) public bounties; // A mapping of bountyIDs to bounties\n  // SWC-108-State Variable Default Visibility: L48-L49\n  address owner; // The address of the individual who's allowed to set the metaTxRelayer address\n  address metaTxRelayer; // The address of the meta transaction relayer whose _sender is automatically trusted for all contract calls\n  ...\n}",
+      "description": "The state variables `owner` and `metaTxRelayer` are declared without an explicit visibility specifier. In Solidity, omitting visibility defaults the variable to internal, which can be unclear and may lead to accidental misuse or incorrect assumptions about accessibility. `metaTxRelayer` in particular is security-sensitive because the contract treats calls coming from this address specially (senderIsValid modifier trusts msg.sender == metaTxRelayer). The lack of explicit visibility reduces code clarity and may lead to maintenance errors. Declare visibility explicitly (e.g., `address private owner;` and `address private metaTxRelayer;` if you intend them to be private, or `public` if you want external read access) to make intent clear and prevent mistakes."
+    },
+    {
+      "type": "SWC-103-Floating Pragma",
+      "location": "pragma solidity 0.5.0;\npragma experimental ABIEncoderV2;",
+      "description": "The file uses `pragma experimental ABIEncoderV2;` which enables an experimental feature. Experimental pragmas may introduce subtle, breaking or unsafe behavior and should be used with caution. Additionally, although `pragma solidity 0.5.0;` pins an exact compiler version (not floating), reliance on an experimental ABI encoder with a fixed/old compiler may cause compatibility or security issues across environments. Recommendation: avoid using experimental features in production unless necessary and audited; if required, document the rationale and test thoroughly across the intended compiler versions. Consider using a bounded pragma (e.g., `pragma solidity >=0.5.0 <0.6.0;`) to express intended compatibility while avoiding accidental compilation with incompatible newer compilers."
+    },
+    {
+      "type": "SWC-101-Integer Overflow and Underflow",
+      "location": "function contribute(...)\n{\n  // ...\n  bounties[_bountyId].contributions.push(\n    Contribution(_sender, _amount, false)); // Adds the contribution to the bounty\n  bounties[_bountyId].balance += _amount; // Increments the balance of the bounty\n  // ...\n}\n\nfunction refundContribution(...)\n{\n  // ...\n  contribution.refunded = true;\n  bounties[_bountyId].balance -= contribution.amount;\n  // ...\n}\n\nfunction acceptFulfillment(...)\n{\n  // ...\n  for (uint256 i = 0; i < fulfillment.fulfillers.length; i++){\n    require(bounties[_bountyId].balance >= _tokenAmounts[i]);\n\n    bounties[_bountyId].balance -= _tokenAmounts[i];\n    // ...\n  }\n  // ...\n}",
+      "description": "Integer arithmetic on `bounties[_bountyId].balance` is performed without using SafeMath or explicit overflow/underflow checks. Examples:\n- `bounties[_bountyId].balance += _amount;` in `contribute` can overflow if `_amount` is very large.\n- `bounties[_bountyId].balance -= contribution.amount;` in `refundContribution` and `bounties[_bountyId].balance -= _tokenAmounts[i];` in `acceptFulfillment` risk underflow if logic errors allow subtraction greater than the balance.\nAlthough some runtime `require` checks exist (e.g., checking balance >= _tokenAmounts[i] in `acceptFulfillment`), arithmetic operations should still use a safe arithmetic library to prevent unexpected wraparound in edge cases and future code changes. Recommendation: use SafeMath (or Solidity 0.8+ built-in checked arithmetic) for all additions/subtractions on token balances to prevent overflow/underflow."
+    }
+  ]
+}

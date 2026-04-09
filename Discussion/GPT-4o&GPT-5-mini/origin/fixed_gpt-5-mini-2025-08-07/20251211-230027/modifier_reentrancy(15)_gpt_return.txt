@@ -1,0 +1,28 @@
+[{
+    "contract_name": "ModifierEntrancy",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "_reentrancyLock",
+            "fix_info": "Added a private reentrancy guard boolean to prevent reentrant calls into sensitive functions.",
+            "variable_code": "bool private _reentrancyLock;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier implementing a simple mutex. Modifier prevents reentrant entry into functions that change contract state.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!_reentrancyLock, \"Reentrant call\");\n    _reentrancyLock = true;\n    _;\n    _reentrancyLock = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "airDrop",
+            "fix_info": "Applied nonReentrant modifier and added an overflow check before updating state to follow checks-effects-interactions and prevent reentrancy/overflow issues.",
+            "corrected_code": "function airDrop() public nonReentrant hasNoBalance supportsToken {\n    // Safety: prevent overflow when increasing balance\n    require(tokenBalance[msg.sender] + 20 > tokenBalance[msg.sender]);\n\n    // Effects: update state before any potential external interactions in modifiers\n    tokenBalance[msg.sender] += 20;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

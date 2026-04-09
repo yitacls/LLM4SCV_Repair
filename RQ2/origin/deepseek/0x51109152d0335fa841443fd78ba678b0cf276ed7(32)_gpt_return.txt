@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountRaised);",
+    "description": "The `send()` function is used to transfer Ether to the beneficiary address, but its return value (a boolean indicating success) is not checked. In Solidity ^0.4.18, `send()` forwards a fixed gas stipend of 2300 gas, which may be insufficient if the beneficiary is a contract with a fallback function performing complex operations. If the transfer fails, `send()` returns `false` and execution continues, leaving `amountRaised` reset to 0 in the next line without ensuring funds were actually transferred. This could permanently lock Ether in the contract. Best practice is to check the return value and revert on failure, or use `transfer()` (which reverts on failure in versions <0.5.0)."
+}
+```

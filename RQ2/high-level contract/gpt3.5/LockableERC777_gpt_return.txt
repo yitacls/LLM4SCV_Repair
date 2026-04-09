@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _burn",
+    "description": "The _burn function in the LockableERC777 contract is vulnerable to reentrancy attack. Reentrancy can occur because the balance update operation is done after calling _callTokensToSend, allowing an attacker to call back into the contract from a fallback function in another contract before the balance is updated, potentially re-entering the _burn function."
+}
+```

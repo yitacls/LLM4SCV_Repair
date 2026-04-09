@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "Integer Overflow/Underflow",
+        "location": "balanceOf[this] += amount; and balanceOf[msg.sender] -= amount;",
+        "description": "In Solidity <0.8.0, arithmetic operations do not automatically check for overflow/underflow. The operations 'balanceOf[this] += amount' and 'balanceOf[msg.sender] -= amount' can silently wrap around, causing incorrect token balances. Using unchecked math with version ^0.4.2 allows an attacker with a small balance to underflow their balance to a very large value when subtracting 'amount', or overflow the contract's balance when adding 'amount'."
+    },
+    {
+        "type": "Integer Overflow",
+        "location": "amount * sellPrice",
+        "description": "The multiplication 'amount * sellPrice' can overflow, resulting in a much smaller ether value being sent to the seller than intended. If 'sellPrice' is not 1 wei per token, an attacker could craft 'amount' and 'sellPrice' values that cause the product to wrap around to a small number, allowing them to receive ether while giving up few tokens."
+    }
+]
+```

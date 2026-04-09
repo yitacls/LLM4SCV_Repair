@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],v);",
+    "description": "The low-level call in the loop does not check the return value or handle potential failures. If any of the external token transfers fail (e.g., due to insufficient balance, contract revert, or out-of-gas), the contract will continue executing the loop without reverting, potentially causing loss of funds and leaving the contract in an inconsistent state. In Solidity ^0.4.24, call() returns a boolean success value that should be verified."
+}
+```

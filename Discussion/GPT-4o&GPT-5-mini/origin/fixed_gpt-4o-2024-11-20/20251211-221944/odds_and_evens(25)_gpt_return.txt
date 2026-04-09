@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "OddsAndEvens",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "players",
+                "fix_info": "The 'players' mapping is retained, but initialization is assumed. No structural modification needed for this context.",
+                "variable_code": "mapping(uint => Player) public players;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "tot",
+                "fix_info": "The player count variable 'tot' remains unchanged for the function logic.",
+                "variable_code": "uint public tot;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyIfValidEntry",
+                "fix_info": "Added a modifier to validate the betting amount, making it reusable and improving modularity.",
+                "modifier_code": "modifier onlyIfValidEntry() { require(msg.value == 1 ether); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "play",
+                "fix_info": "Fixed the front-running vulnerability by using a commit-reveal scheme. This prevents attackers from predicting inputs ahead of time, thereby securing player numbers.",
+                "corrected_code": "function play(bytes32 commitment) public payable onlyIfValidEntry {\n    require(tot < 2, \"Player slots are full\");\n    players[tot] = Player(msg.sender, 0, commitment);\n    tot++;\n\n    if (tot == 2) {\n        andTheWinnerIs();\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "reveal",
+                "fix_info": "Added a new 'reveal' function to implement the commit-reveal scheme. Players reveal their number to finalize gameplay.",
+                "corrected_code": "function reveal(uint number, bytes32 secret) public {\n    require(tot == 2, \"Waiting for players\");\n\n    for (uint i = 0; i < 2; i++) {\n        if (players[i].playerAddress == msg.sender) {\n            require(players[i].commitment == keccak256(abi.encodePacked(number, secret)), \"Invalid reveal\");\n            players[i].number = number;\n        }\n    }\n\n    // Check if both players have revealed their numbers.\n    if (players[0].number != 0 && players[1].number != 0) {\n        andTheWinnerIs();\n    }\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

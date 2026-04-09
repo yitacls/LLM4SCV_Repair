@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EthmoonV2",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added SafeMath protection for arithmetic operations to prevent overflow/underflow vulnerabilities",
+            "corrected_code": "function () public payable {\n        require(gasleft() >= 220000, \"We require more gas!\"); \n        require((msg.value >= MIN_DEPOSIT) && (msg.value <= MAX_DEPOSIT)); \n        uint multiplier = percentRate(msg.sender);\n        uint reward = msg.value.mul(multiplier).div(100);\n        queue.push(Deposit(msg.sender, uint128(msg.value), uint128(reward)));\n        participation[msg.sender] = participation[msg.sender].add(1);\n        uint promo = msg.value.mul(PROMO_PERCENT).div(100);\n        PROMO.transfer(promo);\n        uint tech = msg.value.mul(TECH_PERCENT).div(100);\n        TECH.transfer(tech);\n        pay();\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

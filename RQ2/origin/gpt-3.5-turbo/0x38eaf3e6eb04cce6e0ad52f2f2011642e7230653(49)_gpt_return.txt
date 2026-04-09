@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin as an access control mechanism is considered unsafe as it exposes the contract to potential vulnerabilities. An attacker could manipulate the origin of a transaction to bypass the access control."
+}
+```

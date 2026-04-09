@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "msg.sender.send(valuePaid);",
+        "description": "The send() function is used without checking its return value. If the call fails (e.g., due to gas stipend limits or recipient contract issues), the failure will be silent, potentially leading to loss of funds."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "msg.sender.send(excessPaid);",
+        "description": "The send() function is used without checking its return value. If the refund of excess payment fails, it will not be properly handled, leading to potential fund loss for the user."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "currentMonarch.etherAddress.send(compensation);",
+        "description": "The send() function is used to transfer compensation to the current monarch without checking its return value. If this transfer fails, the failure will not be handled, causing potential loss of funds that should have been paid to the former monarch."
+    }
+]
+```

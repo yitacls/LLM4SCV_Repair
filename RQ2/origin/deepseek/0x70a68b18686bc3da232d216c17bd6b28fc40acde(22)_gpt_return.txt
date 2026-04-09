@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += amount;",
+    "description": "This addition operation is vulnerable to integer overflow in Solidity versions prior to 0.8.0. Since the contract uses ^0.4.24, there are no built-in overflow checks. If balanceOf[to] + amount exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to a small number, potentially causing loss of tokens and incorrect balances. This violates the ERC-20 standard and could be exploited by an attacker receiving tokens to cause overflow and gain unintended balance."
+}
+```

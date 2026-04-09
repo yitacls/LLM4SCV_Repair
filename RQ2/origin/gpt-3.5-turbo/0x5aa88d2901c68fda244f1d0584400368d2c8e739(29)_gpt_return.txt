@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "adr.call.value(msg.value)(data);",
+            "description": "The contract allows for unchecked low-level calls using address.call.value() which can lead to unexpected behavior and potential vulnerabilities."
+        }
+    ]
+}
+```

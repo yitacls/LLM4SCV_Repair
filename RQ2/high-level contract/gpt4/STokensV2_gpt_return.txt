@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "setRewardRate function (Line 125-140)",
+    "description": "The contract contains a setRewardRate function, which includes unbounded loop iterations that may consume a large amount of gas. An attacker may intentionally cause the function to run out of gas before it finishes, causing a denial of service (DoS) state for the contract. Specifically, the _lastMovingRewardTimestamp array is unbounded and iterating over it using a looping construct could lead to the gas limit exceeding. Hence, it can make it impossible to execute this `setRewardRate` function if the array has a lot of members."
+}
+```

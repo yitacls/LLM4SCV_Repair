@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.5.12;",
+        "description": "The Solidity version is floating (^0.5.12), meaning the contract may compile with future compiler versions that could introduce breaking changes. Using a fixed compiler version instead of a floating one ensures predictable and safer contract behavior."
+    },
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": [
+            "uint256 beginDepositTime;",
+            "uint256 endDepositTime;"
+        ],
+        "description": "State variables are declared without an explicit visibility keyword, making them default to internal. Explicitly setting visibility improves the readability and clarity of functionality."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < lockBoxStructs.length; ++i) { if (lockBoxStructs[i].releaseTime <= now && lockBoxStructs[i].balance > 0) { withdraw(i); } }",
+        "description": "The `triggerWithdrawAll` function has a loop that iterates over all `lockBoxStructs`. In case of a large number of lockboxes, this could exceed the block gas limit, preventing the function from completing execution and causing a denial of service for the contract."
+    }
+]
+```

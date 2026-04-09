@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic/Time Dependency Vulnerability",
+    "location": "VOTING_END_TIME = now + max(durationHrs,1) * 1 hours;",
+    "description": "In Solidity 0.4.11, 'now' returns the current block timestamp (in seconds), and arithmetic operations with time units like 'hours' can cause overflow or unexpected behavior. The multiplication 'max(durationHrs,1) * 1 hours' could overflow if 'durationHrs' is very large, though the 'max' function limits the minimum to 1 hour. More critically, using 'now' makes the contract dependent on block timestamps, which miners can influence within a small range, potentially affecting voting duration predictability. Additionally, the function uses two different time bases: 'startBlockNr' (block number) for start and 'durationHrs' (hours) for end, which may lead to inconsistent time calculations due to variable block times."
+}
+```

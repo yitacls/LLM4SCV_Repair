@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "RefStorage",
+    "contract_version": "0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "interval",
+            "fix_info": "Made interval constant for better security",
+            "variable_code": "uint256 public constant interval = 10; // Example value, adjust as needed",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "prize",
+            "fix_info": "Made prize constant or added proper initialization",
+            "variable_code": "uint256 public constant prize = 1000000000000000000; // 1 token in wei units",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "restricted",
+            "fix_info": "Strengthened access control to prevent unauthorized calls",
+            "modifier_code": "modifier restricted() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "newTicket",
+            "fix_info": "Fixed reentrancy vulnerability, improved access control, and added safe math operations",
+            "corrected_code": "function newTicket() external restricted {\n        // Prevent reentrancy by checking state before any transfers\n        uint256 currentTickets = players[tx.origin].tickets;\n        players[tx.origin].tickets = currentTickets.add(1);\n        \n        // Calculate ticket difference safely\n        uint256 ticketDifference = currentTickets.add(1).sub(players[tx.origin].checkpoint);\n        \n        if (players[tx.origin].referrer != address(0) && ticketDifference.mod(interval) == 0) {\n            uint256 totalPrize = prize.mul(2);\n            \n            // Check contract balance and send prizes in a secure order\n            require(token.balanceOf(address(this)) >= totalPrize, \"Insufficient contract balance\");\n            \n            // Send prize to player\n            require(token.transfer(tx.origin, prize), \"Transfer to player failed\");\n            emit BonusSent(tx.origin, prize);\n            \n            // Send prize to referrer\n            require(token.transfer(players[tx.origin].referrer, prize), \"Transfer to referrer failed\");\n            emit BonusSent(players[tx.origin].referrer, prize);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

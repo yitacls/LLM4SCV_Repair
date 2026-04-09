@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "bzxcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed for this variable declaration",
+            "variable_code": "",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed for this variable declaration",
+            "variable_code": "",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "No changes needed for this variable declaration",
+            "variable_code": "",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed for this modifier",
+            "modifier_code": "",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath overflow protection for arithmetic operations and corrected transfer event parameters",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(balanceOf[target] + mintedAmount > balanceOf[target], \"Mint would cause overflow\");\n    require(totalSupply + mintedAmount > totalSupply, \"Total supply overflow\");\n    \n    balanceOf[target] += mintedAmount;\n    totalSupply += mintedAmount;\n    \n    Transfer(address(0), owner, mintedAmount);\n    Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "GAWToken",
+    "contract_version": "0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "isDestroyed",
+            "fix_info": "Added flag to track if contract has been destroyed to prevent reentrancy attacks",
+            "variable_code": "bool private isDestroyed = false;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "notDestroyed",
+            "fix_info": "Added modifier to prevent operations on destroyed contract",
+            "modifier_code": "modifier notDestroyed { require(!isDestroyed, \"Contract has been destroyed\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "close",
+            "fix_info": "Fixed access control vulnerability and suicidal vulnerability: 1. Added notDestroyed modifier to prevent reentrancy, 2. Added state check before selfdestruct, 3. Added explicit ownership transfer pattern for transparency",
+            "corrected_code": "function close() public onlyOwner notDestroyed {\n    isDestroyed = true;\n    address payable ownerAddress = address(uint160(owner));\n    selfdestruct(ownerAddress);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

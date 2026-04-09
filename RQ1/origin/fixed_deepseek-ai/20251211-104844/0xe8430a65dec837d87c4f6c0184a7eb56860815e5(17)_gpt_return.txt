@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MUTOCoin",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added SafeMath library to prevent overflow/underflow",
+            "variable_code": "using SafeMath for uint256;\nmapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers needed for this fix",
+            "modifier_code": "",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replaced arithmetic operations with SafeMath functions to prevent overflow/underflow",
+            "corrected_code": "function transfer(address _to, uint256 _value) public {\n    address _from = msg.sender;\n    require(_to != address(0), \"Invalid address\");\n    require(balanceOf[_from] >= _value, \"Insufficient balance\");\n    \n    balanceOf[_from] = balanceOf[_from].sub(_value);\n    balanceOf[_to] = balanceOf[_to].add(_value);\n    \n    emit Transfer(_from, _to, _value);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "SafeMath",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow/underflow",
+            "corrected_code": "library SafeMath {\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        if (a == 0) {\n            return 0;\n        }\n        uint256 c = a * b;\n        require(c / a == b, \"SafeMath: multiplication overflow\");\n        return c;\n    }\n    \n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b > 0, \"SafeMath: division by zero\");\n        uint256 c = a / b;\n        return c;\n    }\n    \n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a, \"SafeMath: subtraction overflow\");\n        uint256 c = a - b;\n        return c;\n    }\n    \n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a, \"SafeMath: addition overflow\");\n        return c;\n    }\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

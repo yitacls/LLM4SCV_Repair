@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function withdrawUnstakedTokens(address staker)",
+        "description": "The function iterates over an unbounded array _unstakingExpiration[staker] in a for-loop. As the array grows, the gas cost of executing this function may exceed the block gas limit, causing it to fail and making it impossible for users to withdraw their unstaked tokens."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function getTotalUnbondedTokens(address staker)",
+        "description": "This function also iterates over the unbounded array _unstakingExpiration[staker], which can grow indefinitely. If the array becomes too large, the function will consume more gas than allowed by the block limit, leading to a denial of service."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function getTotalUnbondingTokens(address staker)",
+        "description": "Similar to the other functions, this view function iterates through the same unbounded array _unstakingExpiration[staker]. This could result in a DoS condition when the array size exceeds what is processable within the block gas limit."
+    }
+]
+```

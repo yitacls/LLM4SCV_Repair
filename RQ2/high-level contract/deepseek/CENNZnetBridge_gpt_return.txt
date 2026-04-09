@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Lines 99-120 in the setValidators() function",
+    "description": "The setValidators() function contains a critical vulnerability where it transfers the entire contract balance (address(this).balance) to msg.sender without proper access control. While the function does validate signatures through verifyMessage(), the reward mechanism is unprotected since the function is externally callable by anyone who can provide valid signatures. This allows any user who can produce a valid validator set change proof to drain all accumulated verification fees from the contract. The vulnerability is exacerbated because: 1) The reward amount is determined dynamically as the entire contract balance; 2) There is no limit on how many times this can be called; 3) No mechanism exists to prevent validators from colluding to repeatedly update the validator set and drain funds; 4) No minimum time between validator set updates prevents rapid draining attacks."
+}
+```

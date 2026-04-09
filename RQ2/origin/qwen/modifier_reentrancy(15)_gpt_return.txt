@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "tokenBalance[msg.sender] += 20;",
+    "description": "The airDrop() function is vulnerable to reentrancy attack because it modifies the contract state (tokenBalance) after performing external calls or without proper reentrancy guards. An attacker could potentially call back into this function before the state change is completed, allowing them to receive multiple airdrops in a single transaction. The function lacks reentrancy protection modifiers like 'nonReentrant' from OpenZeppelin or custom guard mechanisms."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Mattew",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level calls by using transfer() instead of send() for safer transfers, added withdrawal pattern for fallback function, and updated event logging syntax",
+            "corrected_code": "function() external payable {\n    require(msg.value > 0);\n    \n    if (block.number - PERIOD > blockheight) {\n        // Use transfer() which will revert on failure (safer than send())\n        whale.transfer(stake);\n        \n        emit MattewWon(\"Mattew won (mattew, stake, blockheight)\", whale, stake, block.number);\n        setFacts();\n        return;\n    } else {\n        require(msg.value >= stake + DELTA, \"Insufficient ether sent\");\n        \n        // Use transfer() which will revert on failure (safer than send())\n        msg.sender.transfer(stake);\n        \n        setFacts();\n        emit StakeIncreased(\"stake increased (whale, stake, blockheight)\", whale, stake, blockheight);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

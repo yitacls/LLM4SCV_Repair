@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract uses 'tx.origin' for access control, which is a vulnerability. As 'tx.origin' always refers to the original sender of the transaction, a malicious contract can make the user forward the transaction, which allows the attacker's contract to be originated from the user's address. Instead of 'tx.origin', 'msg.sender' should be used as it refers to the direct sender of the message. This way, even if the contract calls are made through other contracts, the correct contract doesn't lose the reference to the original sender."
+}
+```

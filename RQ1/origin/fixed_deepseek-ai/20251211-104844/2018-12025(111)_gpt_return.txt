@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "FuturXe",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities using SafeMath pattern, corrected allowance logic, and improved code structure for gas efficiency and security",
+            "corrected_code": "function transferFrom(address from, address to, uint value) returns (bool success) {\n    // Checking if sender's account is frozen\n    if (frozenAccount[msg.sender]) {\n        return false;\n    }\n    \n    // Checking if from address has enough balance\n    if (balances[from] < value) {\n        return false;\n    }\n    \n    // Checking if sender has sufficient allowance (corrected logic)\n    if (allowed[from][msg.sender] < value) {\n        return false;\n    }\n    \n    // Checking for overflow in recipient's balance using SafeMath pattern\n    uint newBalance = balances[to] + value;\n    if (newBalance < balances[to]) {\n        return false;\n    }\n    \n    // Safe arithmetic operations to prevent underflow/overflow\n    balances[from] = balances[from] - value;\n    allowed[from][msg.sender] = allowed[from][msg.sender] - value;\n    balances[to] = newBalance;\n    \n    // Emit transfer event\n    Transfer(from, to, value);\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

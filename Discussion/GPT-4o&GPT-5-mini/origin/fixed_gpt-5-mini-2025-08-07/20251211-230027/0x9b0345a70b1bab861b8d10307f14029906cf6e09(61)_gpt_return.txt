@@ -1,0 +1,27 @@
+[{
+    "contract_name": "Presale",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "pendingRefunds",
+            "fix_info": "Added pull-based refund mapping to avoid sending Ether to callers during the purchase flow (prevents reentrancy). Refunds are accumulated and withdrawn by users via a separate withdraw function.",
+            "variable_code": "mapping(address => uint256) public pendingRefunds;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback (purchase)",
+            "fix_info": "Reordered logic to follow checks-effects-interactions and switched to pull-based refunds. State is updated before any external calls (token transfers). Excess Ether is recorded in pendingRefunds instead of being sent immediately to prevent reentrancy.",
+            "corrected_code": "function () payable public {\n    require(!presaleClosed);\n\n    uint256 amount = msg.value;\n    uint256 requestedTokens = amount * pricePresale;\n\n    if (requestedTokens <= availableSupply) {\n        // Effects: update contract state first\n        balanceOf[msg.sender] += amount;\n        amountRaised += amount;\n        availableSupply -= requestedTokens;\n\n        // Interactions: external calls after state changes\n        tokenReward.transfer(msg.sender, amount * pricePresale);\n        tokenReward.transfer(erotixFund, amount * pricePresale * erotixFundMultiplier / 100);\n        tokenReward.transfer(foundersFund, amount * pricePresale * foundersFundMultiplier / 100);\n\n        FundTransfer(msg.sender, amount, true);\n    } else {\n        // Not enough supply: sell what remains, record refund, close presale\n        uint256 amountAvailable = availableSupply / pricePresale;\n        uint256 tokensToTransfer = amountAvailable * pricePresale;\n        uint256 refund = amount - amountAvailable;\n\n        // Effects: update state and record refund (pull pattern)\n        balanceOf[msg.sender] += amountAvailable;\n        amountRaised += amountAvailable;\n        availableSupply = 0;\n        presaleClosed = true;\n        pendingRefunds[msg.sender] += refund;\n\n        // Interactions: transfer tokens/funds after state updates\n        tokenReward.transfer(msg.sender, tokensToTransfer);\n        tokenReward.transfer(erotixFund, tokensToTransfer * erotixFundMultiplier / 100);\n        tokenReward.transfer(foundersFund, tokensToTransfer * foundersFundMultiplier / 100);\n\n        FundTransfer(msg.sender, amountAvailable, true);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawRefund",
+            "fix_info": "Added withdrawal function for users to claim recorded refunds safely using checks-effects-interactions. Uses transfer to send Ether and clears refund balance before the transfer to prevent reentrancy.",
+            "corrected_code": "function withdrawRefund() public {\n    uint256 refund = pendingRefunds[msg.sender];\n    require(refund > 0);\n\n    // Effects: zero out before interaction\n    pendingRefunds[msg.sender] = 0;\n\n    // Interaction\n    msg.sender.transfer(refund);\n}",
+            "change_type": "added"
+        }
+    ]
+}]

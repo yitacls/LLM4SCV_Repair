@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "beneficiary.send(amountRaised);",
+    "description": "The contract contains a classic reentrancy vulnerability in the Crowdsale function. The `beneficiary.send(amountRaised);` statement is executed before updating the `amountRaised` variable to 0. If the `beneficiary` address is a smart contract with a fallback function that calls back this `payable` function, it can reenter and exploit the contract by repeatedly sending funds and increasing its balance while draining the raised amount. The state update (`amountRaised = 0;`) should occur before making the external call to prevent this reentrancy attack."
+}
+```

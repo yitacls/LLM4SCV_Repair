@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "a.call() inside function callAddress(address a)",
+    "description": "The low-level call() function does not check for success and does not propagate errors. In Solidity 0.4.10, when this call fails, it returns false but execution continues. This can lead to unexpected contract behavior where failed calls go unnoticed, potentially allowing operations to proceed despite external call failures. Always check the return value of low-level calls and handle failures appropriately."
+}
+```

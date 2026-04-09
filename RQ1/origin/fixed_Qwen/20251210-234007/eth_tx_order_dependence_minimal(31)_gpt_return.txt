@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "EthTxOrderDependenceMinimal",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "claimed",
+            "fix_info": "No change needed for the claimed variable",
+            "variable_code": "bool claimed;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "reward",
+            "fix_info": "No change needed for the reward variable",
+            "variable_code": "uint256 reward;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "claimReward",
+            "fix_info": "Fixed front-running vulnerability by using reentrancy guard pattern and checking state before external call",
+            "corrected_code": "function claimReward(uint256 submission) {\n        require (!claimed);\n        require(submission < 10);\n        \n        claimed = true;\n        msg.sender.transfer(reward);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "ipshoots",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed to this mapping declaration. Vulnerability is in the mintToken function's arithmetic operation.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to use SafeMath for arithmetic operations to prevent overflows.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to this modifier. It's assumed to exist and function correctly.",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow vulnerability by using SafeMath library for arithmetic operations and added explicit event emission with newer syntax. Also corrected Transfer event calls to properly use emit keyword in Solidity 0.4.16+.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(target != address(0), \"Invalid address\");\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

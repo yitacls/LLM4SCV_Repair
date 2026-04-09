@@ -1,0 +1,14 @@
+[{
+    "contract_name": "PERSONAL_BANK",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Collect",
+            "fix_info": "Prevent reentrancy by applying the checks-effects-interactions pattern and using transfer (which reverts on failure) instead of low-level call.value. The balance is decreased before the external call so a reentrant call cannot withdraw more.",
+            "corrected_code": "function Collect(uint _am) public payable {\n        require(balances[msg.sender] >= MinSum && balances[msg.sender] >= _am);\n        // Effects: update state before external interaction to prevent reentrancy\n        balances[msg.sender] = balances[msg.sender] - _am;\n        // Interaction: use transfer which forwards limited gas and reverts on failure\n        msg.sender.transfer(_am);\n        // Log the successful withdrawal\n        Log.AddMessage(msg.sender, _am, \"Collect\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

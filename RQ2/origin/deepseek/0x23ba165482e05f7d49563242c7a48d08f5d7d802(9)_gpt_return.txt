@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The send() function returns a boolean value indicating success or failure, but this return value is not checked. If the send() fails (e.g., if the recipient is a contract that runs out of gas or reverts), the transaction will not revert, and the contract will continue executing. This can lead to inconsistent state where the user's invested balance and atBlock have been updated, but they did not actually receive their payout. In Solidity 0.4.24, send() forwards only 2300 gas, which is insufficient for most contract operations, making failures more likely. This pattern is known as an 'unchecked send' vulnerability."
+}
+```

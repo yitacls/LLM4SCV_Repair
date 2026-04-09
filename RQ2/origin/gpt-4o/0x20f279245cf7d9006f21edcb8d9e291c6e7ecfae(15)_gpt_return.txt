@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "The code does not handle potential integer overflow when calculating 'previousBalances'. In Solidity version 0.4.19, arithmetic operations do not automatically check for overflow or underflow. If 'balanceOf[_from]' and 'balanceOf[_to]' are large enough, adding them together may result in an overflow, leading to incorrect calculations and potentially compromising the contract's integrity."
+}
+```

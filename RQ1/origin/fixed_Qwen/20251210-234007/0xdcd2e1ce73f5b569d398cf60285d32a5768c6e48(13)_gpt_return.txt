@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "timelock",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added SafeMath protection to prevent arithmetic overflow when calculating freedom block number",
+            "corrected_code": "function() payable public {\n        locker storage l = lockers[msg.sender];\n        l.freedom = SafeMath.add(block.number, freezeBlocks);\n        l.bal = SafeMath.add(l.bal, msg.value);\n        Locked(msg.sender, msg.value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

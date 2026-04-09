@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "if (path[0].isETH()) { tx.origin.transfer(availableBalance); }",
+            "description": "The contract directly uses `tx.origin` to transfer Ether, which can lead to unauthorized withdrawal of funds. This design is unsafe as it allows Ether withdrawal without proper authorization mechanisms in place, making it susceptible to phishing attacks or exploitation in scenarios where an external party gains access to the `tx.origin` account."
+        }
+    ]
+}
+```

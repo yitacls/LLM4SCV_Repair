@@ -1,0 +1,16 @@
+[
+    {
+        "contract_name": "JPMD100B",
+        "contract_version": "^0.4.17",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Replaced var with explicit uint256; added checks to prevent multiplication and addition overflow (arithmetic) and preserved original behavior. Uses address(0) for the Transfer 'from' address. Keeps onlyOwner modifier.",
+                "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner {\n    // scale by 10^18 and check for multiplication overflow\n    uint256 multiplier = 10 ** 18;\n    uint256 totalTokenToMint = tokensToMint * multiplier;\n    require(tokensToMint == 0 || totalTokenToMint / tokensToMint == multiplier);\n\n    // check addition overflow for balance\n    uint256 newBalance = balanceOf[owner] + totalTokenToMint;\n    require(newBalance >= balanceOf[owner]);\n    balanceOf[owner] = newBalance;\n\n    // check addition overflow for totalSupply\n    uint256 newTotalSupply = totalSupply + totalTokenToMint;\n    require(newTotalSupply >= totalSupply);\n    totalSupply = newTotalSupply;\n\n    Transfer(address(0), owner, totalTokenToMint);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

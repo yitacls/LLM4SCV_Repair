@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "LockableERC777",
+        "contract_version": "^0.5.3",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_burn",
+                "fix_info": "Introduced a reentrancy guard to prevent reentrancy attacks in critical state-changing functions.",
+                "corrected_code": "function _burn(\n    address operator,\n    address from,\n    uint256 amount,\n    bytes memory data,\n    bytes memory operatorData\n)\n    private\n    nonReentrant // Added reentrancy guard (custom or using OpenZeppelin's ReentrancyGuard)\n{\n    require(from != address(0), \"ERC777: burn from the zero address\");\n\n    _callTokensToSend(\n        operator, from, address(0), amount, data, operatorData\n    );\n\n    // Update state variables\n    _totalSupply = _totalSupply.sub(amount);\n    _balances[from] = _balances[from].sub(amount);\n\n    emit Burned(\n        operator, from, amount, data, operatorData\n    );\n    emit Transfer(from, address(0), amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_send",
+                "fix_info": "Introduced a reentrancy guard to prevent reentrancy attacks in critical state-changing functions.",
+                "corrected_code": "function _send(\n    address operator,\n    address from,\n    address to,\n    uint256 amount,\n    bytes memory userData,\n    bytes memory operatorData,\n    bool requireReceptionAck\n)\n    private\n    nonReentrant // Added reentrancy guard (custom or using OpenZeppelin's ReentrancyGuard)\n{\n    require(from != address(0), \"ERC777: send from the zero address\");\n    require(to != address(0), \"ERC777: send to the zero address\");\n\n    _callTokensToSend(\n        operator, from, to, amount, userData, operatorData\n    );\n\n    _move(\n        operator, from, to, amount, userData, operatorData\n    );\n\n    _callTokensReceived(\n        operator, from, to, amount, userData, operatorData, requireReceptionAck\n    );\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

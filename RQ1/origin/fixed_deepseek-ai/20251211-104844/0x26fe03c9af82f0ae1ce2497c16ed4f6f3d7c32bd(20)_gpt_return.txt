@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "ERC20Standard",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "not_affected",
+                "fix_info": "No state variables were modified for this vulnerability",
+                "variable_code": "",
+                "change_type": "null"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for subtraction and addition operations. Also added explicit check for recipient address not being zero.",
+                "corrected_code": "function transfer(address _recipient, uint _value) onlyPayloadSize(2*32) {\n    require(balances[msg.sender] >= _value && _value > 0);\n    require(_recipient != address(0));\n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_recipient] = balances[_recipient].add(_value);\n    Transfer(msg.sender, _recipient, _value);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "not_affected",
+                "fix_info": "The vulnerability requires importing SafeMath library and modifying operations",
+                "corrected_code": "",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

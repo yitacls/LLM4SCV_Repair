@@ -1,0 +1,52 @@
+[{
+    "contract_name": "TokenDrop",
+    "contract_version": ">=0.7.0 <0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "_entered",
+            "fix_info": "Added a simple reentrancy guard flag to prevent reentrant calls into functions that perform external token interactions.",
+            "variable_code": "bool private _entered;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a nonReentrant modifier using the _entered flag to prevent reentrancy across external token interactions. Applied to external entry points that interact with tokens.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!_entered, \"TokenDrop: reentrant\");\n    _entered = true;\n    _;\n    _entered = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Added the initializer modifier to prevent unprotected re-initialization and initialized the reentrancy guard flag.",
+            "corrected_code": "function initialize(address _measure, address _asset) external initializer {\n    measure = IERC20Upgradeable(_measure);\n    asset = IERC20Upgradeable(_asset);\n\n    // Set Factory Deployer\n    factory = msg.sender;\n\n    // Initialize reentrancy guard\n    _entered = false;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Protected claim with nonReentrant and reworked internal drop call to avoid nested nonReentrant modifier issues. Also checks transfer return value for safety.",
+            "corrected_code": "function claim(address user) external nonReentrant returns (uint256) {\n    // Update distribution state without invoking public drop (avoids nested nonReentrant)\n    _drop();\n    _captureNewTokensForUser(user);\n\n    uint256 balance = userStates[user].balance;\n\n    // Effects: zero out user balance and update totalUnclaimed before external call\n    userStates[user].balance = 0;\n    totalUnclaimed = uint256(totalUnclaimed).sub(balance).toUint112();\n\n    // Interaction: transfer asset to user\n    require(asset.transfer(user, balance), \"TokenDrop: transfer failed\");\n\n    emit Claimed(user, balance);\n\n    return balance;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "addAssetToken",
+            "fix_info": "Protected addAssetToken with nonReentrant and used internal _drop() to update state. Added transferFrom success check.",
+            "corrected_code": "function addAssetToken(uint256 amount) external nonReentrant returns (bool) {\n    // Transfer asset/reward token from msg.sender to TokenDrop\n    require(asset.transferFrom(msg.sender, address(this), amount), \"TokenDrop: transferFrom failed\");\n\n    // Update TokenDrop asset balance\n    _drop();\n\n    // Return BOOL for transaction gas savings\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "beforeTokenTransfer",
+            "fix_info": "Added nonReentrant to prevent reentrancy when called by token contracts and switched to internal _drop() to avoid nested nonReentrant issues.",
+            "corrected_code": "function beforeTokenTransfer(\n    address from,\n    address to,\n    address token\n) external nonReentrant {\n    // must be measure and not be minting\n    if (token == address(measure)) {\n        _drop();\n\n        // Calculate to tokens balance\n        _captureNewTokensForUser(to);\n\n        // If NOT minting calculate from tokens balance\n        if (from != address(0)) {\n            _captureNewTokensForUser(from);\n        }\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "drop",
+            "fix_info": "Replaced the public logic with a thin wrapper that calls the internal _drop function. This allows external entry points to use nonReentrant while internal callers can call _drop safely.",
+            "corrected_code": "function drop() public returns (uint256) {\n    return _drop();\n}\n\nfunction _drop() internal returns (uint256) {\n    uint256 assetTotalSupply = asset.balanceOf(address(this));\n    uint256 newTokens = assetTotalSupply.sub(totalUnclaimed);\n\n    if (newTokens > 0) {\n        // Check measure token totalSupply()\n        uint256 measureTotalSupply = measure.totalSupply();\n\n        // Check measure supply exists\n        if (measureTotalSupply > 0) {\n            uint256 indexDeltaMantissa = FixedPoint.calculateMantissa(newTokens, measureTotalSupply);\n            uint256 nextExchangeRateMantissa = uint256(exchangeRateMantissa).add(indexDeltaMantissa);\n\n            exchangeRateMantissa = nextExchangeRateMantissa.toUint112();\n            totalUnclaimed = uint256(totalUnclaimed).add(newTokens).toUint112();\n        }\n        // Emit Dripped\n        emit Dripped(newTokens);\n    }\n\n    return newTokens;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

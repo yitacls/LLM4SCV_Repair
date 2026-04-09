@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "uint256 amount1PostX96 = (ratioE18 * valueX96) / (ratioE18 + 1e18);",
+            "description": "The absence of SafeMath or any integer overflow/underflow protection in dividing and multiplying operations (e.g., 'ratioE18 * valueX96' and 'ratioE18 + 1e18') could result in errors when the calculation exceeds the maximum range of type uint256."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "uint256 valueX96 = (amount0In * ((uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION)) + (amount1In << FixedPoint96.RESOLUTION);",
+            "description": "The multiplications and bitwise shifts performed on uint256 values (e.g., 'amount0In * ((uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION)') are prone to overflow without safeguard mechanisms like SafeMath."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "amountToSwap = (((amount1PostX96 - (amount1In << FixedPoint96.RESOLUTION)) / sqrtPriceX96) << FixedPoint96.RESOLUTION) / sqrtPriceX96;",
+            "description": "The subtraction '(amount1PostX96 - (amount1In << FixedPoint96.RESOLUTION))' may result in underflow if amount1In << FixedPoint96.RESOLUTION is greater than amount1PostX96, and there is no underflow protection included."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "amountToSwap = amount1In - (amount1PostX96 >> FixedPoint96.RESOLUTION);",
+            "description": "The subtraction '(amount1In - (amount1PostX96 >> FixedPoint96.RESOLUTION))' may cause underflow if amount1PostX96 >> FixedPoint96.RESOLUTION is greater than amount1In, leading to unexpected behaviors."
+        }
+    ]
+}
+```

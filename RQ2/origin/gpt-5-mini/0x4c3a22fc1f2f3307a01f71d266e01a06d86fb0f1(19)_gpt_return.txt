@@ -1,0 +1,5 @@
+{
+  "type": "Arithmetic",
+  "location": "function () payable public {\n    uint amount = msg.value;\n    amountRaised += amount;  // fault line\n}",
+  "description": "The statement `amountRaised += amount;` can overflow because the contract uses Solidity ^0.4.25, which does not perform automatic integer overflow/underflow checks. If `amountRaised` and `amount` are large enough, the addition can wrap around (e.g., overflow to a small value), corrupting the stored total and allowing an attacker to manipulate accounting logic that depends on `amountRaised`. Consequences include incorrect balance tracking, enabling fraudulent withdrawals or bypassing limits. Mitigation: use safe arithmetic (e.g., OpenZeppelin's SafeMath and `amountRaised = amountRaised.add(amount)`), add an explicit check such as `require(amountRaised + amount >= amountRaised)`, or upgrade to Solidity >=0.8.0 which has built-in overflow checks."
+}

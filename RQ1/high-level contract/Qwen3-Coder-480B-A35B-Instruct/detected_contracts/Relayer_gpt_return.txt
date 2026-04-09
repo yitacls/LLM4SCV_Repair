@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The contract is using Solidity version 0.7.6, which is outdated and may contain known vulnerabilities or lack the latest security improvements. It is recommended to use a more recent and supported version of Solidity."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The use of a floating pragma (`^0.7.6`) allows the contract to be compiled with any compiler version equal to or newer than 0.7.6, up to but not including 0.8.0. This may introduce inconsistency and risk if a newer compiler version changes behavior or introduces bugs."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "using SafeMath for uint;",
+        "description": "Though SafeMath is used, its correct application must be ensured across all arithmetic operations. A manual review is needed to confirm that all `uint` operations utilize SafeMath to prevent overflows or underflows, especially in functions like `_getPrices` performing calculations such as `totalRemoteToken.add(...)`, `remoteGasTotal.mul(...)`, etc."
+    }
+]
+```

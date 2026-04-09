@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract": "NetcToken",
+    "location": "require (tx.origin == owner);",
+    "description": "The contract has a security vulnerability in its access control mechanism. This is because the contract is checking the tx.origin to verify the transaction initiator, instead of using msg.sender. The use of tx.origin in the require statement allows for potential attacks where another contract pretends to be the owner. It is more secure to use msg.sender as it refers to the immediate initiator of the transaction and reduces the risk of these types of attack."
+}
+```

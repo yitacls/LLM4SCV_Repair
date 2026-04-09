@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "DosNumber",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "array",
+            "fix_info": "Assumed existing dynamic array for storing numbers",
+            "variable_code": "uint[] public array;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "numElements",
+            "fix_info": "Assumed existing counter for number of elements",
+            "variable_code": "uint public numElements;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "insertNnumbers",
+            "fix_info": "Added gas limit protection by restricting the maximum number of iterations to prevent DoS attacks",
+            "corrected_code": "function insertNnumbers(uint value, uint numbers) public {\n        // Prevent gas DOS by limiting the maximum numbers that can be inserted in one call\n        require(numbers <= 100, \"Too many numbers, would cause gas DOS\");\n        \n        for(uint i = 0; i < numbers; i++) {\n            if(numElements == array.length) {\n                array.length += 1;\n            }\n            array[numElements++] = value;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

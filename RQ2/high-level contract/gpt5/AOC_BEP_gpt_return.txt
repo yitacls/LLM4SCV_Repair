@@ -1,0 +1,17 @@
+[
+    {
+        "type": "SWC-118-Incorrect Constructor Name",
+        "location": "function initialize() public initializer { ... } (lines ~115-126)",
+        "description": "The contract uses an initialize() function as the initializer instead of a constructor. When using upgradeable/proxy patterns this is normal, but if the implementation contract is deployed directly (or the implementation is left un-initialized on-chain) the initialize() function is public and callable once by anyone. An attacker could call initialize() on an uninitialized implementation, become the owner (OwnableUpgradeable initializer sets owner), and mint the entire initial supply to themselves (the initialize function calls _mint(_msgSender(), ...)). This results in full takeover of token supply and privileged functions. Mitigation: ensure the implementation contract is disabled for direct use (call _disableInitializers() in the implementation constructor) or use a constructor on non-proxy deployments; ensure initialize() is only callable for intended deployments and document deployment steps clearly."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "require(!blacklisted[sender] || !blacklisted[recipient], \"AOC: Cant't transfer, User is blacklisted\"); (in function _transfer)",
+        "description": "The blacklist check uses a logical OR where a logical AND is intended. Current condition (!blacklisted[sender] || !blacklisted[recipient]) permits a transfer when either party is not blacklisted, which means a blacklisted sender (or recipient) can still transfer as long as the counterparty is not blacklisted. The intended behavior is almost certainly to block transfers if either the sender or the recipient is blacklisted (i.e. require(!blacklisted[sender] && !blacklisted[recipient], ...)). As written, the blacklist mechanism is effectively bypassable and has no meaningful effect. Mitigation: change the condition to use && so any blacklisted address is prevented from participating in transfers."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner payable { require(recipient != address(0), ...); require(amount <= address(this).balance, ...); recipient.transfer(amount); emit BNBFromContractTransferred(amount); }",
+        "description": "This function allows the owner to withdraw native currency (BNB) from the contract to an arbitrary recipient. While currently restricted with onlyOwner, this withdrawal functionality becomes critical if ownership can be taken by an attacker (see SWC-118). Additionally the function lacks common safety patterns: there is no reentrancy protection (e.g., nonReentrant) and it is marked payable (payable here is unnecessary for a withdrawal function). Although using transfer() limits reentrancy risk because it forwards limited gas, relying solely on transfer() is brittle and may break with gas changes or if sending to contracts that need more gas. Mitigations: ensure the contract implementation is properly initialized or _disableInitializers() to prevent takeover, add nonReentrant or follow checks-effects-interactions pattern, remove unnecessary payable modifier, and consider using call with proper checks and a reentrancy guard if forwarding larger amounts or sending to arbitrary contracts. Also ensure appropriate access controls and monitoring are in place so owner-only withdrawals cannot be abused if owner keys are compromised."
+    }
+]

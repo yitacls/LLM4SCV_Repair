@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This line in the smart contract is vulnerable. It uses 'tx.origin', which always points to the original initiator of the transaction, to check if the invoker is the contract owner. Meanwhile, 'msg.sender' should be used instead, because it refers to the immediate sender of the contract. In case a malicious contract is used, it'll call your contract (the victim) and your contract finds 'tx.origin' is safe while in reality, the immediate caller (the attacker) manipulated your contract state. This is especially critical in an owner transfer function where ownership rights are at stake."
+}
+```

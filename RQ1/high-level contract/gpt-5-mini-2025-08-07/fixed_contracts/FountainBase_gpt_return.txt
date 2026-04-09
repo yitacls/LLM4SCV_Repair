@@ -1,0 +1,26 @@
+[{
+    "contract_name": "FountainBase",
+    "contract_version": "0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_depositAngel",
+            "fix_info": "Prevent reentrancy by following checks-effects-interactions: update internal totalBalance before calling external angel.deposit. Keeps nonReentrant for extra protection.",
+            "corrected_code": "function _depositAngel(\n    address user,\n    IAngel angel,\n    uint256 amount\n) internal nonReentrant {\n    AngelInfo storage info = _angelInfos[angel];\n    _requireMsg(\n        info.isSet,\n        \"_depositAngel\",\n        \"Fountain: not added by angel\"\n    );\n\n    // Effects: update internal accounting before external interaction\n    info.totalBalance = info.totalBalance.add(amount);\n\n    // Interaction: call external angel after state update\n    angel.deposit(info.pid, amount, user);\n}\n",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_withdrawAngel",
+            "fix_info": "Prevent reentrancy by following checks-effects-interactions: update internal totalBalance before calling external angel.withdraw. Keeps nonReentrant for extra protection.",
+            "corrected_code": "function _withdrawAngel(\n    address user,\n    IAngel angel,\n    uint256 amount\n) internal nonReentrant {\n    AngelInfo storage info = _angelInfos[angel];\n    _requireMsg(\n        info.isSet,\n        \"_withdrawAngel\",\n        \"Fountain: not added by angel\"\n    );\n\n    // Effects: update internal accounting before external interaction\n    info.totalBalance = info.totalBalance.sub(amount);\n\n    // Interaction: call external angel after state update\n    angel.withdraw(info.pid, amount, user);\n}\n",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_emergencyWithdrawAngel",
+            "fix_info": "Prevent reentrancy by following checks-effects-interactions: compute amount and update internal totalBalance before calling external angel.emergencyWithdraw. Keeps nonReentrant for extra protection.",
+            "corrected_code": "function _emergencyWithdrawAngel(address user, IAngel angel)\n    internal\n    nonReentrant\n{\n    AngelInfo storage info = _angelInfos[angel];\n    _requireMsg(\n        info.isSet,\n        \"_emergencyAngel\",\n        \"Fountain: not added by angel\"\n    );\n\n    uint256 amount = balanceOf(user);\n\n    // Effects: update internal accounting before external interaction\n    info.totalBalance = info.totalBalance.sub(amount);\n\n    // Interaction: call external angel after state update\n    angel.emergencyWithdraw(info.pid, user);\n}\n",
+            "change_type": "modified"
+        }
+    ]
+}]

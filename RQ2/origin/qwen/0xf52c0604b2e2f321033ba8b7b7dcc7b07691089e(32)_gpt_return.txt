@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(balances[_token][tx.origin] >= _amounts[i]);",
+    "description": "The function uses tx.origin for authorization instead of msg.sender, which is vulnerable to phishing attacks. tx.origin refers to the original external account that started the transaction, not necessarily the caller of the current function. This allows malicious contracts to bypass access control by tricking users into initiating transactions. Additionally, the balance check and subtraction happen inside the loop, which could lead to incorrect balance management when distributing tokens to multiple addresses. The function should use msg.sender for access control and properly validate the total amount before processing the distribution."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DMPToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath protection to prevent arithmetic overflow when adding mintedAmount to balanceOf and totalSupply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

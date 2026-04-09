@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-116-Block values as a proxy for time",
+        "location": "stakingRateModel.stakingRateMax() - line 509: uint256 timeElapsed = block.timestamp.sub(lastUpdateTimestamp);",
+        "description": "The contract uses block.timestamp as a proxy for time to calculate the staking rate. This can be manipulated by miners within a small range (typically up to 15 seconds) and should not be relied upon for precise time calculations or security-critical operations."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "wHakka.stake() - lines 556-573",
+        "description": "The stake function performs external calls (Hakka.safeTransferFrom) after updating the state but before completing all state changes. This can lead to reentrancy attacks where the external call reenters the contract and exploits the partially updated state."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "wHakka.unstake() - lines 576-592",
+        "description": "The unstake function makes an external call (Hakka.safeTransfer) before fully updating all state variables. An attacker could potentially reenter this function and exploit the inconsistent state to withdraw more tokens than they are entitled to."
+    },
+    {
+        "type": "SWC-116-Block values as a proxy for time",
+        "location": "wHakka.unstake() - line 580: require(block.timestamp >= v.unlockTime, \"locked\");",
+        "description": "The contract uses block.timestamp to check if a vault is unlocked. Since miners can manipulate block.timestamp within a small range, this could potentially allow early withdrawal or prevent timely withdrawal depending on the manipulation direction."
+    }
+]
+```

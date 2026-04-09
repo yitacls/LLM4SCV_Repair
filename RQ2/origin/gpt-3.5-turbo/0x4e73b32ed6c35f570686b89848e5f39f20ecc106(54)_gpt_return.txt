@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The Collect function is vulnerable to reentrancy due to the call to msg.sender. This allows an attacker to repeatedly call back into the Collect function before the state is updated, leading to potential loss of funds or unexpected behavior."
+}
+```

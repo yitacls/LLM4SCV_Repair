@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "CardSale",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "rc",
+            "fix_info": "Migrated to Solidity 0.8.x compatible syntax",
+            "variable_code": "mapping(address => bool) public rc;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Added explicit owner state variable for access control",
+            "variable_code": "address private _owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == _owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced tx.origin check with msg.sender check using onlyOwner modifier to prevent phishing attacks",
+            "corrected_code": "function addMeByRC() public onlyOwner {\n        rc[msg.sender] = true;\n        emit NewRC(msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

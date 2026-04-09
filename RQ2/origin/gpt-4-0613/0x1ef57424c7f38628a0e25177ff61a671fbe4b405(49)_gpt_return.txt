@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract": "BitWestToken",
+    "location": "require(tx.origin == owner);",
+    "description": "This line of code presents an access control vulnerability because it uses 'tx.origin' instead of 'msg.sender'. 'tx.origin' is the original address that initiated the contract execution, while 'msg.sender' is the latest address that called the contract. This can lead to vulnerabilities where a malicious contract can manipulate 'tx.origin' to get access."
+}
+```

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "med_.call(bytes4(keccak256(\"poke()\")));",
+            "description": "The contract uses a low-level call to execute the poke() function on an external contract without checking the return value. This can lead to unexpected behavior if the called contract reverts or behaves maliciously. It is recommended to handle the return value and implement proper error checking."
+        }
+    ]
+}
+```

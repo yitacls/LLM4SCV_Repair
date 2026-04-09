@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "L108-118 in function init(IWeightedPool _pool)",
+        "description": "The `init` function is vulnerable to transaction order dependence because it relies on the state of the pool and vault which could be manipulated before the transaction is mined. An attacker could potentially alter the pool's state right before this transaction executes, leading to unexpected behavior or exploitation."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "L174-258 in function swap()",
+        "description": "The `swap` function does not have adequate protection against unauthorized access when transferring tokens, particularly at the point where remaining `tokenReceived` is transferred to `tokenReceivingAddress`. If an attacker can influence execution flow or state, they might be able to manipulate this transfer."
+    }
+]
+```

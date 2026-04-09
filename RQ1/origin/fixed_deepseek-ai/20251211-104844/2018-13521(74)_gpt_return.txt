@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "PinkyToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change needed - but ensure mapping is initialized properly",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No change needed - but ensure proper initialization",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "No change needed - but ensure ownership tracking",
+            "variable_code": "address public owner;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No change needed - but shown for context",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow vulnerability by using SafeMath library for arithmetic operations and corrected Transfer event parameters",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    balanceOf[target] = SafeMath.add(balanceOf[target], mintedAmount);\n    totalSupply = SafeMath.add(totalSupply, mintedAmount);\n    \n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+Note: This fix assumes the contract includes or will include the SafeMath library. For completeness, you would need to add:
+```solidity
+library SafeMath {
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a, \"SafeMath: addition overflow\");
+        return c;
+    }
+}
+```
+and import it at the top of the contract with `using SafeMath for uint256;`

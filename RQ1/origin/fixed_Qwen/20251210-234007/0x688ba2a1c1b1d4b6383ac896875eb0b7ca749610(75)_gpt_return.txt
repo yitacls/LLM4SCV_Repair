@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "lockEtherPay",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "release",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and specifying the transfer function explicitly",
+            "corrected_code": "function release() onlyOwner public{\n    require(isLocked);\n    require(!isReleased);\n    require(lockOver());\n    uint256 token_amount = tokenBalance();\n    require(token_reward.transfer(beneficiary, token_amount));\n    emit TokenReleased(beneficiary, token_amount);\n    isReleased = true;\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

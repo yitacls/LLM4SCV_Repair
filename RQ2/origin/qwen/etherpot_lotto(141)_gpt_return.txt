@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(msg.value-value);",
+    "description": "The low-level call 'send' is used without checking its return value. In Solidity ^0.4.0, send() returns false on failure but doesn't revert the transaction. This means if the refund fails (e.g., due to gas limitations or recipient being a contract without payable fallback), the function continues execution and the user loses their money while not receiving their partial refund. The return value should be checked and handled appropriately."
+}
+```

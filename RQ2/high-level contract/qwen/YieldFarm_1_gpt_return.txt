@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "^0.6.0",
+        "state_variables": [
+            {
+                "variable_name": "pragma",
+                "fix_info": "Fixed floating pragma to specific version to prevent compiler version mismatch issues",
+                "variable_code": "pragma solidity 0.6.12;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Added gas optimization by limiting the number of epochs processed in a single transaction to prevent DoS",
+                "corrected_code": "function massHarvest() external returns (uint){\n        uint totalDistributedValue;\n        uint epochId = _getEpochId().sub(1); // fails in epoch 0\n        // force max number of epochs\n        if (epochId > NR_OF_EPOCHS) {\n            epochId = NR_OF_EPOCHS;\n        }\n\n        // SWC-128-DoS With Block Gas Limit: Limit iterations to prevent gas exhaustion\n        uint128 startIndex = lastEpochIdHarvested[msg.sender] + 1;\n        uint128 endIndex = epochId;\n        \n        // Limit to maximum 10 epochs per call to prevent gas DoS\n        if (endIndex.sub(startIndex) > 10) {\n            endIndex = startIndex.add(10);\n        }\n\n        for (uint128 i = startIndex; i <= endIndex; i++) {\n            // i = epochId\n            // compute distributed Value and do one single transfer at the end\n            totalDistributedValue += _harvest(i);\n        }\n\n        emit MassHarvest(msg.sender, endIndex.sub(lastEpochIdHarvested[msg.sender]), totalDistributedValue);\n\n        if (totalDistributedValue > 0) {\n            _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n        }\n\n        return totalDistributedValue;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

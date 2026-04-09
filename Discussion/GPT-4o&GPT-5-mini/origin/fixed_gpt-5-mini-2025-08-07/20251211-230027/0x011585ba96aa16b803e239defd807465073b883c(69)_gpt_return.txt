@@ -1,0 +1,22 @@
+[{
+    "contract_name": "SYCEarlyPurchase",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "pendingWithdrawals",
+            "fix_info": "Added a mapping to implement the withdrawal pattern so refunds are recorded and withdrawn by users instead of using unchecked low-level calls (avoid purchaser.send).",
+            "variable_code": "mapping(address => uint) public pendingWithdrawals;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": []
+    ,
+    "functions": [
+        {
+            "function_name": "appendEarlyPurchase",
+            "fix_info": "Replaced direct use of purchaser.send(...) with the withdrawal pattern by recording refunds in pendingWithdrawals. Also replaced throw with require for input validation. Preserves original acceptance/cap logic and updates totalEarlyPurchaseRaised and earlyPurchases accordingly.",
+            "corrected_code": "function appendEarlyPurchase(address purchaser, uint amount, uint purchasedAt)\n        internal\n        onlyEarlyPurchaseTerm\n        returns (bool)\n    {\n        require(purchasedAt != 0 && purchasedAt <= now);\n\n        if (totalEarlyPurchaseRaised + amount >= WEI_MAXIMUM_EARLYPURCHASE) {\n            uint accepted = 0;\n            if (WEI_MAXIMUM_EARLYPURCHASE > totalEarlyPurchaseRaised) {\n                accepted = WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised;\n            }\n            uint refund = 0;\n            if (amount > accepted) {\n                refund = amount - accepted;\n            }\n\n            if (accepted > 0) {\n                earlyPurchases.push(EarlyPurchase(purchaser, accepted, purchasedAt));\n                totalEarlyPurchaseRaised += accepted;\n            }\n\n            // Record refund using withdrawal pattern instead of making an external call here\n            if (refund > 0) {\n                pendingWithdrawals[purchaser] += refund;\n            }\n        }\n        else{\n           earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));\n           totalEarlyPurchaseRaised += amount;\n        }\n        if(totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE){\n            earlyPurchaseClosedAt = now;\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

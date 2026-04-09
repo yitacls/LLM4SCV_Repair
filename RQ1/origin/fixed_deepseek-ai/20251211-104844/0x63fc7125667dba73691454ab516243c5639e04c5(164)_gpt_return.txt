@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "tokenContract",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed from implicit tx.origin check to explicit owner state variable",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict function access to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setCrowdsale",
+            "fix_info": "Replaced tx.origin with msg.sender for secure ownership check, added modifier, and improved validation",
+            "corrected_code": "function setCrowdsale(address tokenWallet, uint maxToken) public onlyOwner returns (bool) {\n    require(tokenWallet != address(0), \"Invalid token wallet address\");\n    require(maxToken > 0, \"Max token amount must be positive\");\n    require(balances[tokenWallet] >= maxToken, \"Insufficient balance in token wallet\");\n    \n    allowed[tokenWallet][msg.sender] = maxToken;\n    emit Approval(tokenWallet, msg.sender, maxToken);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

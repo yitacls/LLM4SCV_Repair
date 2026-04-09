@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function kill() external onlyOwner {\n        require (lockedInBets == 0, \"All bets should be processed (settled or refunded) before self-destruct.\");\n        selfdestruct(owner); // <LEAKING_VUL>, <SUICIDAL_VUL>\n    }",
+    "description": "The kill() function uses onlyOwner modifier for access control, but in Solidity ^0.4.26, the ownership pattern may not be properly implemented or could be bypassed. The function allows self-destruction of the contract, which could be exploited if the owner access control is compromised. Additionally, the selfdestruct call sends all remaining contract funds to the owner address, creating a potential leakage vulnerability if the owner address is malicious or compromised."
+}
+```

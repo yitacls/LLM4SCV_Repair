@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "The contract uses Solidity ^0.4.19, which does not have built-in overflow/underflow protection. The operations 'balanceOf[target] += mintedAmount' and 'totalSupply += mintedAmount' are susceptible to integer overflow. An attacker could call mintToken with a maliciously crafted mintedAmount (e.g., type(uint256).max) to cause an overflow, resulting in balanceOf[target] and totalSupply wrapping around to a small value, disrupting the token economics and potentially allowing malicious minting or freezing of funds. This vulnerability was addressed in Solidity 0.8.0 with automatic overflow checks or can be mitigated in older versions using SafeMath libraries."
+}
+```

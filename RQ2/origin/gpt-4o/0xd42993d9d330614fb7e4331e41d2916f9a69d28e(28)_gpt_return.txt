@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "VOTING_END_TIME = now + max(durationHrs,1) * 1 hours;",
+    "description": "The function calculates the voting end time using the 'now' keyword, which is dependent on the block timestamp. Miners have control over block timestamps to a certain extent, allowing them to exploit this by manipulating the 'now' value, which could result in an inaccurate or maliciously controlled voting end time."
+}
+```

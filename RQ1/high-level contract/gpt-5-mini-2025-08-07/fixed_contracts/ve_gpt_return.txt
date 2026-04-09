@@ -1,0 +1,32 @@
+[{
+    "contract_name": "ve",
+    "contract_version": "1.0.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "ownerOf",
+            "fix_info": "Ensure non-existent tokens revert instead of returning zero address (complies with ERC-721), avoiding ambiguous owner queries.",
+            "corrected_code": "function ownerOf(uint _tokenId) public view returns (address) {\n    address owner = idToOwner[_tokenId];\n    require(owner != address(0), \"ERC721: owner query for nonexistent token\");\n    return owner;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "safeTransferFrom (with data)",
+            "fix_info": "Verify the return value of onERC721Received matches the expected selector. Preserve existing try/catch behavior but check the returned bytes4 and revert if it doesn't match. This fixes unchecked call return value issues.",
+            "corrected_code": "function safeTransferFrom(\n    address _from,\n    address _to,\n    uint _tokenId,\n    bytes memory _data\n) public {\n    _transferFrom(_from, _to, _tokenId, msg.sender);\n\n    if (_isContract(_to)) {\n        try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 retval) {\n            require(retval == IERC721Receiver.onERC721Received.selector, \"ERC721: transfer to non ERC721Receiver implementer\");\n        } catch (bytes memory reason) {\n            if (reason.length == 0) {\n                revert(\"ERC721: transfer to non ERC721Receiver implementer\");\n            } else {\n                assembly {\n                    revert(add(32, reason), mload(reason))\n                }\n            }\n        }\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_burn",
+            "fix_info": "Avoid calling public `approve` from internal context and ensure the correct owner is passed when removing token. Use internal `_clearApproval` to clear approvals and pass the actual owner to `_removeTokenFrom` to prevent incorrect state changes and reduce surface for unexpected external interactions.",
+            "corrected_code": "function _burn(uint _tokenId) internal {\n    require(_isApprovedOrOwner(msg.sender, _tokenId), \"caller is not owner nor approved\");\n\n    address owner = ownerOf(_tokenId);\n\n    // Clear approval using internal function (avoids calling public approve)\n    _clearApproval(owner, _tokenId);\n    // Remove token from the correct owner\n    _removeTokenFrom(owner, _tokenId);\n    emit Transfer(owner, address(0), _tokenId);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Reinforce external call handling: use require for ERC20 transfer return value, burn the NFT before the external token transfer to minimize attack surface, and ensure clearer error messages. Function retains nonreentrant modifier.",
+            "corrected_code": "function withdraw(uint _tokenId) external nonreentrant {\n    require(_isApprovedOrOwner(msg.sender, _tokenId), \"caller is not owner nor approved\");\n    require(attachments[_tokenId] == 0 && !voted[_tokenId], \"attached\");\n\n    LockedBalance memory _locked = locked[_tokenId];\n    require(block.timestamp >= _locked.end, \"The lock didn't expire\");\n    uint value = uint(int256(_locked.amount));\n\n    // Effects\n    locked[_tokenId] = LockedBalance(0,0);\n    uint supply_before = supply;\n    supply = supply_before - value;\n\n    // Record checkpoint\n    _checkpoint(_tokenId, _locked, LockedBalance(0,0));\n\n    // Burn the NFT before making external calls to minimize risk\n    _burn(_tokenId);\n\n    // Interaction: external token transfer (check return value)\n    require(IERC20(token).transfer(msg.sender, value), \"ERC20 transfer failed\");\n\n    emit Withdraw(msg.sender, _tokenId, value, block.timestamp);\n    emit Supply(supply_before, supply_before - value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

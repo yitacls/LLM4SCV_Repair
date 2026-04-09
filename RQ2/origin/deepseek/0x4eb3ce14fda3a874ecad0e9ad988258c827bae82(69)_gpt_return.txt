@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),creator,amount);",
+    "description": "The low-level call to the token contract does not check the return value. In Solidity versions prior to 0.5.0, the `.call()` function returns a boolean indicating success, but this return value is ignored. If the external `transfer` call fails (e.g., due to insufficient balance, a reverted transaction, or a non-compliant token that does not return a boolean), the contract will not be aware of the failure and will proceed as if the transfer succeeded. This can lead to inconsistencies in the contract's state and loss of funds. The function should either use the higher-level `transfer` function (for Ether) or properly check the return value of the low-level call. Since this is an ERC20 token call, it's recommended to use `require(token.transfer(creator, amount))` or check the return value of the call explicitly."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authorization creates a phishing vulnerability. Malicious contracts can call this function, and if the owner is tricked into interacting with the attacker's contract, tx.origin will still be the owner's address, bypassing the check. It also restricts functionality by preventing calls from smart contract wallets. Should use msg.sender == owner instead."
+}
+```

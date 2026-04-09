@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowMinimal",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Added SafeMath library protection for underflow prevention",
+            "variable_code": "using SafeMath for uint256;\n    uint256 public count;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "run",
+            "fix_info": "Replaced vulnerable subtraction with SafeMath.sub to prevent underflow",
+            "corrected_code": "function run(uint256 input) public {\n        count = count.sub(input);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

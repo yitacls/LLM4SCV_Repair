@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "SAFECOVID",
+        "contract_version": "^0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "includeInReward",
+                "fix_info": "Fixed SWC-113 DoS vulnerability by preventing failed calls when account is not excluded. Added require statement to check if account is actually excluded before attempting to remove it from the excluded list.",
+                "corrected_code": "    function includeInReward(address account) external onlyOwner() {\n        require(_isExcluded[account], \"Account is already included in reward\");\n        for (uint256 i = 0; i < _excluded.length; i++) {\n            if (_excluded[i] == account) {\n                _excluded[i] = _excluded[_excluded.length - 1];\n                _tOwned[account] = 0;\n                _isExcluded[account] = false;\n                _excluded.pop();\n                break;\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_getCurrentSupply",
+                "fix_info": "Fixed SWC-113 DoS vulnerability by adding safe calculation logic to prevent overflow and ensure proper handling of excluded accounts. Guarded against division by zero and improved numerical stability.",
+                "corrected_code": "    function _getCurrentSupply() private view returns(uint256, uint256) {\n        uint256 rSupply = _rTotal;\n        uint256 tSupply = _tTotal;\n        for (uint256 i = 0; i < _excluded.length; i++) {\n            address excludedAccount = _excluded[i];\n            uint256 rOwned = _rOwned[excludedAccount];\n            uint256 tOwned = _tOwned[excludedAccount];\n            \n            if (rOwned > rSupply || tOwned > tSupply) {\n                return (_rTotal, _tTotal);\n            }\n            \n            // Use safe subtraction with overflow check\n            rSupply = rSupply - rOwned;\n            tSupply = tSupply - tOwned;\n        }\n        \n        // Guard against division by zero in _getRate\n        if (tSupply == 0) {\n            return (_rTotal, _tTotal);\n        }\n        \n        // Ensure rSupply is not less than the minimal required value\n        if (rSupply < _rTotal / _tTotal) {\n            return (_rTotal, _tTotal);\n        }\n        \n        return (rSupply, tSupply);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

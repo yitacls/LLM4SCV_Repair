@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.6.0;",
+            "description": "Using a floating pragma (^0.6.0) allows the contract to be compiled with different compiler versions (from 0.6.0 to 0.6.x), which can lead to unexpected behaviors and security issues due to version inconsistencies between development and deployment environments. Best practice is to use a fixed compiler version."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "_bond.approve(spender, amount);",
+            "description": "The setAllowance function calls an external contract (_bond.approve) without following checks-effects-interactions pattern. While approve itself doesn't typically enable classic reentrancy attacks, calling external contracts before state changes (though there are none here) is risky. If the spender is a malicious contract, it could re-enter setAllowance during approval (if the token implementation allows it), potentially causing unexpected behavior. The function should implement reentrancy protection if the token contract is unknown/untrusted."
+        }
+    ]
+}
+```

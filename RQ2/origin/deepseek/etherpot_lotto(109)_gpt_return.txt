@@ -1,0 +1,7 @@
+```json
+{
+    "type": "UNCHECKED_LL_CALLS",
+    "location": "winner.send(subpot);",
+    "description": "The low-level .send() call is used without checking its return value. In Solidity ^0.4.0, .send() returns false when the transfer fails (e.g., if the recipient is a contract with a fallback function that reverts). When this occurs, the state change rounds[roundIndex].isCashed[subpotIndex] = true will still be executed, marking the pot as cashed even though the ETH transfer failed, permanently locking the funds and preventing the legitimate winner from claiming them."
+}
+```

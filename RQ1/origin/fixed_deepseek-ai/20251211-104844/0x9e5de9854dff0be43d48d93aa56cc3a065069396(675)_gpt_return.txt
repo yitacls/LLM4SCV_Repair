@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "ArtworkCore",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "cfoAddress",
+            "fix_info": "Added to ensure the contract tracks the CFO address properly for withdrawals",
+            "variable_code": "address payable public cfoAddress;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyCFO",
+            "fix_info": "Added modifier to restrict function access to CFO only",
+            "modifier_code": "modifier onlyCFO() {\n    require(msg.sender == cfoAddress, \"Only CFO can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed vulnerability by replacing unsafe send() with transfer(), added reentrancy guard pattern, and implemented proper error handling",
+            "corrected_code": "function withdrawBalance() external onlyCFO {\n    uint256 balance = address(this).balance;\n    require(balance > 0, \"No balance to withdraw\");\n    \n    // Reset balance before transfer to prevent reentrancy\n    uint256 amount = balance;\n    \n    // Use transfer instead of send for security - reverts on failure\n    cfoAddress.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,12 @@
+```json
+{
+    "contract": "Tokendeployer",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require (tx.origin == owner);",
+            "description": "The contract uses 'tx.origin' for access control, which is a vulnerability. It checks that the contract call was made by the account that originally initiated the transaction, rather than the contract that made the call. This can lead to unexpected behavior if the call was made through another contract, allowing potentially malicious contracts to gain unintended permissions. It's recommended to use 'msg.sender' for access control instead."
+        }
+    ]
+}
+```

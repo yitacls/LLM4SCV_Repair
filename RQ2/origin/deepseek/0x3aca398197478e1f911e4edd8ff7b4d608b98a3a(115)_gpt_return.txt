@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The low-level call `owner.send()` is used without checking its return value. In Solidity versions prior to 0.4.16, the `send()` function returns a boolean indicating success or failure. If the `send()` call fails (e.g., due to insufficient gas, a revert in the fallback function of the recipient, or call depth exceedance), it returns `false` and does not propagate the error. This contract ignores this return value, allowing execution to continue even if the Ether transfer to the owner fails. As a result, `msg.value * buyPrice` tokens may be minted and transferred to the caller (`msg.sender`) without the required Ether payment actually reaching the owner. This vulnerability enables attackers to potentially receive tokens for free by causing the `send()` to fail while still having the transaction proceed."
+}
+```

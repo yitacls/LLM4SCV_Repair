@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 amount = cnt * _value;",
+    "description": "The multiplication 'cnt * _value' is vulnerable to integer overflow. Since the contract uses Solidity 0.4.11 (which does not include built-in overflow protection), if the product of cnt (number of receivers) and _value (transfer amount) exceeds 2^256 - 1, it will wrap around to a small number. This could cause the subsequent balance check 'balanceOf[msg.sender] < amount' to pass incorrectly, allowing an attacker to transfer tokens without sufficient balance or even create tokens arbitrarily. For example, setting _value to a very large number (e.g., 2^255) and cnt to 2 would cause amount to overflow to 0, bypassing both the zero-amount and balance checks."
+}
+```

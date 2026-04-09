@@ -1,0 +1,7 @@
+```json
+{
+  "type": "unchecked_low_level_calls",
+  "location": "msg.sender.send(autoBirthFee);",
+  "description": "The low-level call 'send' is used without checking its return value. In Solidity version ^0.4.11, 'send' can fail silently (e.g., due to insufficient gas or contract execution failure), and the failure will not revert the transaction. This could lead to the autoBirthFee not being transferred to the intended recipient, while the rest of the function continues execution as if the transfer succeeded. It is recommended to either check the return value of 'send' or use 'transfer' instead, which throws an exception on failure."
+}
+```

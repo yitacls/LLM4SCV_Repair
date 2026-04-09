@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This contract uses Solidity v0.4.21, which does not include built-in overflow/underflow protection. The addition operation on line 4 can overflow, causing balances[_to] to wrap around to a very small number instead of increasing as intended. Similarly, the subtraction operation (balances[msg.sender] -= _value) on the previous line can underflow if _value is greater than the sender's balance, but this is prevented by the require statement. The overflow vulnerability allows an attacker to receive tokens that result in a much smaller balance than expected, potentially enabling theft or disruption of token economics. This should be fixed by using SafeMath library or upgrading to Solidity v0.8.0+."
+}
+```

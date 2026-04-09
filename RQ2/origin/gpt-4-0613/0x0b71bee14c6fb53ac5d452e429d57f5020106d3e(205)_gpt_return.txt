@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(!playerRegistered[_customerAddress] && tx.origin == _customerAddress);",
+    "description": "This line of code has a flaw since it relies on the 'tx.origin' for verification. 'tx.origin' points to the original entity that started the transaction, not necessarily the immediate sender of the message. This means the contract could be potentially called by any other contract, playing out on behalf of the original sender without their knowledge. This is a form of access control vulnerability known as 'tx.origin' abuse or misuse."
+}
+```

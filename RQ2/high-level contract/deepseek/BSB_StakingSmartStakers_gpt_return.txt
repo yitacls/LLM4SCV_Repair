@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 393-401: for(uint i = 0; i < holders.length(); i = i.add(1)){ ... }",
+            "description": "The 'end()' function iterates through all holders in a single transaction. As the number of holders grows, this loop may consume excessive gas, potentially exceeding the block gas limit and preventing the owner from ending the staking pool."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 416-418: for(uint i = 0; i < holders.length(); i = i.add(1)){ totalPending = totalPending.add(getPendingRewards(holders.at(i))); }",
+            "description": "The 'getRewardsLeft()' function iterates through all holders to calculate total pending rewards. This can consume excessive gas as the number of holders increases, potentially making the function uncallable or causing out-of-gas errors."
+        }
+    ]
+}
+```

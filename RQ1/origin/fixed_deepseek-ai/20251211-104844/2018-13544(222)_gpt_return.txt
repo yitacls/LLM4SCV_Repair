@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Numisma",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added overflow protection by using SafeMath library",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added overflow protection by using SafeMath library",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow vulnerability by adding SafeMath operations and event emission improvements",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Minted amount must be positive\");\n    \n    // Using SafeMath operations to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Emitting events with proper parameters (using address(0) instead of 0)\n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

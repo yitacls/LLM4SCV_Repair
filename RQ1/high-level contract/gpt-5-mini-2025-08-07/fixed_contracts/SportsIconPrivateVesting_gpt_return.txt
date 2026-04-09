@@ -1,0 +1,14 @@
+[{
+    "contract_name": "SportsIconPrivateVesting",
+    "contract_version": "0.7.5",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "claim",
+            "fix_info": "Checked ERC20.transfer return value and avoided calling transfer when tokens == 0. Preserved original behavior of updating claimedOf before external call to prevent reentrancy, and revert on failed token transfer.",
+            "corrected_code": "function claim() external override returns (uint256) {\n    uint256 tokens = freeTokens(msg.sender);\n    // update state before external call to mitigate reentrancy\n    claimedOf[msg.sender] = claimedOf[msg.sender].add(tokens);\n\n    if (tokens > 0) {\n        bool sent = token.transfer(msg.sender, tokens);\n        require(sent, \"Claim :: Token transfer failed\");\n    }\n\n    emit LogTokensClaimed(msg.sender, tokens);\n\n    return tokens;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

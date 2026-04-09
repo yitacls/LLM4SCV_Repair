@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DosNumber",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "insertNnumbers",
+            "fix_info": "Replaced dynamic array expansion with fixed-size array or added gas limit protection, and added input validation to prevent gas-based DoS attacks via excessive iterations. Changed visibility to prevent unbounded state modification, which could cause transaction failures due to gas costs.",
+            "corrected_code": "function insertNnumbers(uint value, uint numbers) external {\n    require(numbers > 0, \"Number of insertions must be greater than zero\");\n    require(numbers <= 100, \"Number of insertions exceeds safe limit\");\n    require(numElements + numbers <= array.length, \"Array capacity exceeded\");\n    \n    for (uint i = 0; i < numbers; i++) {\n        array[numElements] = value;\n        numElements++;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

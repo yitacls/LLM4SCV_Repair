@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function destroycontract(address _to) { selfdestruct(_to); }",
+    "description": "The 'destroycontract' function lacks any access control modifier or authentication check, allowing any external actor to call it. This vulnerability enables an attacker to maliciously destroy the StandardToken contract via the 'selfdestruct' operation, sending any remaining Ether stored in the contract to an address of their choice ('_to'), resulting in a total loss of contract functionality and funds."
+}
+```

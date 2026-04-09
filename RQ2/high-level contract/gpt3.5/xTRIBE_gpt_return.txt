@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function emitVotingBalances(address[] calldata accounts) external",
+    "description": "The emitVotingBalances function iterates over the accounts array and emits DelegateVotesChanged event without checking for gas costs. If the array is too large, it may result in out-of-gas errors or be susceptible to abuse. It is recommended to update the function to emit events in batches to mitigate potential gas issues."
+}
+```

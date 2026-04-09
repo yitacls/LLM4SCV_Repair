@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ZapIn",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "zapIn",
+            "fix_info": "Fixed potential integer overflow in amount calculations by using SafeMath operations for division and subtraction. Also ensured all arithmetic operations are safely handled to prevent underflow/overflow.",
+            "corrected_code": "function zapIn(\n    address tokenIn,\n    uint256 amountIn,\n    address token0,\n    address token1,\n    int24 tickLower,\n    int24 tickUpper,\n    uint24 fee\n) public override returns (uint256 tokenId) {\n    require(token0 != token1, 'ZapIn::zapIn: token0 and token1 cannot be the same');\n    (token0, token1) = _reorderTokens(token0, token1);\n\n    StorageStruct storage Storage = PositionManagerStorage.getStorage();\n    ERC20Helper._pullTokensIfNeeded(tokenIn, Storage.owner, amountIn);\n\n    ERC20Helper._approveToken(tokenIn, Storage.uniswapAddressHolder.swapRouterAddress(), amountIn);\n\n    (, int24 tickPool, , , , , ) = IUniswapV3Pool(\n        UniswapNFTHelper._getPool(Storage.uniswapAddressHolder.uniswapV3FactoryAddress(), token0, token1, fee)\n    ).slot0();\n    \n    uint256 ratio = SwapHelper.getRatioFromRange(tickPool, tickLower, tickUpper);\n    uint256 denominator = ratio.add(1e18);\n    uint256 amountInTo0 = amountIn.mul(1e18).div(denominator);\n    uint256 amountInTo1 = amountIn.sub(amountInTo0);\n\n    //if token in input is not the token0 of the pool, we need to swap it\n    if (tokenIn != token0) {\n        amountInTo0 = ISwapRouter(Storage.uniswapAddressHolder.swapRouterAddress()).exactInputSingle(\n            ISwapRouter.ExactInputSingleParams({\n                tokenIn: tokenIn,\n                tokenOut: token0,\n                fee: fee,\n                recipient: address(this),\n                deadline: block.timestamp + 120,\n                amountIn: amountInTo0,\n                amountOutMinimum: 1,\n                sqrtPriceLimitX96: 0\n            })\n        );\n    }\n\n    //if token in input is not the token1 of the pool, we need to swap it\n    if (tokenIn != token1) {\n        amountInTo1 = ISwapRouter(Storage.uniswapAddressHolder.swapRouterAddress()).exactInputSingle(\n            ISwapRouter.ExactInputSingleParams({\n                tokenIn: tokenIn,\n                tokenOut: token1,\n                fee: fee,\n                recipient: address(this),\n                deadline: block.timestamp + 120,\n                amountIn: amountInTo1,\n                amountOutMinimum: 1,\n                sqrtPriceLimitX96: 0\n            })\n        );\n    }\n\n    (tokenId, , ) = _mint(token0, token1, fee, tickLower, tickUpper, amountInTo0, amountInTo1);\n\n    emit ZappedIn(address(this), tokenId, tokenIn, amountIn);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

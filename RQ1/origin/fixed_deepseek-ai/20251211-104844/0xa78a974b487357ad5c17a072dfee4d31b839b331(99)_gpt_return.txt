@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "HOT",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added missing onlyOwner modifier to ensure proper access control",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sendAll",
+            "fix_info": "1. Fixed reentrancy vulnerability by moving transfer to the end of function execution (Checks-Effects-Interactions pattern)\n2. Added proper input validation for array length matching\n3. Properly tracked transferred amounts to prevent miscalculation attacks\n4. Used SafeMath library for arithmetic operations\n5. Ensured contract has enough balance before executing transfers\n6. Protected against zero address and zero value transfers",
+            "corrected_code": "function sendAll(address[] _users, uint[] _prices) public onlyOwner {\n    require(_users.length > 0, \"Users array cannot be empty\");\n    require(_prices.length > 0, \"Prices array cannot be empty\");\n    require(_users.length == _prices.length, \"Users and prices arrays must have same length\");\n    \n    uint256 totalAmount = 0;\n    for (uint256 i = 0; i < _users.length; i++) {\n        require(_users[i] != address(0), \"Invalid recipient address\");\n        require(_prices[i] > 0, \"Transfer amount must be positive\");\n        totalAmount = totalAmount.add(_prices[i]);\n    }\n    \n    require(address(this).balance >= totalAmount, \"Insufficient contract balance\");\n    \n    for (uint256 j = 0; j < _users.length; j++) {\n        address user = _users[j];\n        uint256 price = _prices[j];\n        \n        // Reduce balance before transfer to prevent reentrancy\n        totalAmount = totalAmount.sub(price);\n        user.transfer(price);\n        transferLogs(user, '转账', price);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

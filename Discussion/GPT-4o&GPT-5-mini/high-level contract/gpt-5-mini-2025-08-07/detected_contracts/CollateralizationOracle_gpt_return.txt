@@ -1,0 +1,17 @@
+[
+  {
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "protocolControlledValue += _oraclePrice.mul(_totalTokenBalance).asUint256();",
+    "description": "The code multiplies an oracle price (Decimal.D256) by a token balance and accumulates the result into protocolControlledValue (uint256). Although Solidity >=0.8 includes overflow checks that will revert on overflow, a very large _oraclePrice or _totalTokenBalance could still cause a multiplication or addition overflow and revert the transaction. Additionally, Decimal.D256 operations and asUint256() may produce large uint256 values; repeated accumulation across many tokens/deposits increases the risk of exceeding uint256 and causing a runtime revert. This results in denial of service for reads that iterate many deposits or handle unexpectedly large values. Mitigation: validate and/or clamp oracle price and token balance inputs, use safe bounds or require checks before multiplication/addition, or design logic to handle very large totals (e.g., use checked arithmetic with explicit handling or scale values to avoid exceeding limits)."
+  },
+  {
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "userCirculatingFei = fei().totalSupply() - _protocolControlledFei;",
+    "description": "This subtraction can underflow (i.e., revert in Solidity >=0.8) if _protocolControlledFei (sum of FEI held by protocol deposits) exceeds fei().totalSupply(). Under past Solidity versions this would wrap, but in >=0.8 it causes a revert, which can break pcvStats()/read()/isOvercollateralized() calls when protocol-held FEI unexpectedly exceeds total supply (e.g., due to inconsistent deposit reporting). Mitigation: perform a guarded subtraction, e.g. if (_protocolControlledFei >= totalSupply) set userCirculatingFei = 0 else compute the difference; or validate/limit _protocolControlledFei before subtraction."
+  },
+  {
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "protocolEquity = int256(protocolControlledValue) - int256(userCirculatingFei);",
+    "description": "The code casts uint256 values protocolControlledValue and userCirculatingFei to int256 before subtraction. If either uint256 value exceeds type(int256).max (2^255 - 1), the explicit cast will revert in Solidity >=0.8. This can cause pcvStats() to revert unexpectedly when protocolControlledValue or userCirculatingFei are extremely large, preventing the oracle from returning values. Mitigation: ensure the uint256 operands are bounded below type(int256).max before casting, or use signed arithmetic carefully (e.g., compute protocolEquity as an int256 with prior bounds checking or use a signed/int256 accumulator with validated inputs)."
+  }
+]

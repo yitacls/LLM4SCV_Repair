@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "EasyInvestss",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added missing state variable declaration since it's referenced in the function",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "invested",
+            "fix_info": "Added missing state variable declaration for tracking investments",
+            "variable_code": "mapping(address => uint256) public invested;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "atBlock",
+            "fix_info": "Added missing state variable declaration for tracking block numbers",
+            "variable_code": "mapping(address => uint256) public atBlock;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic issues: 1) Moved 'amount' variable declaration before use, 2) Fixed integer division precision by performing multiplication before division, 3) Fixed reentrancy vulnerability by updating state before external call, 4) Used transfer() instead of send() for better gas handling, 5) Added overflow protection",
+            "corrected_code": "function () external payable {\n    require(msg.value > 0, \"Investment must be greater than 0\");\n    \n    if (invested[msg.sender] != 0) {\n        // Calculate reward with overflow protection\n        uint256 rewardNumerator = invested[msg.sender] * 4 * (block.number - atBlock[msg.sender]);\n        require(rewardNumerator / invested[msg.sender] == 4 * (block.number - atBlock[msg.sender]), \"Multiplication overflow\");\n        \n        uint256 amount = rewardNumerator / 5900;\n        \n        // Check if contract has enough balance\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        \n        // Update state before external call to prevent reentrancy\n        atBlock[msg.sender] = block.number;\n        \n        // Use transfer with proper error handling\n        msg.sender.transfer(amount);\n    }\n    \n    // Update investment tracking\n    require(invested[msg.sender] + msg.value >= invested[msg.sender], \"Addition overflow\");\n    invested[msg.sender] += msg.value;\n    atBlock[msg.sender] = block.number;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

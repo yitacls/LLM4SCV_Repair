@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Cryptbond",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by ensuring proper owner verification and using secure transfer methods",
+            "corrected_code": "function withdraw() onlyOwner public {\n        uint256 etherBalance = address(this).balance;\n        require(owner.send(etherBalance));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

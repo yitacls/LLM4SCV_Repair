@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "if(!beneficiary.send(bids[highestBidder]))",
+    "description": "In the 'endAuction' function of the 'Auctionify' contract, the send() function is used to transfer ether to the beneficiary. However, there is no error handling procedure to deal with the failure case, which can occur if the send() function returns false (which can happen, for example, when the receiving contract throws an exception). The use of send() can lead to unexpected behavior if it fails and the failure is not properly addressed. This is called unchecked low level calls vulnerability."
+}
+```

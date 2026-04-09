@@ -1,0 +1,38 @@
+[{
+    "contract_name": "ETHRegistrarController",
+    "contract_version": "^0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "commit",
+            "fix_info": "Fix transaction-order dependence by allowing a new commitment or replacing an expired commitment. Use block.timestamp and provide an explanatory require message.",
+            "corrected_code": "function commit(bytes32 commitment) public {\n    // Allow a new commitment or replace only if the previous commitment expired.\n    require(commitments[commitment] == 0 || commitments[commitment] + MAX_COMMITMENT_AGE < block.timestamp, \"Commitment already exists\");\n    commitments[commitment] = block.timestamp;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "register",
+            "fix_info": "Use block.timestamp and checks-effects-interactions. Refunds are performed via a safe internal transfer helper that checks the return value to avoid unchecked-call issues.",
+            "corrected_code": "function register(string calldata name, address owner, uint duration, bytes32 secret) external payable {\n    // Require a valid commitment\n    bytes32 commitment = makeCommitment(name, secret);\n    require(commitments[commitment] + MIN_COMMITMENT_AGE <= block.timestamp, \"Commitment too recent\");\n\n    // If the commitment is too old, or the name is registered, refund and stop\n    if (commitments[commitment] + MAX_COMMITMENT_AGE < block.timestamp || !available(name))  {\n        _safeTransferETH(address(uint160(msg.sender)), msg.value);\n        return;\n    }\n\n    // Effects: remove the commitment before external interactions\n    delete commitments[commitment];\n\n    require(duration >= MIN_REGISTRATION_DURATION, \"Registration duration too short\");\n\n    uint cost = rentPrice(name, duration);\n    require(msg.value >= cost, \"Insufficient payment\");\n\n    bytes32 label = keccak256(bytes(name));\n    uint expires = base.register(uint256(label), owner, duration);\n    emit NameRegistered(name, owner, cost, expires);\n\n    if (msg.value > cost) {\n        _safeTransferETH(address(uint160(msg.sender)), msg.value - cost);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "renew",
+            "fix_info": "Use the safe internal transfer helper for refunds to ensure the call return value is checked. Use block.timestamp in related logic elsewhere (no change needed here besides safe transfer).",
+            "corrected_code": "function renew(string calldata name, uint duration) external payable {\n    uint cost = rentPrice(name, duration);\n    require(msg.value >= cost, \"Insufficient payment\");\n\n    bytes32 label = keccak256(bytes(name));\n    uint expires = base.renew(uint256(label), duration);\n\n    if (msg.value > cost) {\n        _safeTransferETH(address(uint160(msg.sender)), msg.value - cost);\n    }\n\n    emit NameRenewed(name, cost, expires);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Use the safe internal transfer helper to check the ETH transfer return value when owner withdraws contract balance.",
+            "corrected_code": "function withdraw() public onlyOwner {\n    _safeTransferETH(address(uint160(msg.sender)), address(this).balance);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_safeTransferETH",
+            "fix_info": "Added an internal helper that performs a low-level call and checks the return value to avoid unchecked-call-return-value vulnerabilities. Keeps behavior equivalent while being explicit about failures.",
+            "corrected_code": "function _safeTransferETH(address payable to, uint256 amount) internal {\n    if (amount == 0) {\n        return;\n    }\n    (bool success, ) = to.call.value(amount)(\"\");\n    require(success, \"ETH transfer failed\");\n}",
+            "change_type": "added"
+        }
+    ]
+}]

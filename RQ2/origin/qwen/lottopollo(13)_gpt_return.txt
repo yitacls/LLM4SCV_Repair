@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "if ( rand> 0 && now - rand > 24 hours )",
+    "description": "The contract uses user-provided 'rand' parameter directly in time calculations without proper validation. Since 'rand' is passed as a parameter to the payOut function, a malicious user can manipulate this value to bypass the 24-hour time check. The condition 'now - rand > 24 hours' can be easily satisfied by providing a 'rand' value that is much smaller than 'now', allowing users to withdraw funds immediately regardless of the actual time elapsed. This undermines the intended time-based logic of the contract."
+}
+```

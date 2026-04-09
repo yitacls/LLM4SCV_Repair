@@ -1,0 +1,48 @@
+Sure, below is JSON representation of the vulnerabilities found in the contract:
+
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function add(uint256 _allocPoint, IERC20 _lpToken, bool _withUpdate, address _strategy)",
+        "description": "Public functions contain external calls, that can potentially introduce Reentrancy Attacks vulnerabilities by altering control flow post external call."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate)",
+        "description": "Public functions contain external calls, that can potentially introduce Reentrancy Attacks vulnerabilities by altering control flow post external call."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function deposit(uint256 _pid, uint256 _amount)",
+        "description": "Public functions contain external calls, that can potentially introduce Reentrancy Attacks vulnerabilities by altering control flow post external call."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function withdraw(uint256 _pid, uint256 _shares)",
+        "description": "Public functions contain external calls, that can potentially introduce Reentrancy Attacks vulnerabilities by altering control flow post external call."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function emergencyWithdraw(uint256 _pid)",
+        "description": "Public functions contain external calls, that can potentially introduce Reentrancy Attacks vulnerabilities by altering control flow post external call."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function balance(uint256 _pid)",
+        "description": "Public functions contain external calls, that can potentially introduce Reentrancy Attacks vulnerabilities by altering control flow post external call."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function safePudTransfer(address _to, uint256 _amount)",
+        "description": "Returns of complex low-level calls are not checked, thus making it prone to potential false positives or call failures."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function setPoolStrategy(uint256 _pid, address _strategy)",
+        "description": "Returns of complex low-level calls are not checked, thus making it prone to potential false positives or call failures."
+    }
+]
+```
+
+**Note:** The description of each vulnerability type is generalized, and could vary in individual cases. It's recommended to review the contract thoroughly before proceeding with any implementation or usage.

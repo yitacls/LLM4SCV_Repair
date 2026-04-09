@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Line 60: token.transfer(msg.sender, tokens);",
+    "description": "The contract does not check the return value of the token.transfer() call. According to the ERC-20 standard, transfer() returns a boolean indicating success, but this return value is ignored. If the transfer fails (returns false), the contract will continue execution without reverting, causing the claimedOf mapping to be updated even though no tokens were actually transferred. This could lead to users losing their claimable tokens without receiving anything in return. On line 60, the return value should be checked and the transaction should revert if the transfer fails."
+}
+```

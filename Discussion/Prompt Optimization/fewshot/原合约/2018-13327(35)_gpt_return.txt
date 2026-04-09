@@ -1,0 +1,26 @@
+```json
+[
+    {
+        "contract_name": "StandardToken",
+        "contract_version": "^0.4.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Add overflow check before updating balances and allowances.",
+                "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+        require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0);
+        require(balances[_to] + _value >= balances[_to]);
+        balances[_to] += _value;
+        balances[_from] -= _value;
+        allowed[_from][msg.sender] -= _value;
+        Transfer(_from, _to, _value);
+        return true;
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow in Multiplication",
+    "location": "amount * sellPrice",
+    "description": "In Solidity ^0.4.2, arithmetic operations are unchecked and vulnerable to integer overflow/underflow. The multiplication 'amount * sellPrice' could overflow if the product exceeds uint256's maximum value (2^256 - 1), causing the result to wrap around. In the 'sell' function, this overflow would cause the user to receive far fewer Ether than intended (potentially zero), while the contract still deducts the full token amount. This is particularly dangerous because: 1) sellPrice could be manipulated or set to a large value; 2) An attacker could supply a large 'amount' to trigger overflow; 3) No SafeMath or overflow checks are implemented. The vulnerability violates the intended 1:token-to-wei exchange rate and enables theft of tokens."
+}
+```

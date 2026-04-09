@@ -1,0 +1,12 @@
+```json
+{
+    "contract_name": "myNewPet",
+    "solidity_version": "^0.4.24",
+    "vulnerability": 
+    {
+        "type": "Arithmetic",
+        "location": "balances[to] += tokens;", 
+        "description": "This code is susceptible to an arithmetic overflow vulnerability when an amount is added to the balance of the 'to' address. If 'tokens' is a large value, the sum could exceed the maximum value a uint can hold, causing it to wrap around to a very small, unexpected number."
+    }
+}
+```

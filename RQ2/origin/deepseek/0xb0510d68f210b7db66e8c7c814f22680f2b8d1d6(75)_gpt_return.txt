@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "extra[0].call.value(_share).gas(800000)(); extra[1].call.value(_share).gas(800000)(); extra[2].call.value(_share).gas(800000)(); extra[3].call.value(_share).gas(800000)();",
+    "description": "The contract uses low-level call() without checking the return value. In Solidity 0.4.x, call() returns a boolean indicating success/failure, but this return value is ignored. If any of these calls fail (e.g., recipient contract reverts or runs out of gas), the transaction will continue execution without the caller being aware of the failure. This could lead to funds being considered successfully transferred when they actually weren't. Use require() to validate the return value or use transfer() for simple ETH transfers."
+}
+```

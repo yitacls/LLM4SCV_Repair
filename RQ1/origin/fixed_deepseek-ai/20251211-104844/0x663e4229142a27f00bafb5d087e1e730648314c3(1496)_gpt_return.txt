@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ClockAuction",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdrawBalance",
+                "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and handling failure appropriately. Also changed the authorization logic to be more secure by using require statements for each condition separately.",
+                "corrected_code": "function withdrawBalance() external {\n    address nftAddress = address(nonFungibleContract);\n    \n    require(\n        msg.sender == owner || msg.sender == nftAddress,\n        \"Caller not authorized to withdraw\"\n    );\n    \n    uint256 balanceToSend = this.balance;\n    require(balanceToSend > 0, \"No balance to withdraw\");\n    \n    // Use transfer instead of send for safety\n    nftAddress.transfer(balanceToSend);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

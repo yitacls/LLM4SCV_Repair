@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(amount);",
+    "description": "The vulnerability lies in using the low-level call function send() which does not provide precise control over the execution flow. This can result in potential re-entrancy attacks where malicious contracts can exploit this to re-enter the calling contract and manipulate its state."
+}
+```

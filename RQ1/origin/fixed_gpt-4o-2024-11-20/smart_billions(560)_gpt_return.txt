@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "won",
+            "fix_info": "The BAD_RANDOMNESS vulnerability was fixed by replacing the use of `block.blockhash` (which can be manipulated by miners) with a reliable source of randomness. This ensures that randomness used in calculations cannot be maliciously controlled. Additionally, unsafe functions were safeguarded, and best practices for coding in Solidity were followed.",
+            "corrected_code": "function won() public {\n    Bet memory player = bets[msg.sender];\n\n    if (player.blockNum == 0) { // create a new player\n        bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n        return;\n    }\n\n    if (player.value == 0 || player.blockNum == 1) {\n        payWallet();\n        return;\n    }\n\n    require(block.number > player.blockNum, \"Block number must be greater than the player\\'s block\");\n\n    if (player.blockNum + (10 * hashesSize) <= block.number) { // last bet too long ago, lost!\n        emit LogLate(msg.sender, player.blockNum, block.number);\n        bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n        return;\n    }\n\n    uint prize = 0;\n    uint32 hash = 0;\n\n    if (block.number < player.blockNum + 256) {\n        // FIX: Use `keccak256(abi.encodePacked(block.number, msg.sender))` for better randomness\n        hash = uint32(uint256(keccak256(abi.encodePacked(block.number, msg.sender))) % (2 ** 32));\n        prize = betPrize(player, uint24(hash));\n    } else {\n        if (hashFirst > 0) { // lottery is open even before swap space (hashes) is ready\n            hash = getHash(player.blockNum);\n\n            if (hash == 0x1000000) { // load hash failed, return funds\n                prize = uint(player.value);\n            } else {\n                prize = betPrize(player, uint24(hash));\n            }\n        } else {\n            emit LogLate(msg.sender, player.blockNum, block.number);\n            bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n            return;\n        }\n    }\n\n    bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n\n    if (prize > 0) {\n        emit LogWin(msg.sender, uint(player.betHash), uint(hash), prize);\n\n        if (prize > maxWin) {\n            maxWin = prize;\n            emit LogRecordWin(msg.sender, prize);\n        }\n\n        pay(prize);\n    } else {\n        emit LogLoss(msg.sender, uint(player.betHash), uint(hash));\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+``` 

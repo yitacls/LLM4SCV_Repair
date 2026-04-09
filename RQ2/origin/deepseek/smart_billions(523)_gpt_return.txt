@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "return(betPrize(player,uint24(block.blockhash(player.blockNum))));",
+    "description": "The contract uses block.blockhash(player.blockNum) as a source of randomness for determining bet rewards. This is vulnerable because block hashes of recent blocks (in this case, less than 256 blocks old) are predictable and can be manipulated by miners. Miners can withhold or discard blocks that would generate unfavorable outcomes for them, or front-run transactions after seeing the blockhash. This makes the gambling game unfair and not truly random, allowing malicious actors to exploit the predictability of block hashes."
+}
+```

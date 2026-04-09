@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "ZClassicGold",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed from tx.origin to proper address variable with explicit visibility",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "fullSupplyUnlocked",
+            "fix_info": "Added explicit visibility specifier to follow best practices",
+            "variable_code": "bool public fullSupplyUnlocked;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balances",
+            "fix_info": "Added explicit visibility specifier for clarity",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with msg.sender",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "unlockSupply",
+            "fix_info": "Replaced tx.origin with owner-only modifier, updated visibility and return specification, upgraded to safe version",
+            "corrected_code": "function unlockSupply() external onlyOwner returns(bool) {\n        require(!fullSupplyUnlocked, \"Supply already unlocked\");\n        fullSupplyUnlocked = true;\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Underflow",
+    "location": "uint res = count - input;",
+    "description": "The subtraction operation 'count - input' can result in an arithmetic underflow when 'input' is greater than 'count'. In Solidity version ^0.4.19, such underflows wrap around to the maximum value of the uint type, potentially leading to unexpected behavior and security vulnerabilities. This occurs because there are no built-in overflow/underflow checks in this Solidity version."
+}
+```

@@ -1,0 +1,28 @@
+[{
+  "contract_name": "PwnFoMo3D",
+  "contract_version": "^0.4.24",
+  "state_variables": [
+    {
+      "variable_name": "locked",
+      "fix_info": "Added a reentrancy guard flag to prevent reentrant external calls when interacting with the external fomo3d contract.",
+      "variable_code": "bool private locked;",
+      "change_type": "added"
+    }
+  ],
+  "modifiers": [
+    {
+      "modifier_name": "nonReentrant",
+      "fix_info": "Added nonReentrant modifier to enforce check-effects-interactions and prevent reentrant calls.",
+      "modifier_code": "modifier nonReentrant() {\n    require(!locked, \"Reentrant call\");\n    locked = true;\n    _;\n    locked = false;\n  }",
+      "change_type": "added"
+    }
+  ],
+  "functions": [
+    {
+      "function_name": "gotake",
+      "fix_info": "Checked return value of low-level call and added nonReentrant modifier to mitigate unchecked_low_level_calls and reentrancy risks. Preserves original behavior: send twice the buy price to fomo3d and then call withdraw().",
+      "corrected_code": "function gotake() public nonReentrant {\n    // Ensure there's little time left before attempting the buy\n    require(fomo3d.getTimeLeft() <= 50, \"Too much time left\");\n\n    // Calculate amount to send (twice the buy price)\n    uint256 amount = uint256(fomo3d.getBuyPrice()) * 2;\n\n    // Perform a checked low-level call so failures revert instead of being silently ignored\n    (bool success, ) = address(fomo3d).call.value(amount)(\"\");\n    require(success, \"External call to fomo3d failed\");\n\n    // Interact with fomo3d to withdraw (will revert on failure)\n    fomo3d.withdraw();\n  }",
+      "change_type": "modified"
+    }
+  ]
+}]

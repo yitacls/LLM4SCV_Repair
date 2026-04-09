@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "THE_BANK",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Collect",
+            "fix_info": "The function was vulnerable to reentrancy attacks because the external call to `msg.sender.call.value(_am)()` occurred before the contract's state was updated. This has been fixed by updating the state variables before making the external call. Additionally, `msg.sender.call.value` is replaced with a safer pattern using `transfer` to limit reentrancy risk.",
+            "corrected_code": "function Collect(uint _am)\n    public\n    payable\n    {\n        var acc = Acc[msg.sender];\n        require(acc.balance >= MinSum, \"Insufficient balance for MinSum\");\n        require(acc.balance >= _am, \"Insufficient balance to withdraw\");\n        require(now > acc.unlockTime, \"Account is still locked\");\n\n        acc.balance -= _am; // Update state before external interaction\n        msg.sender.transfer(_am); // Use transfer to limit reentrancy risk\n\n        LogFile.AddMessage(msg.sender, _am, \"Collect\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

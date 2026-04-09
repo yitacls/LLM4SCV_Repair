@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ZapIn",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "zapIn",
+                "fix_info": "Fixed integer underflow vulnerability by checking divisibility before performing calculation.",
+                "corrected_code": "function zapIn(address tokenIn, uint256 amountIn, address token0, address token1, int24 tickLower, int24 tickUpper, uint24 fee) public override returns (uint256 tokenId) {\n        require(token0 != token1, 'ZapIn::zapIn: token0 and token1 cannot be the same');\n        (token0, token1) = _reorderTokens(token0, token1);\n\n        StorageStruct storage Storage = PositionManagerStorage.getStorage();\n        ERC20Helper._pullTokensIfNeeded(tokenIn, Storage.owner, amountIn);\n\n        ERC20Helper._approveToken(tokenIn, Storage.uniswapAddressHolder.swapRouterAddress(), amountIn);\n\n        (, int24 tickPool, , , , , ) = IUniswapV3Pool(\n            UniswapNFTHelper._getPool(Storage.uniswapAddressHolder.uniswapV3FactoryAddress(), token0, token1, fee)\n        ).slot0();\n\n        require(SwapHelper.getRatioFromRange(tickPool, tickLower, tickUpper) + 1e18 > 1e18, 'Invalid tick parameters');\n        uint256 amountInTo0 = (amountIn * 1e18) / (SwapHelper.getRatioFromRange(tickPool, tickLower, tickUpper) + 1e18);\n        uint256 amountInTo1 = amountIn - amountInTo0;\n\n        ERC20Helper._approveToken(tokenIn, Storage.uniswapAddressHolder.swapRouterAddress(), amountIn);\n\n        if (tokenIn != token0) {\n            amountInTo0 = ISwapRouter(Storage.uniswapAddressHolder.swapRouterAddress()).exactInputSingle(...\n        }\n\n        if (tokenIn != token1) {\n            ERC20Helper._approveToken(tokenIn, Storage.uniswapAddressHolder.swapRouterAddress(), amountIn);\n            amountInTo1 = ISwapRouter(Storage.uniswapAddressHolder.swapRouterAddress()).exactInputSingle(...\n        }\n\n        (tokenId, , ) = _mint(token0, token1, fee, tickLower, tickUpper, amountInTo0, amountInTo1);\n\n        emit ZappedIn(address(this), tokenId, tokenIn, amountIn);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

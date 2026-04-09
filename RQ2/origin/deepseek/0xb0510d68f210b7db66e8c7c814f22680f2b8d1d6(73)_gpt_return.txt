@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "extra[0].call.value(_share).gas(800000)()",
+            "description": "The low-level call to extra[0] does not check the return value. If the call fails (e.g., recipient contract reverts, runs out of gas, or is non-existent), the transaction will not revert, potentially leaving funds in the contract and causing silent failures in fund distribution."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "extra[1].call.value(_share).gas(800000)()",
+            "description": "The low-level call to extra[1] does not check the return value. If the call fails, the transaction continues, which may lead to an inconsistent state where some recipients receive funds while others do not, without the caller being notified."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "extra[2].call.value(_share).gas(800000)()",
+            "description": "The low-level call to extra[2] lacks return value validation. This can result in partial execution failures, where funds remain stuck in the contract or are lost if the recipient address is incorrectly configured or malicious."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "extra[3].call.value(_share).gas(800000)()",
+            "description": "The low-level call to extra[3] does not verify success. In Solidity 0.4.x, .call() returns a boolean indicating success; ignoring it may cause the contract to proceed as if the transfer succeeded, leading to accounting errors or loss of funds."
+        }
+    ]
+}
+```

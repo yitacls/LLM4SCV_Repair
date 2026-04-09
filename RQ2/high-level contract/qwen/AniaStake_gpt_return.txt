@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "AniaStake",
+    "contract_version": "0.8.20",
+    "state_variables": [
+        {
+            "variable_name": "pragma",
+            "fix_info": "Updated compiler version to latest stable version 0.8.20 to fix SWC-102 and used exact version to fix SWC-103",
+            "variable_code": "pragma solidity 0.8.20;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "redistributeRewards",
+            "fix_info": "Added a check to prevent DoS by limiting the batch size to 100 users to fix SWC-128",
+            "corrected_code": "function redistributeRewards(address[] calldata users) public {\n    //only owner can issue airdrop\n    require(msg.sender == owner, \"Only contract creator can redistribute\");\n    // Prevent DoS by limiting batch size\n    require(users.length <= 100, \"Too many users, process in smaller batches\");\n    for (uint256 i = 0; i < users.length; i++) {\n        uint256 index = stakes[users[i]];\n        uint256 reward = calculateStakeReward(stakers[index].address_stake);\n        // update stakes before changaing the APY\n        stakers[index].address_stake = Stake(stakers[index].user, stakers[index].address_stake.amount + reward, block.timestamp);\n        // update total staked amount\n        totalStaked += reward;\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "changeAPY",
+            "fix_info": "Added a check to prevent DoS by limiting the batch size to 100 users to fix SWC-128",
+            "corrected_code": "function changeAPY(uint256 _value, address[] calldata users) public {\n    //only owner can issue airdrop\n    require(msg.sender == owner, \"Only contract creator can change APY\");\n    require(\n        _value > 0,\n        \"APY value has to be more than 0, try 100 for (0.100% daily) instead\"\n    );\n    // Prevent DoS by limiting batch size\n    require(users.length <= 100, \"Too many users, process in smaller batches\");\n    redistributeRewards(users);\n    apy = _value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

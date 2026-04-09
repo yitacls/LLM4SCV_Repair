@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "wallet.transfer(this.balance);",
+    "description": "The contract is vulnerable to reentrancy attack because the state variable 'state' is set to 'State.Closed' before the external call to 'wallet.transfer()'. An attacker can re-enter the function before the state change takes effect, potentially withdrawing funds multiple times. The state should be updated after the external call to prevent reentrant calls."
+}
+```

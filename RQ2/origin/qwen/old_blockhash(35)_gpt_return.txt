@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "bytes32 answer = blockhash(guesses[msg.sender].block);",
+    "description": "The contract uses blockhash() to generate randomness, which is predictable and can be manipulated by miners. In Solidity ^0.4.24, blockhash() only works for the most recent 256 blocks, and beyond that returns zero. Additionally, miners can choose when to submit blocks, allowing them to influence the outcome. This makes the random number generation insecure for determining game outcomes, as malicious players (including miners) can predict or manipulate the result to always win."
+}
+```

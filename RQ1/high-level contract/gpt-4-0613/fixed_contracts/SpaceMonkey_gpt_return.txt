@@ -1,0 +1,36 @@
+In the given Smart Contract, some vulnerabilities have been pointed out:
+
+1. **Indirect Reentrancy (SWC-107)**: In the transfer function that accepts the "bytes calldata data" parameter, if the recipient address is a contract, it calls the tokenFallback function of the recipient contract. If the recipient contract was a malicious one, it would lead to reentrancy attacks. Use checks-effects-interaction and pull payment pattern to prevent reentrancy attacks.
+
+2. **Shadowing State Variables (SWC-119)**: The function names "allowance" and "_approve" are being shadowed by state variables. This can confuse users or developers interacting with the code. It is ideal practice to not name functions the same as state variables.
+
+Here is the fixed code:
+
+```json
+[{
+  "contract_name": "SpaceMonkey",
+  "contract_version": "^0.8.4",
+  "state_variables": [],
+  "modifiers": [],
+  "functions": [
+    {
+      "function_name": "transfer",
+      "fix_info": "protected against reentrancy by using a mutex lock",
+      "corrected_code": "function transfer(address recipient, uint256 amount, bytes calldata data) external returns (bool) { require(!reentrancyMutex); if (recipient.isContract()) { require(_msgSender() != address(0), 'ERC20: transfer from the zero address'); require(recipient != address(0), 'ERC20: transfer to the zero address'); reentrancyMutex = true; _transfer(_msgSender(), recipient, amount); reentrancyMutex = false; IERC223Recipient(recipient).tokenFallback(_msgSender(), amount, data); } else { _transfer(_msgSender(), recipient, amount); } return true; }",
+      "change_type": "modified"
+    },
+    {
+      "function_name": "allowance",
+      "fix_info": "prevent shadowing of state variables",
+      "corrected_code": "function getAllowance(address owner, address spender) public view override returns (uint256) { return _allowances[owner][spender]; }",
+      "change_type": "modified"
+    },
+    {
+      "function_name": "_approve",
+      "fix_info": "prevent shadowing of state variables",
+      "corrected_code": "function approve(address owner, address spender, uint256 amount) private { require(owner != address(0), 'ERC20: approve from the zero address'); require(spender != address(0), 'ERC20: approve to the zero address'); require(!_isBlacklisted[_msgSender()], 'You have no power here!'); _allowances[owner][spender] = amount; emit Approval(owner, spender, amount); }",
+      "change_type": "modified"
+    }
+  ]
+}]
+```

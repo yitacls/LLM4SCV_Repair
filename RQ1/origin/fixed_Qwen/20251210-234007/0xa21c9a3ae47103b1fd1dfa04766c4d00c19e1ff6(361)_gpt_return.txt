@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CryptoOscarsToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyCEO",
+            "fix_info": "Added access control modifier to restrict payout function to CEO only",
+            "modifier_code": "modifier onlyCEO() {\n    require(msg.sender == ceoAddress);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "_payout",
+            "fix_info": "Added access control to prevent unauthorized transfers and used safeTransfer to prevent reentrancy",
+            "corrected_code": "function _payout(address _to) private onlyCEO {\n    uint256 amount = this.balance;\n    if (_to == address(0)) {\n      require(ceoAddress.send(amount));\n    } else {\n      require(_to.send(amount));\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

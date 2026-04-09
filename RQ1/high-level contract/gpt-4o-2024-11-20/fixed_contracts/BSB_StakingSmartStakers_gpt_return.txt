@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "BSB_StakingSmartStakers",
+        "contract_version": ">=0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "end",
+                "fix_info": "Refactored the loop to avoid gas limit issues by processing holders in chunks using an 'end' index parameter. This distributes the loop across multiple calls.",
+                "corrected_code": "function end(uint startIndex, uint endIndex) public onlyOwner returns (bool){\n    require(!ended, \"Staking already ended\");\n    require(startIndex < endIndex && endIndex <= holders.length(), \"Invalid index range\");\n\n    for(uint i = startIndex; i < endIndex; i = i.add(1)) {\n        address _aux = holders.at(i);\n        rewardEnded[_aux] = getPendingRewards(_aux);\n        unclaimed[_aux] = 0;\n        stakingTime[_aux] = block.timestamp;\n        progressiveTime[_aux] = block.timestamp;\n        alreadyProgUnstaked[_aux] = 0;\n        amountPerInterval[_aux] = depositedTokens[_aux].div(number_intervals);\n    }\n    \n    if (endIndex == holders.length()) {\n        ended = true;\n        endTime = block.timestamp;\n    }\n    return true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getRewardsLeft",
+                "fix_info": "Avoided an unbounded loop by introducing a chunking mechanism to calculate rewards efficiently.",
+                "corrected_code": "function getRewardsLeft(uint startIndex, uint endIndex) public view returns (uint){\n    require(startIndex < endIndex && endIndex <= holders.length(), \"Invalid index range\");\n\n    uint totalPending = 0;\n    for(uint i = startIndex; i < endIndex; i = i.add(1)) {\n        totalPending = totalPending.add(getPendingRewards(holders.at(i)));\n    }\n\n    if(totalRewards > totalClaimedRewards.add(totalPending)) {\n        return totalRewards.sub(totalClaimedRewards).sub(totalPending);\n    } else {\n        return 0;\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getStakersList",
+                "fix_info": "Added chunking validation to avoid unbounded operations when retrieving the stakers list.",
+                "corrected_code": "function getStakersList(uint startIndex, uint endIndex) public view returns (address[] memory stakers, uint[] memory stakingTimestamps, uint[] memory lastClaimedTimeStamps, uint[] memory stakedTokens) {\n    require(startIndex < endIndex && endIndex <= holders.length(), \"Invalid index range\");\n\n    uint length = endIndex.sub(startIndex);\n    address[] memory _stakers = new address[](length);\n    uint[] memory _stakingTimestamps = new uint[](length);\n    uint[] memory _lastClaimedTimeStamps = new uint[](length);\n    uint[] memory _stakedTokens = new uint[](length);\n\n    for (uint i = startIndex; i < endIndex; i = i.add(1)) {\n        address staker = holders.at(i);\n        uint listIndex = i.sub(startIndex);\n        _stakers[listIndex] = staker;\n        _stakingTimestamps[listIndex] = stakingTime[staker];\n        _lastClaimedTimeStamps[listIndex] = lastClaimedTime[staker];\n        _stakedTokens[listIndex] = depositedTokens[staker];\n    }\n\n    return (_stakers, _stakingTimestamps, _lastClaimedTimeStamps, _stakedTokens);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

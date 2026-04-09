@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic Underflow/Overflow",
+            "location": "uint256 amount = invested[msg.sender] * 4 / 100 * (block.number - atBlock[msg.sender]) / 5900;",
+            "description": "In Solidity 0.4.24, arithmetic operations do not automatically check for overflow/underflow. The expression (block.number - atBlock[msg.sender]) could underflow if atBlock[msg.sender] > block.number, though this is unlikely in practice. More critically, the multiplication invested[msg.sender] * 4 could overflow if invested[msg.sender] is sufficiently large (exceeding 2^256/4). This could result in incorrect rewards or unexpected behavior. The use of SafeMath library is recommended."
+        },
+        {
+            "type": "Integer Division Precision Loss",
+            "location": "invested[msg.sender] * 4 / 100 * (block.number - atBlock[msg.sender]) / 5900",
+            "description": "Solidity performs integer division, which truncates any remainder. The calculation involves multiple consecutive divisions (dividing by 100, then by 5900), which can lead to significant precision loss, especially for small invested amounts or short block differences. This may result in the calculated 'amount' being zero when it should be a small positive value, effectively locking rewards."
+        },
+        {
+            "type": "Improper Order of Operations",
+            "location": "uint256 amount = invested[msg.sender] * 4 / 100 * (block.number - atBlock[msg.sender]) / 5900;",
+            "description": "The reward formula calculates a 4% annual reward (assuming 5900 blocks per day for ~15s blocks, giving ~4% per year), but due to the order of operations, the division by 100 occurs early, potentially truncating the (invested * 4) product before multiplication by the block difference. This exacerbates precision loss. It should ideally be: (invested[msg.sender] * 4 * (block.number - atBlock[msg.sender])) / (100 * 5900), using SafeMath to avoid overflow in the numerator."
+        }
+    ]
+}
+```

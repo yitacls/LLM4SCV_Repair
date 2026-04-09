@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "Channels[_lcID].partyAddresses[0].transfer(Channels[_lcID].ethBalances[0])",
+    "description": "The contract uses .transfer() for ETH transfers to an external address (partyAddresses[0]) before updating state and deleting the channel entry. While .transfer() limits gas to 2300, making traditional reentrancy attacks difficult, it's still considered an unsafe pattern in Solidity <0.8.0. The state deletion occurs after external calls, which violates the checks-effects-interactions pattern. A malicious contract at partyAddresses[0] could exploit this through careful gas manipulation or by causing the transfer to fail and revert, potentially leaving the channel in an inconsistent state."
+}
+```

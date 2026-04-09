@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "player.transfer(winningAmount)",
+    "description": "The function winnerReward allows any player to call it and transfer the winning amount directly to their address. This lacks proper access control measures, making it vulnerable to unauthorized withdrawals or manipulations."
+}
+```  

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "totalSupply += amount;",
+    "description": "In Solidity version ^0.4.25, integer arithmetic operations do not automatically check for overflow/underflow. The operation 'totalSupply += amount' can overflow if totalSupply + amount exceeds the maximum value of uint (2^256 - 1). This could result in totalSupply wrapping around to a small value, breaking token economics. Similarly, 'balanceOf[target] += amount' is also vulnerable. This vulnerability was fixed in Solidity 0.8.0 with built-in overflow checks, but in 0.4.25 requires explicit safeguards like SafeMath library."
+}
+```

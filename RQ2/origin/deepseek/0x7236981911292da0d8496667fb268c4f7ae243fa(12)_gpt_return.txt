@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic",
+        "location": "uint amount = invested[msg.sender] * 5 / 100 * (block.number - atBlock[msg.sender]) / 5900; amount += amount * ((block.number - 6401132) / 118000);",
+        "description": "The contract contains multiple integer arithmetic issues: 1) The calculation 'invested[msg.sender] * 5 / 100' may result in premature truncation due to Solidity's integer division truncating towards zero, especially with small invested amounts. 2) The expression 'amount * ((block.number - 6401132) / 118000)' performs division before multiplication, causing significant precision loss as the division result will truncate to an integer before multiplication. 3) When 'block.number < 6401132', the subtraction may underflow in older Solidity versions (though ^0.4.24 uses SafeMath by default, custom arithmetic without checks may be problematic). 4) The overall reward calculation is excessively complex and vulnerable to precision manipulation."
+    }
+}
+```

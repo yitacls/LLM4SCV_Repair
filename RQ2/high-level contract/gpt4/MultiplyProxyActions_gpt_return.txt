@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-101 Integer Overflow and Underflow",
+        "location": "wad = amt.mul(10**(18 - IJoin(gemJoin).dec())); (line 119)",
+        "description": "The multiplication operation can be overflowed, leading to unexpected behaviours. SafeMath library should be used to handle such operations."
+    },
+    {
+        "type": "SWC-104 Unchecked Call Return Value",
+        "location": "gem.deposit{value: msg.value}(); (line 172)",
+        "description": "The return value of an external call is not checked, which could lead to unexpected state changes. Always check the return value of external calls and handle failure cases properly."
+    }
+]
+```

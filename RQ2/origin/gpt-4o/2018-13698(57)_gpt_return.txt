@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_investor] += promoValue; totalSupply += promoValue;",
+    "description": "The code does not include overflow checks when adding promoValue to balances[_investor] or totalSupply. In Solidity version ^0.4.18, arithmetic operations do not automatically protect against overflows or underflows. An attacker could exploit this by providing input values that cause an overflow, leading to incorrect balances or total supply calculations. This could result in a loss of tokens or other unintended behaviors."
+}
+```

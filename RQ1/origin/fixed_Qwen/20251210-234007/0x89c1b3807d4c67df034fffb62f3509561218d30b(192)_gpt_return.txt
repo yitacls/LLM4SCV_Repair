@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TownCrier",
+    "contract_version": "^0.4.9",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deliver",
+            "fix_info": "Fixed unchecked low-level calls by checking return values of send() and call() methods. Added require() statements to ensure external calls succeed, reverting the transaction on failure.",
+            "corrected_code": "function deliver(uint64 requestId, bytes32 paramsHash, uint64 error, bytes32 respData) public {\n        if (msg.sender != SGX_ADDRESS ||\n                requestId <= 0 ||\n                requests[requestId].requester == 0 ||\n                requests[requestId].fee == DELIVERED_FEE_FLAG) {\n            // If the response is not delivered by the SGX account or the \n            // request has already been responded to, discard the response.\n            return;\n        }\n\n        uint fee = requests[requestId].fee;\n        if (requests[requestId].paramsHash != paramsHash) {\n            // If the hash of request parameters in the response is not \n            // correct, discard the response for security concern.\n            return;\n        } else if (fee == CANCELLED_FEE_FLAG) {\n            // If the request is cancelled by the requester, cancellation \n            // fee goes to the SGX account and set the request as having\n            // been responded to.\n            // <yes> <report> UNCHECKED_LL_CALLS\n            require(SGX_ADDRESS.send(CANCELLATION_FEE));\n            requests[requestId].fee = DELIVERED_FEE_FLAG;\n            unrespondedCnt--;\n            return;\n        }\n\n        requests[requestId].fee = DELIVERED_FEE_FLAG;\n        unrespondedCnt--;\n\n        if (error < 2) {\n            // Either no error occurs, or the requester sent an invalid query.\n            // Send the fee to the SGX account for its delivering.\n            // <yes> <report> UNCHECKED_LL_CALLS\n            require(SGX_ADDRESS.send(fee));         \n        } else {\n            // Error in TC, refund the requester.\n            externalCallFlag = true;\n            // <yes> <report> UNCHECKED_LL_CALLS\n            require(requests[requestId].requester.call.gas(2300).value(fee)());\n            externalCallFlag = false;\n        }\n\n        uint callbackGas = (fee - MIN_FEE) / tx.gasprice; // gas left for the callback function\n        DeliverInfo(requestId, fee, tx.gasprice, msg.gas, callbackGas, paramsHash, error, respData); // log the response information\n        if (callbackGas > msg.gas - 5000) {\n            callbackGas = msg.gas - 5000;\n        }\n        \n        externalCallFlag = true;\n        // <yes> <report> UNCHECKED_LL_CALLS\n        require(requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData)); // call the callback function in the application contract\n        externalCallFlag = false;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

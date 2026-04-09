@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function setValidators(...) external payable { ... (bool sent, ) = msg.sender.call{value: reward}(\"\"); ... }",
+        "description": "The contract sends all its Ether balance to the caller of setValidators() as a reward. Since anyone can call setValidators() (if they provide a valid proof and pay the fee), this allows an attacker to drain the contract's entire Ether balance by calling setValidators() repeatedly or by exploiting the lack of access control on who can trigger the reward payout. The reward mechanism should be restricted to authorized parties or properly accounted for to prevent unauthorized withdrawal of funds."
+    }
+]
+```

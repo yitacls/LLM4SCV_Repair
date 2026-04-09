@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "LPool",
+    "contract_version": "0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "nonReentrantBorrow",
+            "fix_info": "A new reentrancy guard variable has been added to specifically protect the borrowFresh function from reentrancy attacks.",
+            "variable_code": "bool internal nonReentrantBorrow;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrantBorrowGuard",
+            "fix_info": "Added a specialized reentrancy guard for borrowFresh to address the reentrancy vulnerability in SWC-107.",
+            "modifier_code": "modifier nonReentrantBorrowGuard() { require(!nonReentrantBorrow, 'Reentrancy not allowed'); nonReentrantBorrow = true; _; nonReentrantBorrow = false; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "borrowFresh",
+            "fix_info": "A specialized nonReentrantBorrowGuard modifier has been added to prevent reentrancy attacks.",
+            "corrected_code": "function borrowFresh(address payable borrower, address payable payee, uint borrowAmount) internal sameBlock nonReentrantBorrowGuard {\n    (ControllerInterface(controller)).borrowAllowed(address(this), borrower, payee, borrowAmount);\n\n    require(getCashPrior() >= borrowAmount, 'cash<borrow');\n\n    BorrowLocalVars memory vars;\n\n    (vars.mathErr, vars.accountBorrows) = borrowBalanceStoredInternal(borrower);\n    require(vars.mathErr == MathError.NO_ERROR, 'calc acc borrows error');\n\n    (vars.mathErr, vars.accountBorrowsNew) = addUInt(vars.accountBorrows, borrowAmount);\n    require(vars.mathErr == MathError.NO_ERROR, 'calc acc borrows error');\n\n    (vars.mathErr, vars.totalBorrowsNew) = addUInt(totalBorrows, borrowAmount);\n    require(vars.mathErr == MathError.NO_ERROR, 'calc total borrows error');\n\n    doTransferOut(payee, borrowAmount, false);\n\n    accountBorrows[borrower].principal = vars.accountBorrowsNew;\n    accountBorrows[borrower].interestIndex = borrowIndex;\n    totalBorrows = vars.totalBorrowsNew;\n\n    emit Borrow(borrower, payee, borrowAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "mintEth",
+            "fix_info": "Added the nonReentrant modifier to ensure reentrancy protection.",
+            "corrected_code": "function mintEth() external payable override nonReentrant {\n    require(isWethPool, \"not eth pool\");\n    accrueInterest();\n    mintFresh(msg.sender, msg.value);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "repayBorrowFresh",
+            "fix_info": "Added validation to properly handle repay logic against reentry concerns, ensuring that state changes finalize before external calls.",
+            "corrected_code": "function repayBorrowFresh(address payer, address borrower, uint repayAmount, bool isEnd) internal sameBlock nonReentrant returns (uint) {\n    (ControllerInterface(controller)).repayBorrowAllowed(address(this), payer, borrower, repayAmount, isEnd);\n\n    RepayBorrowLocalVars memory vars;\n\n    vars.borrowerIndex = accountBorrows[borrower].interestIndex;\n\n    (vars.mathErr, vars.accountBorrows) = borrowBalanceStoredInternal(borrower);\n    require(vars.mathErr == MathError.NO_ERROR, 'calc acc borrow error');\n\n    if (repayAmount == uint(-1)) {\n        vars.repayAmount = vars.accountBorrows;\n    } else {\n        vars.repayAmount = repayAmount;\n    }\n\n    vars.actualRepayAmount = doTransferIn(payer, vars.repayAmount, false);\n\n    if (isEnd) {\n        vars.actualRepayAmount = vars.accountBorrows;\n    }\n\n    (vars.mathErr, vars.accountBorrowsNew) = subUInt(vars.accountBorrows, vars.actualRepayAmount);\n    require(vars.mathErr == MathError.NO_ERROR, \"calc acc borrows error\");\n\n    if (vars.actualRepayAmount > totalBorrows) {\n        vars.totalBorrowsNew = 0;\n    } else {\n        vars.totalBorrowsNew = totalBorrows - vars.actualRepayAmount;\n    }\n\n    accountBorrows[borrower].principal = vars.accountBorrowsNew;\n    accountBorrows[borrower].interestIndex = borrowIndex;\n    totalBorrows = vars.totalBorrowsNew;\n\n    emit RepayBorrow(payer, borrower, vars.actualRepayAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);\n\n    return vars.actualRepayAmount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

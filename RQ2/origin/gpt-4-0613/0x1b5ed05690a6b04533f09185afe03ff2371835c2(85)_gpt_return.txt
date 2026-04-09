@@ -1,0 +1,32 @@
+```json
+{
+    "contractName": "RainbowUnicoin",
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "totalContribution += msg.value;",
+            "description": "This line of code may result in an integer overflow. If msg.value is large enough, it can cause the totalContribution to roll back to 0."
+        },
+        {
+            "type": "Arithmetic",
+            "location": "uint256 tokensIssued = (msg.value * 1000) + nextBonusPayout;",
+            "description": "This line of code may result in an integer overflow. If the multiplication of msg.value and 1000 is large enough, it can cause tokensIssued to roll back to 0."
+        },
+        {
+            "type": "Arithmetic",
+            "location": "nextBonusPayout = tokensIssued / 2;",
+            "description": "The division operation can potentially result in an underflow if the value of tokensIssued is not even."
+        },
+        {
+            "type": "Arithmetic",
+            "location": "totalSupply += tokensIssued;",
+            "description": "This line of code may result in an integer overflow. If the tokensIssued value is large enough, it can cause the totalSupply to roll back to 0."
+        },
+        {
+            "type": "Arithmetic",
+            "location": "balances[msg.sender] += tokensIssued;",
+            "description": "This line of code may result in an integer overflow. If the tokensIssued value is large enough, it can cause the balance of the msg.sender to roll back to 0."
+        }
+    ]
+}
+```

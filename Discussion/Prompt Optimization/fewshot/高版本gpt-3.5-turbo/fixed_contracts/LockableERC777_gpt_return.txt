@@ -1,0 +1,37 @@
+```json
+[{
+  "contract_name": "LockableERC777",
+  "contract_version": "^0.5.3",
+  "state_variables": [],
+  "modifiers": [],
+  "functions": [
+    {
+      "function_name": "_burn",
+      "fix_info": "Add reentrancy guard to prevent reentrancy vulnerability.",
+      "corrected_code": "function _burn(address operator, address from, uint256 amount, bytes memory data, bytes memory operatorData) private {
+        require(from != address(0), "ERC777: burn from the zero address");
+        
+        address sender = msg.sender;
+        // Add reentrancy guard flag
+        bool isReentrant = _getReentrancyGuard() == 0;
+        require(isReentrant, "Reentrancy detected");
+
+        _callTokensToSend(
+            operator, from, address(0), amount, data, operatorData
+        );
+
+        // Update state variables
+        // Set reentrancy guard flag
+        _setReentrancyGuard(1);
+        _totalSupply = _totalSupply.sub(amount);
+        _balances[from] = _balances[from].sub(amount);
+        _setReentrancyGuard(0);
+
+        emit Burned(operator, from, amount, data, operatorData);
+        emit Transfer(from, address(0), amount);
+    }",
+      "change_type": "modified"
+    }
+  ]
+}]
+```

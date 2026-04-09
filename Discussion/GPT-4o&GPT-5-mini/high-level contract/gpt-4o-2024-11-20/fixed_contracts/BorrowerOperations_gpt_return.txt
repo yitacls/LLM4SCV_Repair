@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "BorrowerOperations",
+    "contract_version": "0.6.11",
+    "state_variables": [
+        {
+            "variable_name": "activePool",
+            "fix_info": "Added a new state variable to securely store the ActivePool contract address. This ensures functions interacting with ActivePool can verify the recipient.",
+            "variable_code": "IActivePool public activePool;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "_requireValidRecipient",
+            "fix_info": "This modifier ensures that Ether withdrawal operations are protected by verifying the recipient as a valid and registered address.",
+            "modifier_code": "modifier _requireValidRecipient(address recipient) { require(recipient != address(0), 'Recipient cannot be zero address'); require(isRegisteredTrove(recipient), 'Recipient is not a registered Trove owner'); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "closeTrove",
+            "fix_info": "Added recipient validation to prevent unrestricted ether withdrawal. Ensured that ETH withdrawals interact securely with the `ActivePool` contract.",
+            "corrected_code": "function closeTrove() external override _requireValidRecipient(msg.sender) { ITroveManager troveManagerCached = troveManager; IActivePool activePoolCached = activePool; ILUSDToken lusdTokenCached = lusdToken; _requireTroveisActive(troveManagerCached, msg.sender); uint price = priceFeed.fetchPrice(); _requireNotInRecoveryMode(price); troveManagerCached.applyPendingRewards(msg.sender); uint coll = troveManagerCached.getTroveColl(msg.sender); uint debt = troveManagerCached.getTroveDebt(msg.sender); _requireSufficientLUSDBalance(lusdTokenCached, msg.sender, debt.sub(LUSD_GAS_COMPENSATION)); uint newTCR = _getNewTCRFromTroveChange(coll, false, debt, false, price); _requireNewTCRisAboveCCR(newTCR); troveManagerCached.removeStake(msg.sender); troveManagerCached.closeTrove(msg.sender); emit TroveUpdated(msg.sender, 0, 0, 0, BorrowerOperation.closeTrove); _repayLUSD(activePoolCached, lusdTokenCached, msg.sender, debt.sub(LUSD_GAS_COMPENSATION)); _repayLUSD(activePoolCached, lusdTokenCached, gasPoolAddress, LUSD_GAS_COMPENSATION); activePoolCached.sendETH(msg.sender, coll); }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimCollateral",
+            "fix_info": "Added recipient validation to prevent unprotected Ether withdrawal. The recipient must be verified and part of the Trove system.",
+            "corrected_code": "function claimCollateral() external override _requireValidRecipient(msg.sender) { collSurplusPool.claimColl(msg.sender); }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_activePoolAddColl",
+            "fix_info": "Added a check to verify that the ActivePool contract successfully receives the ETH sent.",
+            "corrected_code": "function _activePoolAddColl(IActivePool _activePool, uint _amount) internal { require(address(_activePool) != address(0), 'ActivePool address invalid'); (bool success, ) = address(_activePool).call{value: _amount}(\"\"); require(success, 'BorrowerOps: Sending ETH to ActivePool failed'); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

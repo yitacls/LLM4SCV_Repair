@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "NetcToken",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed visibility to private and added explicit address type",
+                "variable_code": "address private owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to replace tx.origin check with msg.sender for secure access control",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "destroy",
+                "fix_info": "Fixed spelling from 'destory' to 'destroy', replaced tx.origin with onlyOwner modifier, updated selfdestruct to address payable, and added proper spelling",
+                "corrected_code": "function destroy() external onlyOwner {\n        selfdestruct(payable(owner));\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function pwr(uint256 x, uint256 y) in SafeMath library",
+    "description": "The return values of calls are not checked. This could lead to errors as the failure of the external calls are not handled in the contract's logic."
+}
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "EternalHeroesFactory",
+        "contract_version": "^0.5.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_buy",
+                "fix_info": "Applied reentrancy guard by moving external calls after state changes. The refund transfer is now done after minting to prevent reentrancy attacks.",
+                "corrected_code": "  function _buy(\n    uint256[] memory _ids,\n    uint256[] memory _amounts,\n    uint256[] memory _expectedTiers,\n    uint256 _arcAmount,\n    address _recipient)\n    internal\n  {\n    // Input validation\n    uint256 nTokens = _ids.length;\n    uint256 tier_size = tierSize;\n\n    // Load tokens to purchase supplies\n    uint256[] memory current_supplies = factoryManager.getCurrentSupplies(_ids);\n\n    // Total amount of card to purchase\n    uint256 total_cost = 0;\n\n    // Keep track of amount for each hero the user actually purchases.\n    // While less efficient in case of amounts reduced to 0,\n    // it keeps the code simpler.\n    uint256[] memory amounts_to_mint = new uint256[](nTokens);\n\n    // Validate purchase and count # of cards to purchase\n    for (uint256 i = 0; i < nTokens; i++) {\n      uint256 id = _ids[i];\n      uint256 supply = current_supplies[i];\n      uint256 to_mint = 0;\n      uint256 amount = _amounts[i];\n\n      // Validate token id\n      require(isPurchasable[id], \"EternalHeroesFactory#_buy: ID_NOT_PURCHASABLE\");\n\n      // Assumes IDs are sorted to make sure there are no duplicates.\n      // Otherwise we would have to query supplies for each loop\n      if (i > 0) {\n        require(_ids[i-1] < id, \"EternalHeroesFactory#_buy: UNSORTED_OR_DUPLICATE_TOKEN_IDS\");\n      }\n\n      // Current discount step (division round down)\n      uint256 current_tier = supply.div(tier_size);\n\n      // Skip asset if tier is not the one expected, to not make the order fail\n      if (_expectedTiers[i] != current_tier) {\n        amounts_to_mint[i] = 0; // Set amount to mint for this hero to 0 and ignore in total_cost\n        continue;\n      }\n\n      // Get price for given tier\n      uint256 current_price = floorPrice.add(current_tier.mul(priceIncrement));\n\n      // How many left in current tier (remainers is what is available)\n      uint256 amount_left = tier_size.sub(supply.mod(tier_size));\n\n      // Amount of assets that user will purchase\n      to_mint = amount < amount_left ? amount : amount_left;\n\n      // Increase total cost\n      total_cost = total_cost.add(to_mint.mul(current_price));\n      amounts_to_mint[i] = to_mint;\n    }\n\n    // Mint tokens to recipient BEFORE refunding excess payment\n    factoryManager.batchMint(_recipient, _ids, amounts_to_mint, \"\");\n\n    // Check if enough ARC was sent and refund exceeding amount\n    // .sub() will revert if insufficient amount received for purchase\n    uint256 refundAmount = _arcAmount.sub(total_cost);\n    if (refundAmount > 0) {\n      arcadeumCoin.safeTransferFrom(address(this), _recipient, arcadeumCoinID, refundAmount, \"\");\n    }\n\n    // Emit event\n    emit AssetsPurchased(_recipient, _ids, amounts_to_mint, total_cost);\n  }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

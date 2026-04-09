@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Ethereum_Cash_Pro_Coin",
+        "contract_version": "^0.5.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and updated to Solidity 0.5.0+ syntax. Added explicit data type for variable declaration.",
+                "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner {\n    require(tokensToMint > 0, \"Tokens to mint must be greater than 0\");\n    \n    uint256 totalTokenToMint = tokensToMint.mul(10 ** 18);\n    \n    // Use SafeMath operations to prevent overflows\n    balanceOf[owner] = balanceOf[owner].add(totalTokenToMint);\n    totalSupply = totalSupply.add(totalTokenToMint);\n    \n    emit Transfer(address(0), owner, totalTokenToMint);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

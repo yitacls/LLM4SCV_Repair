@@ -1,0 +1,14 @@
+[{
+    "contract_name": "bankcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added input validation and explicit overflow checks using require to prevent arithmetic overflows and to avoid minting to the zero address or with zero amount. Preserves original behavior and events.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0));\n    require(mintedAmount > 0);\n\n    // Overflow checks\n    require(balanceOf[target] + mintedAmount >= balanceOf[target]);\n    require(totalSupply + mintedAmount >= totalSupply);\n\n    balanceOf[target] += mintedAmount;\n    totalSupply += mintedAmount;\n\n    Transfer(address(0), owner, mintedAmount);\n    Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

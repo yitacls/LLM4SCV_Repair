@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "TOC",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Assuming balances is a mapping for address to uint - no explicit change needed as it's not provided in the snippet",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for all arithmetic operations. Also changed 'uint' to 'uint256' for clarity and updated zero address check to address(0).",
+            "corrected_code": "function _transfer(address _from, address _to, uint256 _value) internal {\n    require(_to != address(0), \"Transfer to zero address\");\n    require(balances[_from] >= _value, \"Insufficient balance\");\n    require(balances[_to] + _value >= balances[_to], \"Balance overflow at recipient\");\n    \n    uint256 previousBalances = balances[_from] + balances[_to];\n    balances[_from] = balances[_from] - _value;\n    balances[_to] = balances[_to] + _value;\n    \n    assert(balances[_from] + balances[_to] == previousBalances);\n    emit Transfer(_from, _to, _value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

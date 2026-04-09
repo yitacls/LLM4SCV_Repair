@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "IdleLiquidityModule",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_calcTick",
+                "fix_info": "Fixed integer underflow vulnerability by checking for correct tickDelta value.",
+                "corrected_code": "function _calcTick(uint256 tokenId, uint24 fee) internal view returns (int24 tickLower, int24 tickUpper) {\
+        (, , , , , int24 tickLower, int24 tickUpper, , , , , ) = INonfungiblePositionManager(uniswapAddressHolder.nonfungiblePositionManagerAddress()).positions(tokenId);\
+        int24 tickDelta = tickUpper - tickLower;\
+        require(tickDelta > 0, 'Invalid tickDelta');\
+        int24 halfDelta = tickDelta / 2;\
+        int24 centerTick = tickLower + halfDelta;\
+        return (centerTick - halfDelta, centerTick + halfDelta);\
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

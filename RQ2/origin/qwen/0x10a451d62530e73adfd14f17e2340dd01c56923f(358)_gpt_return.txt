@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_to == tx.origin) {  // fault line\n        balance.profitBalance = balance.profitBalance.sub(_deposited);\n      } else {\n        Balance storage senderBalance = userWallets[tx.origin];\n        senderBalance.profitBalance = senderBalance.profitBalance.sub(_deposited);\n      }",
+    "description": "The function uses `tx.origin` to determine the caller, which is vulnerable to phishing attacks. An attacker can trick a user into calling this function through a malicious contract, causing the profit balance deduction from the wrong user (`tx.origin`) instead of the actual caller (`msg.sender`). This can lead to unauthorized modification of balances and potential fund loss. It's recommended to use `msg.sender` for access control and user identification instead of `tx.origin`."
+}
+```

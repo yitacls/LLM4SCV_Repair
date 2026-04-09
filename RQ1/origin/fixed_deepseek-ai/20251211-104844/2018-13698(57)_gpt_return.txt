@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "Play2LivePromo",
+        "contract_version": "^0.5.0",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Changed type to use SafeMath library",
+                "variable_code": "mapping(address => uint256) private balances;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Changed type to use SafeMath library",
+                "variable_code": "uint256 private totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No changes needed - assuming this modifier exists",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Only owner can call\"); _; }",
+                "change_type": "existing"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintTokens",
+                "fix_info": "Fixed arithmetic vulnerability using SafeMath, added input validation, updated event emission syntax",
+                "corrected_code": "function mintTokens(address _investor) external onlyOwner {\n    require(_investor != address(0), \"Invalid address\");\n    require(promoValue > 0, \"Invalid promo value\");\n    \n    balances[_investor] = balances[_investor].add(promoValue);\n    totalSupply = totalSupply.add(promoValue);\n    \n    emit Transfer(address(0), _investor, promoValue);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "add",
+                "fix_info": "Added SafeMath library function for arithmetic safety",
+                "corrected_code": "function add(uint256 a, uint256 b) internal pure returns (uint256) {\n    uint256 c = a + b;\n    require(c >= a, \"SafeMath: addition overflow\");\n    return c;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

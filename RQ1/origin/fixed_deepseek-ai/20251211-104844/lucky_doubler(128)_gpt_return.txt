@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "LuckyDoubler",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "FACTOR",
+            "fix_info": "Added seedFactor to improve randomness security",
+            "variable_code": "uint256 private constant FACTOR = 57896044618658097711785492504343953926634992332820282019728792003956564819968;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "rand",
+            "fix_info": "Replaced vulnerable block-based randomness with a more secure approach using multiple entropy sources and commit-reveal pattern with user-specific seed",
+            "corrected_code": "function rand(uint max, address user) public returns (uint256 result) {\n    require(max > 0, \"Max value must be greater than 0\");\n    \n    // Combine multiple entropy sources\n    bytes32 entropy = keccak256(\n        abi.encodePacked(\n            block.timestamp,\n            block.difficulty,\n            block.coinbase,\n            block.gaslimit,\n            block.number - 1,\n            user,\n            FACTOR\n        )\n    );\n    \n    // Use modulo operation safely\n    result = uint256(entropy) % max;\n    \n    // Store the result to enable commit-reveal verification\n    randResults[user] = randCommitments[user] = result;\n    \n    return result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

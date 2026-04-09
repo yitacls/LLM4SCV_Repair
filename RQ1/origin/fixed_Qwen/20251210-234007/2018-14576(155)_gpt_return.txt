@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SunContractToken",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintTokens",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding overflow checks for supply addition and using SafeMath patterns",
+            "corrected_code": "function mintTokens(address _to, uint256 _amount) {\n    if (msg.sender != icoContractAddress) throw;            // Only ICO address can mint tokens\n    if (restrictedAddresses[_to]) throw;                    // Throw if user wants to send to restricted address\n    if (balances[_to] + _amount < balances[_to]) throw;     // Check for overflows\n    if (supply + _amount < supply) throw;                   // Check for supply overflow\n    supply += _amount;                                      // Update total supply\n    balances[_to] += _amount;                               // Set minted coins to target\n    Mint(_to, _amount);                                     // Create Mint event\n    Transfer(0x0, _to, _amount);                            // Create Transfer event from 0x\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

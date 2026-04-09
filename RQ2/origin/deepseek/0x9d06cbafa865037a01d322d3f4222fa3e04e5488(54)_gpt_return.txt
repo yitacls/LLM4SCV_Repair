@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "owner2.send(sum2);",
+            "description": "The return value of the low-level send() call is not checked. This call to owner2.send(sum2) could fail silently (e.g., if the recipient contract runs out of gas or reverts), causing the Ether transfer to fail without the calling contract being aware. This could disrupt the intended fund distribution logic, as the 30% portion might not be delivered while the rest of the transaction proceeds. Best practice is to either use transfer() (which automatically reverts on failure in this Solidity version) or check the return value and handle failures appropriately."
+        }
+    ]
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function sudicideAnyone() {\n    selfdestruct(msg.sender);\n  }",
+    "description": "The function sudicideAnyone() has no access control modifiers, allowing anyone to call it and destroy the contract. The function name also appears to be misspelled ('sudicide' instead of 'suicide'). Since there are no restrictions on who can call this function, any external account or contract can trigger selfdestruct, causing permanent loss of the contract and its funds. This is a critical vulnerability that allows unauthorized contract destruction."
+}
+```

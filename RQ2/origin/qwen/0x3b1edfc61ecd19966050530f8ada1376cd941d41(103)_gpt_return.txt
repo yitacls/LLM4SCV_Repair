@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "The function only checks if the message sender is the implementation contract (impl), but does not properly validate that the transaction origin (tx.origin) has authorized this transfer. This creates a potential vulnerability where the implementation contract could be manipulated to transfer tokens on behalf of users without their explicit consent, bypassing normal approval mechanisms. The function should ensure proper authorization from the token owner."
+}
+```

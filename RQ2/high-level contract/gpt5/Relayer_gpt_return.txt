@@ -1,0 +1,17 @@
+[
+  {
+    "type": "SWC-102-Outdated Compiler Version",
+    "location": "pragma solidity ^0.7.6; (top of file)",
+    "description": "The contract pins Solidity to ^0.7.6, which is an outdated compiler series. Older Solidity versions (pre-0.8.x) do not include built-in overflow/underflow checks and miss many language/runtime fixes and security improvements present in later releases. Using an outdated compiler increases attack surface and may expose the contract to bugs fixed in newer compilers. Recommendation: upgrade to a current stable Solidity version (preferably >=0.8.20 at time of analysis), re-run audits and tests, and update dependencies to compatible versions."
+  },
+  {
+    "type": "SWC-103-Floating Pragma",
+    "location": "pragma solidity ^0.7.6; (top of file)",
+    "description": "The caret (^) in the pragma allows compilation with any compiler version >=0.7.6 and <0.8.0. This floating pragma makes compilations non-deterministic across toolchains and environments and may result in different bytecode/behavior if compiled with different patch/minor compiler versions. Recommendation: pin a specific compiler version (for example, 'pragma solidity 0.7.6;') or move to a fixed modern compiler and update code accordingly to ensure reproducible builds."
+  },
+  {
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Price calculation code in _getPrices (lines around computations):\n\nuint remoteGasTotal = dstPrice.dstGasPriceInWei.mul(dstConfig.baseGas.add(extraGas));\n...\nbasePrice = totalRemoteToken.mul(dstPrice.dstPriceRatio).div(10**10);\npricePerByte = dstPrice.dstGasPriceInWei.mul(dstConfig.gasPerByte).mul(dstPrice.dstPriceRatio).div(10**10);\n",
+    "description": "The contract performs multi-operand arithmetic across several smaller-width storage types (uint128, uint64) and uint256 temporaries. While SafeMath is used, the code relies on older compiler behavior and multiple mixed-size operands which can lead to unexpected truncation, overflows, or inadvertent casts if types are not consistently handled. Specifically, large values for dstGasPriceInWei, baseGas/extraGas, gasPerByte, or dstPriceRatio could cause intermediate multiplications to overflow their native widths before conversion, producing incorrect pricing (undercharging or overcharging) and potential loss/freeze of funds. Additionally, arithmetic in assembly-derived variables (extraGas loaded from calldata) may be mis-typed. Recommendation: (1) upgrade to Solidity >=0.8.x to get built-in overflow checks; (2) standardize and use uint256 for all arithmetic temporaries and conversions before performing multiplications; (3) explicitly cast storage fields when reading them into uint256 temporaries; (4) add unit tests for extreme parameter values and review assembly mload offsets/typing to avoid accidental misreads."
+  }
+]

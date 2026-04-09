@@ -1,0 +1,168 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function depositTo(address to, uint256 tokenAmount) external override returns (uint256)",
+    "description": "The function depositTo is vulnerable to reentrancy attacks as it performs an external call to transfer tokens before updating state variables. This design pattern can be exploited by malicious contracts to manipulate the state of the current contract before the transfer is completed."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function withdraw(uint256 shareAmount) external override returns (uint256)",
+    "description": "The function withdraw does not check the return value of the external call to token.transfer, which can lead to unexpected behavior if the transfer fails. It is advisable to handle the return value to ensure the transfer was successful."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _burnShares(uint256 shares) internal returns (uint256)",
+    "description": "The internal function _burnShares is vulnerable to reentrancy attacks as it withdraws tokens from the Prize Pool contract before updating state variables. This sequence can potentially enable reentrancy exploits."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _withdrawFromPool(uint256 _amount) internal returns (uint256)",
+    "description": "The internal function _withdrawFromPool does not check the return value of the external call to PrizePool.withdrawInstantlyFrom, which may lead to unexpected outcomes if the transaction fails. It is recommended to validate the return value of such calls."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _burnShares(uint256 shares) internal returns (uint256)",
+    "description": "The internal function _burnShares does not verify the return value of the token transfer operation with token.transfer, which can introduce risks if the transfer fails. It is best practice to handle the return value for error handling."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _burnShares(uint256 shares) internal returns (uint256)",
+    "description": "The internal function _burnShares is susceptible to reentrancy vulnerabilities as it performs an external call to transfer tokens before updating the internal state. Reentrancy attacks may occur due to this sequence of operations."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _withdrawFromPool(uint256 _amount) internal returns (uint256)",
+    "description": "The internal function _withdrawFromPool could be exploited for reentrancy attacks since it calls PrizePool.withdrawInstantlyFrom before managing internal state. This can allow malicious contracts to manipulate state before the withdrawal completes."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override",
+    "description": "The function _beforeTokenTransfer does not validate the return value of TokenDrop.beforeTokenTransfer call, opening up the possibility of unexpected behavior if the call fails. It is good practice to handle and verify return values of external calls."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function depositTo(address to, uint256 tokenAmount) external override returns (uint256)",
+    "description": "The depositTo function is vulnerable to reentrancy attacks as it executes an external token transfer before updating the state. This sequence of operations can be exploited by malicious contracts to manipulate the contract's state."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _deposit(address user, uint256 amount) internal returns (uint256)",
+    "description": "The internal function _deposit does not verify the return value of the token transfer operation with token.transferFrom, which can introduce risks if the transfer fails. It is advisable to handle the return value for proper error management."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _burnShares(uint256 shares) internal returns (uint256)",
+    "description": "The internal function _burnShares does not handle the return value of the external token transfer operation with token.transfer, leaving the contract vulnerable to unexpected behavior in case of transfer failures."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _withdrawFromPool(uint256 _amount) internal returns (uint256)",
+    "description": "The internal function _withdrawFromPool does not validate the return value of the PrizePool.withdrawInstantlyFrom call, which can lead to issues if the call fails. Implementing proper handling for return values is recommended."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override",
+    "description": "The _beforeTokenTransfer function does not check the return value of the TokenDrop.beforeTokenTransfer call, potentially resulting in unexpected behavior if the call fails. It's best practice to handle return values for external calls."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override",
+    "description": "The _beforeTokenTransfer function lacks a validation check for the return value of TokenDrop.beforeTokenTransfer, potentially leading to unexpected outcomes if the call fails. Implementing appropriate error handling for external calls is recommended."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _burnShares(uint256 shares) internal returns (uint256)",
+    "description": "The internal function _burnShares is vulnerable to reentrancy attacks due to the sequence where tokens are withdrawn from the Prize Pool contract before updating internal state. This could allow malicious contracts to exploit reentrancy vulnerabilities."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function batch(uint256 batchAmount) external override returns (bool)",
+    "description": "The batch function could be susceptible to reentrancy attacks as it triggers operations that interact with external contracts before updating internal state. This can lead to unexpected behavior if not properly managed."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function withdraw(uint256 shareAmount) external override returns (uint256)",
+    "description": "The withdraw function does not validate the return value of the token transfer operation with token.transfer, which can introduce vulnerabilities if the transfer fails. Handling the return value is recommended for proper error handling."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function batch(uint256 batchAmount) external override returns (bool)",
+    "description": "The batch function does not validate the return value of the external call to token.approve, which can lead to unexpected outcomes if the approval fails. It is advisable to handle the return value for proper error management."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _deposit(address user, uint256 amount) internal returns (uint256)",
+    "description": "The internal function _deposit lacks a check for the return value of the external token transfer operation with token.transferFrom, leaving the contract vulnerable to unexpected behavior if the transfer fails. Handling return values is essential for error handling."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function batch(uint256 batchAmount) external override returns (bool)",
+    "description": "The batch function does not handle the return value of the external call to _prizePool.depositTo, which can result in unexpected behavior if the deposit fails. It is recommended to validate return values for external calls."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function withdraw(uint256 shareAmount) external override returns (uint256)",
+    "description": "The withdraw function does not verify the return value of the external call to token.transfer, leaving the contract exposed to potential issues if the transfer fails. It is advisable to handle the return value for proper error management."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function batch(uint256 batchAmount) external override returns (bool)",
+    "description": "The batch function does not validate the return value of the external call to token.approve, which can result in unforeseen consequences if the approval is unsuccessful. It is recommended to handle return values for external calls."
+}
+```
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _burnShares(uint256 shares) internal returns (uint256)",
+    "description": "The internal function _burnShares does not validate the return value of the token transfer operation with token.transfer, which can introduce risks if the transfer fails. It is best practice to handle the return value for error handling."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _burnShares(uint256 shares) internal returns (uint256)",
+    "description": "The internal function _burnShares is susceptible to reentrancy vulnerabilities as it executes an external token transfer before modifying the contract state. This order of operations could enable reentrancy exploits."
+}
+```

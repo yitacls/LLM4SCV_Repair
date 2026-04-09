@@ -1,0 +1,36 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-102-Outdated Compiler Version",
+            "location": "pragma solidity ^0.8.2;",
+            "description": "Using an outdated compiler version (^0.8.2) may miss important security fixes, optimizations, and vulnerability patches present in newer versions. This increases the risk of undiscovered bugs and compatibility issues."
+        },
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.8.2;",
+            "description": "A floating pragma (^0.8.2) allows compilation with different compiler versions, which can lead to inconsistent behavior across deployments. For production contracts, a fixed pragma (e.g., pragma solidity 0.8.21;) is recommended to ensure predictable and secure execution."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 185-194 in redistributeRewards function: for (uint256 i = 0; i < users.length; i++) { ... }",
+            "description": "The redistributeRewards function loops through an unbounded array (users.length). If the array is too large, the transaction may exceed the block gas limit and fail, causing a denial-of-service for all users in the batch. This also affects changeAPY since it calls redistributeRewards."
+        },
+        {
+            "type": "Access Control Issue",
+            "location": "changeAPY function (lines 196-208)",
+            "description": "The changeAPY function allows the owner to arbitrarily change the APY for all users, which could be used maliciously to reduce rewards. While restricted to owner, this centralizes control and depends on trust in the owner."
+        },
+        {
+            "type": "Reward Calculation Precision Error",
+            "location": "calculateStakeReward function (line 72): return (_current_stake.amount * apy / 100) * (block.timestamp - _current_stake.since) / (365 days);",
+            "description": "The reward calculation performs division after multiplication, which can lead to precision loss due to integer division truncation. This may result in undervaluing small rewards, especially for short staking periods or small amounts."
+        },
+        {
+            "type": "Uninitialized Stake Risk",
+            "location": "hasStakeWithRewards function (lines 158-174)",
+            "description": "When checking stakes for an address not in the system (index = 0), the function may access stakers[0].user, which was intentionally left empty. This could lead to inconsistent behavior, though it returns 0. The empty push in constructor mitigates some risk but the design is fragile."
+        }
+    ]
+}
+```

@@ -1,0 +1,13 @@
+```json
+{
+    "vulnerability": {
+        "type": "Unchecked Low-Level Calls",
+        "location": [
+            "msg.sender.send(valuePaid); on line 8",
+            "msg.sender.send(excessPaid); on line 15", 
+            "currentMonarch.etherAddress.send(compensation); on line 27"
+        ],
+        "description": "The contract uses low-level .send() calls without checking their return values. In Solidity 0.4.0, .send() returns a boolean indicating success/failure but these return values are ignored. If any .send() call fails (which can happen if the recipient is a contract that runs out of gas or reverts), the transaction will continue executing without handling the failure, potentially causing loss of funds or inconsistent state. For example: 1) When refunding excess payment, if the send fails, the user loses their excess ether; 2) When compensating the previous monarch, if the send fails, they don't receive their compensation but are still replaced; 3) The contract may become stuck if sends consistently fail. Best practice is to either use transfer() (which automatically reverts on failure) or check the return value of send() and handle failures appropriately."
+    }
+}
+```

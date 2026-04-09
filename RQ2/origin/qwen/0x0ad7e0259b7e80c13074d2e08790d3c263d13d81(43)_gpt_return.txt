@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call{ value: wad }(\"\");",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the balance. In Solidity 0.6.12, the called contract can re-enter the withdraw function before balanceOf[msg.sender] -= wad is executed, allowing an attacker to withdraw more funds than their actual balance. The external call should be made after updating the contract state."
+}
+```

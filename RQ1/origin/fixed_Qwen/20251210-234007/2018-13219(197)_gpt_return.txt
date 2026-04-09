@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ETH033",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow/underflow in balance calculations and revenue calculation",
+            "corrected_code": "function sell(uint amount) returns (uint revenue){\n    if (balanceOf[msg.sender] < amount ) throw;\n    balanceOf[this] = balanceOf[this] + amount;\n    balanceOf[msg.sender] = balanceOf[msg.sender] - amount;\n    revenue = amount * sellPrice;\n    if (!msg.sender.send(revenue)) {\n        throw;\n    } else {\n        Transfer(msg.sender, this, amount);\n        return revenue;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

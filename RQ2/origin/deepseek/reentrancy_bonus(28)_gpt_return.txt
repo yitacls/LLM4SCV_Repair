@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "withdrawReward(recipient); call inside getFirstWithdrawalBonus function",
+    "description": "The function getFirstWithdrawalBonus updates the state variable claimedBonus[recipient] to true only after the external call withdrawReward(recipient). If withdrawReward contains an external call to the recipient (e.g., transferring funds via recipient.call.value() or similar), a malicious contract at the recipient address can re-enter getFirstWithdrawalBonus before claimedBonus is set, bypassing the require(!claimedBonus[recipient]) check. This allows multiple claims of the bonus (rewardsForA increased multiple times) due to the state update (claimedBonus) occurring after the external call (Checks-Effects-Interactions pattern violation)."
+}
+```

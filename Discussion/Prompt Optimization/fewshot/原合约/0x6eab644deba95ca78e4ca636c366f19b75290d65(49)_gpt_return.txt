@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "PFG",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mint",
+                "fix_info": "Add access control to only allow the owner to mint tokens.",
+                "corrected_code": "function mint(uint256 amount) public {
+    require(tx.origin == owner);  
+    balances[msg.sender] += amount;
+    totalSupply += amount;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

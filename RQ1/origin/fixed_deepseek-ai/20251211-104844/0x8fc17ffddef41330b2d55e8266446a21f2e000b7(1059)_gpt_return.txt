@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "Factory",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "whitelistedLighthouses",
+                "fix_info": "Added whitelist mapping to track authorized lighthouses for better access control",
+                "variable_code": "mapping(address => bool) public whitelistedLighthouses;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyWhitelistedLighthouse",
+                "fix_info": "Replaced onlyLighthouse modifier with more secure whitelist-based access control",
+                "modifier_code": "modifier onlyWhitelistedLighthouse() {\n    require(whitelistedLighthouses[msg.sender], \"Caller is not a whitelisted lighthouse\");\n    _;\n}",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "liabilityFinalized",
+                "fix_info": "Fixed access control vulnerability by using a whitelist instead of tx.origin and implementing proper gas tracking",
+                "corrected_code": "function liabilityFinalized(\n        ILiability _liability,\n        uint256 _gas\n    )\n        external\n        onlyWhitelistedLighthouse\n        gasPriceEstimate\n        returns (bool)\n    {\n        require(_gas > 0, \"Gas amount must be positive\");\n        require(address(_liability) != address(0), \"Invalid liability address\");\n        \n        // Track gas consumption\n        totalGasConsumed += _gas;\n        gasConsumedOf[_liability] += _gas;\n        \n        // Use msg.sender instead of tx.origin for security\n        uint256 reward = wnFromGas(gasConsumedOf[_liability]);\n        require(reward > 0, \"Reward must be positive\");\n        \n        // Mint reward to the whitelisted lighthouse (msg.sender)\n        require(xrt.mint(msg.sender, reward), \"Minting failed\");\n        \n        // Reset gas tracking for this liability after reward distribution\n        gasConsumedOf[_liability] = 0;\n        \n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "addWhitelistedLighthouse",
+                "fix_info": "Added function to manage whitelisted lighthouses with proper access control",
+                "corrected_code": "function addWhitelistedLighthouse(address _lighthouse) external onlyOwner {\n    require(_lighthouse != address(0), \"Invalid lighthouse address\");\n    require(!whitelistedLighthouses[_lighthouse], \"Lighthouse already whitelisted\");\n    whitelistedLighthouses[_lighthouse] = true;\n    emit LighthouseWhitelisted(_lighthouse);\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "removeWhitelistedLighthouse",
+                "fix_info": "Added function to remove lighthouses from whitelist with proper access control",
+                "corrected_code": "function removeWhitelistedLighthouse(address _lighthouse) external onlyOwner {\n    require(_lighthouse != address(0), \"Invalid lighthouse address\");\n    require(whitelistedLighthouses[_lighthouse], \"Lighthouse not whitelisted\");\n    whitelistedLighthouses[_lighthouse] = false;\n    emit LighthouseRemoved(_lighthouse);\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

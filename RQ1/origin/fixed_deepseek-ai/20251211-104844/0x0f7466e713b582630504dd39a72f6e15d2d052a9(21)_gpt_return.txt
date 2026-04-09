@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "Multiplier",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "MULTIPLIER",
+            "fix_info": "Changed from potential division truncation issue in arithmetic operations",
+            "variable_code": "uint256 public constant MULTIPLIER = 110; // Example value - ensuring multiplication before division",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "PROMO_PERCENT1",
+            "fix_info": "Changed to use SafeMath library for arithmetic operations",
+            "variable_code": "uint256 public constant PROMO_PERCENT1 = 5; // Using SafeMath",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "PROMO_PERCENT2",
+            "fix_info": "Changed to use SafeMath library for arithmetic operations",
+            "variable_code": "uint256 public constant PROMO_PERCENT2 = 5; // Using SafeMath",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "TECH_PERCENT",
+            "fix_info": "Changed to use SafeMath library for arithmetic operations",
+            "variable_code": "uint256 public constant TECH_PERCENT = 10; // Using SafeMath",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow/underflow, division truncation, and reentrancy issues using SafeMath",
+            "corrected_code": "function () external payable {\n    if(msg.value > 0){\n        require(gasleft() >= 220000, \"We require more gas!\"); \n        require(msg.value <= 1 ether, \"Value must be <= 1 ether\"); \n        \n        // Using SafeMath for arithmetic operations\n        uint256 multiplierAmount = msg.value.mul(MULTIPLIER).div(100);\n        \n        // Ensure no overflow/underflow with uint128\n        require(uint128(msg.value) == msg.value, \"Value too large for uint128\");\n        require(uint128(multiplierAmount) == multiplierAmount, \"Multiplier amount too large for uint128\");\n        \n        queue.push(Deposit(msg.sender, uint128(msg.value), uint128(multiplierAmount)));\n        \n        // Calculate promotions using SafeMath\n        uint256 promo1 = msg.value.mul(PROMO_PERCENT1).div(100);\n        uint256 promo2 = msg.value.mul(PROMO_PERCENT2).div(100);\n        uint256 tech = msg.value.mul(TECH_PERCENT).div(100);\n        \n        // Ensure total percentages don't exceed 100%\n        require(PROMO_PERCENT1.add(PROMO_PERCENT2).add(TECH_PERCENT) <= 100, \"Percentages exceed 100%\");\n        \n        // Safe transfers using transfer() instead of send() for better gas handling\n        if(promo1 > 0) {\n            PROMO1.transfer(promo1);\n        }\n        if(promo2 > 0) {\n            PROMO2.transfer(promo2);\n        }\n        if(tech > 0) {\n            TECH.transfer(tech);\n        }\n        \n        pay();\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

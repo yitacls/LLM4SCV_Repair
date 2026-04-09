@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "PresalerVoting",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "VOTING_START_BLOCKNR",
+                "fix_info": "No issue detected. Kept as is.",
+                "variable_code": "uint public VOTING_START_BLOCKNR;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "VOTING_END_TIME",
+                "fix_info": "No issue in declaration itself, but its assignment logic in the function needed a fix.",
+                "variable_code": "uint public VOTING_END_TIME;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No issue detected in the modifier itself.",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+                "change_type": "unchanged"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "startVoting",
+                "fix_info": "Replaced 'now' with block.timestamp to align with best practices and prevent potential time manipulation using future-compatible/unchangeable block attributes.",
+                "corrected_code": "function startVoting(uint startBlockNr, uint durationHrs) onlyOwner {\n    require(durationHrs > 0, \"Duration must be greater than zero\");\n\n    VOTING_START_BLOCKNR = startBlockNr > block.number ? startBlockNr : block.number;\n    VOTING_END_TIME = block.timestamp + durationHrs * 1 hours;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-112-Delegatecall to Untrusted Callee",
+    "location": "No specific location provided in the code snippet",
+    "description": "The contract includes the SWC-112 vulnerability due to the use of delegatecall to untrusted callee contracts, which can lead to unexpected behaviors and potential security risks."
+}
+```

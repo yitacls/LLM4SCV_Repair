@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "_addr.send( balanceToWithdraw() );",
+            "description": "The return value of the low-level send() call is stored in a boolean variable but is not checked for failure. In Solidity ^0.4.24, send() only provides 2300 gas and forward. If the recipient is a contract with a fallback function that requires more gas, or if the call fails, send() will return false. However, the execution continues regardless, and the state is updated (lastDate[_addr] = now), which may lead to inconsistencies. This vulnerability can result in lost funds and incorrect state updates. It is recommended to check the return value of send() and revert or handle the failure appropriately."
+        }
+    ]
+}
+```

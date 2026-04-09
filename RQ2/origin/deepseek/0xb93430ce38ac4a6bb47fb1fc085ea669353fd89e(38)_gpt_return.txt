@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; ... }",
+    "description": "This contract contains a classic reentrancy vulnerability. The contract sends ETH to msg.sender using the low-level call.value() method before updating the sender's internal balance (balances[msg.sender]-=_am). If msg.sender is a malicious contract, its fallback function can recursively call CashOut() again before the balance deduction occurs, allowing the attacker to withdraw funds multiple times while their balance is only deducted once. This violates the checks-effects-interactions pattern. The vulnerability is particularly dangerous because .call.value() forwards all remaining gas by default in Solidity 0.4.19, enabling complex reentrant attacks."
+}
+```

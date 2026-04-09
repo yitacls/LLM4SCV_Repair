@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "City",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "freezeAccount",
+            "fix_info": "Replaced vulnerable tx.origin check with secure msg.sender check using onlyOwner modifier",
+            "corrected_code": "function freezeAccount(address target, bool freeze) public onlyOwner {\n    frozenAccount[target] = freeze;\n    FrozenFunds(target, freeze);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

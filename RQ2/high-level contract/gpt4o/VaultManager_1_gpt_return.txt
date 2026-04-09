@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "_repayDebt(vaultIDs[i], (amounts[i] * liquidationSurcharge) / BASE_PARAMS, liqData.newInterestAccumulator);",
+    "description": "The function `_repayDebt` is invoked without checking whether the call was successful. This could lead to unexpected contract states if `_repayDebt` fails silently or reverts without being properly handled. An unchecked return value may result in poor error handling and potential security risks, as associated logic might assume successful execution."
+}
+```

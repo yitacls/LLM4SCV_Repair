@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "revenue = amount * sellPrice;",
+    "description": "The multiplication operation between amount and sellPrice can cause an arithmetic overflow in Solidity version 0.4.13, which does not have built-in overflow protection. This could result in the revenue calculation wrapping around to a much smaller value, causing the seller to receive significantly less Ether than expected. The vulnerability occurs because there is no check to ensure that the multiplication result does not exceed the maximum value for uint256."
+}
+```

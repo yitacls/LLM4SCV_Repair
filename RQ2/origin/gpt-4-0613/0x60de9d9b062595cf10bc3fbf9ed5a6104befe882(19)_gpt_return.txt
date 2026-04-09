@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "This 'Collect' function of the WWW_WALLET contract contains a reentrancy vulnerability. This vulnerability stems from the fact that the state update ('acc.balance-=_am;') happens after the external call ('msg.sender.call.value(_am)()'). An attacker can make a recursive call to 'Collect' function in the fallback function, draining ether from the contract because the balance gets updated only after the external call. To avoid this vulnerability, one must adhere to the 'checks-effects-interactions' pattern, which recommends handling external calls at the end and updating the state before making the external calls."
+}
+```

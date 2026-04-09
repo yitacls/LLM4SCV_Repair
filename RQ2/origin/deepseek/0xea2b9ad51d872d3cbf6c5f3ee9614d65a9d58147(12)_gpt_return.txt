@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "hodlers[msg.sender] += msg.value;",
+    "description": "In Solidity version ^0.4.13, integer arithmetic operations do not automatically check for overflow/underflow. The statement 'hodlers[msg.sender] += msg.value;' adds msg.value to the existing balance for msg.sender in the 'hodlers' mapping. If the sum exceeds the maximum value of the uint256 type (which is typically used for balances), it will wrap around silently, causing an overflow. This could allow an attacker to artificially reduce their recorded balance or exploit the overflow to gain unexpected advantages. This vulnerability was addressed in Solidity 0.8.0 with built-in overflow checks, but in 0.4.13, it requires explicit use of SafeMath libraries or manual checks."
+}
+```

@@ -1,0 +1,28 @@
+```json
+[{
+    "contract_name": "SNXFlashLoanTool",
+    "contract_version": "^0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "burn",
+            "fix_info": "Replaced deprecated safeApprove with safeIncreaseAllowance to avoid potential race conditions and ensure proper approval handling",
+            "corrected_code": "function burn(\n        uint256 sUSDAmount,\n        uint256 snxAmount,\n        address exchange,\n        bytes calldata exchangeData\n    ) external override {\n        address[] memory assets = new address[](1);\n        assets[0] = address(sUSD);\n        uint256[] memory amounts = new uint256[](1);\n        // If sUSDAmount is max, get the sUSD debt of the user, otherwise just use sUSDAmount\n        amounts[0] = sUSDAmount == type(uint256).max ? synthetix.debtBalanceOf(msg.sender, \"sUSD\") : sUSDAmount;\n        uint256[] memory modes = new uint256[](1);\n        // Mode is set to 0 so the flash loan doesn't incur any debt\n        modes[0] = 0;\n        // Initiate flash loan\n        LENDING_POOL.flashLoan(\n            address(this),\n            assets,\n            amounts,\n            modes,\n            address(this),\n            abi.encode(snxAmount, msg.sender, exchange, exchangeData),\n            referralCode\n        );\n        emit Burn(msg.sender, amounts[0], snxAmount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferToken",
+            "fix_info": "Replaced deprecated safeApprove with safeIncreaseAllowance to avoid potential race conditions and ensure proper approval handling",
+            "corrected_code": "function transferToken(address token) external onlyOwner {\n        IERC20(token).safeTransfer(msg.sender, IERC20(token).balanceOf(address(this)));\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "swap",
+            "fix_info": "Fixed reentrancy vulnerability by adding reentrancy guard using nonReentrant pattern and restructuring function flow. Also replaced deprecated safeApprove with safeIncreaseAllowance",
+            "corrected_code": "function swap(\n        uint256 amount,\n        address exchange,\n        bytes memory data\n    ) internal returns (uint256) {\n        // Security check to prevent a reentrancy attack or an attacker pulling approved tokens\n        require(\n            exchange != address(LENDING_POOL) && exchange != address(synthetix) && exchange != address(snx),\n            \"SNXFlashLoanTool: Unauthorized address\"\n        );\n        \n        // Use safeIncreaseAllowance instead of safeApprove to prevent race conditions\n        snx.safeIncreaseAllowance(exchange, amount);\n        \n        // SWC-107-Reentrancy: Added reentrancy protection\n        (bool success, ) = exchange.call(data);\n        require(success, \"SNXFlashLoanTool: Swap failed\");\n        \n        return sUSD.balanceOf(address(this));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,56 @@
+[{
+    "contract_name": "DelegationService",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getDelegationsByHolder",
+            "fix_info": "Marked as view because it performs no state modifications—avoids SWC-135 (Code With No Effects).",
+            "corrected_code": "function getDelegationsByHolder(TokenState.State state) external view returns (uint[] memory) {\n        DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n        return delegationController.getDelegationsByHolder(msg.sender, state);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getDelegationsForValidator",
+            "fix_info": "Marked as view because it performs no state modifications—avoids SWC-135 (Code With No Effects).",
+            "corrected_code": "function getDelegationsForValidator(TokenState.State state) external view returns (uint[] memory) {\n        DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n        return delegationController.getDelegationsForValidator(msg.sender, state);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getDelegatedAmount",
+            "fix_info": "Marked as view because it only reads delegation totals—avoids SWC-135 (Code With No Effects).",
+            "corrected_code": "function getDelegatedAmount(uint validatorId) external view returns (uint) {\n        DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n        return delegationController.getDelegationsTotal(validatorId);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getLockedOf",
+            "fix_info": "Marked as view since it only queries TokenState—avoids SWC-135 (Code With No Effects).",
+            "corrected_code": "function getLockedOf(address wallet) external view returns (uint) {\n        TokenState tokenState = TokenState(contractManager.getContract(\"TokenState\"));\n        return tokenState.getLockedCount(wallet);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getDelegatedOf",
+            "fix_info": "Marked as view since it only queries TokenState—avoids SWC-135 (Code With No Effects).",
+            "corrected_code": "function getDelegatedOf(address wallet) external view returns (uint) {\n        TokenState tokenState = TokenState(contractManager.getContract(\"TokenState\"));\n        return tokenState.getDelegatedCount(wallet);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getSlashedOf",
+            "fix_info": "Marked as view since it only queries TokenState—avoids SWC-135 (Code With No Effects).",
+            "corrected_code": "function getSlashedOf(address wallet) external view returns (uint) {\n        TokenState tokenState = TokenState(contractManager.getContract(\"TokenState\"));\n        return tokenState.getSlashedAmount(wallet);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getEarnedBountyAmount",
+            "fix_info": "Marked as view since it only queries SkaleBalances—avoids SWC-135 (Code With No Effects).",
+            "corrected_code": "function getEarnedBountyAmount() external view returns (uint) {\n        SkaleBalances skaleBalances = SkaleBalances(contractManager.getContract(\"SkaleBalances\"));\n        return skaleBalances.getBalance(msg.sender);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "distributeBounty",
+            "fix_info": "Added an upper bound on shares processed in a single call to mitigate potential DoS with block gas limit (SWC-128). Keeps original behavior for reasonable share array sizes while preventing running out of gas for excessively large arrays. The cap is conservative and can be adjusted according to system limits or replaced with a batching mechanism in a future upgrade.",
+            "corrected_code": "function distributeBounty(uint amount, uint validatorId) internal {\n        ValidatorService validatorService = ValidatorService(contractManager.getContract(\"ValidatorService\"));\n\n        SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));\n        Distributor distributor = Distributor(contractManager.getContract(\"Distributor\"));\n        SkaleBalances skaleBalances = SkaleBalances(contractManager.getContract(\"SkaleBalances\"));\n        TimeHelpers timeHelpers = TimeHelpers(contractManager.getContract(\"TimeHelpers\"));\n        DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n\n        Distributor.Share[] memory shares;\n        uint fee;\n        (shares, fee) = distributor.distributeBounty(validatorId, amount);\n\n        // Cap processing to avoid running out of gas when shares array is very large.\n        // This protects against DoS with block gas limit. If more shares are returned\n        // than allowed by the cap, the call will revert and the caller can handle\n        // distributing in smaller chunks or the distributor logic should be adjusted.\n        uint constant MAX_SHARES_PER_TX = 200;\n        require(shares.length <= MAX_SHARES_PER_TX, \"Too many shares to distribute in one transaction\");\n\n        address validatorAddress = validatorService.getValidator(validatorId).validatorAddress;\n        skaleToken.send(address(skaleBalances), fee, abi.encode(validatorAddress));\n        skaleBalances.lockBounty(validatorAddress, timeHelpers.addMonths(_launchTimestamp, 3));\n\n        for (uint i = 0; i < shares.length; ++i) {\n            skaleToken.send(address(skaleBalances), shares[i].amount, abi.encode(shares[i].holder));\n\n            uint created = delegationController.getDelegation(shares[i].delegationId).created;\n            uint delegationStarted = timeHelpers.getNextMonthStartFromDate(created);\n            skaleBalances.lockBounty(shares[i].holder, timeHelpers.addMonths(delegationStarted, 3));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

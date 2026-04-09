@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public { ... owner.transfer(etherBalance); // <LEAKING_VUL> }",
+    "description": "The `withdraw` function implements access control through the `onlyOwner` modifier, which is correct in principle. However, for Solidity version ^0.4.22, the `.transfer()` method forwards a fixed 2300 gas stipend, which may be insufficient if the owner is a smart contract with a complex fallback function. This can lead to a denial-of-service (DoS) where funds become permanently locked in the contract, as the transfer will revert. The vulnerability lies in the failure to handle gas requirements appropriately for contract-owned withdrawals, effectively leaking control over the funds due to the gas restriction of `.transfer()`."
+}
+```

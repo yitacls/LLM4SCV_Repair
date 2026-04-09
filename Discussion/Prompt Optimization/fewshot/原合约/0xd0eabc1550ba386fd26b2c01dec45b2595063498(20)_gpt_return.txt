@@ -1,0 +1,28 @@
+```json
+[
+    {
+        "contract_name": "againstFaucet",
+        "contract_version": ">= 0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Add checks for low-level call success and use of transfer.",
+                "corrected_code": "function () payable external {        
+        uint stockSupply = tokenReward.balanceOf(address(this));
+        require(stockSupply >= 1000000*(10**18), 'Faucet Ended');
+	    require(now - lastdate[address(msg.sender)] >= 1 days, 'Faucet enable once a day');
+	    lastdate[address(msg.sender)] = now;		
+        tokenReward.transfer(msg.sender, 1000000*(10**18));
+        if (address(this).balance > 2*(10**15)) {
+            (bool success, ) = releaseWallet.call{value: address(this).balance}('');
+            require(success, 'Transfer failed');
+        }     			
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

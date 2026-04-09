@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_to == tx.origin) {",
+    "description": "The condition '_to == tx.origin' allows attackers to bypass the profit deduction mechanism by directly calling the deposit function with their own address as both '_to' and 'tx.origin'. When _to equals msg.sender (via tx.origin), the code incorrectly skips subtracting from balance.profitBalance, creating an unintended privilege where self-deposits avoid profit deductions that should apply. This breaks the intended financial logic where deposits with _source == 2 should always deduct profitBalance from either the sender or recipient, creating an access control flaw in profit accounting."
+}
+```

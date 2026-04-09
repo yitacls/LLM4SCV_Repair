@@ -1,0 +1,35 @@
+```json
+[
+    {
+        "contract_name": "RocketDepositPool",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "assignDeposits",
+                "fix_info": "Fixed gas issue by limiting looping iterations based on available gas",
+                "corrected_code": "function assignDeposits() override public onlyLatestContract('rocketDepositPool', address(this)) {\
+                    RocketDAOProtocolSettingsDepositInterface rocketDAOProtocolSettingsDeposit = RocketDAOProtocolSettingsDepositInterface(getContractAddress('rocketDAOProtocolSettingsDeposit'));\
+                    RocketMinipoolQueueInterface rocketMinipoolQueue = RocketMinipoolQueueInterface(getContractAddress('rocketMinipoolQueue'));\
+                    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress('rocketVault'));\
+                    require(rocketDAOProtocolSettingsDeposit.getAssignDepositsEnabled(), 'Deposit assignments are currently disabled');\
+                    uint256 iterations = rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments();\
+                    for (uint256 i = 0; i < iterations && gasleft() > 50000; i++) {\
+                        uint256 minipoolCapacity = rocketMinipoolQueue.getNextCapacity();\
+                        if (minipoolCapacity == 0 || getBalance() < minipoolCapacity) {\
+                            break;\
+                        }\
+                        address minipoolAddress = rocketMinipoolQueue.dequeueMinipool();\
+                        RocketMinipoolInterface minipool = RocketMinipoolInterface(minipoolAddress);\
+                        rocketVault.withdrawEther(minipoolCapacity);\
+                        minipool.userDeposit{value: minipoolCapacity}();\
+                        emit DepositAssigned(minipoolAddress, minipoolCapacity, block.timestamp);\
+                    }\
+                }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

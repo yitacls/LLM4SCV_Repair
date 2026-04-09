@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.value(msg.value)();",
+    "description": "The low-level call method does not check if the call was successful. In Solidity 0.4.24, call.value() returns a boolean indicating success/failure, but this return value is not checked. If the call to the target address fails, the function will continue execution and transfer all contract balance to the owner, potentially losing funds. The call should be checked for success, e.g., require(target.call.value(msg.value)());"
+}
+```

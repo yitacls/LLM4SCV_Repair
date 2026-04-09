@@ -1,0 +1,28 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 67-68",
+    "description": "The multiplication operation in function bmul at line 67 can result in an integer overflow if the result is too large for the data type. Additionally, the subsequent addition operation at line 68 may also result in an overflow if the result exceeds the maximum value that can be stored in the data type."
+}
+```
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 77",
+    "description": "The addition operation in function bpowApprox at line 77 may result in an integer overflow if the result is too large for the data type."
+}
+```
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 89",
+    "description": "The multiplication operation in function bmul at line 89 may result in an integer overflow if the result is too large for the data type."
+}
+```
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 96",
+    "description": "The multiplication operation in function bmul at line 96 may result in an integer overflow if the result is too large for the data type."
+}
+```

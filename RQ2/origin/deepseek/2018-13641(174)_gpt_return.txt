@@ -1,0 +1,19 @@
+```json
+{
+    "contract": "MVGcoin",
+    "solidity_version": "^0.4.16",
+    "function": "mintToken",
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+            "description": "This vulnerable code lacks integer overflow/underflow protection, which was not automatically implemented by Solidity compiler versions prior to 0.8.0. In Solidity ^0.4.16, arithmetic operations wrap around on overflow/underflow. An attacker could potentially set an initial mintedAmount that causes balanceOf[target] or totalSupply to overflow, resulting in values that are much smaller than intended, potentially even zero. This could allow unauthorized token minting, destruction of tokens, or manipulation of token balances."
+        },
+        {
+            "type": "Compliance/Standard",
+            "location": "Transfer(0, this, mintedAmount); Transfer(this, target, mintedAmount);",
+            "description": "The Transfer events are invoked without the 'emit' keyword (introduced in Solidity 0.4.21). While this is syntactically correct for 0.4.16, it is a deprecated pattern. More critically, the first Transfer event uses 'this' (the contract address) as the 'to' parameter, and the second uses 'this' as the 'from' parameter. This dual-event pattern for minting is non-standard; the ERC-20 standard expects a single Transfer event from the zero address (0x0) to the target address to represent minting. This may cause compatibility issues with wallets, exchanges, and other contracts that expect standard ERC-20 event emissions."
+        }
+    ]
+}
+```

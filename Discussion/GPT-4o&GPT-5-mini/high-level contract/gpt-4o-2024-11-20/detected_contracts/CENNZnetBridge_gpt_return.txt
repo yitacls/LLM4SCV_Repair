@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function setValidators(...) L99-120",
+    "description": "The `setValidators` function allows a malicious user to potentially manipulate the validator set if they are able to construct a valid proof. Once successful, they can call the function to withdraw all Ether from the contract's balance since the entire balance is sent to the function caller as a reward (`(bool sent, ) = msg.sender.call{value: reward}("");`). This introduces a security risk as any accumulated Ether in the contract is not protected adequately from unauthorized withdrawal."
+}
+```

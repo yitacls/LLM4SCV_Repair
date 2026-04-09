@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the contract's state. An attacker can create a malicious contract that calls back into the CashOut function before the balance is reduced, allowing them to withdraw funds multiple times in a single transaction."
+}
+```

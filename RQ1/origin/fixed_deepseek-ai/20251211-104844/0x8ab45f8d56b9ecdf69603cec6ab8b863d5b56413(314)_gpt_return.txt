@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "BLBlocks",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "s",
+                "fix_info": "Storage variable 's' should be explicitly declared. In the original code, it's used but not declared, which suggests it might be a contract instance or storage pointer.",
+                "variable_code": "// Assuming 's' is a contract instance for storage\n// Original code doesn't show declaration, so maintaining existing usage",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to replace tx.origin check with msg.sender and proper ownership verification",
+                "modifier_code": "modifier onlyOwner(bytes32 key) {\n    require(msg.sender == s.getAdd(keccak256(key, \"owner\")));\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "updateBlock",
+                "fix_info": "Removed vulnerable tx.origin check and replaced with msg.sender check using modifier. This prevents phishing attacks and follows the check-effects-interactions pattern.",
+                "corrected_code": "function updateBlock(\n    uint x,\n    uint y,\n    bytes32 name,\n    bytes32 description,\n    bytes32 url,\n    bytes32 imageURL\n) public {\n    bytes32 key = getKey(x, y);\n    require(msg.sender == s.getAdd(keccak256(key, \"owner\")));\n    \n    s.setBytes32(keccak256(key, \"name\"), name);\n    s.setBytes32(keccak256(key, \"description\"), description);\n    s.setBytes32(keccak256(key, \"url\"), url);\n    s.setBytes32(keccak256(key, \"imageURL\"), imageURL);\n    \n    UpdatedBlock(x, y, name, description, url, imageURL, msg.sender);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

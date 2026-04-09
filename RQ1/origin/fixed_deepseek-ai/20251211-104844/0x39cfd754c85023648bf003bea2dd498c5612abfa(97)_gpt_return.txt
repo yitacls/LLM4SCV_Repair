@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenBank",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "WithdrawToHolder",
+            "fix_info": "1. Removed unnecessary 'payable' modifier as function doesn't receive ETH\n2. Fixed the condition to check Holders[msg.sender] instead of Holders[msg.sender]>0\n3. Added proper address validation using require statements\n4. Replaced vulnerable low-level .call() with .transfer() for better security\n5. Implements checks-effects-interactions pattern by updating state before external call\n6. Added explicit return statement for clarity",
+            "corrected_code": "    function WithdrawToHolder(address _addr, uint _wei) \n        public\n        onlyOwner\n    {\n        // Validate inputs and state\n        require(_addr != address(0), \"Invalid address\");\n        require(_wei > 0, \"Amount must be greater than 0\");\n        require(Holders[msg.sender] >= _wei, \"Insufficient balance\");\n        require(Holders[_addr] >= _wei, \"Recipient insufficient balance\");\n        \n        // Update state before external call (checks-effects-interactions)\n        Holders[msg.sender] -= _wei;\n        Holders[_addr] -= _wei;\n        \n        // Use transfer instead of low-level call for security\n        _addr.transfer(_wei);\n        \n        // Optional: Emit an event for transparency\n        // Withdrawn(_addr, _wei);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

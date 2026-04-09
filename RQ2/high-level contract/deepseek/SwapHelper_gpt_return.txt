@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 56: uint256 valueX96 = (amount0In * ((uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION)) + (amount1In << FixedPoint96.RESOLUTION);",
+    "description": "The calculation of valueX96 involves multiplications and bit-shifting operations that can result in integer overflow. When uint256(sqrtPriceX96)**2 is executed, sqrtPriceX96 (which is a uint160 up to ~1.46e48) is squared, potentially exceeding the maximum uint256 value of ~1.16e77 for large tick values. Additionally, amount1In << FixedPoint96.RESOLUTION (shift left by 96 bits) can overflow if amount1In is sufficiently large (> ~7.9e28). These overflows could lead to incorrect swap amount calculations and unexpected contract behavior."
+}
+```

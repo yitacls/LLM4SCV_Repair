@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.call(msg.value);",
+    "description": "The low-level call to 'wallet' does not check the return value, which means the function will continue execution even if the call fails. In Solidity 0.4.23, failed calls will return false but the contract does not handle this case, potentially leading to loss of funds or unexpected behavior. The call should be checked for success and properly handled."
+}
+```

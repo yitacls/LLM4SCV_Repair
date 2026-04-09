@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "if (msg.sender.send(amount)) { and if (beneficiary.send(amountRaised)) {",
+    "description": "The contract fails to check the return value of the low-level `send()` calls. In Solidity 0.4.x, `send()` returns a boolean indicating success, but if it fails, the contract continues executing without reverting. This can leave the contract in an inconsistent state—for example, when `fundingGoalReached` is set to `false` on a failed send to the beneficiary, but the previously transferred `amountRaised` is not refunded or accounted for. Additionally, the first `send()` to `msg.sender` does not revert or handle failure appropriately, potentially causing users to lose funds without recovery. Best practice is to use `transfer()` (which reverts on failure in 0.4.x) or explicitly check the return value and revert on failure."
+}
+```

@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "safeSendAmount",
+            "fix_info": "Added variable to track refund amount safely",
+            "variable_code": "uint256 private safeSendAmount;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "refundAddress",
+            "fix_info": "Added variable to track refund recipient",
+            "variable_code": "address private refundAddress;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyDuringCrowdsale",
+            "fix_info": "Added modifier to ensure crowdsale is active",
+            "modifier_code": "modifier onlyDuringCrowdsale() {\n    require(!crowdsaleClosed && !soldOut, \"Crowdsale not active\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed multiple vulnerabilities: 1) Replaced while loop with require statements to prevent gas exhaustion, 2) Fixed unchecked low-level call by using transfer() instead of send(), 3) Added overflow protection with SafeMath, 4) Removed recursive fallback call pattern, 5) Added explicit function name instead of anonymous fallback",
+            "corrected_code": "function buyTokens() public payable onlyDuringCrowdsale {\n    require(msg.value > 0, \"No ETH sent\");\n    \n    uint256 amount = msg.value;\n    uint256 orderRate;\n    uint256 curSupply;\n    \n    // Determine current round\n    if (round1Open) {\n        orderRate = priceRound1;\n        curSupply = supplyRound1;\n    } else if (round2Open) {\n        orderRate = priceRound2;\n        curSupply = supplyRound2;\n    } else if (round3Open) {\n        orderRate = priceRound3;\n        curSupply = supplyRound3;\n    } else if (round4Open) {\n        orderRate = priceRound4;\n        curSupply = supplyRound4;\n    } else {\n        revert(\"No active round\");\n    }\n    \n    require(orderRate > 0, \"Invalid order rate\");\n    \n    uint256 requestedTokens = amount.mul(orderRate);\n    \n    if (requestedTokens <= curSupply) {\n        // Complete order in current round\n        balanceOf[msg.sender] = balanceOf[msg.sender].add(amount);\n        amountRaised = amountRaised.add(amount);\n        \n        tokenReward.transfer(msg.sender, requestedTokens);\n        \n        uint256 erotixTokens = requestedTokens.mul(erotixFundMultiplier).div(100);\n        uint256 foundersTokens = requestedTokens.mul(foundersFundMultiplier).div(100);\n        \n        tokenReward.transfer(erotixFund, erotixTokens);\n        tokenReward.transfer(foundersFund, foundersTokens);\n        \n        if (round1Open) {\n            supplyRound1 = supplyRound1.sub(requestedTokens);\n        } else if (round2Open) {\n            supplyRound2 = supplyRound2.sub(requestedTokens);\n        } else if (round3Open) {\n            supplyRound3 = supplyRound3.sub(requestedTokens);\n        } else if (round4Open) {\n            supplyRound4 = supplyRound4.sub(requestedTokens);\n        }\n        \n        FundTransfer(msg.sender, amount, true);\n    } else {\n        // Partial order - fill what's available in current round\n        uint256 amountAvailable = curSupply.div(orderRate);\n        require(amountAvailable > 0, \"Insufficient supply\");\n        \n        uint256 tokensToSend = amountAvailable.mul(orderRate);\n        \n        balanceOf[msg.sender] = balanceOf[msg.sender].add(amountAvailable);\n        amountRaised = amountRaised.add(amountAvailable);\n        \n        tokenReward.transfer(msg.sender, tokensToSend);\n        \n        uint256 erotixTokens = tokensToSend.mul(erotixFundMultiplier).div(100);\n        uint256 foundersTokens = tokensToSend.mul(foundersFundMultiplier).div(100);\n        \n        tokenReward.transfer(erotixFund, erotixTokens);\n        tokenReward.transfer(foundersFund, foundersTokens);\n        \n        // Move to next round or end crowdsale\n        if (round1Open) {\n            supplyRound1 = 0;\n            round1Open = false;\n            round2Open = true;\n            FundTransfer(msg.sender, amountAvailable, true);\n            \n            // Refund remaining ETH\n            uint256 refund = amount.sub(amountAvailable);\n            if (refund > 0) {\n                msg.sender.transfer(refund);\n            }\n        } else if (round2Open) {\n            supplyRound2 = 0;\n            round2Open = false;\n            round3Open = true;\n            FundTransfer(msg.sender, amountAvailable, true);\n            \n            uint256 refund = amount.sub(amountAvailable);\n            if (refund > 0) {\n                msg.sender.transfer(refund);\n            }\n        } else if (round3Open) {\n            supplyRound3 = 0;\n            round3Open = false;\n            round4Open = true;\n            FundTransfer(msg.sender, amountAvailable, true);\n            \n            uint256 refund = amount.sub(amountAvailable);\n            if (refund > 0) {\n                msg.sender.transfer(refund);\n            }\n        } else if (round4Open) {\n            supplyRound4 = 0;\n            round4Open = false;\n            soldOut = true;\n            FundTransfer(msg.sender, amountAvailable, true);\n            \n            uint256 refund = amount.sub(amountAvailable);\n            if (refund > 0) {\n                msg.sender.transfer(refund);\n            }\n        }\n    }\n}\n\n// Keep fallback for backward compatibility but route to buyTokens\nfunction () external payable {\n    buyTokens();\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "safeRefund",
+            "fix_info": "Added separate refund function for safe ETH transfers",
+            "corrected_code": "function safeRefund(address payable recipient, uint256 amount) internal {\n    require(recipient != address(0), \"Invalid recipient\");\n    require(amount > 0, \"No amount to refund\");\n    require(address(this).balance >= amount, \"Insufficient contract balance\");\n    \n    recipient.transfer(amount);\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "IntegerOverflowSingleTransaction",
+        "contract_version": "^0.4.23",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "overflowlocalonly",
+                "fix_info": "Added SafeMath library usage to prevent arithmetic overflow/underflow vulnerabilities in the addition operation",
+                "corrected_code": "function overflowlocalonly(uint256 input) public {\n    // Using SafeMath to prevent overflow\n    uint256 res = add(uint256(count), input);\n}\n\n// Additional SafeMath function for addition\nfunction add(uint256 a, uint256 b) internal pure returns (uint256) {\n    uint256 c = a + b;\n    require(c >= a, \"SafeMath: addition overflow\");\n    return c;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

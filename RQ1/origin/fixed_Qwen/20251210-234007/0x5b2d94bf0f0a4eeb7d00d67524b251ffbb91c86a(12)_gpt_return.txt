@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "R256",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "addMultipleRecords",
+            "fix_info": "Added gas optimization and DoS protection by limiting array length and using indexed loop variable",
+            "corrected_code": "function addMultipleRecords(uint[] zz) public {\n    require(zz.length <= 100, \"Array too large\");\n    for (uint i = 0; i < zz.length; i++) {\n        addRecord(zz[i]);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

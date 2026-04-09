@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(autoBirthFee);",
+    "description": "The contract uses the low-level send() function without checking the return value. If the send() operation fails (e.g., recipient is a contract that runs out of gas or reverts), the transaction will continue without reverting, causing the caller to not receive the autoBirthFee payment while the state changes have already been applied. In Solidity 0.4.11, send() returns a boolean indicating success/failure, which should always be checked. The recommended fix is to either use transfer() (which automatically reverts on failure) or check the return value and handle failure appropriately."
+}
+```

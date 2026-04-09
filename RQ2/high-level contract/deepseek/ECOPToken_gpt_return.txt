@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Lines 196-210 in the pwr function of the SafeMath library",
+    "description": "The pwr function contains a for-loop that repeatedly multiplies the result but does not check for integer overflow during each multiplication operation. While the function uses SafeMath's mul function internally, the SafeMath library's mul function itself checks for overflow. However, the pwr function lacks explicit overflow checks for the exponentiation operation as a whole, and the loop's repeated multiplication could theoretically overflow even if individual multiplications are checked. This is a medium-severity issue that could lead to unexpected behavior when calculating powers with large exponents."
+}
+```

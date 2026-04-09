@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "CrowdsaleToken",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Owner address should be immutable or have proper ownership transfer mechanism",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict owner-only functions",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Not contract owner\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback function",
+            "fix_info": "Fixed access control vulnerability: added withdrawal pattern for owner funds and proper error handling",
+            "corrected_code": "function () external payable {\n    require(currentStage == Stages.icoStart, \"ICO not active\");\n    require(msg.value > 0, \"No ether sent\");\n    require(remainingTokens > 0, \"No tokens remaining\");\n    \n    uint256 weiAmount = msg.value;\n    uint256 tokens = weiAmount.mul(basePrice).div(1 ether);\n    uint256 returnWei = 0;\n    \n    if(tokensSold.add(tokens) > cap) {\n        uint256 newTokens = cap.sub(tokensSold);\n        uint256 newWei = newTokens.mul(1 ether).div(basePrice);\n        returnWei = weiAmount.sub(newWei);\n        weiAmount = newWei;\n        tokens = newTokens;\n    }\n    \n    tokensSold = tokensSold.add(tokens);\n    remainingTokens = cap.sub(tokensSold);\n    \n    if(returnWei > 0) {\n        msg.sender.transfer(returnWei);\n        emit Transfer(address(this), msg.sender, returnWei);\n    }\n    \n    balances[msg.sender] = balances[msg.sender].add(tokens);\n    emit Transfer(address(this), msg.sender, tokens);\n    totalSupply_ = totalSupply_.add(tokens);\n    \n    // Instead of direct transfer, accumulate funds for owner withdrawal\n    collectedFunds = collectedFunds.add(weiAmount);\n    \n    // Emit event for tracking\n    emit FundsReceived(msg.sender, weiAmount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawFunds",
+            "fix_info": "Added secure withdrawal function for owner with proper access control",
+            "corrected_code": "function withdrawFunds() external onlyOwner {\n    require(collectedFunds > 0, \"No funds to withdraw\");\n    uint256 amount = collectedFunds;\n    collectedFunds = 0;\n    owner.transfer(amount);\n    emit FundsWithdrawn(owner, amount);\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Added secure ownership transfer function",
+            "corrected_code": "function transferOwnership(address newOwner) external onlyOwner {\n    require(newOwner != address(0), \"Invalid new owner address\");\n    emit OwnershipTransferred(owner, newOwner);\n    owner = newOwner;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

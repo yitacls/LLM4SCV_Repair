@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "This line allows the calling contract to perform arbitrary operations on the recipient contract. Without proper checks and validation, it can lead to potential security vulnerabilities, such as reentrancy attacks or loss of funds."
+}
+```

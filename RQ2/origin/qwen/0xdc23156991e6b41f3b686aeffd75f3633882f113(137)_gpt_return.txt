@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function initWallet(Wallet storage _self, address _operator, address _feesAccount) public validAddress(_operator) validAddress(_feesAccount) { _self.operatorAccount = _operator; _self.feesAccount = _feesAccount; }",
+    "description": "The initWallet function lacks proper access control modifiers to restrict who can call it. Since it's marked as public, any external account can call this function and overwrite the operatorAccount and feesAccount stored in the Wallet struct. This could allow malicious actors to take control of wallet operations and redirect fees to their own addresses. The function should include access control checks such as 'onlyOwner' or similar modifiers to ensure only authorized entities can initialize or reconfigure the wallet settings."
+}
+```

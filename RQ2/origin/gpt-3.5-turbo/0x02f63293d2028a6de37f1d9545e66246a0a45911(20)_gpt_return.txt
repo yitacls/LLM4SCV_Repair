@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "DragonsBurned += _amount;  // fault line",
+            "description": "The use of the += operator for incrementing DragonsBurned may result in an integer overflow if the sum exceeds the maximum value that a uint256 can hold, potentially leading to unexpected behavior or vulnerabilities."
+        }
+    ]
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "YumeGorilla",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for addition operation",
+            "corrected_code": "function transfer(address to, uint amount) external returns (bool) {\n        require(to != address(this));\n        require(to != 0);\n        uint balanceOfMsgSender = balanceOf[msg.sender];\n        require(balanceOfMsgSender >= amount);\n        balanceOf[msg.sender] = balanceOfMsgSender - amount;\n        balanceOf[to] = balanceOf[to].add(amount);\n        emit Transfer(msg.sender, to, amount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

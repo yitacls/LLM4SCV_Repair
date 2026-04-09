@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "FidgETHSpinner",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "juicyBonus",
+            "fix_info": "Changed from post-decrement to explicit subtraction with boundary check to prevent underflow",
+            "variable_code": "uint256 public juicyBonus;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "weiRaised",
+            "fix_info": "Added SafeMath for overflow protection",
+            "variable_code": "uint256 public weiRaised;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "normalRate",
+            "fix_info": "Explicitly declared as uint256 for type safety",
+            "variable_code": "uint256 public normalRate;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fidget",
+            "fix_info": "Fixed arithmetic vulnerabilities: 1) Removed post-decrement with underflow risk, 2) Added SafeMath operations, 3) Fixed division order for rate calculation, 4) Prevented reentrancy",
+            "corrected_code": "function fidget(address _to) payable external {\n    require(_to != address(0));\n    require(block.number <= endBlock);\n    require(msg.value >= 0.03 ether);\n    \n    // Safe decrement of juicyBonus with underflow protection\n    require(juicyBonus > 0, \"juicyBonus must be greater than 0\");\n    uint256 currentBonus = juicyBonus;\n    juicyBonus = (juicyBonus > 1) ? juicyBonus - 1 : 1;\n    \n    // Calculate rate and tokens with SafeMath\n    uint256 rate = normalRate.mul(currentBonus);\n    uint256 tokens = msg.value.mul(rate);\n    \n    // Use SafeMath for weiRaised\n    weiRaised = weiRaised.add(msg.value);\n    \n    // Transfer funds before state changes to prevent reentrancy\n    wallet.transfer(msg.value);\n    \n    spin(_to, tokens);\n    emit Fidget(msg.sender, _to, msg.value, currentBonus, rate, tokens);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "safeSubtract",
+            "fix_info": "Added helper function for safe subtraction to replace post-decrement operator",
+            "corrected_code": "function safeSubtract(uint256 a, uint256 b) internal pure returns (uint256) {\n    require(b <= a, \"Subtraction underflow\");\n    return a - b;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

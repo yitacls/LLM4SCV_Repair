@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "amount = msg.value * buyPrice;",
+    "description": "The multiplication operation between msg.value and buyPrice can cause an arithmetic overflow in Solidity version 0.4.13, as there is no built-in overflow protection. This could result in the 'amount' variable wrapping around to a very small or negative value, allowing an attacker to receive an unexpectedly large number of tokens for a small ETH payment."
+}
+```

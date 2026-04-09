@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send( tx.gasprice*(startGasLeft-endGasLeft+35000) );",
+    "description": "The use of send() in this context is risky as it does not handle potential failures, allowing the recipient contract to perform reentrant attacks, consuming all available gas and potentially leading to a denial-of-service."
+}
+```

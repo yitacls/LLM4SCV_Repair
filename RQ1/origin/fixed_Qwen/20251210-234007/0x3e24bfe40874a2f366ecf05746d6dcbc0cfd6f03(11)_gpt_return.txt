@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Timelock",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Replaced tx.origin with msg.sender for proper access control to prevent phishing attacks",
+            "corrected_code": "function withdraw() public {\n    require( msg.sender == owner, \"Only the owner can withdraw!\" );\n    require( now > releaseDate, \"Cannot withdraw prior to release date!\" );\n    msg.sender.transfer( address(this).balance );\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

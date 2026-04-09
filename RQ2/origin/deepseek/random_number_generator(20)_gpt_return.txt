@@ -1,0 +1,31 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 x = salt * 100 / max;",
+            "description": "This calculation uses 'salt' which is a contract state variable that can potentially be manipulated or predictable. The salt value combined with deterministic arithmetic operations doesn't provide true randomness as miners can influence the outcome."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 y = salt * block.number / (salt % 5);",
+            "description": "The calculation uses block.number which is public and predictable, and the division by (salt % 5) can potentially be gamed by miners who can choose which blocks to mine based on the salt value."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 seed = block.number / 3 + (salt % 300) + y;",
+            "description": "The seed generation relies on predictable inputs (block.number and salt) and the previously calculated y value. Since all inputs are either public blockchain data or controllable state variables, the seed is not random."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 h = uint256(blockhash(seed));",
+            "description": "Using blockhash for randomness is problematic because blockhash only works for the most recent 256 blocks. For older blocks (seed > 256), blockhash returns 0, making the random function predictable. Additionally, miners can withhold blocks to influence the result."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "return uint256((h / x)) % max + 1;",
+            "description": "The final random number calculation combines all the previously vulnerable components, making the entire random number generation process predictable and manipulable by miners or malicious actors who can influence block mining or salt values."
+        }
+    ]
+}
+```

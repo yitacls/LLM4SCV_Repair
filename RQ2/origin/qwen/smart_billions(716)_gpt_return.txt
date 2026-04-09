@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint(block.blockhash(_lastb)) & 0xFFFFFF",
+    "description": "The function uses block.blockhash() which is predictable and can be manipulated by miners. The randomness derived from blockhash is not secure for critical contract logic as miners can influence the outcome by choosing whether or not to publish a block. Additionally, blockhash() only works for the most recent 256 blocks, making it unreliable for future block numbers."
+}
+```

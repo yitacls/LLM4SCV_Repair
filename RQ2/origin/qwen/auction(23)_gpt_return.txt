@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "require(currentFrontrunner.send(currentBid));",
+    "description": "The contract is vulnerable to Denial of Service attack because it uses the send() function to refund the previous bidder. If the previous bidder's fallback function fails (e.g., always reverts), the entire transaction will revert, preventing any new bids from being processed. This allows a malicious bidder to win the auction by ensuring refunds always fail."
+}
+```

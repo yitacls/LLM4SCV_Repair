@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The Reentrancy vulnerability becomes evident when an amount (_am) is sent to the msg.sender before it is deducted from the sender's balance. This can allow the recipient to call the function again as a fallback and withdraw more than the initial balance, potentially draining the contract's funds."
+}
+```

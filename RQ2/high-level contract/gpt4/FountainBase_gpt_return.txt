@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "_depositAngel function (lines 290-291), _withdrawAngel function (lines 295-308), _harvestAngel, _emergencyWithdrawAngel",
+        "description": "The contract contains reentrancy vulnerabilities where the functions _depositAngel, _withdrawAngel, _harvestAngel and _emergencyWithdrawAngel are marked as nonReentrant but call external contract, IAngel, with a function call angel.deposit, angel.withdraw, angel.harvest and angel.emergencyWithdraw respectively. An attacker can exploit these vulnerabilities to re-enter the contract before the function call is finished, possibly causing unexpected behavior."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "_beforeTokenTransfer function",
+        "description": "The function _beforeTokenTransfer interacts with an external contract (IAngel) within a control flow that is executed before the state changes are made. An attacker can potentially use a reentrancy attack to change the state before the function finishes executing, leading to unexpected behavior such as nested function calls."
+    }
+]
+```

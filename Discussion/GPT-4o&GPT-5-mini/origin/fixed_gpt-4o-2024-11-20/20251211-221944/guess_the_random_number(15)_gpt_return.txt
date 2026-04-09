@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "GuessTheRandomNumberChallenge",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "answer",
+            "fix_info": "Move the answer generation to a more secure function to mitigate vulnerability. Also store the answer securely using private visibility.",
+            "variable_code": "uint8 private answer;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "GuessTheRandomNumberChallenge",
+            "fix_info": "Replaced the use of 'block.blockhash' and 'now' to generate the answer with a more secure random number generation method. Enhancement includes initializing the answer in the constructor with additional entropy.",
+            "corrected_code": "function GuessTheRandomNumberChallenge() public payable {\n    require(msg.value == 1 ether);\n    answer = uint8(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, msg.sender))) % 256);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

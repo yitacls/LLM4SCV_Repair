@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "vualt",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Replaced tx.origin with msg.sender to prevent access control bypass via intermediary contracts",
+            "corrected_code": "function clear() public\n    {\n        require(msg.sender == owner);\n        selfdestruct(owner);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "SwapHelper",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getRatioFromRange",
+                "fix_info": "Fixed integer overflow in calculation of ratioE18",
+                "corrected_code": "function getRatioFromRange(int24 tickPool, int24 tickLower, int24 tickUpper) internal pure returns (uint256 ratioE18) { require(tickLower < tickPool && tickUpper > tickPool, 'Position should be in range to call this function'); ratioE18 = 1e18 * TickMath.getSqrtRatioAtTick(tickUpper) / TickMath.getSqrtRatioAtTick(tickLower); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "calcAmountToSwap",
+                "fix_info": "Fixed integer overflow and division by zero vulnerabilities",
+                "corrected_code": "function calcAmountToSwap(int24 tickPool, int24 tickLower, int24 tickUpper, uint256 amount0In, uint256 amount1In) internal pure returns (uint256 amountToSwap, bool token0In) { require(amount0In > 0 || amount1In > 0); uint256 ratioE18 = getRatioFromRange(tickPool, tickLower, tickUpper); uint128 divisor = ratioE18 + 1e18; if (divisor == 0) { divisor = 1; } uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tickPool); uint256 valueX96 = (amount0In * (uint256(sqrtPriceX96)**2) / FixedPoint96.Q96 + amount1In * FixedPoint96.Q96; uint256 amount1PostX96 = (ratioE18 * valueX96) / divisor; token0In = amount1PostX96 >= (amount1In * FixedPoint96.Q96); if (token0In) { amountToSwap = (amount1PostX96 - (amount1In * FixedPoint96.Q96)) / sqrtPriceX96 * FixedPoint96.Q96 / sqrtPriceX96; } else { amountToSwap = amount1In - amount1PostX96 / FixedPoint96.Q96; } }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

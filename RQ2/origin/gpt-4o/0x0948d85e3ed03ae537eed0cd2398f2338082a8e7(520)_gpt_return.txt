@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of 'tx.origin' for authentication in the 'WithdrawDevFunds' function introduces a security vulnerability known as 'tx.origin phishing'. An attacker can trick a contract owner into calling this function indirectly via another contract, enabling unauthorized withdrawal of funds. Instead of 'tx.origin', the contract should use 'msg.sender' for proper access control."
+}
+```

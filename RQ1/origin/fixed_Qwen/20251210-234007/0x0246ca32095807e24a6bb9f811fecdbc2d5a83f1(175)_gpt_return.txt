@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RC",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "price",
+            "fix_info": "Added SafeMath operations to prevent arithmetic overflow/underflow vulnerabilities and added zero-division check",
+            "corrected_code": "function price() public view returns(uint) {\n        uint256 oneEther = 10**18;\n        uint256 tokenValue = tokenSaleContract.tokenValueInEther(oneTokenInFiatWei);\n        require(tokenValue > 0, \"Division by zero\");\n        return oneEther.mul(10**18).div(tokenValue);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

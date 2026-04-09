@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "armies[_armyId].ownerAddress.call(CommissionOwnerValue);",
+    "description": "The use of low-level `call` to transfer funds introduces a reentrancy vulnerability. Since external calls are made before updating the internal state with `_ownershipArmy(_armyId)` or any other state-altering function, an attacker could exploit this to recursively call the `purchaseArmy` function and drain funds by manipulating the transaction flow. This happens because the execution flow allows re-entry before the state has been changed to prevent double-spending."
+}
+```

@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "ERC20",
+    "contract_version": "2.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "approve",
+        "fix_info": "Added protection against front-running attacks by implementing the increaseAllowance/decreaseAllowance pattern and requiring allowance to be set to 0 first before changing to another non-zero value",
+        "corrected_code": "function approve(address spender, uint256 value) public returns (bool) {\n    require(spender != address(0), \"ERC20: approve to the zero address\");\n    \n    // Prevent front-running by requiring allowance to be set to zero first\n    require(value == 0 || _allowed[msg.sender][spender] == 0, \"ERC20: use increaseAllowance or decreaseAllowance instead\");\n    \n    _allowed[msg.sender][spender] = value;\n    emit Approval(msg.sender, spender, value);\n    return true;\n}",
+        "change_type": "modified"
+    }]
+}]
+```

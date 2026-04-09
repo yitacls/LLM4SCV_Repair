@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of `tx.origin` to verify ownership introduces a security vulnerability. This is because `tx.origin` refers to the original address that initiated the transaction, which can be exploited by a phishing attack. An attacker could trick the contract's owner into initiating the transaction from their address, bypassing the intended access control. Instead, the contract should use `msg.sender` for authentication, which ensures that the address interacting with the contract is verified."
+}
+```

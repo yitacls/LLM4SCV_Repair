@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(userBalance[msg.sender])()",
+    "description": "The contract calls an external contract function (msg.sender.call.value()) before updating the state variable (userBalance[msg.sender] = 0). This allows a malicious contract to re-enter the withdrawBalance function multiple times before the balance is reset to zero, potentially draining the contract's funds. The external call can trigger the fallback function of the caller, which could recursively call withdrawBalance again while the original execution is still in progress."
+}
+```

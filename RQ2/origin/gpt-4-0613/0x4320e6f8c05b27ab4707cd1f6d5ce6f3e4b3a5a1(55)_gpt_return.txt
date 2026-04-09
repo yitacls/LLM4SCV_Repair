@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract suffers from a reentrancy vulnerability where the state of the contract is updated after an external call. This can be exploited by an attacker to drain the contract of ETH before balances[msg.sender] can be decremented."
+}
+```

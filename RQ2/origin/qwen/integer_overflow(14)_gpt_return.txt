@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "sellerBalance += value;",
+    "description": "The addition operation on sellerBalance can cause an integer overflow when the result exceeds the maximum value of the uint type. Since Solidity version ^0.4.15 does not have built-in overflow protection, this could lead to unexpected behavior where the balance wraps around to a small value or zero. The commented out assert statement suggests awareness of this issue but it is not implemented, leaving the contract vulnerable to overflow attacks."
+}
+```

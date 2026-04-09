@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "Admin",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "removeAdmin",
+                "fix_info": "Fixed the while loop logic error that could cause infinite loop and out-of-bounds access. Changed to use explicit bounds checking and early return on failure.",
+                "corrected_code": "function removeAdmin(address _adminAddress) external onlyAdmin {\n        // Admin has to exist\n        require(isAdmin[_adminAddress] == true, \"[RBAC] : Admin does not exist\");\n\n        uint256 adminCount = admins.length;\n        bool found = false;\n        uint256 index = 0;\n\n        // Find the index of the admin to remove\n        for (uint256 i = 0; i < adminCount; i++) {\n            if (admins[i] == _adminAddress) {\n                index = i;\n                found = true;\n                break;\n            }\n        }\n\n        // This should never happen due to the require check above, but adding safety\n        require(found, \"[RBAC] : Admin not found in array\");\n\n        // If removing last element, just pop\n        if (index == adminCount - 1) {\n            admins.pop();\n        } else {\n            // Replace with last element and pop\n            admins[index] = admins[adminCount - 1];\n            admins.pop();\n        }\n\n        // Update mapping\n        isAdmin[_adminAddress] = false;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "addAdmin",
+                "fix_info": "Added explicit error message to the require statement for better error handling.",
+                "corrected_code": "function addAdmin(address _adminAddress) external onlyAdmin {\n        // Can't add 0x address as an admin\n        require(_adminAddress != address(0x0), \"[RBAC] : Admin must be != than 0x0 address\");\n        // Can't add existing admin\n        require(isAdmin[_adminAddress] == false, \"[RBAC] : Admin already exists.\");\n        // Add admin to array of admins\n        admins.push(_adminAddress);\n        // Set mapping\n        isAdmin[_adminAddress] = true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "constructor",
+                "fix_info": "Added duplicate address check to prevent duplicate admin entries in constructor.",
+                "corrected_code": "constructor (address [] memory _admins) public {\n        for(uint i = 0; i < _admins.length; i++) {\n            require(_admins[i] != address(0x0), \"[RBAC] : Admin address cannot be zero\");\n            require(!isAdmin[_admins[i]], \"[RBAC] : Duplicate admin address\");\n            admins.push(_admins[i]);\n            isAdmin[_admins[i]] = true;\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

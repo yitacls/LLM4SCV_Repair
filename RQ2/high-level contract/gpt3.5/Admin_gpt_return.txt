@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "L51-L66",
+    "description": "The vulnerability lies in the while loop in the removeAdmin function (lines 51-66). If an admin address that does not exist is passed, the while loop will continue infinitely, causing a Denial of Service (DoS) vulnerability. Additionally, the check for whether the index i is equal to admins.length should be i == admins.length - 1 to prevent an off-by-one error."
+}
+```

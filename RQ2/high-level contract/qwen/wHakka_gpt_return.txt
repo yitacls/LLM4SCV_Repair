@@ -1,0 +1,58 @@
+```json
+[
+    {
+        "contract_name": "stakingRateModel",
+        "contract_version": "0.5.17",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "stakingRateMax",
+                "fix_info": "Added reentrancy guard and improved time calculation to mitigate reentrancy and block timestamp issues",
+                "corrected_code": "function stakingRateMax() public returns (uint256 rate) {\n    uint256 timeElapsed = block.timestamp.sub(lastUpdateTimestamp);\n    // Use a more secure time check to prevent manipulation\n    if(timeElapsed > 0 && timeElapsed < 365 days) {  // Added sanity check for time elapsed\n        lastUpdateTimestamp = block.timestamp;\n        rate = timeElapsed.mul(ratePerSecond).add(1e18).mul(stakingRateStored).div(1e18);\n        stakingRateStored = rate;\n    }\n    else rate = stakingRateStored;\n}",
+                "change_type": "modified"
+            }
+        ]
+    },
+    {
+        "contract_name": "wHakka",
+        "contract_version": "0.5.17",
+        "state_variables": [
+            {
+                "variable_name": "ReentrancyGuard",
+                "fix_info": "Added reentrancy guard state variable",
+                "variable_code": "uint256 private _guardCounter;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+                "modifier_code": "modifier nonReentrant() {\n    _guardCounter += 1;\n    uint256 localCounter = _guardCounter;\n    _;\n    require(localCounter == _guardCounter, \"ReentrancyGuard: reentrant call\");\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Initialized reentrancy guard counter",
+                "corrected_code": "constructor() public {\n    symbol = \"wHAKKA\";\n    name = \"Wrapped Hakka\";\n    decimals = 18;\n    _balances[address(this)] = uint256(-1);\n    _balances[address(0)] = uint256(-1);\n    _guardCounter = 1;  // Initialize reentrancy guard\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "stake",
+                "fix_info": "Added reentrancy guard and improved time validation to prevent reentrancy and timestamp manipulation",
+                "corrected_code": "function stake(address to, uint256 amount, uint256 time) public nonReentrant returns (uint256 wAmount) {\n    // Validate time parameter to prevent timestamp manipulation\n    require(time == 30 days || time == 90 days || time == 180 days || time == 360 days, \"Invalid staking period\");\n    \n    vault storage v = vaults[to][vaultCount[to]];\n    wAmount = getStakingRate(time).mul(amount).div(1e18);\n    require(wAmount > 0, \"invalid lockup\");\n\n    v.hakkaAmount = amount;\n    v.wAmount = wAmount;\n    v.unlockTime = block.timestamp.add(time);\n    \n    stakedHakka[to] = stakedHakka[to].add(amount);\n    votingPower[to] = votingPower[to].add(wAmount);\n    vaultCount[to]++;\n\n    _mint(to, wAmount);\n    Hakka.safeTransferFrom(msg.sender, address(this), amount);\n\n    emit Stake(to, msg.sender, amount, wAmount, time);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unstake",
+                "fix_info": "Added reentrancy guard and improved time validation to prevent reentrancy and timestamp manipulation",
+                "corrected_code": "function unstake(address to, uint256 index, uint256 wAmount) public nonReentrant returns (uint256 amount) {\n    vault storage v = vaults[msg.sender][index];\n    // Added maximum time check to prevent timestamp manipulation\n    require(block.timestamp >= v.unlockTime && v.unlockTime > block.timestamp - 365 days, \"locked\");\n    require(wAmount <= v.wAmount, \"exceed locked amount\");\n    amount = wAmount.mul(v.hakkaAmount).div(v.wAmount);\n\n    v.hakkaAmount = v.hakkaAmount.sub(amount);\n    v.wAmount = v.wAmount.sub(wAmount);\n\n    stakedHakka[msg.sender] = stakedHakka[msg.sender].sub(amount);\n    votingPower[msg.sender] = votingPower[msg.sender].sub(wAmount);\n\n    _burn(msg.sender, wAmount);\n    Hakka.safeTransfer(to, amount);\n    \n    emit Unstake(msg.sender, to, amount, wAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

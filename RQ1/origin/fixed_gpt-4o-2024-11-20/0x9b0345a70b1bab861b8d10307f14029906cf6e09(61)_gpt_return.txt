@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "Presale",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "presaleClosed",
+            "fix_info": "No changes required for this variable; retains original intent.",
+            "variable_code": "bool presaleClosed;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "availableSupply",
+            "fix_info": "No changes required for this variable; retains original intent.",
+            "variable_code": "uint availableSupply;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed for this variable - stores user balances.",
+            "variable_code": "mapping(address => uint) public balanceOf;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "amountRaised",
+            "fix_info": "No changes required for this variable; holds total amount raised.",
+            "variable_code": "uint public amountRaised;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added reentrancy protection to ensure state consistency during external calls.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!reentrancyGuard, \"Reentrant call\");\n    reentrancyGuard = true;\n    _;\n    reentrancyGuard = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Resolved reentrancy vulnerability by using the Checks-Effects-Interactions (CEI) pattern and adding the `nonReentrant` modifier. Changed `send` to `transfer` for safe Ether transfer. Removed invalid `presaleClosed` setting logic in fallback.",
+            "corrected_code": "function () payable public nonReentrant {\n    require(!presaleClosed, \"Presale is closed\");\n    uint amount = msg.value;\n    uint requestedTokens = amount * pricePresale;\n\n    if (requestedTokens <= availableSupply) {\n        balanceOf[msg.sender] += amount;\n        amountRaised += amount;\n        availableSupply -= requestedTokens;\n\n        // Interactions after state updates (Checks-Effects-Interactions pattern).\n        tokenReward.transfer(msg.sender, requestedTokens);\n        tokenReward.transfer(\n            erotixFund,\n            requestedTokens * erotixFundMultiplier / 100\n        );\n        tokenReward.transfer(\n            foundersFund,\n            requestedTokens * foundersFundMultiplier / 100\n        );\n\n        emit FundTransfer(msg.sender, amount, true);\n    } else {\n        uint amountAvailable = availableSupply / pricePresale;\n        uint refundAmount = amount - (amountAvailable * pricePresale);\n\n        balanceOf[msg.sender] += amountAvailable;\n        amountRaised += amountAvailable;\n\n        // State update before interactions.\n        availableSupply = 0;\n\n        // Interactions after state updates.\n        tokenReward.transfer(\n            msg.sender,\n            amountAvailable * pricePresale\n        );\n        tokenReward.transfer(\n            erotixFund,\n            amountAvailable * pricePresale * erotixFundMultiplier / 100\n        );\n        tokenReward.transfer(\n            foundersFund,\n            amountAvailable * pricePresale * foundersFundMultiplier / 100\n        );\n\n        emit FundTransfer(msg.sender, amountAvailable * pricePresale, true);\n\n        if (refundAmount > 0) {\n            msg.sender.transfer(refundAmount); // Using transfer ensures reentrancy safety.\n        }\n        presaleClosed = true;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

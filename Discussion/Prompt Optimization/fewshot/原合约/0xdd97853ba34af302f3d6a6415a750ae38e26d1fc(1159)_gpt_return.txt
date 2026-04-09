@@ -1,0 +1,23 @@
+```json
+[
+    {
+        "contract_name": "betContractUP",
+        "contract_version": "^0.4.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "winnerReward",
+                "fix_info": "Add access control to only allow authorized callers to reward winners.",
+                "corrected_code": "function winnerReward(address player, uint betvalue) public payable {
+    require(msg.sender == owner); // Add access control
+    uint winningAmount = (betvalue * 175) / 100;
+    player.transfer(winningAmount);
+    UpStats(UP_totalBets, UP_etherWin, UP_winBets, UP_winRate);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

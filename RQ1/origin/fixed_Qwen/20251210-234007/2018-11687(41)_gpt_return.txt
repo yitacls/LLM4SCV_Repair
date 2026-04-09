@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BitcoinRed",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "distributeBTR",
+            "fix_info": "Added safe arithmetic operations to prevent underflow/overflow vulnerabilities. Used require statements to check for sufficient balance and valid addresses before performing arithmetic operations.",
+            "corrected_code": "function distributeBTR(address[] addresses) onlyOwner {\n    for (uint i = 0; i < addresses.length; i++) {\n        require(balances[owner] >= 2000 * 10**8, \"Insufficient balance\");\n        require(addresses[i] != address(0), \"Invalid address\");\n        balances[owner] = balances[owner] - 2000 * 10**8;\n        balances[addresses[i]] = balances[addresses[i]] + 2000 * 10**8;\n        Transfer(owner, addresses[i], 2000 * 10**8);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

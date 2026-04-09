@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "In function getDebtOut, line 283",
+    "description": "The function gets the debt out of a vault without checking the return value of the _repayDebt function, potentially leading to unexpected behavior if the debt repayment fails."
+}
+```

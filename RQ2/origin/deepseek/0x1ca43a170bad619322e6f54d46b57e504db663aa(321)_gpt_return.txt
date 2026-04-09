@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), _from, _amount, _data);",
+    "description": "The low-level call to the receiving contract does not check the return value or success status. In Solidity 0.4.25, .call() returns a boolean success value which is ignored here. If the receiving contract's fallback function fails (runs out of gas, throws an exception, etc.), the transaction will continue execution and emit the ERC223Transfer event despite the failed token transfer to the contract. This violates the invariant that token transfers should be atomic - either fully succeed or fully revert. An attacker could potentially exploit this by implementing a receiving contract that intentionally fails in certain conditions, leading to inconsistent state where tokens are deducted from sender but not properly credited to receiver."
+}
+```

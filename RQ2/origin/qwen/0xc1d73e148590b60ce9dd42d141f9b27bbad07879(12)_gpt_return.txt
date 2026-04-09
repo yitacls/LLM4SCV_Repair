@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "unlockTime += now;",
+    "description": "The statement 'unlockTime += now;' is vulnerable to arithmetic overflow. In Solidity ^0.4.22, arithmetic operations do not have built-in overflow protection. When 'now' (current timestamp) is added to 'unlockTime', if the result exceeds the maximum value that can be stored in the uint type, it will wrap around to zero, causing unexpected behavior. This could allow an attacker to manipulate the unlock time to be earlier than intended, potentially bypassing time-based security mechanisms."
+}
+```

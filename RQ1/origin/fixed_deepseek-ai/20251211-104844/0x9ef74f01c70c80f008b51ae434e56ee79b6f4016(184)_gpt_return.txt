@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added reentrancy guard to prevent reentrancy attacks",
+            "modifier_code": "modifier nonReentrant() {\n        require(!locked, \"Reentrant call\");\n        locked = true;\n        _;\n        locked = false;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "depositEtherTokenAmount",
+            "fix_info": "Added reentrancy protection, proper value handling, and address validation",
+            "corrected_code": "function depositEtherTokenAmount(IEtherToken etherToken, uint256 amount) external nonReentrant {\n        require(address(etherToken) != address(0), \"Invalid token address\");\n        require(amount > 0, \"Amount must be greater than zero\");\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        \n        uint256 initialBalance = address(this).balance;\n        etherToken.deposit.value(amount)();\n        require(address(this).balance == initialBalance - amount, \"Balance mismatch after deposit\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

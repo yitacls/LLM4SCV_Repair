@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "Lines 1-7: The entire deal() function",
+    "description": "The contract uses predictable on-chain data (block.number, block.timestamp, and block.blockhash) combined with user inputs to generate pseudo-randomness. This method is vulnerable to manipulation because: 1) Miners can directly influence block.timestamp within limits, 2) block.blockhash(block.number) often returns zero for the current block, 3) In public blockchains, all inputs are visible, allowing attackers to front-run transactions by pre-computing outcomes. In Solidity 0.4.2, block.blockhash() specifically returns the hash of the given block, but using the current block's number often fails as the current block's hash isn't available during execution. This makes the randomness predictable and exploitable."
+}
+```

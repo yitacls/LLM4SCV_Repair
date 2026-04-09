@@ -1,0 +1,22 @@
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function _swapUniswap(address _from, address _to, uint256 _amount) internal {\n    ...\n    UniswapRouterV2(univ2Router2).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n}\n",
+        "description": "The call to UniswapRouterV2.swapExactTokensForTokens is invoked without checking its return value or any post-call effects. Although Uniswap's router typically reverts on failure, relying solely on that behavior is risky: a malicious or poisoned router implementation (or unexpected change in ABI/behavior) could return incorrect data or a falsy success indication without reverting, and this contract does not validate the returned amounts or confirm the expected token balance changes. This can lead to silent failures or loss of funds if the swap does not produce the expected token amounts. Recommended fixes: capture the returned amounts and validate them (e.g., ensure returned amounts[amounts.length-1] >= expected minimum), or check token balances before/after the swap to verify the operation succeeded as intended. If using low-level calls, always check the success flag and decode/validate returned data."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function _swapUniswapWithPath(address[] memory path, uint256 _amount) internal {\n    ...\n    UniswapRouterV2(univ2Router2).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n}\n",
+        "description": "The call to UniswapRouterV2.swapExactTokensForTokens is made without checking its return value or verifying post-conditions. The contract neither inspects the returned amounts array nor confirms that the expected output token balance increased. Without these checks, a swap could silently produce no or insufficient output tokens (due to a malicious router, changed behavior, or other unexpected conditions), and the strategy would proceed assuming success. Recommended mitigation: assign the returned uint[] to a variable and assert the final output amount meets a minimum threshold, or compare token balances before and after the call to ensure the expected result."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function _swapSushiswap(address _from, address _to, uint256 _amount) internal {\n    ...\n    UniswapRouterV2(sushiRouter).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n}\n",
+        "description": "The call to the SushiSwap router (UniswapRouterV2(sushiRouter).swapExactTokensForTokens) does not check the return value or validate outcomes. Similar to the Uniswap case, absence of return-data handling or balance validation may allow a failing or manipulated router to cause the swap to result in unexpected or zero output without detection. To harden this, capture and validate the returned amounts array, enforce a minimum acceptable output amount, or verify token balance deltas before and after the swap. If using low-level calls, ensure you check the boolean success and decode the returned data."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function _swapSushiswapWithPath(address[] memory path, uint256 _amount) internal {\n    ...\n    UniswapRouterV2(sushiRouter).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n}\n",
+        "description": "The SushiSwap router call is made without any verification of its return value or effects. The contract neither inspects the returned swap amounts nor checks token balances to ensure the swap yielded the expected output. This unchecked external call can lead to silent failures or incorrect accounting if the router behaves unexpectedly. Recommended remediation: store the returned uint[] amounts and validate the final amount is acceptable, or check pre/post token balances to detect anomalies. Also consider using trusted router addresses and adding require checks that enforce minimum output amounts."
+    }
+]

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public {",
+    "description": "The withdraw function does not properly check the ownership before allowing the transfer of funds. This can potentially lead to unauthorized withdrawals by anyone calling the function instead of just the owner."
+}
+```

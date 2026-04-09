@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.call(_value);",
+    "description": "The low-level call function does not check if the call was successful. In Solidity ^0.4.13, call() returns a boolean indicating success/failure, but this return value is not checked. If the call fails (e.g., recipient is not a contract, out of gas, or recipient contract reverts), the function will still continue execution and return true, potentially leading to loss of funds. The call should be checked for success: require(_to.call.value(_value)());"
+}
+```

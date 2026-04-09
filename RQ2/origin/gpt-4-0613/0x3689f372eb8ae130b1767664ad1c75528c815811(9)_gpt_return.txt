@@ -1,0 +1,9 @@
+Here's how the vulnerabilities of the EasyInvestPI contract would be presented:
+
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount)",
+    "description": "The send() function is a low-level call that throws an exception when it fails. However, an exception is not checked or handled in the contract when it does occur, which might cause unexpected behavior or potential loss of funds. Always use transfer() instead of send() for sending ethers as it is safer, it will revert the transaction if it fails."
+}
+```

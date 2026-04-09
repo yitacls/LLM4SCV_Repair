@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract is vulnerable to a 'tx.origin' attack. The 'tx.origin' command checks the original address that initiated the call, not necessarily the immediate sender (msg.sender). This can lead to security vulnerabilities where another contract is tricked into calling this contract, making 'tx.origin' an origin address that is not the actual sender. The best practice is to use 'msg.sender' instead of 'tx.origin' to avoid these potential security risks."
+}
+```

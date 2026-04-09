@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(uint tokenCount) public returns (bool) {\n        var balance = dividends(msg.sender);\n        payouts[msg.sender] += (int256) (balance * PRECISION);\n        totalPayouts += (int256) (balance * PRECISION);\n        msg.sender.transfer(balance); // <LEAKING_VUL>\n        return true;\n    }",
+    "description": "The withdraw function lacks proper access control checks and does not verify that the caller has sufficient balance or tokens to withdraw. The function is publicly accessible and allows any user to potentially withdraw funds they shouldn't have access to. Additionally, there's no validation of the tokenCount parameter that is passed but not used in the function, and the balance calculation may not properly account for the user's actual entitlement."
+}
+```

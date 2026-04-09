@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), _from, _amount, _data);  // fault line",
+    "description": "The contract is using a low-level call to interact with an external contract using `_custom_fallback`, which can pose security risks if not properly validated. This can lead to scenarios where unintended functions are executed on the receiving contract, potentially causing unexpected behavior or exploits."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "setRewardRate function",
+    "description": "The setRewardRate function can be used maliciously to consume large amounts of gas in a single transaction, leading to potential denial of service (DoS) attacks. This vulnerability may result from the processing of a large number of rewardRate values, causing exceeding block gas limit. It could allow an attacker to disrupt normal operations of the contract."
+}
+```

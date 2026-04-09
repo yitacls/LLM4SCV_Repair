@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == _customerAddress)",
+    "description": "The contract uses 'tx.origin' for authorization instead of 'msg.sender'. This creates a phishing vulnerability where a malicious contract can call 'register()' on behalf of a user. When the user interacts with the attacker's contract, 'tx.origin' will be the user's address (not the attacker's contract address), allowing the attacker to register the user without their consent. This bypasses the intended access control that should ensure only the actual sender can register themselves."
+}
+```

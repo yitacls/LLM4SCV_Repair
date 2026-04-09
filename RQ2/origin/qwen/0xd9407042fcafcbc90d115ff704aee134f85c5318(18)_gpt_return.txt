@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 amount = invested[msg.sender] * 4 / 100 * (block.number - atBlock[msg.sender]) / 5900;",
+    "description": "The arithmetic operation for calculating the amount is vulnerable to integer division issues and potential overflow. In Solidity ^0.4.24, there is no automatic overflow protection. The multiplication operations could overflow, and the division operations use integer division which truncates remainders, potentially leading to incorrect calculations. Additionally, the order of operations may not yield the expected results due to integer truncation at each division step."
+}
+```

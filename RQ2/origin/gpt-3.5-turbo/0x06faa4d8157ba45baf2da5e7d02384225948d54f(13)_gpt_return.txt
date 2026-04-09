@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;",
+    "description": "This vulnerable code snippet is susceptible to integer underflow or overflow due to potential multiplication or division with large values, leading to unexpected results or exploitation."
+}
+```

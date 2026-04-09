@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "modifier refundsAttachedEth",
+        "description": "The function refundsAttachedEth contains a vulnerability where msg.sender.transfer is used. This can enable a reentrancy attack as it forwards all available gas to the recipient's fallback function. If the fallback function contains malicious code, it can reenter the contract and potentially exploit the system. This vulnerability is present because the transfer of remainingBalance happens after a critical business logic execution and relies on state that can potentially be altered during the reentrancy."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _callSelf",
+        "description": "The internal function _callSelf executes arbitrary bytes input via the address(this).call{value: value}(callData). This can be problematic as it allows external calls during execution, making the contract susceptible to reentrancy attacks. Attackers can use these external calls to modify contract state or reenter the function in unintended ways. Careful validation of input data and ensuring all side effects are completed before the call is made could prevent issues."
+    }
+]
+```

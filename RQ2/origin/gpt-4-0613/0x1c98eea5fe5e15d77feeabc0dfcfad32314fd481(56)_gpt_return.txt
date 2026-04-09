@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.transfer(balance);",
+    "description": "This contract contains a reentrancy vulnerability in the 'withdraw' function. The function calls 'transfer' before it updates the state (i.e., 'payouts' and 'totalPayouts'). Thus, if the callback of the transaction is able to trigger the function again (e.g., if it's a contract), it could withdraw more than its balance - effectively draining the contract's funds."
+}
+```

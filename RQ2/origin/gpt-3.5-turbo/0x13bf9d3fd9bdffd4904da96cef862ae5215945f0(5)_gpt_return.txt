@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "wallet.call(msg.value);  // fault line",
+            "description": "The contract directly calls the external contract using a low-level call without checking the return value or performing any validations. This can potentially lead to various security vulnerabilities such as reentrancy attacks or loss of funds."
+        }
+    ]
+}
+```

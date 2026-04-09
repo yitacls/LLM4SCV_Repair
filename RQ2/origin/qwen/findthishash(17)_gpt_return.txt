@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "Front Running",
+        "location": "require(hash == sha3(solution));\n        msg.sender.transfer(1000 ether);",
+        "description": "This function is vulnerable to front-running attacks. When a user submits a transaction with the correct solution, miners or other attackers can observe this transaction in the mempool and submit the same solution with a higher gas price to get their transaction processed first. The attacker would receive the 1000 ether reward instead of the legitimate solver. Additionally, there's a reentrancy-like risk if the recipient is a contract, and the use of transfer() which can fail and block the contract."
+    },
+    {
+        "type": "Weak PRNG",
+        "location": "sha3(solution)",
+        "description": "The contract relies on sha3 (now keccak256) hashing of user-provided input, but doesn't specify how the 'hash' state variable is generated or initialized. If the target hash is predictable or poorly generated, it could be vulnerable to preimage attacks or brute force attempts."
+    }
+]
+```

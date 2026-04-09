@@ -1,0 +1,17 @@
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256(sqrtPriceX96)**2 (in calcAmountToSwap, computing valueX96)\n\nuint256 valueX96 = (amount0In * ((uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION)) +\n    (amount1In << FixedPoint96.RESOLUTION);",
+        "description": "The expression uint256(sqrtPriceX96)**2 computes the square of a uint160 value and is evaluated using 256-bit arithmetic. If sqrtPriceX96 is sufficiently large, squaring it can exceed 2**256-1 and overflow, producing an incorrect small result. That incorrect result is then used in multiplication by amount0In, causing further incorrect values and enabling downstream arithmetic errors. Using the exponentiation operator (**) on large operands without checks can overflow. Even if typical TickMath outputs limit sqrtPriceX96, this code does not enforce any bounds and therefore is vulnerable to overflow in this operation."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Multiplications and additions when computing valueX96 and amount1PostX96\n\nuint256 valueX96 = (amount0In * ((uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION)) +\n    (amount1In << FixedPoint96.RESOLUTION);\n...\nuint256 amount1PostX96 = (ratioE18 * valueX96) / (ratioE18 + 1e18);",
+        "description": "The multiplication amount0In * ((uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION) and the left-shift (amount1In << FixedPoint96.RESOLUTION) can overflow uint256 if amount0In or amount1In are large (or if the squared sqrtPriceX96 is large). Similarly, ratioE18 * valueX96 can overflow before the division is applied. There are no SafeMath checks or explicit bounds checks to prevent these multiplications/additions from exceeding the uint256 limit. Overflows here would corrupt valueX96/amount1PostX96 and can lead to incorrect swap amount calculations or logic errors that could be exploited."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Left-shifts and subsequent arithmetic when computing amountToSwap\n\nif (token0In) {\n    amountToSwap = (((amount1PostX96 - (amount1In << FixedPoint96.RESOLUTION)) / sqrtPriceX96) <<\n        FixedPoint96.RESOLUTION) / sqrtPriceX96;\n} else {\n    amountToSwap = amount1In - (amount1PostX96 >> FixedPoint96.RESOLUTION);\n}",
+        "description": "The code performs large left-shifts (amount1In << FixedPoint96.RESOLUTION) and additional shifts on intermediate results. These left shifts can overflow uint256 if amount1In is large. Even if the logic attempts to ensure non-negative differences (the token0In boolean depends on a comparison), prior overflowed intermediate values (from the squared price, multiplications, or shifts) can invalidate the comparison and lead to underflow on the subtraction branches. There are no explicit checks or use of SafeMath to prevent overflow/underflow during these shift/subtract operations, making the final amountToSwap computation unsafe."
+    }
+]

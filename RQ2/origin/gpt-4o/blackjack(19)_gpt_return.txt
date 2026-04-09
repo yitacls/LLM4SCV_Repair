@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint b = block.number;\nuint timestamp = block.timestamp;\nreturn uint8(uint256(keccak256(block.blockhash(b), player, cardNumber, timestamp)) % 52);",
+    "description": "The function `deal` relies on block variables like `block.number`, `block.timestamp`, and `block.blockhash` to generate randomness. These variables can be influenced or predicted by miners or external parties, allowing manipulation of the contract's behavior. This compromises the unpredictability of the random number generation, which could lead to unfair outcomes or exploitation of the function's logic."
+}
+```

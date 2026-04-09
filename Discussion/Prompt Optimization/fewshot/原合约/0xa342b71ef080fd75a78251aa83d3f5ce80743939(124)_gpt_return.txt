@@ -1,0 +1,26 @@
+```json
+[
+    {
+        "contract_name": "QIUToken",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "ownerTransferFrom",
+                "fix_info": "Add proper access control to prevent unauthorized transfers.",
+                "corrected_code": "function ownerTransferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+    require(msg.sender == owner);   
+    require(_to != address(0));
+    require(_value <= balances[_from]);
+    balances[_from] = balances[_from].sub(_value);
+    balances[_to] = balances[_to].add(_value);
+    Transfer(_from, _to, _value);
+    return true;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

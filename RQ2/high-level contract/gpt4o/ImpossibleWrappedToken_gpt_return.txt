@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Line 53-61, function: deposit(address dst, uint256 wad)",
+            "description": "The defined `deposit` function allows an external call (`IERC20(underlying).transferFrom`) before updating the `underlyingBalance`. This can lead to potential reentrancy attacks where the state is inconsistent between external calls."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Line 65-73, function: deposit(address dst)",
+            "description": "The alternative `deposit` function calculates state (`transferAmt`, `balance`) starting at `IERC20(underlying).balanceOf` but updates critical state variables (`underlyingBalance`, `totalSupply`) much later, exposing the contract to malicious reentrant transfers."
+        },
+        {
+            "type": "SWC-114-Transaction Order Dependence",
+            "location": "Line 65-73, function: deposit(address dst)",
+            "description": "The token balance fetched in line 67 is dependent on the transaction ordering as any external transaction updating token balance before transfer can result in unexpected or manipulated outcomes. Proper synchrony with atomic updates is needed."
+        }
+    ]
+}
+```

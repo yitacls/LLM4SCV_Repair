@@ -1,0 +1,29 @@
+[
+    {
+        "contract_name": "GuessTheRandomNumberChallenge",
+        "contract_version": "^0.4.21",
+        "state_variables": [
+            {
+                "variable_name": "answerHash",
+                "fix_info": "Added commit-reveal: store the hash (commitment) of the secret random seed provided by the deployer instead of deriving randomness from manipulable block values.",
+                "variable_code": "bytes32 public answerHash;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "answer",
+                "fix_info": "Removed the public storage of a derived random value to avoid providing an attacker information and to prevent relying on insecure on-chain randomness.",
+                "variable_code": "",
+                "change_type": "deleted"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "GuessTheRandomNumberChallenge",
+                "fix_info": "Constructor changed to accept a commitment (bytes32) provided by the deployer (commit-reveal pattern). This avoids using blockhash/now for randomness which is manipulable by miners. The contract still requires 1 ether funding as before.",
+                "corrected_code": "function GuessTheRandomNumberChallenge(bytes32 _commitment) public payable {\n        require(msg.value == 1 ether);\n        require(_commitment != bytes32(0));\n        // Store only the commitment (hash of the secret seed). The actual secret/seed\n        // should be revealed later via a dedicated reveal function (commit-reveal pattern).\n        answerHash = _commitment;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

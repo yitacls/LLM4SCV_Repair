@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Unchecked External Call / Denial of Service",
+    "location": "beneficiary.send(amountToSend);",
+    "description": "In Solidity version ^0.4.16, the .send() method returns a boolean value indicating success or failure, but this return value is not checked. If the send fails (e.g., if the beneficiary is a contract with a fallback function that reverts or runs out of gas), the transaction will not revert, but currentBalance will already be set to 0. This results in a permanent loss of funds, as the contract's balance is reset without the beneficiary actually receiving the ether. The vulnerability is an unchecked external call that can lead to denial of service (permanent locking of funds). While not a traditional arithmetic vulnerability, it is a critical flaw in fund handling logic. In Solidity 0.4.x, use .transfer() for automatic reverts on failure, or check the return value of .send() and handle failures appropriately."
+}
+```

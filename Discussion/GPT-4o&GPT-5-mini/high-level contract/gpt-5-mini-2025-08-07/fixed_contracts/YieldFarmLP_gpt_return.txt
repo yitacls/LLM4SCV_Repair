@@ -1,0 +1,21 @@
+[{
+    "contract_name": "YieldFarmLP",
+    "contract_version": "0.6.12",
+    "state_variables": [
+        {
+            "variable_name": "MAX_EPOCHS_PER_HARVEST",
+            "fix_info": "Added an upper bound on the number of epochs processed in a single massHarvest call to mitigate DoS by block gas limit and keep loops bounded.",
+            "variable_code": "uint128 public constant MAX_EPOCHS_PER_HARVEST = 20;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "massHarvest",
+            "fix_info": "Prevent underflow when current epoch is 0 and limit the number of epochs processed per call to avoid DoS via block gas limit. Preserve original semantics (sequential harvesting) while capping iterations and returning early when nothing to harvest.",
+            "corrected_code": "function massHarvest() external returns (uint){\n    uint totalDistributedValue = 0;\n\n    uint128 currentEpoch = _getEpochId();\n    // nothing to harvest if epoch 0 (before distribution start)\n    if (currentEpoch == 0) {\n        return 0;\n    }\n\n    // the last epoch that can be harvested is currentEpoch - 1\n    uint128 lastHarvestable = currentEpoch - 1;\n    if (lastHarvestable > NR_OF_EPOCHS) {\n        lastHarvestable = uint128(NR_OF_EPOCHS);\n    }\n\n    // first epoch to process\n    uint128 start = uint128(lastEpochIdHarvested[msg.sender]) + 1;\n    if (start > lastHarvestable) {\n        // nothing to do\n        return 0;\n    }\n\n    // limit number of epochs processed in a single tx to avoid block gas limit DoS\n    uint128 remaining = lastHarvestable - start + 1;\n    uint128 end = lastHarvestable;\n    if (remaining > MAX_EPOCHS_PER_HARVEST) {\n        end = start + MAX_EPOCHS_PER_HARVEST - 1;\n    }\n\n    // process epochs sequentially (as required by _harvest)\n    for (uint128 i = start; i <= end; i++) {\n        totalDistributedValue = totalDistributedValue.add(_harvest(i));\n    }\n\n    uint256 epochsHarvested = uint256(end - start + 1);\n    emit MassHarvest(msg.sender, epochsHarvested, totalDistributedValue);\n\n    if (totalDistributedValue > 0) {\n        // require success of ERC20 transfer\n        require(_bond.transferFrom(_communityVault, msg.sender, totalDistributedValue), \"Transfer failed\");\n    }\n\n    return totalDistributedValue;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

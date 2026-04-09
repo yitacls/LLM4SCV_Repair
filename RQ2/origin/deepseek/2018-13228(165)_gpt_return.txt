@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "msg.sender.send(amount * sellPrice)",
+    "description": "The multiplication 'amount * sellPrice' can cause an integer overflow. Since this contract uses Solidity ^0.4.2, which does not have built-in SafeMath by default, multiplying two unsigned integers without bounds checking can result in an overflow where the product wraps around to a small number, causing the seller to receive far less ether than intended or potentially causing the transaction to fail unexpectedly due to insufficient ether being sent."
+}
+```

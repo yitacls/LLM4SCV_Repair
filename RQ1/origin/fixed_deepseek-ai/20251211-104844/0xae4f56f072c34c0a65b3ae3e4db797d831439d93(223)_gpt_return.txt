@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Gimli",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyStreamer",
+            "fix_info": "Added access control modifier to validate that only the streamerContract can call functions with this modifier",
+            "modifier_code": "modifier onlyStreamer() {\n        require(msg.sender == streamerContract);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferGIM",
+            "fix_info": "Removed the dangerous tx.origin check and replaced it with proper access control pattern using onlyStreamer modifier. Added proper input validation for the amount. Fixed visibility and return syntax.",
+            "corrected_code": "function transferGIM(address _from, address _to, uint256 _amount) onlyStreamer returns (bool success) {\n        require(_amount <= streamerContractMaxAmount);\n        require(_amount > 0, \"Amount must be positive\");\n        require(balances[_from] >= _amount, \"Insufficient balance\");\n        \n        balances[_from] = safeSub(balances[_from], _amount);\n        balances[_to] = safeAdd(balances[_to], _amount);\n        Transfer(_from, _to, _amount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

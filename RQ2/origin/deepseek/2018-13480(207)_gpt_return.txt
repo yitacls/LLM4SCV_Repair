@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "In Solidity version ^0.4.18, arithmetic operations are unprotected against overflow/underflow vulnerabilities. The mintToken function performs unchecked addition operations on balanceOf[target] and totalSupply. An attacker with owner privileges could pass extremely large values to mintedAmount, causing the variables to wrap around (overflow). This could artificially inflate the token supply or manipulate user balances beyond intended limits, disrupting token economics and potentially enabling unauthorized wealth creation or denial-of-service conditions."
+}
+```

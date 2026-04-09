@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Roulette",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "pastBlockTime",
+            "fix_info": "Replaced timestamp-based tracking with block number tracking to prevent time manipulation attacks",
+            "variable_code": "uint256 public pastBlockNumber;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "",
+            "fix_info": "Fixed time manipulation vulnerability by replacing timestamp checks with block number checks, and improved randomness source",
+            "corrected_code": "function () public payable {\n        require(msg.value == 10 ether); // must send 10 ether to play\n        require(block.number != pastBlockNumber); // only 1 transaction per block\n        pastBlockNumber = block.number;\n        if(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), msg.sender))) % 15 == 0) { // improved randomness check for winner\n            msg.sender.transfer(this.balance);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

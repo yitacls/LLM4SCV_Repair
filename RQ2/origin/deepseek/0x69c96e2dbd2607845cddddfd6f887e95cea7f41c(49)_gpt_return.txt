@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authentication is a security vulnerability. The tx.origin variable returns the original external account that started the transaction chain, which creates phishing risks. A malicious contract could trick the owner into calling a function that then calls the vulnerable contract, making tx.origin equal to the owner's address even though the call originates from the attacker's contract. This can lead to unauthorized minting if the owner interacts with a malicious contract. It should be replaced with msg.sender for proper authentication. Additionally, the assert(amount >= 0) is redundant since uint256 values cannot be negative in Solidity 0.4.11."
+}
+```

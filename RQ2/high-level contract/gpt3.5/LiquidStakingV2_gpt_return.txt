@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Line 380",
+    "description": "The 'withdrawUnstakedTokens' function can be exploited for a denial-of-service attack if an attacker supplies a large number of unstaked tokens. The loop in the function can consume excessive gas, leading to a DoS attack."
+}
+```

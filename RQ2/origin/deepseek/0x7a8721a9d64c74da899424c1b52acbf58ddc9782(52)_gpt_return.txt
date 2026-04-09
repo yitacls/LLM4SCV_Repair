@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; ... }",
+    "description": "The contract uses the low-level call.value() function to send ether before updating the sender's internal balance state. This allows a malicious contract receiving the funds to recursively call CashOut() again before balances[msg.sender] is decremented, potentially draining all funds from the contract. In Solidity 0.4.19, there is no built-in reentrancy guard, making this vulnerability critical. The recommended fix is to follow the Checks-Effects-Interactions pattern: update balances[msg.sender] first, then perform the external call, or use a reentrancy guard."
+}
+```

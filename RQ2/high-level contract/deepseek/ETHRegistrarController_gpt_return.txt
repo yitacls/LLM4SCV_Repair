@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "Lines 46-49: `makeCommitment` and `commit` functions",
+        "description": "The contract uses a commitment scheme to prevent front-running, but there's a race condition between making a commitment and registering a name. An attacker can monitor the mempool for commitments and submit their own transaction with a higher gas price to front-run the registration. The vulnerability exists because commitments are stored publicly and the registration process has a minimum wait time (MIN_COMMITMENT_AGE = 1 hour), allowing attackers to observe commitments and potentially intercept registrations."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Lines 56-65: `register` function, specifically the `msg.sender.transfer(msg.value)` call",
+        "description": "The contract uses `transfer()` to refund excess Ether without checking the return value. In Solidity 0.5.x, `transfer()` can fail and revert, but the code continues execution. If the transfer fails (e.g., if the sender is a contract with a fallback function that uses more than 2300 gas), the entire transaction will revert, preventing legitimate registrations. Additionally, the early return on line 64 doesn't propagate the potential failure of `transfer()`."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Lines 56-65: `register` function, specifically the 3rd line from the bottom where `msg.sender.transfer(msg.value - cost)` is called",
+        "description": "Similar to the previous issue, the contract fails to check the return value of `transfer()` when refunding excess payment after a successful registration. If this transfer fails, the user loses their excess Ether permanently, and the transaction may still succeed (depending on gas stipend issues with `transfer()` in versions prior to 0.5.0)."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Lines 77-83: `renew` function, specifically `msg.sender.transfer(msg.value - cost)` call",
+        "description": "The same vulnerability exists in the `renew` function where excess Ether refunds are sent via `transfer()` without checking the return value. A failed transfer could cause users to lose their excess Ether during the renewal process."
+    }
+]
+```

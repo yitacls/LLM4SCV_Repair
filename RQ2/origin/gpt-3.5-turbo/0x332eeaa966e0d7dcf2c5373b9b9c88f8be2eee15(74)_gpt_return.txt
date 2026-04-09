@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "totalSupply += amount;",
+            "description": "The use of arithmetic operation directly on 'totalSupply' without explicitly checking for potential overflow or underflow vulnerabilities, which can lead to unexpected behavior or attacks."
+        }
+    ]
+}
+```

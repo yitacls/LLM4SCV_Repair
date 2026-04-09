@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "TransferHelper.safeTransfer(collateral, pair, IERC20Minimal(collateral).balanceOf(address(this)));",
+    "description": "The distribute function transfers all collateral tokens to a Uniswap pair without any access control or validation checks beyond the initial admin role check. This could allow an attacker with admin privileges to drain all tokens from the contract. The function lacks proper authorization mechanisms and balance validation, making it vulnerable to unauthorized fund withdrawal."
+}
+```

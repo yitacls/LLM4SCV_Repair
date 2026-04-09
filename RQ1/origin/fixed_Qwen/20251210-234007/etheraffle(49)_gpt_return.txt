@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "blockNumber",
+            "fix_info": "Removed insecure randomness source using block.number",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [],
+    "functions": []
+}]
+```

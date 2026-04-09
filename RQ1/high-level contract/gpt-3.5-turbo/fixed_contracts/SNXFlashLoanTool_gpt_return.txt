@@ -1,0 +1,12 @@
+```json
+{
+    "functions": [
+        {
+            "function_name": "burn",
+            "fix_info": "Fixed the usage of type(uint256).max by using a separate variable to handle maximum value for sUSDAmount",
+            "corrected_code": "uint256 constant MAX_UINT = 2**256 - 1; // Define maximum uint256 value\n\nfunction burn(uint256 sUSDAmount, uint256 snxAmount, address exchange, bytes calldata exchangeData) external override {\n        address[] memory assets = new address[](1);\n        assets[0] = address(sUSD);\n        uint256[] memory amounts = new uint256[](1);\n        // If sUSDAmount is max, get the sUSD debt of the user, otherwise just use sUSDAmount\n        amounts[0] = sUSDAmount == MAX_UINT ? synthetix.debtBalanceOf(msg.sender, 'sUSD') : sUSDAmount;\n        uint256[] memory modes = new uint256[](1);\n        // Mode is set to 0 so the flash loan doesn't incur any debt\n        modes[0] = 0;\n        // Initiate flash loan\n        LENDING_POOL.flashLoan(\n            address(this),\n            assets,\n            amounts,\n            modes,\n            address(this),\n            abi.encode(snxAmount, msg.sender, exchange, exchangeData),\n            referralCode\n        );\n        emit Burn(msg.sender, amounts[0], snxAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}
+```

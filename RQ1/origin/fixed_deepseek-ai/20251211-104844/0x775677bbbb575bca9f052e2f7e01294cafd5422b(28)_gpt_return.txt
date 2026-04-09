@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PresalerVoting",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "startVoting",
+                "fix_info": "Fixed potential integer overflow by using SafeMath for multiplication and addition operations, ensuring durationHrs is validated, and using block.timestamp instead of deprecated 'now'",
+                "corrected_code": "function startVoting(uint startBlockNr, uint durationHrs) onlyOwner {\n        require(durationHrs > 0, \"Duration must be greater than 0\");\n        \n        using SafeMath for uint;\n        \n        VOTING_START_BLOCKNR = max(block.number, startBlockNr);\n        \n        // Use SafeMath to prevent overflow: durationHrs * 1 hours\n        uint durationInSeconds = durationHrs.mul(1 hours);\n        \n        // Use SafeMath to prevent overflow: now + durationInSeconds\n        VOTING_END_TIME = block.timestamp.add(durationInSeconds);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

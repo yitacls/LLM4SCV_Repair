@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "StablePriceOracle",
+        "contract_version": "^0.5.0",
+        "state_variables": [
+            {
+                "variable_name": "rentPrices",
+                "fix_info": "No change required for state variable.",
+                "variable_code": "uint[] public rentPrices;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "usdOracle",
+                "fix_info": "No change required for state variable.",
+                "variable_code": "DSValue usdOracle;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "price",
+                "fix_info": "Added SafeMath methods with explicit checks to prevent integer overflow and underflow. Enhanced readability while safeguarding the arithmetic operations.",
+                "corrected_code": "function price(string calldata name, uint /*expires*/, uint duration) view external returns(uint) {\n    uint len = name.strlen();\n    require(len > 0, \"Name length must be greater than 0\");\n    \n    if(len > rentPrices.length) {\n        len = rentPrices.length;\n    }\n\n    uint priceUSD = rentPrices[len - 1].mul(duration);\n\n    // Ensure the oracle value is valid\n    uint ethPrice = uint(usdOracle.read());\n    require(ethPrice > 0, \"Oracle returned invalid ETH price\");\n\n    // SafeMath protects against overflow in multiplication and division\n    uint finalPrice = priceUSD.mul(1e18).div(ethPrice);\n    return finalPrice;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setOracle",
+                "fix_info": "Added a check to ensure the new oracle address is non-zero to prevent issues with an invalid oracle setup.",
+                "corrected_code": "function setOracle(DSValue _usdOracle) public onlyOwner {\n    require(address(_usdOracle) != address(0), \"The oracle address cannot be zero\");\n    usdOracle = _usdOracle;\n    emit OracleChanged(address(_usdOracle));\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setPrices",
+                "fix_info": "Added a check to prevent setting an empty price array, which could lead to unexpected behavior in the price function.",
+                "corrected_code": "function setPrices(uint[] memory _rentPrices) public onlyOwner {\n    require(_rentPrices.length > 0, \"Rent prices array cannot be empty\");\n    rentPrices = _rentPrices;\n    emit RentPriceChanged(_rentPrices);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

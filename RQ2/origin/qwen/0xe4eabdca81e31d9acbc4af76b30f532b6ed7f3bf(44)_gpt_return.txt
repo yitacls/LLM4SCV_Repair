@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call operation does not check the return value, which means the function will not detect if the call failed. In Solidity 0.4.19, low-level calls return a boolean indicating success or failure, but this return value is ignored here. This can lead to silent failures where the contract continues execution even though the intended operation did not succeed, potentially causing loss of funds or unexpected behavior."
+}
+```

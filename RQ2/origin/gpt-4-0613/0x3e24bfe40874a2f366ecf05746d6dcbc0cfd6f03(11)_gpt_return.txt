@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require( tx.origin == owner, \"Only the owner can withdraw!\" );",
+    "description": "Using tx.origin for authentication purposes is a security risk as it can be tricked by a malicious contract. It is better to use msg.sender for checks as it can't be spoofed. In the current form, a malicious contract could call this contract, making tx.origin to be the legitimate owner even if the actual initiation is from the malicious contract."
+}
+```

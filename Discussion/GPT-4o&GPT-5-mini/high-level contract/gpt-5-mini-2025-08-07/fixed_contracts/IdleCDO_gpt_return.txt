@@ -1,0 +1,32 @@
+[{
+    "contract_name": "IdleCDO",
+    "contract_version": "0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "depositAA",
+            "fix_info": "Added nonReentrant protection to prevent reentrancy and preserve original functionality.",
+            "corrected_code": "function depositAA(uint256 _amount) external whenNotPaused nonReentrant returns (uint256) {\n    return _deposit(_amount, AATranche);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "depositBB",
+            "fix_info": "Added nonReentrant protection to prevent reentrancy and preserve original functionality.",
+            "corrected_code": "function depositBB(uint256 _amount) external whenNotPaused nonReentrant returns (uint256) {\n    return _deposit(_amount, BBTranche);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_deposit",
+            "fix_info": "Reordered external interaction and state updates to follow checks-effects-interactions pattern: transferFrom is executed before minting to prevent reentrancy where minted tokens could trigger callbacks or other interactions. Preserved all original checks and updates.",
+            "corrected_code": "function _deposit(uint256 _amount, address _tranche) internal returns (uint256 _minted) {\n    // check that we are not depositing more than the contract available limit\n    _guarded(_amount);\n    // set _lastCallerBlock hash\n    _updateCallerBlock();\n    // check if strategyPrice decreased\n    _checkDefault();\n    // interest accrued since last mint/redeem/harvest is splitted between AA and BB\n    // according to trancheAPRSplitRatio. NAVs of AA and BB are so updated and tranche\n    // prices adjusted accordingly\n    _updatePrices();\n\n    // Transfer underlyings from sender first to follow checks-effects-interactions\n    IERC20Detailed(token).safeTransferFrom(msg.sender, address(this), _amount);\n\n    // mint tranche tokens according to the current prices\n    _minted = _mintShares(_amount, msg.sender, _tranche);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "harvest",
+            "fix_info": "Added nonReentrant protection to prevent reentrancy during complex external interactions (redeemRewards, Uniswap swaps, strategy deposit).",
+            "corrected_code": "function harvest(bool _skipRedeem, bool _skipIncentivesUpdate, bool[] calldata _skipReward, uint256[] calldata _minAmount) external nonReentrant {\n    require(msg.sender == rebalancer || msg.sender == owner(), \"IDLE:!AUTH\");\n    // Fetch state variable once to save gas\n    address _token = token;\n    address _strategy = strategy;\n    // Check whether to redeem rewards from strategy or not\n    if (!_skipRedeem) {\n      // Fetch state variables once to save gas\n      address[] memory _incentiveTokens = incentiveTokens;\n      address _weth = weth;\n      IUniswapV2Router02 _uniRouter = uniswapRouterV2;\n      // Redeem all rewards associated with the strategy\n      IIdleCDOStrategy(_strategy).redeemRewards();\n      // get all rewards addresses\n      address[] memory rewards = getRewards();\n      for (uint256 i = 0; i < rewards.length; i++) {\n        address rewardToken = rewards[i];\n        // get the balance of a specific reward\n        uint256 _currentBalance = _contractTokenBalance(rewardToken);\n        // check if it should be sold or not\n        if (_skipReward[i] || _currentBalance == 0 || _includesAddress(_incentiveTokens, rewardToken)) { continue; }\n        // Prepare path for uniswap trade\n        address[] memory _path = new address[](3);\n        _path[0] = rewardToken;\n        _path[1] = _weth;\n        _path[2] = _token;\n        // approve the uniswap router to spend our reward\n        IERC20Detailed(rewardToken).safeIncreaseAllowance(address(_uniRouter), _currentBalance);\n        // do the uniswap trade\n        _uniRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(\n          _currentBalance,\n          _minAmount[i],\n          _path,\n          address(this),\n          block.timestamp + 1\n        );\n      }\n      // split converted rewards and update tranche prices for mint\n      // NOTE: that fee on gov tokens will be accumulated in unclaimedFees\n      _updatePrices();\n      // update last saved prices for redeems at this point\n      // if we arrived here we assume all reward tokens with 'big' balance have been sold in the market\n      // others could have been skipped (with flags set off chain) but it just means that\n      // were not worth a lot so should be safe to assume that those wont' be siphoned from theft of interest attacks\n      // NOTE: This method call should not be inside the `if finalBalance > initialBalance` just in case\n      // no rewards are distributed from the underlying strategy\n      _updateLastTranchePrices();\n\n      // Get fees in the form of totalSupply diluition\n      // NOTE we return currAARatio to reuse it in _updateIncentives and so to save some gas\n      uint256 currAARatio = _depositFees(unclaimedFees);\n\n      if (!_skipIncentivesUpdate) {\n        // Update tranche incentives distribution and send rewards to staking contracts\n        _updateIncentives(currAARatio);\n      }\n    }\n    // If we _skipRedeem we don't need to call _updatePrices because lastNAV is already updated\n    uint256 underlyingBal = _contractTokenBalance(_token);\n    // Put unlent balance at work in the lending provider\n    IIdleCDOStrategy(_strategy).deposit(\n      // Keep some unlent balance for cheap redeems and as reserve of last resort\n      underlyingBal - (underlyingBal * unlentPerc / FULL_ALLOC)\n    );\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function transfer(address recipient, uint256 amount) at lines 454-457",
+        "description": "The function `transfer` allows for the transfer of tokens but does not include any checks or restrictions for unauthorized calls. A lack of access control or additional verification can lead to unintended token manipulation by unauthorized entities. This poses a risk to the token holders."
+    }
+]
+```

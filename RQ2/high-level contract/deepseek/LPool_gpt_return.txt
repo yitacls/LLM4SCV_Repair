@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 845-885 in the borrowFresh function",
+    "description": "The contract contains a classic reentrancy vulnerability in the borrowFresh function. After checking that there is sufficient cash (line 850: `require(getCashPrior() >= borrowAmount, 'cash<borrow')`), the function performs an external call via `doTransferOut` (line 875) before updating the contract's state. This creates a reentrancy vector where an attacker could recursively call back into the contract before `accountBorrows[borrower].principal`, `accountBorrows[borrower].interestIndex`, and `totalBorrows` are updated. Although there's a `sameBlock` modifier, this only prevents reentrancy within the same block number, not the same transaction. An attacker could implement a malicious token contract with a fallback function that calls back into LPool's borrow function, potentially draining funds through repeated borrow operations before balances are properly deducted."
+}
+```

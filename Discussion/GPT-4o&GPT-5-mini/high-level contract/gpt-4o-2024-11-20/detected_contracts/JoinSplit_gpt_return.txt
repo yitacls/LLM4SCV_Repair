@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L75-L78",
+        "description": "Potential integer overflow or underflow may occur in the following code snippet at L75-L78:\nif gt(m, n) { mstore(0x00, 404) revert(0x00, 0x20) }\nThe variables `m` and `n` are not validated to ensure they are within safe bounds before the execution of this comparison. If incorrectly initialized or manipulated, arithmetic operations on these variables could produce undefined results and possibly lead to vulnerabilities."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L138-L141",
+        "description": "Potential integer overflow or underflow may occur when calculating the value of `kn` in the code snippet at L138-L141:\nkn := addmod(kn, sub(gen_order, k), gen_order)\nIf the value of `kn` or `k` is outside the expected range, this operation could produce incorrect computational results. Proper input validation is necessary to ensure the safety of this arithmetic operation."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L149-L153",
+        "description": "Risk of integer underflow in the subtraction operation during the modulus calculation at L149-L153:\nk := mulmod(sub(gen_order, k), challenge, gen_order)\nThis operation subtracts `k` from `gen_order`. If `k > gen_order`, this will result in an underflow, creating unintended behavior. Ensure that `k` is validated to be within the expected range before performing arithmetic."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L236",
+        "description": "Potential underflow in the subtraction during curve validation at L236:\nmstore(0x200, sub(field_order, mload(0x100)))\nIf the value loaded at memory location 0x100 is greater than `field_order`, this subtraction will result in underflow. Input validation must ensure that the memory value is within the expected range."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L477-L480",
+        "description": "Potential overflow during calculation of `sigmaX` and `gammaX` validation in the curve equation check (y^2 ?= x^3 + 3) at L477-L480:\n eq(\n   addmod(\n      mulmod(mulmod(gammaX, gammaX, field_order), gammaX, field_order),\n      3,\n      field_order\n   ),\n   mulmod(gammaY, gammaY, field_order)\n)\nIf `gammaX` or `gammaY` is not properly validated, it may cause the operation to overflow beyond the field order, leading to incorrect point validation."
+    }
+]
+```

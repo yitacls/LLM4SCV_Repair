@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] += _amount;",
+    "description": "The addition operation on balances[_to] += _amount can cause an integer overflow, potentially allowing an attacker to manipulate balance values. In Solidity ^0.4.25, arithmetic operations are not protected against overflow/underflow by default, which can lead to unexpected behavior and potential exploitation."
+}
+```

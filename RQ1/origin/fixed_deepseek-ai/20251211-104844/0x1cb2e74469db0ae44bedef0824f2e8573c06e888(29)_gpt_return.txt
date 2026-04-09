@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Owned",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No changes needed to state variable",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict function access to contract owner only",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner, \"Caller is not owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier for secure ownership transfer",
+            "corrected_code": "function transferOwnership(address _newOwner) public onlyOwner {\n        require(_newOwner != address(0), \"New owner cannot be zero address\");\n        owner = _newOwner;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

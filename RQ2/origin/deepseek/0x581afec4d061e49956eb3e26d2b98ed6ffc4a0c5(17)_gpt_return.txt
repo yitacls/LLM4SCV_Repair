@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The low-level call `send()` is used without checking the return value. In Solidity 0.4.24, `send()` returns a boolean indicating success/failure but this return value is ignored. If the transfer fails (e.g., if the recipient is a contract that runs out of gas or reverts), the contract will continue execution without handling the failure, potentially leaving the contract state inconsistent (user's rewards recorded as paid when they weren't). This is particularly dangerous here because the state (atBlock[msg.sender]) is updated after the send, regardless of whether the transfer succeeded. Consider using `transfer()` (which automatically reverts on failure in this version) or explicitly check the return value and handle failures appropriately."
+}
+```

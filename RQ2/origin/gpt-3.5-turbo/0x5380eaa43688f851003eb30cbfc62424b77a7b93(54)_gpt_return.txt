@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "    _to.send(_value);  // fault line",
+    "description": "The use of send() to transfer funds in this contract is vulnerable to reentrancy attacks, as it does not properly handle failure cases and does not impose a limit on the gas stipend. This can result in potential loss of funds or other unexpected behavior."
+}
+```   

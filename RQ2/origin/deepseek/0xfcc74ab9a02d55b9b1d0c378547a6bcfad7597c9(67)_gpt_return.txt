@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Integer Overflow / Underflow",
+        "location": "amount = amount.mul(1000000000000000000);",
+        "description": "The multiplication operation `amount.mul(1000000000000000000)` is vulnerable to integer overflow. Since Solidity 0.4.x uses unchecked arithmetic by default, if `amount` is large enough, the multiplication could exceed the maximum value of uint256 (2^256 - 1), causing it to wrap around to a small incorrect value. This would result in the attacker receiving far fewer tokens than intended. The vulnerability is exacerbated by the prior division operations which reduce `amount`, but an attacker could still exploit this by providing a large `msg.value` to maximize `amount` before multiplication. Additionally, the contract uses the outdated `.div()` and `.mul()` SafeMath patterns but doesn't appear to show SafeMath library imports or usage for these operations, making overflow/underflow protections dependent on external factors."
+    }
+}
+```

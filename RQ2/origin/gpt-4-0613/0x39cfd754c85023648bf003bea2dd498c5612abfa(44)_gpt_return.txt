@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+    "description": "In current contract 'Token', the function 'WithdrawToken' involves a low level 'CALL' operation. This operation is not checking the return value, and this can lead to unexpected scenarios. Low level calls should be handled appropriately, with the return values checked, or exception handling mechanism in place to prevent a possible re-entrancy attack or failure of the call."
+}
+```

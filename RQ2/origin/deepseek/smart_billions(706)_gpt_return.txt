@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) { ... multiple uses of block.blockhash() ... }",
+    "description": "The contract uses block.blockhash() of past blocks as a source of randomness, which is predictable and manipulable by miners. After 256 blocks, block.blockhash() returns 0, and for recent blocks, miners can influence the hash by excluding or ordering transactions. This allows miners to bias the outcome in their favor, making the randomness insecure for applications like lotteries or gambling."
+}
+```

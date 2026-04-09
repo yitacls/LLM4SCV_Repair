@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "CompHelper",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "enterMarket",
+                "fix_info": "The function 'enterMarket' is updated to handle the unchecked return value of 'enterMarkets' function call. It now checks the return value and reverts the transaction if the returned error code is not zero.",
+                "corrected_code": "function enterMarket(address _cTokenAddr) public {\n    address[] memory markets = new address[](1);\n    markets[0] = _cTokenAddr;\n\n    uint[] memory results = IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);\n    for (uint i = 0; i < results.length; i++) {\n        require(results[i] == 0, 'Failed to enter Compound market');\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "exitMarket",
+                "fix_info": "The function 'exitMarket' is updated to handle the unchecked return value of 'exitMarket' function call. It now checks the return value and reverts the transaction if the returned error code is not zero.",
+                "corrected_code": "function exitMarket(address _cTokenAddr) public {\n    uint result = IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);\n    require(result == 0, 'Failed to exit Compound market');\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

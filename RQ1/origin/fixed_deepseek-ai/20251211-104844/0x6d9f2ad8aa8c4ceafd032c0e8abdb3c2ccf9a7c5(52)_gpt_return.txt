@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "GreenEthereus2",
+    "contract_version": "0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "No state variable changes required for this fix",
+            "variable_code": "",
+            "change_type": ""
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to replace tx.origin check and prevent phishing attacks",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "renounceOwnership",
+            "fix_info": "Replaced vulnerable tx.origin check with onlyOwner modifier and removed setting owner to 0x0 in favor of address(0)",
+            "corrected_code": "function renounceOwnership() external onlyOwner {\n        owner = address(0);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Oraclize",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawFunds",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and using require() to handle failure cases",
+            "corrected_code": "function withdrawFunds(address _addr)\n    external\n    {\n        onlyadmin();\n        require(_addr.send(this.balance));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call to 'adr' does not check the return value, which could lead to loss of funds if the call fails. In Solidity 0.4.19, the `.call()` function returns a boolean indicating success, but this return value is ignored. As a result, even if the external call fails (e.g., due to out-of-gas, revert, or non-existent contract), the transaction will not revert, and the caller (the contract owner) may not be aware of the failure. This is particularly dangerous because it involves transferring Ether (via `.value(msg.value)`). Additionally, the function lacks reentrancy protection, making it susceptible to reentrancy attacks if the target contract is malicious. Best practice is to always check the return value of low-level calls and handle failures appropriately, or use higher-level functions like `transfer` or `send` with built-in gas limits and revert on failure."
+}
+```

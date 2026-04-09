@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],v[i]);",
+    "description": "The smart contract allows for unchecked low-level calls, which can result in unexpected behavior or vulnerabilities. This can potentially be exploited by attackers to perform unauthorized actions or manipulate the contract state."
+}
+```

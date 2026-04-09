@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EncryptedToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using safe multiplication and added proper error handling for ETH transfer",
+            "corrected_code": "function () payable public {\n    uint amount = safeMul(msg.value, buyPrice);\n    _transfer(owner, msg.sender, amount);\n    require(owner.send(msg.value));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

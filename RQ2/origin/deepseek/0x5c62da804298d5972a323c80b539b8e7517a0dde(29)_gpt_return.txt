@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Integer Overflow/Underflow",
+    "location": "balances[to] += tokens; balances[msg.sender] -= tokens;",
+    "description": "The contract uses Solidity version ^0.4.24, which does not have built-in overflow/underflow protection. In this transfer function, the addition and subtraction operations on unsigned integers (uint) can overflow or underflow. Although the require statement checks that the sender has sufficient tokens, the operation 'balances[to] += tokens' could overflow if the recipient's new balance exceeds the maximum uint value. Similarly, the decrement operation could underflow if the sender's balance is less than tokens, though the require statement should prevent this specific case. However, the overflow risk remains significant for the recipient's balance update, which could lead to incorrect token balances and potential token supply manipulation."
+}
+```

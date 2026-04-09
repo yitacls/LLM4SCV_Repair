@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(target.call.value(value)());",
+    "description": "The function sendEthValue does not include any access control mechanism to restrict who can call it. This can lead to unauthorized users being able to send ETH to any address, potentially resulting in loss of funds or unintended behavior."
+}
+```

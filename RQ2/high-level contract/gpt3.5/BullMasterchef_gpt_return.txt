@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Lines 196-201",
+    "description": "The _massUpdatePools function updates reward variables for all pools in a single transaction. As the number of pools increases, this function can consume a significant amount of gas, potentially exceeding the block gas limit and causing a denial-of-service (DoS) vulnerability. Gas optimization should be considered to prevent this issue."
+}
+```

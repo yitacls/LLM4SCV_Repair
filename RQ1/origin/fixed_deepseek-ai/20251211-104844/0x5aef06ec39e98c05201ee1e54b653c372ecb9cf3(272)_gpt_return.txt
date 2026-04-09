@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "FALCON",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added state variable declaration to properly manage contract ownership with explicit access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict functions to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by adding proper ownership check and updated transfer method for security",
+            "corrected_code": "function withdraw() public onlyOwner {\n        uint256 etherBalance = address(this).balance;\n        require(etherBalance > 0, \"No balance to withdraw\");\n        owner.transfer(etherBalance);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to properly initialize contract owner during deployment",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Added ownership transfer function with proper validation to prevent unauthorized ownership changes",
+            "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n        require(newOwner != address(0), \"New owner cannot be zero address\");\n        require(newOwner != owner, \"New owner cannot be current owner\");\n        owner = newOwner;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

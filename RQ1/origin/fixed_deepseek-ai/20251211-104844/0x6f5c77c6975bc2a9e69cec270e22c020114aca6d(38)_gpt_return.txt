@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EIP20",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes needed to state variable declaration. However, we must ensure it's declared as mapping(address => uint256) and is private or internal with appropriate getter.",
+            "variable_code": "mapping(address => uint256) internal balances;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability by using SafeMath library for uint256 operations and added check for non-zero address. Also handled reentrancy risk.",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Invalid address\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(value);",
+    "description": "In Solidity 0.4.19, the `send()` function returns a boolean value indicating success or failure, but this return value is not checked. If the `send()` call fails (e.g., due to out-of-gas, recipient contract rejection, or insufficient gas), the ether transfer will fail silently, and the contract will continue execution, marking the user's balance as zero in `l.bal = 0` without actually transferring the funds. This permanently locks the user's ether in the contract. The vulnerability exists because the contract does not verify the result of the low-level call and does not revert the state changes on failure, violating the checks-effects-interactions pattern."
+}
+```

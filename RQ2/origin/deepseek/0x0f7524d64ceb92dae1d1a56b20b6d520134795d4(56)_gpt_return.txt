@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(uint tokenCount) public returns (bool) { ... msg.sender.transfer(balance); }",
+    "description": "The withdraw function lacks access control checks, allowing any user to trigger withdrawals regardless of ownership or authorization. The function calculates dividends based on the caller's stored balance and transfers the full calculated amount without verifying if the user has sufficient tokens, proper withdrawal permissions, or if the dividend calculation is legitimate. Additionally, the ignored 'tokenCount' parameter suggests the function may have been intended for different logic but was improperly implemented, making it universally accessible and potentially allowing unauthorized fund drainage."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Caller",
+    "contract_version": "^0.4.10",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "callAddress",
+            "fix_info": "Added check for low-level call return value to prevent unchecked call vulnerabilities",
+            "corrected_code": "function callAddress(address a) {\n        require(a.call());\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

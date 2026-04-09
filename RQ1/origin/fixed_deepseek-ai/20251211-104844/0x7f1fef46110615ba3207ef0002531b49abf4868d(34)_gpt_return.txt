@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "BAJIDOR",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "No changes needed - mapping from address to uint256 already exists",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "noOverflow",
+                "fix_info": "Added safe arithmetic modifier to prevent overflow/underflow",
+                "modifier_code": "modifier noOverflow(address _to, uint256 _value) {\n        require(balances[msg.sender] >= _value, \"Insufficient balance\");\n        require(balances[_to] + _value >= balances[_to], \"Balance overflow\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library pattern and added input validation",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(_to != address(0), \"Invalid recipient address\");\n        require(_value > 0, \"Transfer value must be positive\");\n        require(balances[msg.sender] >= _value, \"Insufficient balance\");\n        require(balances[_to] + _value >= balances[_to], \"Recipient balance overflow\");\n        \n        balances[msg.sender] = balances[msg.sender] - _value;\n        balances[_to] = balances[_to] + _value;\n        \n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

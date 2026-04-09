@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "DhaCoin",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No vulnerability found in this specific variable declaration - addressing overflow in usage",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Using SafeMath for overflow protection",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added SafeMath import for arithmetic safety",
+            "modifier_code": "import \"zeppelin-solidity/contracts/math/SafeMath.sol\";\n\nmodifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath operations to prevent integer overflow in balanceOf and totalSupply, and updated event parameters for Solidity 0.4.21 compatibility",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    balanceOf[target] = SafeMath.add(balanceOf[target], mintedAmount);\n    totalSupply = SafeMath.add(totalSupply, mintedAmount);\n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

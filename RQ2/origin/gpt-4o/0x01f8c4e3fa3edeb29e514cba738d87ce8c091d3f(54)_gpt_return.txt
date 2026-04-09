@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract contains a reentrancy vulnerability. Specifically, it allows an external call to an untrusted contract through msg.sender.call.value(_am)() without updating the state variable (balances[msg.sender]) first. This allows the called contract to re-enter the Collect function and perform multiple withdrawals before the state is updated, potentially draining the contract's funds."
+}
+```

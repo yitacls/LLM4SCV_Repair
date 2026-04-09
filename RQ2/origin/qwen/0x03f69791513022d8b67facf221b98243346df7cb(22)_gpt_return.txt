@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint multiplier = percentRate(msg.sender);\nqueue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value * multiplier/100)));",
+    "description": "The multiplication operation 'msg.value * multiplier' can cause an arithmetic overflow when the result exceeds the maximum value that can be stored in a uint128. Since Solidity 0.4.25 does not have automatic overflow protection, this could lead to unexpected behavior or loss of funds. The overflow occurs before the division by 100, and the result is cast to uint128 which may truncate or wrap around if the intermediate multiplication result is too large."
+}
+```

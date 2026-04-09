@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "PrivateBank",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "CashOut",
+                "fix_info": "Add reentrancy guard to prevent reentrancy vulnerability.",
+                "corrected_code": "function CashOut(uint _am) {
+    require(_am <= balances[msg.sender]);
+    uint256 amount = _am;
+    balances[msg.sender] -= amount;
+    if(msg.sender.call.value(amount)()) {
+        TransferLog.AddMessage(msg.sender, amount, 'CashOut');
+    }
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

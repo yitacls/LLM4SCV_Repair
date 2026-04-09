@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.send(_value);",
+    "description": "The `.send()` method's return value is not checked. In Solidity ^0.4.13, `.send()` returns a boolean indicating success (true) or failure (false). If the call to `_to` fails (e.g., due to out of gas, call depth limit, or a revert in a fallback function), the transaction will continue execution as if the transfer succeeded, returning `true` and updating the contract's state incorrectly. This can lead to loss of funds where users believe a transfer occurred when it actually failed. Consider using `transfer()` (which automatically reverts on failure) or explicitly checking the return value and reverting on failure: `require(_to.send(_value));`."
+}
+```

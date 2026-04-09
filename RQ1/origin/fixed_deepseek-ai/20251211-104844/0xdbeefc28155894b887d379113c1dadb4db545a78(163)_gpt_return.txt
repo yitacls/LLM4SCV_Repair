@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "TokenSale",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added explicit visibility specifier for security",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly check ownership using msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced tx.origin with msg.sender check using onlyOwner modifier to prevent phishing attacks and improve access control",
+            "corrected_code": "function addMeByRC() public onlyOwner {\n        rc[msg.sender] = true;\n        NewRC(msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

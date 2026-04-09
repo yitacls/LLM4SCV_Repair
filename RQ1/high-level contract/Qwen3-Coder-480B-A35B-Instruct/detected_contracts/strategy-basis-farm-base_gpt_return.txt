@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IStakingRewards(pool).claimReward(poolId);",
+        "description": "The return value of the claimReward() function call is not checked. If the call fails, it may lead to incorrect accounting of rewards or unexpected behavior during the harvest process."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(univ2Router2).addLiquidity(token1, token2, _token1, _token2, 0, 0, address(this), now + 60);",
+        "description": "The return value of the addLiquidity() function call is not checked. If the call fails, it could lead to loss of tokens or incorrect liquidity provision without proper error handling."
+    }
+]
+```

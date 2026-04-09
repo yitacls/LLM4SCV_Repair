@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "exitTempusAMMAndRedeem function (lines 352-386)",
+        "description": "Reentrancy can occur when you create a function that makes an external contract calls and then updates the state. If the called external contract calls your contract back (before your function finishes executing) it can manipulate your function’s state. In this case, exitTempusAMMAndRedeem function executes state-changing external calls before it finishes executing, which may lead to reentrancy attacks that can cause unexpected behavior or even drain the funds in the contract."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "completeExitAndRedeem function (lines 395-436)",
+        "description": "Reentrancy can occur when you create a function that makes an external contract calls and then updates the state. If the called external contract calls your contract back (before your function finishes executing) it can manipulate your function’s state. In this case, completeExitAndRedeem function executes state-changing external calls before it finishes executing, which may lead to reentrancy attacks that can cause unexpected behavior or even drain the funds in the contract."
+    }
+]
+```

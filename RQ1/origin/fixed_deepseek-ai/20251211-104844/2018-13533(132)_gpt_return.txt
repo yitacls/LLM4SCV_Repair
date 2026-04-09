@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "ALUXToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No direct change needed to variable declaration, but overflow protection added in function",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No direct change needed to variable declaration, but overflow protection added in function",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Unchanged - modifier logic remains the same",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "not_changed"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library and changed 'this' to 'address(this)' for compatibility",
+            "corrected_code": "function mintToken(uint256 mintedAmount) onlyOwner public {\n    require(mintedAmount > 0, \"Amount must be greater than zero\");\n    \n    // Use SafeMath for overflow protection\n    balanceOf[owner] = balanceOf[owner].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Changed 'this' to 'address(this)' for compatibility\n    Transfer(address(0), address(this), mintedAmount);\n    Transfer(address(this), owner, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

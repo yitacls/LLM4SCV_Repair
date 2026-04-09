@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow (Arithmetic)",
+    "location": "balanceOf[msg.sender] -= value; \n balanceOf[to] += value;",
+    "description": "This contract uses Solidity 0.4.21 which does not have built-in overflow/underflow protection. In the transfer function, the operation 'balanceOf[to] += value;' could overflow if the sum of the recipient's current balance and the transferred value exceeds the maximum value a uint256 can hold (2^256 - 1). Similarly, 'balanceOf[msg.sender] -= value' could underflow if the value being subtracted is greater than the sender's balance. Although the 'require' statement prevents the underflow in subtraction, no check exists to prevent overflow in addition. This vulnerability was addressed in Solidity 0.8.0 with automatic overflow checks or can be prevented in earlier versions using SafeMath library."
+}
+```

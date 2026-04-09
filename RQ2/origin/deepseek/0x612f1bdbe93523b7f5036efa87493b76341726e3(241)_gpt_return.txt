@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public",
+    "description": "The `onlyOwner` modifier is insufficient for access control in this context. While it restricts direct calls to `withdraw()` to the contract owner, the contract may still unintentionally receive Ether via `selfdestruct` calls from arbitrary addresses (since Solidity 0.4.18 lacks a `receive()` or `fallback()` function to block incoming Ether). This means any malicious contract could forcibly send Ether to this contract via `selfdestruct`, potentially trapping the owner's legitimate funds or allowing the attacker to trigger the withdrawal function if the owner calls it after the forced transfer, resulting in the loss of the owner's original balance. The vulnerability is exacerbated by the fact that the contract lacks proper mechanisms to reject unexpected Ether transfers."
+}
+```

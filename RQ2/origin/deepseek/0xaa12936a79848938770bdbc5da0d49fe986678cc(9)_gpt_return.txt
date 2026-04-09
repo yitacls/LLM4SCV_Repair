@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "target.call.value(amount)()",
+    "description": "The contract uses a low-level .call.value()() without gas stipulation or reentrancy guard, making it vulnerable to reentrancy attacks. An attacker-controlled 'target' address could be a malicious contract that re-enters this function via a fallback/receive function before CashMove is emitted or any state is updated. Since the contract is from Solidity ^0.4.11, it lacks built-in reentrancy protections (e.g., Checks-Effects-Interactions pattern is not enforced, and there is no ReentrancyGuard modifier). The external call happens before any state changes or events (CashMove is only emitted after the call succeeds). An attacker could repeatedly re-enter loggedTransfer, potentially draining funds because the contract's balance is not reduced until after the recursive calls."
+}
+```

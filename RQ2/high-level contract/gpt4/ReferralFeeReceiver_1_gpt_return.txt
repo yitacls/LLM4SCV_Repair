@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "tx.origin.transfer(availableBalance);",
+    "description": "The contract allows the transaction sender to withdraw an arbitrary amount of ether without any checks. This may lead to unauthorized withdrawals because tx.origin refers to the actual user who made the transaction, not the contract that was invoked, potentially making it susceptible to phishing attacks where a malicious contract can trick a user into transferring value unintentionally."
+}
+```

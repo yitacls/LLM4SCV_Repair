@@ -1,0 +1,60 @@
+```json
+[{
+    "contract_name": "Comptroller",
+    "contract_version": "^0.8.6",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "",
+            "variable_code": "",
+            "change_type": ""
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added to prevent reentrancy attacks",
+            "modifier_code": "modifier nonReentrant() {\n        require(!locked, \"Reentrant call\");\n        locked = true;\n        _;\n        locked = false;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Added reentrancy guard initialization",
+            "corrected_code": "constructor() {\n        admin = msg.sender;\n        locked = false;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "liquidateBorrowAllowed",
+            "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+            "corrected_code": "function liquidateBorrowAllowed(\n        address cTokenBorrowed,\n        address cTokenCollateral,\n        address liquidator,\n        address borrower,\n        uint repayAmount) override external nonReentrant returns (uint) {\n        // Shh - currently unused\n        liquidator;\n\n        if (!markets[cTokenBorrowed].isListed || !markets[cTokenCollateral].isListed) {\n            return uint(Error.MARKET_NOT_LISTED);\n        }\n\n        uint borrowBalance = CToken(cTokenBorrowed).borrowBalanceStored(borrower);\n\n        /* allow accounts to be liquidated if the market is deprecated */\n        if (isDeprecated(CToken(cTokenBorrowed))) {\n            require(borrowBalance >= repayAmount, \"Can not repay more than the total borrow\");\n        } else {\n            /* The borrower must have shortfall in order to be liquidatable */\n            (Error err, , uint shortfall) = getAccountLiquidityInternal(borrower);\n            if (err != Error.NO_ERROR) {\n                return uint(err);\n            }\n\n            if (shortfall == 0) {\n                return uint(Error.INSUFFICIENT_SHORTFALL);\n            }\n\n            /* The liquidator may not repay more than what is allowed by the closeFactor */\n            uint maxClose = mul_ScalarTruncate(Exp({mantissa: closeFactorMantissa}), borrowBalance);\n            if (repayAmount > maxClose) {\n                return uint(Error.TOO_MUCH_REPAY);\n            }\n        }\n        return uint(Error.NO_ERROR);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_setPriceOracle",
+            "fix_info": "Added reentrancy guard for admin functions that could be called during reentrancy",
+            "corrected_code": "function _setPriceOracle(PriceOracle newOracle) public nonReentrant returns (uint) {\n        // Check caller is admin\n        if (msg.sender != admin) {\n            return fail(Error.UNAUTHORIZED, FailureInfo.SET_PRICE_ORACLE_OWNER_CHECK);\n        }\n\n        // Track the old oracle for the comptroller\n        PriceOracle oldOracle = oracle;\n\n        // Set comptroller's oracle to newOracle\n        oracle = newOracle;\n\n        // Emit NewPriceOracle(oldOracle, newOracle)\n        emit NewPriceOracle(oldOracle, newOracle);\n\n        return uint(Error.NO_ERROR);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_setCollateralFactor",
+            "fix_info": "Added reentrancy guard for admin functions that could be called during reentrancy",
+            "corrected_code": "function _setCollateralFactor(CToken cToken, uint newCollateralFactorMantissa) external nonReentrant returns (uint) {\n        // Check caller is admin\n        if (msg.sender != admin) {\n            return fail(Error.UNAUTHORIZED, FailureInfo.SET_COLLATERAL_FACTOR_OWNER_CHECK);\n        }\n\n        // Verify market is listed\n        Market storage market = markets[address(cToken)];\n        if (!market.isListed) {\n            return fail(Error.MARKET_NOT_LISTED, FailureInfo.SET_COLLATERAL_FACTOR_NO_EXISTS);\n        }\n\n        Exp memory newCollateralFactorExp = Exp({mantissa: newCollateralFactorMantissa});\n\n        // Check collateral factor <= 0.9\n        Exp memory highLimit = Exp({mantissa: collateralFactorMaxMantissa});\n        if (lessThanExp(highLimit, newCollateralFactorExp)) {\n            return fail(Error.INVALID_COLLATERAL_FACTOR, FailureInfo.SET_COLLATERAL_FACTOR_VALIDATION);\n        }\n\n        // If collateral factor != 0, fail if price == 0\n        if (newCollateralFactorMantissa != 0 && oracle.getUnderlyingPrice(cToken) == 0) {\n            return fail(Error.PRICE_ERROR, FailureInfo.SET_COLLATERAL_FACTOR_WITHOUT_PRICE);\n        }\n\n        // Set market's collateral factor to new collateral factor, remember old value\n        uint oldCollateralFactorMantissa = market.collateralFactorMantissa;\n        market.collateralFactorMantissa = newCollateralFactorMantissa;\n\n        // Emit event with asset, old collateral factor, and new collateral factor\n        emit NewCollateralFactor(cToken, oldCollateralFactorMantissa, newCollateralFactorMantissa);\n\n        return uint(Error.NO_ERROR);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_supportMarket",
+            "fix_info": "Added reentrancy guard for admin functions that could be called during reentrancy",
+            "corrected_code": "function _supportMarket(CToken cToken) external nonReentrant returns (uint) {\n        if (msg.sender != admin) {\n            return fail(Error.UNAUTHORIZED, FailureInfo.SUPPORT_MARKET_OWNER_CHECK);\n        }\n\n        if (markets[address(cToken)].isListed) {\n            return fail(Error.MARKET_ALREADY_LISTED, FailureInfo.SUPPORT_MARKET_EXISTS);\n        }\n\n        cToken.isCToken(); // Sanity check to make sure its really a CToken\n\n        // Note that isComped is not in active use anymore\n        Market storage newMarket = markets[address(cToken)];\n        newMarket.isListed = true;\n        newMarket.isComped = false;\n        newMarket.collateralFactorMantissa = 0;\n\n        _addMarketInternal(address(cToken));\n\n        emit MarketListed(cToken);\n\n        return uint(Error.NO_ERROR);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_grantComp",
+            "fix_info": "Added reentrancy guard for token transfer functions",
+            "corrected_code": "function _grantComp(address recipient, uint amount) public nonReentrant {\n        require(adminOrInitializing(), \"only admin can grant comp\");\n        uint amountLeft = grantCompInternal(recipient, amount);\n        require(amountLeft == 0, \"insufficient comp for grant\");\n        emit CompGranted(recipient, amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

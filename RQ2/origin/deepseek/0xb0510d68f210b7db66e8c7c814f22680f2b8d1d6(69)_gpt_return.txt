@@ -1,0 +1,12 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": [
+        "extra[0].call.value(_share).gas(800000)()",
+        "extra[1].call.value(_share).gas(800000)()",
+        "extra[2].call.value(_share).gas(800000)()",
+        "extra[3].call.value(_share).gas(800000)()"
+    ],
+    "description": "The low-level call operations (.call.value()) do not check the return value of the external calls. In Solidity 0.4.23, the .call() function returns a boolean indicating success or failure, but this return value is ignored. If any of these calls fail (e.g., due to out-of-gas, revert in the target contract, or non-existent contract), the transaction will continue executing without handling the failure, potentially leading to inconsistent state. This is particularly dangerous when transferring Ether, as failed transfers will not be detected, causing loss of funds. Best practice is to always check the return value: require(extra[0].call.value(_share).gas(800000)())."
+}
+```

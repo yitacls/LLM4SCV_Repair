@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function borrowFresh(address payable borrower, address payable payee, uint borrowAmount) internal sameBlock { ... }",
+        "description": "The borrowFresh function is vulnerable to reentrancy because it calls external contracts (doTransferOut and controller.borrowAllowed) before updating the contract's state. This could allow an attacker to re-enter the function and manipulate the borrowing logic."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function repayBorrowFresh(address payer, address borrower, uint repayAmount, bool isEnd) internal sameBlock returns (uint) { ... }",
+        "description": "The repayBorrowFresh function is vulnerable to reentrancy as it performs external calls (doTransferIn and controller.repayBorrowAllowed) before updating the account and total borrow balances. An attacker could potentially re-enter this function to repay the same borrow multiple times or manipulate the repayment logic."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function redeemFresh(address payable redeemer, uint redeemTokensIn, uint redeemAmountIn) internal sameBlock { ... }",
+        "description": "The redeemFresh function is vulnerable to reentrancy because it calls external functions (doTransferOut and controller.redeemAllowed) before updating the total supply and account token balances. This could allow an attacker to re-enter the function and redeem more tokens than they should be able to."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function mintFresh(address minter, uint mintAmount) internal sameBlock returns (uint) { ... }",
+        "description": "The mintFresh function is vulnerable to reentrancy as it performs external calls (doTransferIn and controller.mintAllowed) before updating the total supply and account token balances. An attacker could potentially re-enter this function to mint more tokens than they should be able to."
+    }
+]
+```

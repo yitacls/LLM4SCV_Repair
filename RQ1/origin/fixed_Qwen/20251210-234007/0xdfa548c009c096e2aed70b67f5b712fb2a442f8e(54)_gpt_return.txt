@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed unchecked low-level call by checking the return value and using transfer() instead of call() for safer ETH transfer",
+            "corrected_code": "function transfer(address _to, uint _value) returns (bool) {\n\t\trequire(owner == msg.sender);\n\t\trequire(_value <= this.balance);\n\t\t_to.transfer(_value);\n\t\treturn true;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

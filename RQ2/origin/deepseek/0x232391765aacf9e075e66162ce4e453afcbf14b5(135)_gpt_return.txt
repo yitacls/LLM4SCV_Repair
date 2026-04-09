@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(success, ) = address(user).call{value: amount}(\"\");",
+    "description": "The `send` function makes an external call (`call{value: amount}(\"\")`) to a user-controlled address before updating any state or implementing reentrancy guards. This violates the checks-effects-interactions pattern. In Solidity 0.8.2, the target contract's fallback or receive function could re-enter this contract and potentially manipulate its state, as the `success` check (`require(success, \"ETH send failed\");`) occurs after the external call. Although the contract uses Solidity 0.8.2, which includes built-in overflow/underflow protection, the core reentrancy vulnerability remains because state changes are not performed before the external call. This could allow an attacker to re-enter functions that call `send` and perform unauthorized actions, such as draining funds or manipulating presale logic in the `UniqlyPresale4` contract."
+}
+```

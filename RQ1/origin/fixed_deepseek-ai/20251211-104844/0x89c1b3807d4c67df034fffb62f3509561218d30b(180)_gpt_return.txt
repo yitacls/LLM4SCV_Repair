@@ -1,0 +1,60 @@
+```json
+[{
+    "contract_name": "TownCrier",
+    "contract_version": "^0.4.9",
+    "state_variables": [
+        {
+            "variable_name": "externalCallFlag",
+            "fix_info": "Maintained for tracking external calls",
+            "variable_code": "bool public externalCallFlag;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "SGX_ADDRESS",
+            "fix_info": "Maintained SGX address constant",
+            "variable_code": "address public constant SGX_ADDRESS = 0x...;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "CANCELLATION_FEE",
+            "fix_info": "Maintained cancellation fee constant",
+            "variable_code": "uint public constant CANCELLATION_FEE = ...;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "MIN_FEE",
+            "fix_info": "Maintained minimum fee constant",
+            "variable_code": "uint public constant MIN_FEE = ...;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "DELIVERED_FEE_FLAG",
+            "fix_info": "Maintained delivered fee flag constant",
+            "variable_code": "uint public constant DELIVERED_FEE_FLAG = ...;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "CANCELLED_FEE_FLAG",
+            "fix_info": "Maintained cancelled fee flag constant",
+            "variable_code": "uint public constant CANCELLED_FEE_FLAG = ...;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "OnlySGX",
+            "fix_info": "Added modifier for SGX address validation",
+            "modifier_code": "modifier OnlySGX() { require(msg.sender == SGX_ADDRESS, \"Only SGX can call\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deliver",
+            "fix_info": "Fixed unchecked low-level calls by replacing send() and call() with safe patterns. Added error handling with require statements. Used .transfer() for simple transfers where appropriate and added explicit require checks for successful calls.",
+            "corrected_code": "function deliver(uint64 requestId, bytes32 paramsHash, uint64 error, bytes32 respData) public OnlySGX {\n    require(requestId > 0, \"Invalid request ID\");\n    require(requests[requestId].requester != 0, \"Request does not exist\");\n    require(requests[requestId].fee != DELIVERED_FEE_FLAG, \"Request already delivered\");\n    \n    uint fee = requests[requestId].fee;\n    require(requests[requestId].paramsHash == paramsHash, \"Invalid params hash\");\n    \n    if (fee == CANCELLED_FEE_FLAG) {\n        SGX_ADDRESS.transfer(CANCELLATION_FEE);\n        requests[requestId].fee = DELIVERED_FEE_FLAG;\n        unrespondedCnt--;\n        return;\n    }\n    \n    requests[requestId].fee = DELIVERED_FEE_FLAG;\n    unrespondedCnt--;\n    \n    if (error < 2) {\n        SGX_ADDRESS.transfer(fee);\n    } else {\n        externalCallFlag = true;\n        bool success = requests[requestId].requester.call.value(fee).gas(2300)();\n        require(success, \"Refund transfer failed\");\n        externalCallFlag = false;\n    }\n    \n    uint callbackGas = (fee - MIN_FEE) / tx.gasprice;\n    DeliverInfo(requestId, fee, tx.gasprice, msg.gas, callbackGas, paramsHash, error, respData);\n    \n    if (callbackGas > msg.gas - 5000) {\n        callbackGas = msg.gas - 5000;\n    }\n    \n    require(callbackGas > 0, \"Insufficient gas for callback\");\n    \n    externalCallFlag = true;\n    bool callbackSuccess = requests[requestId].callbackAddr.call.gas(callbackGas)(\n        requests[requestId].callbackFID, \n        requestId, \n        error, \n        respData\n    );\n    \n    externalCallFlag = false;\n    \n    if (!callbackSuccess) {\n        emit CallbackFailed(requestId);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

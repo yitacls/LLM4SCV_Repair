@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(target.call.value(amount)()){",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to 'target' before updating the contract's state. The 'call.value(amount)()' sends Ether to the target address, which could be a malicious contract that calls back into the PreSaleFund contract before the state is updated. This could allow an attacker to withdraw funds multiple times before the balance is properly deducted, leading to loss of funds from the contract."
+}
+```

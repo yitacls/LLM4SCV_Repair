@@ -1,0 +1,11 @@
+```json
+{
+    "type": "access_control",
+    "location": {
+		"contractName": "ERC20Standard",
+		"functionName": "mint",
+		"lineNo": "3"
+	},
+    "description": "The contract has an access control vulnerability. The specific line of code 'require(tx.origin == owner);' allows only the original sender (owner) of a transaction to mint tokens. This use of tx.origin is considered bad practice because it can be deceived in contracts where an intermediary contract forwards a call from another contract. This can potentially lead to unauthorized actions such as abnormal token minting."
+}
+```

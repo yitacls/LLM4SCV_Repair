@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic/Reentrancy",
+    "location": "msg.sender.call(tempWithdraw);",
+    "description": "The contract uses a low-level call() function to send Ether without limiting gas or following the Checks-Effects-Interactions pattern. This allows for reentrancy attacks where an attacker's fallback function can re-enter the withdraw() function before state variables (like investorWallet[msg.sender]) are reset. The attacker could repeatedly drain funds since the balance check (this.balance < tempWithdraw) occurs after state updates but before the transfer. Additionally, the arithmetic operation allInvestments -= investments[msg.sender].amount could cause integer underflow in older Solidity versions (<0.8.0) if allInvestments is smaller than investments[msg.sender].amount."
+}
+```

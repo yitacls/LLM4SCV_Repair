@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "OmnisBitBurner",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "totalBurned",
+            "fix_info": "Changed from default uint256 to use SafeMath for arithmetic operations to prevent overflow/underflow. In Solidity 0.8+, built-in overflow checks exist, but explicit safety is still good practice.",
+            "variable_code": "using SafeMath for uint256;\nuint256 public totalBurned;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyNonZeroValue",
+            "fix_info": "Added modifier to ensure function only executes with positive Ether value, preventing zero-value transactions that could bypass intended functionality.",
+            "modifier_code": "modifier onlyNonZeroValue() {\n    require(msg.value > 0, \"Value must be greater than zero\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Burn",
+            "fix_info": "1. Added payable function visibility\n2. Added onlyNonZeroValue modifier\n3. Used SafeMath for addition to prevent overflow\n4. Added event emission for transparency\n5. Used receive/fallback pattern for better contract design\n6. Improved function naming convention (camelCase)",
+            "corrected_code": "event Burned(address indexed burner, uint256 amount, uint256 newTotal);\n\nfunction burn() external payable onlyNonZeroValue {\n    uint256 previousTotal = totalBurned;\n    totalBurned = totalBurned.add(msg.value);\n    \n    emit Burned(msg.sender, msg.value, totalBurned);\n}\n\n// Fallback function to handle plain Ether transfers\nreceive() external payable {\n    require(msg.value > 0, \"Value must be greater than zero\");\n    uint256 previousTotal = totalBurned;\n    totalBurned = totalBurned.add(msg.value);\n    \n    emit Burned(msg.sender, msg.value, totalBurned);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "SafeMath",
+            "fix_info": "Added SafeMath library to provide safe arithmetic operations, though Solidity 0.8+ has built-in overflow checking, this ensures compatibility and explicit safety.",
+            "corrected_code": "library SafeMath {\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a, \"SafeMath: addition overflow\");\n        return c;\n    }\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

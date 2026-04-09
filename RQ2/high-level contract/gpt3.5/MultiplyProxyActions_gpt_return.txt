@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 156",
+    "description": "In the convertTo18 function, an integer overflow vulnerability may occur as there is a multiplication operation without checking for potential overflow, which may lead to unexpected behavior if the input values are large."
+},
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Line 172",
+    "description": "In the increaseMultipleDepositCollateral function, the transferFrom function is called on the gem contract without checking the return value, which may result in the function not reverting when the transfer fails, potentially leaving the contract in an inconsistent state."
+}
+```
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "balanceOfOld[_to] += _value;",
+    "description": "The addition operation does not include overflow protection. In Solidity <0.8.0, unsigned integer operations wrap-around on overflow without reverting. If balanceOfOld[_to] + _value exceeds type(uint256).max, it will wrap to a small number rather than reverting. This could allow malicious users to manipulate token balances by intentionally causing overflows. The vulnerability also exists in the subtraction operation balanceOfOld[_from] -= _value, though it's less critical since the previous revert() check prevents underflow. This should be fixed using SafeMath library or Solidity 0.8.0+ with built-in overflow checks."
+}
+```

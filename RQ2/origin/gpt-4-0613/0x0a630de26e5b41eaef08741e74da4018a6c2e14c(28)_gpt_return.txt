@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "players[currentGamenumber][winner].send(this.balance);",
+    "description": "This line of code in the smart contract is an example of an unchecked low level call, which is a vulnerability in Solidity. The .send() function is used to send funds to the address of the winner, but the return value of this function is not checked. This means if the transaction fails, the contract will not be aware of the failure, which can lead to unexpected behavior. It's highly recommended to always check the return value of send() and call() functions to make sure they were successful."
+}
+```

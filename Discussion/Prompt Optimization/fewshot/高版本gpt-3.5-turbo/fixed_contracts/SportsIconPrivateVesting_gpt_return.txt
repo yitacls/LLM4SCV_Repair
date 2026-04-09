@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "SportsIconPrivateVesting",
+        "contract_version": "^0.7.5",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "claim",
+                "fix_info": "Check for successful transfer before updating claimed balance.",
+                "corrected_code": "function claim() external override returns (uint256) {
+    uint256 tokens = freeTokens(msg.sender);
+    claimedOf[msg.sender] = claimedOf[msg.sender].add(tokens);
+    require(token.transfer(msg.sender, tokens), 'Transfer failed');
+    emit LogTokensClaimed(msg.sender, tokens);
+    return tokens;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

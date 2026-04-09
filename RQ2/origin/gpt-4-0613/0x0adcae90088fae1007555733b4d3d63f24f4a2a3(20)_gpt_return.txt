@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_recipient] += _value;",
+    "description": "This line of code is vulnerable because it does not check for overflows. In Solidity 0.4.11, this arithmetic operation will wrap around if the result is larger than the maximum value that can be held by a variable of type uint (2^256 - 1). This can potentially result in an incorrect balance being assigned to the `_recipient` account, leading to loss of funds or other unexpected behavior."
+}
+```

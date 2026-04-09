@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "cur_coin.call(bytes4(keccak256(\"pay(address,uint256,uint256)\")), msg.sender, msg.value, price);",
+    "description": "This vulnerability exists because the contract tries to execute a low level call without checking the return value. It can give rise to unhandled exceptions and is susceptible to possible re-entrancy attacks. The 'call' method is low level and risky to use because it hands over control flow to the called contract which can have vulnerabilities or malicious code resulting in unexpected behaviour."
+}
+```

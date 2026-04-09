@@ -1,0 +1,62 @@
+```json
+[
+    {
+        "contract_name": "PonziToken",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "balanceOfOld",
+                "fix_info": "Changed from int256 to uint256 to prevent arithmetic underflow/overflow",
+                "variable_code": "mapping(address => uint256) public balanceOfOld;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "payouts",
+                "fix_info": "Changed from int256 to uint256 to prevent arithmetic underflow/overflow",
+                "variable_code": "mapping(address => uint256) public payouts;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "earningsPerShare",
+                "fix_info": "Changed from int256 to uint256 to prevent arithmetic underflow/overflow",
+                "variable_code": "uint256 public earningsPerShare;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "validAddress",
+                "fix_info": "Added to prevent transfers to zero address",
+                "modifier_code": "modifier validAddress(address _addr) {\n    require(_addr != address(0), \"Invalid address: zero address\");\n    require(_addr != address(this), \"Invalid address: contract address\");\n    _;\n}",
+                "change_type": "added"
+            },
+            {
+                "modifier_name": "validAmount",
+                "fix_info": "Added to prevent arithmetic overflow in balance updates",
+                "modifier_code": "modifier validAmount(address _from, uint256 _value) {\n    require(_value > 0, \"Amount must be greater than zero\");\n    require(balanceOfOld[_from] >= _value, \"Insufficient balance\");\n    require(balanceOfOld[_from] - _value <= balanceOfOld[_from], \"Arithmetic overflow check\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transferTokens",
+                "fix_info": "Fixed arithmetic overflow/underflow vulnerabilities using SafeMath pattern, added access control, and reentrancy protection",
+                "corrected_code": "function transferTokens(address _from, address _to, uint256 _value) internal validAddress(_to) validAmount(_from, _value) {\n    // Prevent reentrancy\n    require(!locked, \"Reentrancy detected\");\n    locked = true;\n    \n    if (_to == address(this)) {\n        sell(_value);\n    } else {\n        // Safe arithmetic operations\n        uint256 newFromBalance = balanceOfOld[_from] - _value;\n        require(balanceOfOld[_to] + _value >= balanceOfOld[_to], \"Arithmetic overflow in recipient balance\");\n        \n        uint256 payoutDiff = earningsPerShare * _value;\n        require(earningsPerShare == 0 || payoutDiff / earningsPerShare == _value, \"Arithmetic overflow in payout calculation\");\n        \n        // Update balances using safe patterns\n        balanceOfOld[_from] = newFromBalance;\n        balanceOfOld[_to] += _value;\n        \n        // Safe payouts update\n        require(payouts[_from] >= payoutDiff, \"Arithmetic underflow in from payouts\");\n        require(payouts[_to] + payoutDiff >= payouts[_to], \"Arithmetic overflow in to payouts\");\n        \n        payouts[_from] -= payoutDiff;\n        payouts[_to] += payoutDiff;\n    }\n    \n    Transfer(_from, _to, _value);\n    \n    // Reset reentrancy lock\n    locked = false;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "safeSub",
+                "fix_info": "Added SafeMath function for subtraction to prevent underflow",
+                "corrected_code": "function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {\n    require(b <= a, \"Subtraction underflow\");\n    return a - b;\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "safeAdd",
+                "fix_info": "Added SafeMath function for addition to prevent overflow",
+                "corrected_code": "function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {\n    uint256 c = a + b;\n    require(c >= a, \"Addition overflow\");\n    return c;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

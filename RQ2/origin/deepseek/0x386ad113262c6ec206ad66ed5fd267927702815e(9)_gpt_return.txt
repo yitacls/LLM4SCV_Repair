@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(amount);",
+    "description": "The low-level 'send' call's return value is not checked for failure. In Solidity 0.4.24, 'send' returns false (rather than reverting) if the recipient runs out of gas or the call fails, potentially causing silent failures where users do not receive owed funds. This can lead to locked Ether in the contract and incorrect state updates, as the code continues execution despite the failed transfer. Additionally, the contract uses outdated 'block.timestamp' which can be manipulated by miners within limited bounds, and integer arithmetic may overflow due to unchecked multiplication of 'waited * waited' with large values."
+}
+```

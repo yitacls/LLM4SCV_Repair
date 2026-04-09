@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "VOTING_END_TIME = now + max(durationHrs,1) * 1 hours;",
+    "description": "The contract uses 'now' (equivalent to block.timestamp) to calculate voting end time, which can be manipulated by miners within a small range (typically up to 900 seconds). This allows miners to influence the voting period duration and potentially extend or shorten the voting window to affect the outcome. In Solidity 0.4.11, 'now' is an alias for block.timestamp and inherits its manipulability issues."
+}
+```

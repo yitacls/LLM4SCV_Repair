@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "beneficiary.send(amountLeft)",
+    "description": "The contract uses the deprecated and unsafe `send()` function (which forwards 2300 gas) before updating the state variable `amountLeft`. If the beneficiary is a malicious contract, its fallback function could re-enter the `safeWithdrawal` function via a recursive call before `amountLeft` is set to 0. Since the condition `amountLeft > 0` remains true during the external call, the attacker could drain funds repeatedly. This violates the checks-effects-interactions pattern. The vulnerability is compounded by the use of Solidity 0.4.16, where `send()` returns false on failure rather than reverting, and the empty else block could silently ignore a failed send, leaving funds locked."
+}
+```

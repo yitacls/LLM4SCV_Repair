@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LuckyDoubler",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "rand",
+            "fix_info": "Replaced blockhash-based randomness with keccak256 hash of block number and timestamp for better entropy, and added nonce parameter to prevent predictability",
+            "corrected_code": "function rand(uint max, uint256 nonce) constant private returns (uint256 result){\n        uint256 factor = FACTOR * 100 / max;\n        uint256 hashVal = uint256(keccak256(block.number, block.timestamp, nonce));\n        return uint256((uint256(hashVal) / factor)) % max;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

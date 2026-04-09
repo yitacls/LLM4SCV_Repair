@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_to == tx.origin) {   balance.profitBalance = balance.profitBalance.sub(_deposited); }",
+    "description": "The code uses `tx.origin` to check if the transaction initiator is the same as the target address. This is unsafe as `tx.origin` can be manipulated via malicious contracts. An attacker can create a contract that initiates a transaction to exploit this check, bypassing proper access control mechanisms. Instead of `tx.origin`, the contract should rely on `msg.sender` for authentication, as it is a more secure and reliable method to verify the direct sender of the transaction."
+}
+```

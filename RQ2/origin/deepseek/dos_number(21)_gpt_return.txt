@@ -1,0 +1,12 @@
+```json
+{
+    "vulnerability": "DENIAL_OF_SERVICE",
+    "function": "insertNnumbers",
+    "line_start": 1,
+    "line_end": 13,
+    "description": "The function contains an unbounded loop that iterates based on the user-provided `numbers` parameter. Each iteration performs state modifications (array resizing and assignment) which consume gas. Since gas costs accumulate linearly with iterations, an attacker can provide a large `numbers` value (e.g., >382 as commented) to cause the transaction to exceed the block gas limit, making the function uncallable and potentially disrupting contract functionality.",
+    "recommendation": "Implement safeguards such as: 1) Limiting the maximum allowed `numbers` value, 2) Using a pull-over-push pattern to let users perform iterations themselves, 3) Implementing pagination or batching to avoid exceeding gas limits.",
+    "severity": "HIGH",
+    "affected_code": "for(uint i=0;i<numbers;i++) {\n    if(numElements == array.length) {\n        array.length += 1;\n    }\n    array[numElements++] = value;\n}"
+}
+```

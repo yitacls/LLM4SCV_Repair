@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "PornTokenV2Crowdsale",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "beneficiary",
+            "fix_info": "Changed visibility to private with getter function to follow security best practices",
+            "variable_code": "address private beneficiary;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "currentBalance",
+            "fix_info": "Changed visibility to private to protect internal state and prevent direct manipulation",
+            "variable_code": "uint256 private currentBalance;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyBeneficiary",
+            "fix_info": "Added modifier to restrict function access to beneficiary only",
+            "modifier_code": "modifier onlyBeneficiary() {\n        require(msg.sender == beneficiary, \"Only beneficiary can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "hasBalance",
+            "fix_info": "Added modifier to ensure balance is positive before withdrawal",
+            "modifier_code": "modifier hasBalance() {\n        require(currentBalance > 0, \"No balance to withdraw\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "bank",
+            "fix_info": "Fixed arithmetic vulnerability by upgrading to Solidity 0.8.0 with built-in overflow protection, replaced deprecated send() with transfer(), added modifiers for access control and safety checks",
+            "corrected_code": "function bank() public onlyBeneficiary hasBalance {\n        uint256 amountToSend = currentBalance;\n        currentBalance = 0;\n        \n        (bool success, ) = payable(beneficiary).call{value: amountToSend}(\"\");\n        require(success, \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setBeneficiary",
+            "fix_info": "Added setter function with access control to update beneficiary address",
+            "corrected_code": "function setBeneficiary(address _newBeneficiary) public onlyBeneficiary {\n        require(_newBeneficiary != address(0), \"Invalid address\");\n        beneficiary = _newBeneficiary;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "getCurrentBalance",
+            "fix_info": "Added getter function to view current balance",
+            "corrected_code": "function getCurrentBalance() public view returns (uint256) {\n        return currentBalance;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

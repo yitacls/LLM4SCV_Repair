@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balances[_to] += _value;",
+    "description": "In Solidity version ^0.4.11, integer operations do not automatically check for overflow/underflow. The addition 'balances[_to] + _value' could overflow if the sum exceeds the maximum value of uint256 (2^256 - 1), causing the balance to wrap around to a very small value instead of reverting. This vulnerability could be exploited to artificially inflate token balances. The issue is present in the transfer function where unchecked arithmetic is used. In later Solidity versions (>=0.8.0), this would automatically revert, but in 0.4.11, explicit checks or SafeMath libraries are required."
+}
+```

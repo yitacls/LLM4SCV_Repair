@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to[i].send(_val);",
+    "description": "The send() function returns a boolean value indicating success or failure, but this return value is not checked. In Solidity ^0.4.17, failed send() calls will silently fail without reverting the transaction, potentially causing funds to be lost or distributed incorrectly. The contract should check the return value and handle failures appropriately, such as using require() or reverting the transaction when send() fails."
+}
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PERSONAL_BANK",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "Collect",
+                "fix_info": "Added Reentrancy guard and updated to use transfer instead of low-level call. Transferring funds occurs before state changes for safety. The original function allowed reentrancy due to the usage of msg.sender.call, which permits external calls that can execute fallback functions and re-enter the contract.",
+                "corrected_code": "function Collect(uint _am) public payable {\n    require(balances[msg.sender] >= MinSum, \"Insufficient balance.\");\n    require(balances[msg.sender] >= _am, \"Requested amount exceeds balance.\");\n\n    // Deduct balance before sending funds to prevent reentrancy\n    balances[msg.sender] -= _am;\n\n    // Use .transfer instead of .call to send funds, which mitigates reentrancy\n    msg.sender.transfer(_am);\n\n    // Log the transaction\n    Log.AddMessage(msg.sender, _am, \"Collect\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

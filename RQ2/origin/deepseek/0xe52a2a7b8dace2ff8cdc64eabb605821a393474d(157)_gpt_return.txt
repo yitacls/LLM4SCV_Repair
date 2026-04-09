@@ -1,0 +1,7 @@
+```json
+{
+    "vulnerability_type": "Reentrancy",
+    "location": "recipient.call{ value: amount }(\"\")",
+    "description": "The sendValue function performs an external call to a recipient address before any state changes are finalized. This creates a reentrancy vulnerability where the recipient contract could be malicious and implement a fallback/receive function that calls back into the ArtBlocksBroker contract before the initial call completes. Since the function only checks the contract balance at the beginning and doesn't use checks-effects-interactions pattern, an attacker could potentially drain funds from the contract through recursive calls. The vulnerability is marked in the code as <RE_ENT> and <RE_VUL>."
+}
+```

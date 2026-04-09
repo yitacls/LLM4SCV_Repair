@@ -1,0 +1,28 @@
+[{
+    "contract_name": "SimpleWallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Retained owner state variable; added explicit declaration for clarity.",
+            "variable_code": "address public owner;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Retained onlyOwner modifier to preserve original access control.",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"SimpleWallet: caller is not the owner\");\n        _;\n    }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sendMoney",
+            "fix_info": "Checked preconditions (non-zero target and sufficient balance) and verified the low-level call return value to prevent unchecked low-level call vulnerability. Preserves original behavior of forwarding all gas while ensuring failures revert.",
+            "corrected_code": "function sendMoney(address _target, uint _value) public onlyOwner {\n        require(_target != address(0), \"SimpleWallet: invalid target\");\n        require(address(this).balance >= _value, \"SimpleWallet: insufficient balance\");\n        // Perform the call and revert on failure to avoid unchecked low-level call\n        bool success = _target.call.value(_value)();\n        require(success, \"SimpleWallet: transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

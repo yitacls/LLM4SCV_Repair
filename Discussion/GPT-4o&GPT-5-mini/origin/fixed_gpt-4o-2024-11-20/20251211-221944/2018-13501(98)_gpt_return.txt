@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HRWtoken",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath checks for arithmetic operations to prevent overflows and underflows.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Minted amount must be greater than zero\");\n\n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Overflow detected\");\n    balanceOf[target] = newBalance;\n\n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Overflow detected\");\n    totalSupply = newTotalSupply;\n\n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

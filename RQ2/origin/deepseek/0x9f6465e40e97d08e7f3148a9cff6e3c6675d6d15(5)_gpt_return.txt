@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The contract uses a low-level .send() call without checking the return value. In Solidity 0.4.x, .send() returns a boolean indicating success (true) or failure (false), but this return value is ignored. If the send fails (e.g., if the wallet is a contract that runs out of gas or reverts), the ether transfer will silently fail, but the contract's execution will continue as if the transfer succeeded. This can lead to locked funds or inconsistent state. The vulnerability is exacerbated by being in the fallback function, which could be called unintentionally. The recommended mitigation is to check the return value and revert on failure (e.g., require(wallet.send(msg.value));), or use transfer() (though transfer() has gas limitations in newer Solidity versions)."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == _customerAddress)",
+    "description": "The contract uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. An attacker can create a malicious contract that calls this function on behalf of a legitimate user, as tx.origin will still be the original user's address while msg.sender would be the malicious contract. This allows unauthorized registration by exploiting the difference between tx.origin and msg.sender."
+}
+```

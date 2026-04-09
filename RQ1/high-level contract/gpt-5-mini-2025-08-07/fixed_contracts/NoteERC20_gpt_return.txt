@@ -1,0 +1,20 @@
+[{
+    "contract_name": "NoteERC20",
+    "contract_version": "^0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Ensure explicit bounds-checking on the input amount before casting to uint96 and use the internal safe cast helper to prevent truncation/overflow. Preserve original behavior but make the error message specific to transfer.",
+            "corrected_code": "function transfer(address dst, uint256 rawAmount) external returns (bool) {\n    // Ensure amount fits into uint96 to avoid silent truncation when casting\n    uint96 amount = _safe96(rawAmount, \"Note::transfer: amount exceeds 96 bits\");\n\n    _transferTokens(msg.sender, dst, amount);\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Cast the requested transfer amount using the safe helper before performing allowance arithmetic to avoid mixed-width arithmetic issues. Maintain the infinite-allowance behavior using the maximum uint96 sentinel while ensuring underflow/overflow checks remain enforced via _sub96/_safe96.",
+            "corrected_code": "function transferFrom(\n    address src,\n    address dst,\n    uint256 rawAmount\n) external returns (bool) {\n    address spender = msg.sender;\n\n    // Safely cast requested amount to uint96 to prevent truncation/overflow\n    uint96 amount = _safe96(rawAmount, \"Note::transferFrom: amount exceeds 96 bits\");\n\n    uint96 spenderAllowance = allowances[src][spender];\n\n    if (spender != src && spenderAllowance != uint96(-1)) {\n        uint96 newAllowance = _sub96(\n            spenderAllowance,\n            amount,\n            \"Note::transferFrom: transfer amount exceeds spender allowance\"\n        );\n        allowances[src][spender] = newAllowance;\n\n        emit Approval(src, spender, newAllowance);\n    }\n\n    _transferTokens(src, dst, amount);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

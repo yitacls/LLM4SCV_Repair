@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "StarToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No direct changes to state variable declaration, but usage is now safe from overflows",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No direct changes to state variable declaration, but usage is now safe from overflows",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyICO",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyICO() { require(msg.sender == icoContract); _; }",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "issue",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for addition operations and removed redundant require statement",
+            "corrected_code": "function issue(address _recipient, uint256 _value) onlyICO returns (bool success) {\n    require(_recipient != address(0));\n    uint256 newRecipientBalance = balances[_recipient].add(_value);\n    uint256 newTotalSupply = totalSupply.add(_value);\n    \n    balances[_recipient] = newRecipientBalance;\n    totalSupply = newTotalSupply;\n    \n    Transfer(0, owner, _value);\n    Transfer(owner, _recipient, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

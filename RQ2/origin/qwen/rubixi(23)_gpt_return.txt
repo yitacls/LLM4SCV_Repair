@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "creator = msg.sender;",
+    "description": "The contract constructor does not properly restrict access to initialization. In Solidity ^0.4.15, this function should be explicitly declared as a constructor using 'function Rubixi()' or 'constructor()'. Without proper constructor designation, this function can be called by anyone after deployment, allowing malicious actors to take control of the contract by setting themselves as the creator. This gives them unauthorized access to privileged functions that should only be accessible to the legitimate contract owner."
+}
+```

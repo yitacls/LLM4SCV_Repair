@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "L57",
+    "description": "The contract allows for an unprotected ether withdrawal in the 'trade' function at line 57. If 'returnAmount' is 0, it executes an ether transfer using 'tx.origin'. This is a potential vulnerability as using 'tx.origin' for Ether transfers can lead to unintended outcomes and may allow for unauthorized withdrawals. It is recommended to use 'msg.sender' instead for more secure and controlled Ether transfers."
+}
+```

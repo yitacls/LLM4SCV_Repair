@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract": "CardSale",
+    "location": "require(tx.origin == owner() );",
+    "description": "This contract is vulnerable to access control attacks due to the use of tx.origin for authorization. The tx.origin variable in Ethereum contains the address of the user who originally triggered the transaction. This can be different from msg.sender if a contract is called by another contract, this can lead to potential security vulnerabilities if used improperly. An attacker could trick a user into initiating a transaction, and the attacking contract could interact with the vulnerable contract on behalf of the user."
+}
+```

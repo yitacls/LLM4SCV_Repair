@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "msg.sender.send(address(this).balance)",
+            "description": "The use of send() for transferring funds may result in unexpected behavior as it does not provide proper error handling. It is recommended to use transfer() or revert() pattern for sending Ether."
+        }
+    ]
+}
+```  

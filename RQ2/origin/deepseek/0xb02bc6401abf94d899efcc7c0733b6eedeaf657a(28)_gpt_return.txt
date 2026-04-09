@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflow/underflow. The calculation 'balanceOf[_from] + balanceOf[_to]' could overflow if the sum exceeds the maximum value of uint (2^256 - 1), which would wrap around and cause the subsequent assertion to fail incorrectly even for valid transfers. Additionally, the unchecked subtraction 'balanceOf[_from] -= _value' could underflow if balanceOf[_from] < _value (though this is prevented by the require statement). The vulnerability is critical because an overflow in previousBalances would bypass the safety assertion, potentially allowing manipulation of token balances. This should be fixed using SafeMath library or by upgrading to Solidity 0.8.0+ which has built-in overflow checks."
+}
+```

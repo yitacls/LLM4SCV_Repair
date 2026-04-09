@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_receiver.send(_amount);",
+    "description": "The low-level call 'send()' is used without checking its return value. In Solidity versions prior to 0.4.25, the 'send()' function returns a boolean indicating success (true) or failure (false). If the call fails (e.g., if the receiver is a contract that runs out of gas or reverts), execution continues without handling the failure. This can lead to silent failures where transferred ether is effectively lost (refunded to the caller). Moreover, if the call consumes more than 2300 gas, the transaction will revert. Best practice is to either use 'transfer()' (which automatically reverts on failure) or check the return value of 'send()' and handle failures appropriately. In this case, since the contract uses Solidity ^0.4.25, 'transfer()' is available and should be preferred over 'send()'."
+}
+```

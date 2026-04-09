@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "This access control check uses 'tx.origin' for authorization, which is vulnerable to phishing attacks. 'tx.origin' returns the original external account that started the transaction chain, not the immediate caller ('msg.sender'). A malicious contract could trick the owner into calling a function that then calls 'mint()', making 'tx.origin' equal to the owner's address while 'msg.sender' is the attacker's contract. This allows unauthorized minting. Additionally, Solidity version ^0.4.11 is outdated and lacks modern security features."
+        },
+        {
+            "type": "logic_error",
+            "location": "assert(amount >= 0);",
+            "description": "The 'assert' statement is redundant because 'uint256 amount' cannot be negative (unsigned integers are always >= 0). This line serves no purpose and could be removed. In Solidity 0.4.11, 'assert' consumes all gas on failure, but here it will never fail."
+        }
+    ]
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "REENTRANCY",
+    "location": "withdrawReward(recipient);",
+    "description": "The contract calls an external function withdrawReward() before setting the claimedBonus flag to true. Since the Solidity version is ^0.4.0 and there is no reentrancy guard, a malicious recipient contract could reenter the getFirstWithdrawalBonus function before the claimedBonus[recipient] = true statement executes, allowing them to claim the bonus multiple times. The state update should occur before the external call to prevent reentrant attacks."
+}
+```

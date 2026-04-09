@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "function makeCommitment(string memory name, bytes32 secret) pure public returns(bytes32) {\n    bytes32 label = keccak256(bytes(name));\n    return keccak256(abi.encodePacked(label, secret));\n}",
+        "description": "The makeCommitment function is susceptible to transaction order dependence because it allows miners or attackers to front-run commitment submissions. Since the commitment is derived from publicly visible data (name and secret), an attacker can observe a pending transaction and submit their own commitment with the same parameters before the original transaction is mined, potentially causing unintended behavior or front-running during name registration."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "msg.sender.transfer(msg.value);",
+        "description": "The transfer call at this line (and similar ones in the contract) does not check the return value. In Solidity versions prior to 0.6.0, transfer() can fail silently. If the recipient is a contract with a fallback function that consumes more than 2300 gas, the transfer will fail but execution will continue, which could lead to unexpected behavior or denial of service."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "msg.sender.transfer(msg.value - cost);",
+        "description": "The transfer call does not check the return value. If the transfer fails (e.g., recipient is a contract that rejects the transfer), the function will not revert, potentially causing users to lose funds or experience unexpected behavior. This can happen if the recipient contract's fallback function consumes too much gas or explicitly rejects the transfer."
+    }
+]
+```

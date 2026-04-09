@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target[0].call.value(msg.value).gas(600000)();",
+    "description": "The low-level call `target[0].call.value(msg.value).gas(600000)()` does not check the return value of the external call. If the call fails (e.g., due to out-of-gas, revert in the called contract, or non-existent contract), the transaction will continue execution without the caller being aware of the failure. This can lead to unexpected behavior, such as loss of funds if the caller assumes the transfer succeeded when it actually failed. In Solidity < 0.5.0, low-level calls like `call()` return a boolean success flag that should be checked to handle failures appropriately."
+}
+```

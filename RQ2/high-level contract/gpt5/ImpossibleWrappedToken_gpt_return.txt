@@ -1,0 +1,17 @@
+[
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function deposit(address dst, uint256 wad) { bool success = IERC20(underlying).transferFrom(msg.sender, address(this), transferAmt); _deposit(dst, wad); underlyingBalance = underlyingBalance.add(transferAmt); emit Transfer(address(0), msg.sender, wad); }",
+    "description": "The function performs an external call to the underlying token (IERC20.transferFrom) before updating the contract's internal accounting (balanceOf and underlyingBalance). If the underlying token is malicious or implements callbacks (or if a token contract can trigger a call back to this contract during transferFrom), an attacker can reenter this contract during transferFrom and call other contract functions (e.g., withdraw or deposit) before the internal state is updated. That may allow the attacker to cause inconsistent accounting, double-mint wrapped tokens, or withdraw more underlying than allowed. The insecure ordering of external call followed by internal state updates is the reentrancy root cause."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function deposit(address dst) { uint256 balance = IERC20(underlying).balanceOf(address(this)); transferAmt = balance.sub(underlyingBalance); uint256 wad = transferAmt.mul(ratioNum).div(ratioDenom); _deposit(dst, wad); underlyingBalance = balance; emit Transfer(address(0), dst, wad); }",
+    "description": "This variant of deposit reads data from the external token (balanceOf) and computes transferAmt based on the difference between the token's on-chain balance and the contract's stored underlyingBalance, then updates internal supply after that external interaction. Because the external call happens before internal state updates, a malicious underlying token can reenter the wrapper during balanceOf (or via synchronous side-effects caused by other transactions interacting in the same block) and manipulate the wrapper state or trigger additional deposits/withdrawals. This allows reentrancy or state-manipulation attacks that lead to incorrect minting or unauthorized transfers."
+  },
+  {
+    "type": "SWC-114-Transaction Order Dependence",
+    "location": "function deposit(address dst) { uint256 balance = IERC20(underlying).balanceOf(address(this)); transferAmt = balance.sub(underlyingBalance); uint256 wad = transferAmt.mul(ratioNum).div(ratioDenom); _deposit(dst, wad); underlyingBalance = balance; emit Transfer(address(0), dst, wad); }",
+    "description": "The deposit(address dst) function relies on the difference between IERC20(underlying).balanceOf(address(this)) and the contract's stored underlyingBalance to infer how many underlying tokens were transferred in. This design is vulnerable to transaction-order-dependence and front-running: an attacker can transfer underlying tokens to or from the wrapper contract (or arrange for such transfers) just before another user's deposit transaction is mined, thereby changing the observed balance delta. As a result the function may mint an incorrect amount of wrapped tokens (over- or under-mint), enabling stealing of value (minting wrapped tokens without providing the corresponding underlying) or loss to honest users. Relying on an externally observed balance delta without atomic transfer and state update is unsafe."
+  }
+]

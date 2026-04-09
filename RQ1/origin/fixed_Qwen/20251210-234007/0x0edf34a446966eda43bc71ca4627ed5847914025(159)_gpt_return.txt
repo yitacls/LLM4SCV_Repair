@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Ownable",
+    "contract_version": "^0.7.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Changed tx.origin to msg.sender to prevent bypassing proxy contracts and improve security",
+            "modifier_code": "modifier onlyOwner() {\n        require(_owner == msg.sender, \"Ownable: caller is not the owner\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": []
+}]
+```

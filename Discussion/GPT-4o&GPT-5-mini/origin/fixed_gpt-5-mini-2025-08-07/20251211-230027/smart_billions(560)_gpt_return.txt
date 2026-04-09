@@ -1,0 +1,21 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "Bet.betHash",
+            "fix_info": "Changed betHash from a small integer type (used as raw entropy) to a 32-byte commitment so players must commit a secret when placing a bet (commit-reveal). This prevents miners from fully controlling randomness because outcome depends on player's secret as well as block-derived data.",
+            "variable_code": "bytes32 betHash;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "won",
+            "fix_info": "Reworked to require a reveal (commit-reveal). The function now verifies the reveal against the stored commitment (betHash) and mixes the reveal with the stored block hash (or the on-chain fallback hash) via keccak256 to produce the randomness. This reduces miner influence over outcomes compared to using raw block.blockhash(player.blockNum) as the sole source of randomness.",
+            "corrected_code": "function won(bytes32 reveal) public {\n    Bet memory player = bets[msg.sender];\n\n    // New player initialization (unchanged behavior)\n    if (player.blockNum == 0) {\n        bets[msg.sender] = Bet({value: 0, betHash: 0x0, blockNum: 1});\n        return;\n    }\n\n    // If no active bet or special state, forward to wallet (unchanged)\n    if ((player.value == 0) || (player.blockNum == 1)) {\n        payWallet();\n        return;\n    }\n\n    // Must resolve at a later block than the bet block\n    require(block.number > player.blockNum);\n\n    // Too late to resolve (unchanged logic)\n    if (player.blockNum + (10 * hashesSize) <= block.number) {\n        LogLate(msg.sender, player.blockNum, block.number);\n        bets[msg.sender] = Bet({value: 0, betHash: 0x0, blockNum: 1});\n        return;\n    }\n\n    // Verify the reveal matches the committed betHash to enforce commit-reveal\n    require(keccak256(reveal) == player.betHash);\n\n    uint prize = 0;\n    uint32 hash = 0;\n\n    // If the original bet block is still accessible via blockhash, use it\n    if (block.number < player.blockNum + 256) {\n        // Mix player's secret reveal with the historical blockhash to derive randomness\n        bytes32 bh = block.blockhash(player.blockNum);\n        bytes32 mixed = keccak256(reveal, bh);\n        hash = uint32(uint256(mixed) & 0xFFFFFF);\n        prize = betPrize(player, uint24(hash));\n    } else {\n        // Fallback to the contract's stored hash ring if available\n        if (hashFirst > 0) {\n            uint32 chainHash = getHash(player.blockNum);\n            if (chainHash == 0x1000000) { // load hash failed :-(, return funds\n                prize = uint(player.value);\n            } else {\n                // Mix the reveal with the fallback chain hash\n                bytes32 mixed = keccak256(reveal, bytes32(uint256(chainHash)));\n                hash = uint32(uint256(mixed) & 0xFFFFFF);\n                prize = betPrize(player, uint24(hash));\n            }\n        } else {\n            LogLate(msg.sender, player.blockNum, block.number);\n            bets[msg.sender] = Bet({value: 0, betHash: 0x0, blockNum: 1});\n            return;\n        }\n    }\n\n    // Clear player's bet state (unchanged behavior)\n    bets[msg.sender] = Bet({value: 0, betHash: 0x0, blockNum: 1});\n\n    // Payout / logging (adapted to new betHash type)\n    if (prize > 0) {\n        LogWin(msg.sender, uint(player.betHash), uint(hash), prize);\n        if (prize > maxWin) {\n            maxWin = prize;\n            LogRecordWin(msg.sender, prize);\n        }\n        pay(prize);\n    } else {\n        LogLoss(msg.sender, uint(player.betHash), uint(hash));\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

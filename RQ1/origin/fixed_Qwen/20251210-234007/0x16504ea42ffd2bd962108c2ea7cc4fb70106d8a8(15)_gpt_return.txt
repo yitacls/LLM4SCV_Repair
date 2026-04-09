@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Wforcer",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "wcf",
+            "fix_info": "Added check for return value of low-level call to prevent unchecked call vulnerabilities",
+            "corrected_code": "function wcf(address target, uint256 a) payable {\n    require(msg.sender == owner);\n    uint startBalance = this.balance;\n    bool success = target.call.value(msg.value)(bytes4(keccak256(\"play(uint256)\")), a);\n    if (!success) revert();\n    if (this.balance <= startBalance) revert();\n    owner.transfer(this.balance);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

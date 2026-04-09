@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "for(uint i=0;i<numbers;i++) { if(numElements == array.length) { array.length += 1; } array[numElements++] = value; }",
+    "description": "The 'insertNnumbers' function contains a loop that grows an array dynamically based on user input 'numbers'. When 'numbers' is large (approximately >382 iterations under default gas limits), the transaction will consume all gas and revert, causing denial of service. This occurs because: 1) Each iteration checks array bounds and potentially resizes storage array 'array.length += 1', which is gas-intensive; 2) Storage writes 'array[numElements++] = value' cost ~20,000 gas each; 3) The loop has no upper bound restriction, allowing attackers to force transaction failure by providing large 'numbers' values."
+}
+```

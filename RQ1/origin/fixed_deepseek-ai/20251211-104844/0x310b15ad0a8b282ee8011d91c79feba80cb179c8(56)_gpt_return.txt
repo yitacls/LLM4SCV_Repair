@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "NumbersToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "_owner",
+            "fix_info": "Added owner variable to enable access control for withdrawal function",
+            "variable_code": "address private _owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to withdrawal function",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == _owner, \"NumbersToken: caller is not the owner\");\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "constructorAdded",
+            "fix_info": "Added constructor to set contract owner during deployment",
+            "modifier_code": "constructor() public {\n    _owner = msg.sender;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier and removing tokenCount parameter which was unused",
+            "corrected_code": "function withdraw() public onlyOwner returns (bool) {\n    uint256 balance = dividends(msg.sender);\n    require(balance > 0, \"NumbersToken: no balance to withdraw\");\n    \n    payouts[msg.sender] += int256(balance * PRECISION);\n    totalPayouts += int256(balance * PRECISION);\n    \n    msg.sender.transfer(balance);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

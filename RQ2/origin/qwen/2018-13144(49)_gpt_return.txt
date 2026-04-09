@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] += _value;",
+    "description": "The addition operation on balances[_to] += _value; can cause an integer overflow if the resulting balance exceeds the maximum value of uint256. This could allow an attacker to wrap around to a small value, potentially creating tokens out of thin air. Similarly, the subtraction operation balances[_from] -= _value; can cause an integer underflow if _value is greater than balances[_from], though this is partially mitigated by the require statement checking balances[_from] >= _value."
+}
+```

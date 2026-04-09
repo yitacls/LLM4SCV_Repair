@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract's mint function sets restriction to the account that originates the transaction (tx.origin) instead of the function's caller (msg.sender), which can potentially be exploited. An attacker can trick the owner to initiate a transaction, then during the same transaction, call the mint function to credit their own account. This is because tx.origin refers to the original sender of the transaction, not the current function caller."
+}
+```

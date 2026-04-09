@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "VOCC_I061_20181211",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Modified to use SafeMath library to prevent arithmetic overflows/underflows, especially for the += and -= operations",
+            "variable_code": "using SafeMath for uint256;\nmapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding SafeMath library calls for subtraction and addition operations. Also added zero-value check for destination address.",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n    require(balanceOf[msg.sender] >= value, \"Insufficient balance\");\n    require(to != address(0), \"Invalid recipient address\");\n    \n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(value);\n    balanceOf[to] = balanceOf[to].add(value);\n    \n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

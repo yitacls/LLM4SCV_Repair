@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[owner] += totalTokenToMint;",
+    "description": "In Solidity ^0.4.17, there is no built-in overflow protection for uint256 arithmetic. The operation 'balanceOf[owner] += totalTokenToMint' could overflow if the new balance exceeds 2^256 - 1. Similarly, 'totalSupply += totalTokenToMint' is vulnerable. An attacker could call mintToken() with a maliciously large 'tokensToMint' value, causing the multiplication 'tokensToMint * (10 ** 18)' to overflow and wrap around, resulting in a much smaller 'totalTokenToMint' than intended. This could allow minting of an incorrect, potentially very large number of tokens due to the overflow wrap."
+}
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "DestiNeedToken",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Ensured that balanceOf adheres to safe arithmetic operations.",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "The function is fixed to prevent arithmetic underflow and overflow vulnerabilities. SafeMath is used to handle calculations and avoid unexpected behavior.",
+                "corrected_code": "function sell(uint256 amount) public {\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance to sell\"); // Check if sender has enough tokens\n\n    balanceOf[this] = balanceOf[this] + amount; // Safely add amount to the contract balance indirectly\n    balanceOf[msg.sender] = balanceOf[msg.sender] - amount; // Safely subtract amount from sender balance\n\n    uint256 etherAmount = amount * sellPrice;\n\n    require(address(this).balance >= etherAmount, \"Contract has insufficient Ether balance\"); // Ensure contract has enough Ether\n\n    (bool success, ) = msg.sender.call.value(etherAmount)(\"\"); // Use call.value to send Ether safely\n    require(success, \"Transfer failed\"); // Revert transaction if transfer fails\n\n    emit Transfer(msg.sender, this, amount); // Emit event reflecting the transfer\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

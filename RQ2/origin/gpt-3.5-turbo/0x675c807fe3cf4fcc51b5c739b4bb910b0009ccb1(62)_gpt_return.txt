@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "recipient.send(weiAmount);  // fault line",
+    "description": "The use of send() for transferring funds includes potential vulnerabilities. If the recipient is a contract, this can lead to reentrancy attacks. It's recommended to use transfer() or call.value()() with appropriate checks and constraints to handle potential failures."
+}
+```

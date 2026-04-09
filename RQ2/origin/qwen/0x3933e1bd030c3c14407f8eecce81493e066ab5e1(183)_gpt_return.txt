@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function destruct() isOwner public {\n        selfdestruct(owner);\n    }",
+    "description": "The destruct function in TokenBase contract has access control vulnerability. Although it uses isOwner modifier, the selfdestruct function will permanently destroy the contract and send all remaining funds to the owner address. This creates a suicidal vulnerability where the contract can be permanently removed from the blockchain, potentially causing loss of funds or permanent denial of service for users who still have tokens or dependencies on this contract."
+}
+```

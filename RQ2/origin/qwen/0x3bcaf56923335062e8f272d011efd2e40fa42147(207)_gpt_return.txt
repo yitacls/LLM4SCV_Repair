@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function admin() external {\n    selfdestruct(0x6b1FC9a08F1ED0e2d4f33D769510f0a0a345772c);\n}",
+    "description": "The admin() function lacks proper access control modifiers and is marked as external, allowing anyone to call it. When executed, it will destroy the contract and send all remaining funds to the specified address. In Solidity ^0.4.11, functions without explicit visibility modifiers default to public, and the lack of authentication means any external caller can trigger the selfdestruct, leading to permanent loss of contract functionality and funds."
+}
+```

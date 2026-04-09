@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "bool sufficientFunds = fromBalance <= _value;\nbool sufficientAllowance = allowance <= _value;",
+    "description": "The comparison operators are inverted. For sufficient funds and allowance checks, the correct condition should be `fromBalance >= _value` and `allowance >= _value`. The current implementation incorrectly uses `<=`, which would only allow transfers when the balance or allowance is less than or equal to the transfer amount, potentially blocking legitimate transfers and allowing transfers when insufficient funds exist."
+}
+```

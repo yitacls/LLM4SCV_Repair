@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "entriesCommitments",
+            "fix_info": "Added to store commitments for verifiable randomness",
+            "variable_code": "mapping(uint256 => bytes32) public entriesCommitments;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "randomSeed",
+            "fix_info": "Added to store the final random seed after reveal",
+            "variable_code": "uint256 public randomSeed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "chooseWinner",
+            "fix_info": "Replaced vulnerable blockchain attributes with commit-reveal scheme and external randomness",
+            "corrected_code": "function chooseWinner() private {\n    // Require that all tickets have been purchased and commit-reveal completed\n    require(nextTicket == totalTickets, \"All tickets must be sold\");\n    require(randomSeed != 0, \"Random seed must be set\");\n    \n    // Use the finalized random seed to determine winner\n    uint256 winningNumber = uint256(keccak256(abi.encodePacked(randomSeed, raffleId))) % totalTickets;\n    address winningAddress = contestants[winningNumber].addr;\n    \n    // Emit event with verifiable data\n    RaffleResult(raffleId, winningNumber, winningAddress, randomSeed, 0, 0, 0);\n    \n    // Start next raffle\n    raffleId++;\n    nextTicket = 0;\n    randomSeed = 0;\n    \n    // Clear entries commitments for next raffle\n    delete entriesCommitments[raffleId - 1];\n    \n    // Distribute prize and fee\n    winningAddress.transfer(prize);\n    feeAddress.transfer(fee);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "commitEntry",
+            "fix_info": "Added new function for participants to commit their random values",
+            "corrected_code": "function commitEntry(bytes32 commitment) external payable {\n    require(msg.value == ticketPrice, \"Incorrect ticket price\");\n    require(nextTicket < totalTickets, \"All tickets sold\");\n    \n    // Store commitment\n    entriesCommitments[raffleId] = keccak256(abi.encodePacked(\n        entriesCommitments[raffleId], \n        commitment, \n        msg.sender\n    ));\n    \n    // Record contestant\n    contestants[nextTicket] = Contestant(msg.sender, false);\n    nextTicket++;\n    \n    // Update prize pool\n    uint256 perTicket = ticketPrice - feePerTicket;\n    prize += perTicket;\n    fee += feePerTicket;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "revealAndFinalize",
+            "fix_info": "Added new function to reveal commitments and finalize random seed",
+            "corrected_code": "function revealAndFinalize(uint256 seed, bytes32 salt) external onlyOwner {\n    require(nextTicket == totalTickets, \"All tickets must be sold\");\n    require(randomSeed == 0, \"Random seed already set\");\n    require(block.number > blockNumber + 5, \"Must wait for more blocks\");\n    \n    // Verify the commitment matches the reveal\n    bytes32 commitment = keccak256(abi.encodePacked(seed, salt));\n    require(entriesCommitments[raffleId] != bytes32(0), \"No commitments found\");\n    \n    // Combine with blockhash for additional unpredictability\n    bytes32 blockHash = blockhash(block.number - 1);\n    \n    // Finalize random seed\n    randomSeed = uint256(keccak256(abi.encodePacked(\n        seed,\n        blockHash,\n        block.timestamp,\n        entriesCommitments[raffleId]\n    )));\n    \n    // Store block number for next raffle\n    blockNumber = block.number;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

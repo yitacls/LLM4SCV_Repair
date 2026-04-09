@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "msg.sender.send(address(this).balance)",
+            "description": "The use of send() for transferring funds can lead to unexpected behavior as it does not handle failure scenarios, such as if the receiving contract does not implement a fallback function or runs out of gas. This can result in a loss of funds."
+        }
+    ]
+}
+```

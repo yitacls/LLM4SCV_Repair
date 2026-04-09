@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "benecifiary.send(msg.value);",
+    "description": "This line uses the deprecated low-level `.send()` function without checking its return value. In Solidity 0.4.25, `.send()` forwards 2,300 gas and returns false on failure (rather than reverting). If the beneficiary is a smart contract with a fallback function that consumes more than 2,300 gas or fails, the transfer will fail silently. This creates a critical issue where the state changes below this line (`isWhiteList[msg.sender] = true;` and `participants.push(msg.sender);`) will still execute even if the ether transfer fails, allowing users to be added to the whitelist without actually paying. The recommended fix is to use `.transfer()` (which reverts on failure in 0.4.25) or check the return value of `.send()` and revert on failure."
+}
+```

@@ -1,0 +1,5 @@
+{
+    "type": "unchecked_low_level_calls",
+    "location": "function () external payable {\n    wallet.send(msg.value);  // fault line\n}",
+    "description": "The fallback function forwards received ETH using wallet.send(msg.value) but does not check the boolean return value. In Solidity ^0.4.23, .send returns false on failure (it forwards only 2300 gas) and does not revert the caller. By ignoring the return value, failed transfers are silently dropped — Ether may remain locked in the contract or subsequent logic may operate under false assumptions, creating a denial-of-service or funds-loss condition. Proper handling requires checking the return value and responding to failures (for example, reverting the transaction or recording a failed withdrawal and using a pull-pattern), or otherwise using a safer, explicit transfer pattern with clear error handling."
+}

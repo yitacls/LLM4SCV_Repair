@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function liquidateBorrowAllowed(...) override external returns (uint)",
+        "description": "The function liquidateBorrowAllowed calls external contracts and may be susceptible to reentrancy attacks. Although it does not directly send Ether or interact with user-controlled contracts in a way that would obviously result in loss of funds, the use of external calls without adequate protection mechanisms can lead to unexpected behavior. It is recommended to follow the checks-effects-interactions pattern and consider using reentrancy guards where necessary."
+    }
+]
+```

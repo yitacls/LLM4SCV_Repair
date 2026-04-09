@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "VOCC_I075_20181211",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed to the state variable itself",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "safeTransferCheck",
+            "fix_info": "Added new modifier to prevent overflow/underflow in token transfers",
+            "modifier_code": "modifier safeTransferCheck(address to, uint256 value) {\n    require(to != address(0), \"Invalid recipient address\");\n    require(balanceOf[msg.sender] >= value, \"Insufficient balance\");\n    require(balanceOf[to] + value >= balanceOf[to], \"Balance overflow\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding overflow check and using safe math patterns",
+            "corrected_code": "function transfer(address to, uint256 value) public safeTransferCheck(to, value) returns (bool success) {\n    balanceOf[msg.sender] -= value;\n    balanceOf[to] += value;\n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

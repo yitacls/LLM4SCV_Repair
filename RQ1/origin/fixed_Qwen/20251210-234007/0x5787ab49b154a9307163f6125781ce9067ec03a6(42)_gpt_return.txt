@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PwnFoMo3D",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "gotake",
+            "fix_info": "Added check for low-level call success to prevent unchecked call vulnerabilities",
+            "corrected_code": "function gotake() public  {\n    require(address(fomo3d).call.value( fomo3d.getBuyPrice() * 2 )(), \"Low level call failed\");\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

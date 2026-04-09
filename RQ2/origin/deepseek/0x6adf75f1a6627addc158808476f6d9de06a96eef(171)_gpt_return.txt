@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_source == 2) { if (_to == tx.origin) { balance.profitBalance = balance.profitBalance.sub(_deposited); } else { Balance storage senderBalance = userWallets[tx.origin]; senderBalance.profitBalance = senderBalance.profitBalance.sub(_deposited); } }",
+    "description": "The contract lacks proper access control validation for the profit balance deduction logic when _source == 2. Any user can call this function with _source == 2 and manipulate tx.origin to deduct profitBalance from arbitrary addresses. The function is marked as onlyReserveFundContract, but if that modifier is improperly implemented or if the ReserveFundContract itself is compromised, unauthorized profitBalance deductions can occur. Additionally, the use of tx.origin for authorization is risky as it can be manipulated through intermediate contract calls, potentially allowing malicious contracts to trigger unexpected profitBalance subtractions from user accounts."
+}
+```

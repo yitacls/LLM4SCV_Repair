@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "AirdropTryer",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added a state variable to track contract owner securely",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict function access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "empty",
+            "fix_info": "Replaced tx.origin with msg.sender check via onlyOwner modifier for secure access control",
+            "corrected_code": "function empty() public onlyOwner {\n        selfdestruct(owner);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize owner during contract deployment",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

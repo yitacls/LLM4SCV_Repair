@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CGENToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added ownership modifier to replace tx.origin check",
+            "modifier_code": "modifier onlyOwner {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "vestToAddressEx",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier for proper access control",
+            "corrected_code": "function vestToAddressEx(address _who, uint128 _amount, uint8 _divisor, uint32 _intervalSeconds) public onlyOwner returns(bool) {\n    vesting memory newVesting;\n    require(_amount > 0);\n    require(_divisor <= 100 && _divisor > 0);\n    require(_intervalSeconds > 0);\n    require(100 % _divisor == 0);\n    require(_amount <= availableSupply);\n    \n    newVesting.createdAt = now;\n    newVesting.amount = _amount;\n    newVesting.releaseRate = 100 / _divisor;\n    newVesting.releaseIntervalSeconds = _intervalSeconds;\n    newVesting.nextReleasePeriod = 0;\n    newVesting.completed = false;\n    \n    tokenAccountIndex[_who].vestingIndex.push(newVesting);\n    availableSupply -= _amount;\n    tokenAccountIndex[_who].vestedBalance += _amount;\n    \n    emit Transfer(owner, _who, _amount);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.send(_value);",
+    "description": "The contract uses `send()` without checking its return value. In Solidity versions prior to 0.5.0, the `send()` function returns a boolean indicating success or failure, but this return value is not checked. If the transfer fails, execution continues as if it succeeded. This could allow an owner to think tokens were transferred when they were not, potentially leading to locked funds, incorrect state, or other unexpected behavior. Additionally, the function performs an ownership check but does not modify the contract's internal balance tracking, suggesting this might be intended to transfer the contract's native Ether balance directly, making the unchecked `send()` particularly dangerous."
+}
+```

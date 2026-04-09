@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Main",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "playLottery",
+            "fix_info": "Replaced tx.origin with msg.sender for proper access control to prevent phishing attacks",
+            "corrected_code": "function playLottery(uint256[] amounts, address[] winners) public onlyStarted{\n        require(msg.sender == ownerAddress);\n        require(amounts.length == winners.length);\n        require(lastLotteryTime.add(LotteryStepTime) <= now);\n        for (uint i=0; i!=amounts.length; i++) {\n            winners[i].transfer(amounts[i]);\n        }\n        lastLotteryTime = now;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

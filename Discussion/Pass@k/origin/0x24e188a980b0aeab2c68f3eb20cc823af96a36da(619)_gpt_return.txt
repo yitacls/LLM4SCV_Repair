@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Jotter",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setEth",
+                "fix_info": "Added onlyOwner modifier to restrict access to the owner",
+                "corrected_code": "function setEth(uint _newEth) public onlyOwner {\n        ethToJot = _newEth;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "SimpleWallet",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sendMoney",
+                "fix_info": "Added `require` to check the return value of the low-level call to ensure it executes successfully, and used explicit gas to mitigate reentrancy risks.",
+                "corrected_code": "function sendMoney(address _target, uint _value) public onlyOwner {\n        require(_target != address(0), \"Invalid target address\");\n        require(address(this).balance >= _value, \"Insufficient balance\");\n\n        (bool success, ) = _target.call.value(_value)(\"\");\n        require(success, \"Call failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

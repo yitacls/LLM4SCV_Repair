@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(0x0581cee36a85Ed9e76109A9EfE3193de1628Ac2A).call.value(msg.value)()",
+    "description": "This low-level call transfers the contract's entire balance (msg.value) to a hardcoded address, but it does not check the return value of the call. In Solidity 0.4.x, low-level 'call' returns a boolean indicating success. If the call fails (e.g., if the recipient contract reverts or runs out of gas), it will return false, but the failure will be ignored here. This can lead to silent failures where Ether is not actually transferred as intended, but the contract state may still be updated as if it succeeded. The function also lacks access controls and validation, allowing arbitrary users to drain the contract's Ether to the hardcoded address."
+}
+```

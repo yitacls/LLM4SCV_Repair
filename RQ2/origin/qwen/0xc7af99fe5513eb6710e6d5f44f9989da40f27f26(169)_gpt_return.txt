@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.25, send() returns false silently on failure instead of reverting, which means if the transfer fails, the function will continue execution without handling the error. This can lead to loss of funds as the contract balance might not be properly withdrawn while the function appears to succeed."
+}
+```

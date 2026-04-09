@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if (beneficiary.send(amountLeft)) {",
+    "description": "The contract is vulnerable to reentrancy attack because it calls an external contract function (beneficiary.send()) before updating the contract state (amountLeft). An attacker can repeatedly call the safeWithdrawal() function in a reentrant manner, potentially draining the contract's funds before amountLeft is properly updated to 0."
+}
+```

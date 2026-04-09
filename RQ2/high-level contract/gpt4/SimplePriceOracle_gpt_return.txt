@@ -1,0 +1,13 @@
+```json
+{
+    "contractName": "SimplePriceOracle",
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "function price(string calldata /*name*/, uint /*expires*/, uint duration)",
+            "description": "This function contains a multiplication operation which could potentially overflow without proper checks. To prevent an integer overflow or underflow, try adding checks to ensure that the `duration` variable is within a certain range—that no arbitrary large values could be passed to it that would result in an overflow. Openzeppelin provides a SafeMath library to prevent these types of vulnerabilities."
+        }
+    ]
+}
+```
+The above JSON object defines the vulnerabilities within the "SimplePriceOracle" contract. It clearly mentions the SWC-101-Integer Overflow and Underflow vulnerability and provides a brief description as well. The location key directly points to the method where this vulnerability is present.

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "IntermediateWallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback function",
+            "fix_info": "Added proper error handling for low-level call to send() by checking return value",
+            "corrected_code": "function() external payable {\n    require(wallet.send(msg.value), \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

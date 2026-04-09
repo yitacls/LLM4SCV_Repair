@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "BulkTransfer",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Not an administrator\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "forwardTransaction",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and using new onlyOwner modifier. Also updated deprecated .gas() and .value() syntax to modern Solidity 0.4.24 syntax.",
+            "corrected_code": "function forwardTransaction(address destination, uint amount, uint gasLimit, bytes data) internal onlyOwner {\n    require(\n        destination.call.gas(\n            (gasLimit > 0) ? gasLimit : gasleft()\n        ).value(amount)(data), \n        \"operation failed\"\n    );\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

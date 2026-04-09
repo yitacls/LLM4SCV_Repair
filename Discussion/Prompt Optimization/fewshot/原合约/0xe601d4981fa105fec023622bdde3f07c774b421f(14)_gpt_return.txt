@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "Token",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Add overflow check before updating balances.",
+                "corrected_code": "function transfer(address _to, uint _amount) {
+        require(balances[msg.sender] >= _amount);
+        balances[msg.sender] -= _amount;
+        balances[_to] += _amount;  
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

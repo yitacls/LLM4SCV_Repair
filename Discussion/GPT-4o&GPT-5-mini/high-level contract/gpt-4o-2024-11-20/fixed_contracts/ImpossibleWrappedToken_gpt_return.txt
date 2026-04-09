@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "ImpossibleWrappedToken",
+        "contract_version": "=0.7.6",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Added a nonReentrant modifier to prevent reentrancy attacks.",
+                "modifier_code": "bool internal locked;\n\nmodifier nonReentrant() {\n    require(!locked, 'ImpossibleWrapper: REENTRANCY');\n    locked = true;\n    _;\n    locked = false;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "deposit(address,uint256)",
+                "fix_info": "Rewrote the 'deposit' function to use the newly added 'nonReentrant' modifier to avoid reentrancy attacks.",
+                "corrected_code": "function deposit(address dst, uint256 wad) public nonReentrant returns (uint256 transferAmt) {\n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n    require(IERC20(underlying).transferFrom(msg.sender, address(this), transferAmt), 'ImpossibleWrapper: TRANSFERFROM_FAILED');\n    _deposit(dst, wad);\n    underlyingBalance = underlyingBalance.add(transferAmt);\n    emit Transfer(address(0), msg.sender, wad);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "deposit(address)",
+                "fix_info": "Rewrote the overload of 'deposit' function to use the 'nonReentrant' modifier and mitigate transaction order dependence by moving balance reading after state updates.",
+                "corrected_code": "function deposit(address dst) public override nonReentrant returns (uint256 transferAmt) {\n    uint256 balanceBefore = underlyingBalance;\n    uint256 balanceAfter = IERC20(underlying).balanceOf(address(this));\n    transferAmt = balanceAfter.sub(balanceBefore);\n    uint256 wad = transferAmt.mul(ratioNum).div(ratioDenom);\n    _deposit(dst, wad);\n    underlyingBalance = balanceAfter;\n    emit Transfer(address(0), dst, wad);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw(address,uint256)",
+                "fix_info": "Rewrote the 'withdraw' function to use the 'nonReentrant' modifier to avoid reentrancy attacks and added stricter state updates.",
+                "corrected_code": "function withdraw(address dst, uint256 wad) public override nonReentrant returns (uint256 transferAmt) {\n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(wad);\n    totalSupply = totalSupply.sub(wad);\n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n    require(IERC20(underlying).transfer(dst, transferAmt), 'IF Wrapper: UNDERLYING_TRANSFER_FAIL');\n    underlyingBalance = underlyingBalance.sub(transferAmt);\n    emit Transfer(msg.sender, address(0), wad);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw(address,address,uint256)",
+                "fix_info": "Rewrote the 'withdraw' function for specific src to use the 'nonReentrant' modifier and mitigate reentrancy risks. Enforced stricter state handling.",
+                "corrected_code": "function withdraw(address src, address dst, uint256 wad) public nonReentrant returns (uint256 transferAmt) {\n    allowance[src][msg.sender] = allowance[src][msg.sender].sub(wad);\n    balanceOf[src] = balanceOf[src].sub(wad);\n    totalSupply = totalSupply.sub(wad);\n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n    require(IERC20(underlying).transfer(dst, transferAmt), 'IF Wrapper: UNDERLYING_TRANSFER_FAIL');\n    underlyingBalance = underlyingBalance.sub(transferAmt);\n    emit Transfer(src, address(0), wad);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

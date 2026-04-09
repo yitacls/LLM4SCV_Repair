@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint i = 0; i < holders.length(); i = i.add(1)){...} within the function end()",
+        "description": "This loop iterates over an array of addresses 'holders'. As the number of addresses increase, the gas cost of each transaction could become very large and potentially exceed the block gas limit, rendering the contract unusable."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint i = 0; i < holders.length(); i = i.add(1)){...} within the function getRewardsLeft()",
+        "description": "This loop iterates over an array of addresses 'holders'. As the number of 'holders' increase, the gas cost of each transaction could become very large and potentially exceed the block gas limit, causing the function to be potentially uncallable if the gas costs rise too high."
+    }
+]
+```

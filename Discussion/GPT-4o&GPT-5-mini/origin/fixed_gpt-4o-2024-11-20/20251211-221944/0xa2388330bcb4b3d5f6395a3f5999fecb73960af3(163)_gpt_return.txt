@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BTRCTOKEN",
+    "contract_version": "0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "The unchecked low-level call vulnerability has been resolved by applying a require check to ensure the call to the external contract is successful. Additionally, an event is used to report the payment status while handling edge cases like reentrancy.",
+            "corrected_code": "function () public payable {\n    require(workingFlag, \"Contract is currently not processing transactions\");\n    bool ret = false;\n    if (generationState) {\n        (ret,) = address(cur_coin).call(abi.encodeWithSelector(\n            bytes4(keccak256(\"pay(address,uint256,uint256)\")), \n            msg.sender, \n            msg.value, \n            price\n        ));\n        require(ret, \"Low-level call to cur_coin contract failed\");\n    }\n    emit PaymentGot(ret);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

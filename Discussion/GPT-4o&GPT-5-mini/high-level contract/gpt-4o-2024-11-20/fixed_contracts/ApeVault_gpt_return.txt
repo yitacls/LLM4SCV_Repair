@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "ApeVaultWrapperImplementation",
+    "contract_version": "^0.8.2",
+    "state_variables": [
+        {
+            "variable_name": "hasAccess",
+            "fix_info": "Removed `hasAccess` mapping since it was declared but unused, indicating dead code.",
+            "variable_code": "",
+            "change_type": "deleted"
+        },
+        {
+            "variable_name": "allowanceModule",
+            "fix_info": "Removed `allowanceModule` state variable since it was declared but unused, indicating dead code.",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "apeWithdrawSimpleToken",
+            "fix_info": "Added an access control to restrict withdrawals to the owner only, previously lacked protection.",
+            "corrected_code": "function apeWithdrawSimpleToken(uint256 _amount) public onlyOwner {\n    require(_amount > 0, \"Amount must be greater than zero\");\n    require(simpleToken.balanceOf(address(this)) >= _amount, \"Insufficient balance to withdraw\");\n    simpleToken.safeTransfer(msg.sender, _amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "init",
+            "fix_info": "Added checks to validate critical initialization parameters and prevent misconfiguration.",
+            "corrected_code": "function init(\n    address _apeRegistry,\n    address _token,\n    address _registry,\n    address _simpleToken,\n    address _newOwner\n) external {\n    require(!setup, \"Contract already initialized\");\n    require(_apeRegistry != address(0), \"apeRegistry cannot be the zero address\");\n    require(_registry != address(0), \"registry cannot be the zero address\");\n    require(_simpleToken != address(0), \"simpleToken cannot be the zero address\");\n    require(_newOwner != address(0), \"New owner cannot be the zero address\");\n\n    setup = true;\n    apeRegistry = _apeRegistry;\n\n    if (_token != address(0)) {\n        address latestVault = RegistryAPI(_registry).latestVault(_token);\n        require(latestVault != address(0), \"Invalid vault for token\");\n        vault = VaultAPI(latestVault);\n    }\n\n    simpleToken = IERC20(_simpleToken);\n    token = IERC20(_token);\n    registry = RegistryAPI(_registry);\n    _owner = _newOwner;\n    emit OwnershipTransferred(address(0), _newOwner);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

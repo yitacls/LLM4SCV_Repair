@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_to == tx.origin) { balance.profitBalance = balance.profitBalance.sub(_deposited); } else { Balance storage senderBalance = userWallets[tx.origin]; senderBalance.profitBalance = senderBalance.profitBalance.sub(_deposited); }",
+    "description": "The contract allows arbitrary deduction from any user's profitBalance. When _source == 2, the contract checks if the depositor (_to) is the same as the transaction initiator (tx.origin). If they match, it deducts from the depositor's profitBalance. If not, it deducts from the transaction initiator's profitBalance. This creates two vulnerabilities: 1) Anyone can call the deposit function with any user as _to and _source == 2 to cause a deduction, regardless of authorization. 2) The condition uses tx.origin which refers to the original transaction sender (EOA) rather than msg.sender (the immediate caller), which can be manipulated through intermediate contracts, potentially leading to unexpected deductions from users who didn't authorize the transaction."
+}
+```

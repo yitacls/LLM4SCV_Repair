@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "bytes32 answer = blockhash(guesses[msg.sender].block);",
+    "description": "The contract uses `blockhash` for randomness, which is predictable and manipulable. Specifically, `blockhash` returns `0x0` for blocks older than 256 blocks from the current block, making it trivial for an attacker to wait until the guessed block is more than 256 blocks old to guarantee `answer` will be `0x0`. An attacker can always win by guessing `0x0` if they call `settle()` after 256 blocks have passed since their guessed block."
+}
+```

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The use of tx.origin for access control is considered a security risk in Solidity. Using tx.origin for authorization can potentially be exploited by a malicious contract. It is recommended to use msg.sender for access control instead of tx.origin."
+        }
+    ]
+}
+```  

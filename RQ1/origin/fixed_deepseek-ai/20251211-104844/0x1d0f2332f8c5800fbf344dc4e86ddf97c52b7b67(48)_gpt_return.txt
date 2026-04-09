@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "SplitterService",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added explicit owner variable to track contract owner",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function calls to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "ownerWithdrawFees",
+            "fix_info": "Added onlyOwner modifier for access control, used .balance property (not .balance()), and used address(this).balance instead of deprecated this.balance",
+            "corrected_code": "function ownerWithdrawFees() external onlyOwner {\n        owner.transfer(address(this).balance);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set the initial owner to the contract deployer",
+            "corrected_code": "function SplitterService() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

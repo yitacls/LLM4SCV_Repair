@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ETH10",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using safeSend pattern with require statement to handle failed transfers properly",
+            "corrected_code": "function () external payable {\n        if (invested[msg.sender] != 0) {\n            uint256 amount = invested[msg.sender] * 10/100 * (block.number - atBlock[msg.sender]) / 6000;\n            address sender = msg.sender;\n            require(sender.send(amount), \"Transfer failed\");\n        }\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

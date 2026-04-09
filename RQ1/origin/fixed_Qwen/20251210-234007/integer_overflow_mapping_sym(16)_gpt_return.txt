@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "IntegerOverflowMappingSym1",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "init",
+            "fix_info": "Added SafeMath library to prevent arithmetic underflow when subtracting values from mapping",
+            "corrected_code": "function init(uint256 k, uint256 v) public {\n        // Using SafeMath sub to prevent underflow\n        map[k] = map[k].sub(v);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

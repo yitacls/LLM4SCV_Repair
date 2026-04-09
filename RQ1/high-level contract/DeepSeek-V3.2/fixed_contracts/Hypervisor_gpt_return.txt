@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "Hypervisor",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+                "modifier_code": "modifier nonReentrant() {\n        require(!locked, \"Reentrant call\");\n        locked = true;\n        _;\n        locked = false;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed reentrancy vulnerability and owner permission check by applying nonReentrant modifier",
+                "corrected_code": "    function deposit(\n        uint256 deposit0,\n        uint256 deposit1,\n        address to,\n        address from\n    ) external override nonReentrant returns (uint256 shares) {\n        require(deposit0 > 0 || deposit1 > 0, \"deposits must be nonzero\");\n        require(deposit0 <= deposit0Max && deposit1 <= deposit1Max, \"deposits must be less than maximum amounts\");\n        require(to != address(0) && to != address(this), \"to\");\n        require(!whitelisted || list[from], \"must be on the list\");\n\n        // update fess for inclusion in total pool amounts\n        (uint128 baseLiquidity,,) = _position(baseLower, baseUpper);\n        if (baseLiquidity > 0) {\n            pool.burn(baseLower, baseUpper, 0);\n        }\n        (uint128 limitLiquidity,,)  = _position(limitLower, limitUpper);\n        if (limitLiquidity > 0) {\n            pool.burn(limitLower, limitUpper, 0);\n        }\n\n        uint160 sqrtPrice = TickMath.getSqrtRatioAtTick(currentTick());\n        uint256 price = FullMath.mulDiv(uint256(sqrtPrice).mul(uint256(sqrtPrice)), PRECISION, 2**(96 * 2));\n\n        (uint256 pool0, uint256 pool1) = getTotalAmounts();\n\n        uint256 deposit0PricedInToken1 = deposit0.mul(price).div(PRECISION);\n        shares = deposit1.add(deposit0PricedInToken1);\n\n        if (deposit0 > 0) {\n          token0.safeTransferFrom(from, address(this), deposit0);\n        }\n        if (deposit1 > 0) {\n          token1.safeTransferFrom(from, address(this), deposit1);\n        }\n\n        if (totalSupply() != 0) {\n          uint256 pool0PricedInToken1 = pool0.mul(price).div(PRECISION);\n          shares = shares.mul(totalSupply()).div(pool0PricedInToken1.add(pool1));\n          if(directDeposit) {\n            baseLiquidity = _liquidityForAmounts(\n                baseLower,\n                baseUpper,\n                token0.balanceOf(address(this)),\n                token1.balanceOf(address(this))\n            );\n            _mintLiquidity(baseLower, baseUpper, baseLiquidity, address(this));\n\n            limitLiquidity = _liquidityForAmounts(\n                limitLower,\n                limitUpper,\n                token0.balanceOf(address(this)),\n                token1.balanceOf(address(this))\n            );\n            _mintLiquidity(limitLower, limitUpper, limitLiquidity, address(this));\n          }\n        }\n        _mint(to, shares);\n        emit Deposit(from, to, shares, deposit0, deposit1);\n        // Check total supply cap not exceeded. A value of 0 means no limit.\n        require(maxTotalSupply == 0 || totalSupply() <= maxTotalSupply, \"maxTotalSupply\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed reentrancy vulnerability by applying nonReentrant modifier and reordered checks-effects-interactions pattern",
+                "corrected_code": "    function withdraw(\n        uint256 shares,\n        address to,\n        address from\n    ) external override nonReentrant returns (uint256 amount0, uint256 amount1) {\n        require(shares > 0, \"shares\");\n        require(to != address(0), \"to\");\n        require(\n            from == msg.sender || IUniversalVault(from).owner() == msg.sender,\n            \"Sender must own the tokens\"\n        );\n\n        // Burn shares first (checks-effects pattern)\n        _burn(from, shares);\n\n        uint256 totalSupply = totalSupply();\n        \n        // Withdraw liquidity from Uniswap pool\n        (uint256 base0, uint256 base1) = _burnLiquidity(\n            baseLower,\n            baseUpper,\n            _liquidityForShares(baseLower, baseUpper, shares),\n            to,\n            false\n        );\n        (uint256 limit0, uint256 limit1) = _burnLiquidity(\n            limitLower,\n            limitUpper,\n            _liquidityForShares(limitLower, limitUpper, shares),\n            to,\n            false\n        );\n\n        // Push tokens proportional to unused balances\n        uint256 unusedAmount0 = token0.balanceOf(address(this)).mul(shares).div(totalSupply);\n        uint256 unusedAmount1 = token1.balanceOf(address(this)).mul(shares).div(totalSupply);\n        \n        amount0 = base0.add(limit0).add(unusedAmount0);\n        amount1 = base1.add(limit1).add(unusedAmount1);\n        \n        // Transfer tokens after state changes\n        if (unusedAmount0 > 0) token0.safeTransfer(to, unusedAmount0);\n        if (unusedAmount1 > 0) token1.safeTransfer(to, unusedAmount1);\n\n        emit Withdraw(from, to, shares, amount0, amount1);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "uniswapV3MintCallback",
+                "fix_info": "Fixed SWC-135 (Code With No Effects) by removing unnecessary payer address check and fixing if-else logic",
+                "corrected_code": "    function uniswapV3MintCallback(\n        uint256 amount0,\n        uint256 amount1,\n        bytes calldata data\n    ) external override {\n        require(msg.sender == address(pool));\n        address payer = abi.decode(data, (address));\n        \n        if (amount0 > 0) {\n            if (payer == address(this)) {\n                token0.safeTransfer(msg.sender, amount0);\n            } else {\n                token0.safeTransferFrom(payer, msg.sender, amount0);\n            }\n        }\n        \n        if (amount1 > 0) {\n            if (payer == address(this)) {\n                token1.safeTransfer(msg.sender, amount1);\n            } else {\n                token1.safeTransferFrom(payer, msg.sender, amount1);\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "pullLiquidity",
+                "fix_info": "Fixed function compilation error by properly handling return variables",
+                "corrected_code": "    function pullLiquidity(\n      uint256 shares\n    ) external onlyOwner returns(\n        uint256 base0,\n        uint256 base1,\n        uint256 limit0,\n        uint256 limit1\n      ) {\n\n        (base0, base1) = _burnLiquidity(\n            baseLower,\n            baseUpper,\n            _liquidityForShares(baseLower, baseUpper, shares),\n            address(this),\n            false\n        );\n        (limit0, limit1) = _burnLiquidity(\n            limitLower,\n            limitUpper,\n            _liquidityForShares(limitLower, limitUpper, shares),\n            address(this),\n            false\n        );\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

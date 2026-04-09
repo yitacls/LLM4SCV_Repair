@@ -1,0 +1,7 @@
+```json
+{
+    "Type": "access_control",
+    "Location": "require(tx.origin == owner);",
+    "Description": "The contract has a faulty access control vulnerability where it is only checking if the transaction origin is the owner instead of the msg.sender, who is the current function executor. This allows for unauthorised minting of tokens if a contract that the owner interacts with calls this function, even if the actual initiator of the transaction is not the owner."
+}
+```

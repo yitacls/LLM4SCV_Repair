@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Line 930-947: function _setComptroller(ComptrollerInterface newComptroller) override public returns (uint)",
+    "description": "The _setComptroller function lacks a reentrancy guard (nonReentrant modifier) and makes an external call to newComptroller.isComptroller() before updating the comptroller state variable. This creates a reentrancy vulnerability where an attacker could provide a malicious contract that implements the ComptrollerInterface and calls back into the CToken contract before the comptroller state is updated, potentially allowing unauthorized operations or inconsistent state changes."
+}
+```

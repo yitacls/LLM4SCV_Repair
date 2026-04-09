@@ -1,0 +1,30 @@
+[
+    {
+        "contract_name": "ERC20Standard",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Ensure an explicit owner state variable with proper visibility is declared so access control can use msg.sender instead of tx.origin. Marked as modified because the original code relied on owner but used tx.origin which is insecure.",
+                "variable_code": "address public owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added an onlyOwner modifier to centralize the ownership check and replace the insecure tx.origin check. Uses msg.sender for correct access control.",
+                "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mint",
+                "fix_info": "Removed the insecure tx.origin check and the redundant assert. Applied onlyOwner modifier to restrict access to the contract owner while preserving original behavior of increasing sender's balance and totalSupply.",
+                "corrected_code": "function mint(uint256 amount) public onlyOwner {\n    balances[msg.sender] += amount;\n    totalSupply += amount;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

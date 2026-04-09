@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "VotePumpCoin0x",
+    "contract_version": "^0.4.22",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added state variable to store owner address securely - best practice for access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function calls to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by ensuring only owner can withdraw, added explicit transfer amount and error handling",
+            "corrected_code": "function withdraw() public onlyOwner {\n    uint256 etherBalance = address(this).balance;\n    require(etherBalance > 0, \"No funds to withdraw\");\n    \n    (bool success, ) = owner.call.value(etherBalance)(\"\");\n    require(success, \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

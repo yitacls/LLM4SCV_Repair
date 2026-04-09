@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for send() and using require() to handle failure cases",
+            "corrected_code": "function () payable {\n        require(!crowdsaleClosed);\n        uint amount = msg.value;\n        balanceOf[msg.sender] += amount;\n        amountRaised += amount;\n        tokenReward.transfer(msg.sender, amount / price);\n        require(beneficiary.send(amountRaised));\n        amountRaised = 0;\n        FundTransfer(msg.sender, amount, true);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

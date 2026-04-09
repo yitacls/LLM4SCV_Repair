@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HEY",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow/underflow vulnerabilities in balance and supply calculations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

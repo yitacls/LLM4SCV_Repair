@@ -1,0 +1,51 @@
+```json
+[
+    {
+        "contract_name": "Lottery",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "doInvest",
+                "fix_info": "Add access control to prevent unauthorized calls.",
+                "corrected_code": "function doInvest() internal onlyOwner {
+        uint256 investment = msg.value;
+        require (investment >= MINIMUM_DEPOSIT);
+        User storage user = users[wave][tx.origin];
+        if (user.firstTime == 0) {
+            user.firstTime = now;
+            user.lastPayment = now;
+            emit InvestorAdded(tx.origin);
+        }
+        if (user.referrer == address(0) && msg.data.length == 20 && user.firstTime == now) {
+            address newReferrer = _bytesToAddress(msg.data);
+            if (newReferrer != address(0) && newReferrer != tx.origin && users[wave][newReferrer].firstTime > 0) {  
+                user.referrer = newReferrer;
+                emit ReferrerAdded(tx.origin, newReferrer);
+            }
+        }
+        if (user.referrer != address(0)) {
+            uint256 refAmount = investment.mul(referralPercents).div(ONE_HUNDRED_PERCENTS);
+            users[wave][user.referrer].referralAmount = users[wave][user.referrer].referralAmount.add(investment);
+            user.referrer.transfer(refAmount);
+        }
+        investment = investment.add(getDividends(tx.origin));
+        totalInvest = totalInvest.add(investment);
+        user.deposits.push(Deposit({
+            amount: investment,
+            interest: getUserInterest(tx.origin),
+            withdrawedRate: 0
+        }));
+        emit DepositAdded(tx.origin, user.deposits.length, investment);
+        uint256 marketingAndTeamFee = msg.value.mul(MARKETING_AND_TEAM_FEE).div(ONE_HUNDRED_PERCENTS);
+        marketingAndTechnicalSupport.transfer(marketingAndTeamFee);
+        emit FeePayed(tx.origin, marketingAndTeamFee);
+        emit BalanceChanged(address(this).balance);
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

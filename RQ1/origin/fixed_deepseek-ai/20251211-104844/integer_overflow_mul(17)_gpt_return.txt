@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowMul",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Added SafeMath library protection for arithmetic operations",
+            "variable_code": "using SafeMath for uint256;\nuint256 public count;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "run",
+            "fix_info": "Replaced vulnerable multiplication with SafeMath.mul to prevent overflow",
+            "corrected_code": "function run(uint256 input) public {\n    count = count.mul(input);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

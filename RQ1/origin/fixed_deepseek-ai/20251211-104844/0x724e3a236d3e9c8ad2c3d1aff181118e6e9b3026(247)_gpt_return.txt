@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "BITCOINMILLIONARE",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "withdraw",
+        "fix_info": "Replaced deprecated 'this.balance' with 'address(this).balance' for clarity and forward compatibility",
+        "corrected_code": "function withdraw() onlyOwner public {\n    uint256 etherBalance = address(this).balance;\n    owner.transfer(etherBalance);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public {\n    uint256 etherBalance = this.balance;\n    owner.transfer(etherBalance); // <LEAKING_VUL>\n}",
+    "description": "The function lacks access control for the owner role. While it uses the 'onlyOwner' modifier, the contract does not show its definition or implementation. In Solidity 0.4.x, the common practice was to use a custom modifier, which is not defined in the provided snippet. If the 'onlyOwner' modifier is missing, incorrectly implemented, or if the 'owner' variable can be changed by unauthorized parties, any user could call this function to drain all Ether from the contract. Additionally, the function does not emit an event, making ownership transfers or withdrawals harder to track. To fix this, ensure the 'onlyOwner' modifier is correctly defined and the 'owner' variable is securely set, preferably in the constructor, and consider adding an event for transparency."
+}
+```

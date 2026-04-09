@@ -1,0 +1,38 @@
+Let's analyze the vulnerability. SWC-128 is about DoS with Block Gas Limit. In this contract, the `assignDeposits()` function uses a loop that iterates up to `getMaximumDepositAssignments()`. If this number is too large, the loop could consume all gas and cause the transaction to fail.
+
+The fix is to limit the loop iterations based on available gas or allow partial processing with state persistence. However, in Solidity 0.7.6, we cannot easily track gas mid-execution. A common pattern is to process only as many items as feasible within gas limits and allow the function to be called again. But here, the loop already breaks early if balance is insufficient or queue is empty. The real issue is that `getMaximumDepositAssignments()` could be set to a high value by governance, causing gas exhaustion.
+
+We should:
+1. Keep the loop but add a gas-aware limit or make it break when gas is low.
+2. Since gas checking is not straightforward, we can instead add a configurable maximum assignments per call, separate from the global maximum.
+
+But the contract already uses `getMaximumDepositAssignments()` from settings. The vulnerability is that this could be set too high. However, governance controls it, so it's a governance risk. To mitigate, we can:
+- Add a hard upper bound per transaction in the contract.
+- Or process only until gas left is above a safe threshold.
+
+Given the constraints (Solidity 0.7.6), I'll implement a gas check: break if gas left is below a safe threshold (e.g., 50000 gas). This prevents running out of gas mid-loop.
+
+But note: checking gas left is not perfect because gas costs per iteration vary. Still, it's a common defensive pattern.
+
+Also, the function `assignDeposits()` is public and can be called multiple times, so partial progress is fine.
+
+Let's fix the `assignDeposits()` function.
+
+We'll modify the loop to break if gas left is below a threshold (e.g., 50000 gas) to ensure we don't run out of gas and revert.
+
+Here's the corrected function:
+
+```json
+[{
+    "contract_name": "RocketDepositPool",
+    "contract_version": 1,
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "assignDeposits",
+        "fix_info": "Added gas limit check in loop to prevent DoS via block gas limit. Breaks iteration if remaining gas is below 50000 to ensure transaction doesn't revert due to out-of-gas.",
+        "corrected_code": "    // Assign deposits to available minipools\n    function assignDeposits() override public onlyLatestContract(\"rocketDepositPool\", address(this)) {\n        // Load contracts\n        RocketDAOProtocolSettingsDepositInterface rocketDAOProtocolSettingsDeposit = RocketDAOProtocolSettingsDepositInterface(getContractAddress(\"rocketDAOProtocolSettingsDeposit\"));\n        RocketMinipoolQueueInterface rocketMinipoolQueue = RocketMinipoolQueueInterface(getContractAddress(\"rocketMinipoolQueue\"));\n        RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n        // Check deposit settings\n        require(rocketDAOProtocolSettingsDeposit.getAssignDepositsEnabled(), \"Deposit assignments are currently disabled\");\n        // Assign deposits\n        // SWC-128-DoS With Block Gas Limit: Fixed by adding gas limit check\n        for (uint256 i = 0; i < rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments(); ++i) {\n            // Prevent running out of gas mid-loop\n            if (gasleft() < 50000) {\n                break;\n            }\n            // Get & check next available minipool capacity\n            uint256 minipoolCapacity = rocketMinipoolQueue.getNextCapacity();\n            if (minipoolCapacity == 0 || getBalance() < minipoolCapacity) { break; }\n            // Dequeue next available minipool\n            address minipoolAddress = rocketMinipoolQueue.dequeueMinipool();\n            RocketMinipoolInterface minipool = RocketMinipoolInterface(minipoolAddress);\n            // Withdraw ETH from vault\n            rocketVault.withdrawEther(minipoolCapacity);\n            // Assign deposit to minipool\n            minipool.userDeposit{value: minipoolCapacity}();\n            // Emit deposit assigned event\n            emit DepositAssigned(minipoolAddress, minipoolCapacity, block.timestamp);\n        }\n    }",
+        "change_type": "modified"
+    }]
+}]
+```

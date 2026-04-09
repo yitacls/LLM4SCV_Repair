@@ -1,0 +1,28 @@
+```json
+[
+    {
+        "contract_name": "TokenDrop",
+        "contract_version": ">=0.7.0 <0.8.0",
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Added require statement to ensure only the factory can initialize the contract",
+                "corrected_code": "function initialize(address _measure, address _asset) external {\n        require(factory == address(0), 'Contract already initialized');\n        measure = IERC20Upgradeable(_measure);\n        asset = IERC20Upgradeable(_asset);\n        factory = msg.sender;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claim",
+                "fix_info": "Reorganized the function to mitigate reentrancy by transferring assets before updating the user balance",
+                "corrected_code": "function claim(address user) external returns (uint256) {\n        require(userStates[user].balance > 0, 'No balance to claim');\n        drop();\n        uint256 balance = userStates[user].balance;\n        totalUnclaimed = uint256(totalUnclaimed).sub(balance).toUint112();\n        userStates[user].balance = 0;\n\n        // Transfer asset/reward token to user\n        asset.transfer(user, balance);\n\n        // Emit Claimed\n        emit Claimed(user, balance);\n\n        return balance;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "drop",
+                "fix_info": "Added a check to only proceed if there are new tokens to be dripped",
+                "corrected_code": "function drop() public returns (uint256) {\n        uint256 assetTotalSupply = asset.balanceOf(address(this));\n        uint256 newTokens = assetTotalSupply.sub(totalUnclaimed);\n\n        if (newTokens > 0) {\n            // Check measure token totalSupply()\n            uint256 measureTotalSupply = measure.totalSupply();\n\n            if (measureTotalSupply > 0) {\n                uint256 indexDeltaMantissa = FixedPoint.calculateMantissa(newTokens, measureTotalSupply);\n                uint256 nextExchangeRateMantissa = uint256(exchangeRateMantissa).add(indexDeltaMantissa);\n                exchangeRateMantissa = nextExchangeRateMantissa.toUint112();\n                totalUnclaimed = totalUnclaimed.add(newTokens).toUint112();\n            }\n\n            // Emit Dripped\n            emit Dripped(newTokens);\n        }\n\n        return newTokens;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

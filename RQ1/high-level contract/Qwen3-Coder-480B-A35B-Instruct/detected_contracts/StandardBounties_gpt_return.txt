@@ -1,0 +1,29 @@
+```json
+[
+  {
+    "type": "SWC-108-State Variable Default Visibility",
+    "location": "L48-L49",
+    "description": "State variables 'owner' and 'metaTxRelayer' do not have explicit visibility specified. In Solidity, state variables without explicit visibility are public by default, but it's best practice to explicitly declare visibility to avoid unintended exposure or access control issues."
+  },
+  {
+    "type": "SWC-103-Floating Pragma",
+    "location": "L3",
+    "description": "The contract uses a floating pragma '^0.5.0', which can lead to unintended behavior when compiling with different compiler versions. It's recommended to use a fixed version to ensure consistent behavior and avoid potential vulnerabilities introduced by newer compiler versions."
+  },
+  {
+    "type": "SWC-108-State Variable Default Visibility",
+    "location": "L246-L265",
+    "description": "In the contribute function, there's no explicit check for overflow during balance increment. When adding contribution amount to the bounty balance, if the sum exceeds the maximum value of uint, it will wrap around silently, leading to incorrect balance tracking."
+  },
+  {
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "L249",
+    "description": "Integer overflow may occur in 'bounties[_bountyId].balance += _amount;' if the balance plus the contribution amount exceeds the maximum value of uint. This could result in the balance wrapping around to a very small number, causing incorrect accounting of funds."
+  },
+  {
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "L199",
+    "description": "In the refundContribution function, there is a potential underflow when decrementing the balance: 'bounties[_bountyId].balance -= contribution.amount;'. If the balance is less than the contribution amount due to prior miscalculation or manipulation, this would cause an underflow leading to incorrect balance values."
+  }
+]
+```

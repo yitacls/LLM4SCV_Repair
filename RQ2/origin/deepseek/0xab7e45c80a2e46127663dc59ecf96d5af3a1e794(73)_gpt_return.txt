@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "uint order = msg.value / sellPrice; \nuint can_sell = ERC20(asset).balanceOf(address(this)) / units;",
+    "description": "In Solidity <0.8.0, integer division results in floor rounding, which can cause loss of precision and unexpected behavior when msg.value < sellPrice (order becomes 0 even if ETH was sent) or when ERC20(asset).balanceOf(address(this)) < units (can_sell becomes 0 incorrectly). Additionally, the calculation 'can_sell * sellPrice' could overflow if can_sell is large enough. The absence of overflow protection in these arithmetic operations can lead to incorrect token distribution, fund loss, or locked funds."
+}
+```

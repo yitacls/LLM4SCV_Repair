@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "(amount / price) * 1 ether",
+    "description": "The arithmetic operation (amount / price) * 1 ether can result in integer overflow or underflow. In Solidity ^0.4.16, there are no built-in overflow/underflow protections. If the amount is large enough or if price is very small, the multiplication by 1 ether (10^18) could cause the result to exceed the maximum uint256 value, leading to unexpected behavior and potential loss of funds."
+}
+```

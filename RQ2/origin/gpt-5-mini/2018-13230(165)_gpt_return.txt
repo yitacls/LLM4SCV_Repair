@@ -1,0 +1,12 @@
+[
+    {
+        "type": "Arithmetic",
+        "location": "        balanceOf[this] += amount;                         // adds the amount to owner's balance\n",
+        "description": "Unsigned integer overflow can occur when adding `amount` to `balanceOf[this]`. If `balanceOf[this]` is near uint256 max, the addition wraps around to a small value, corrupting the contract's internal balances. An attacker could exploit a wrapped balance to manipulate token accounting. Mitigation: use SafeMath's add (or check for `balanceOf[this] + amount >= balanceOf[this]`) to prevent overflow, and prefer modern Solidity's built-in overflow checks (pragma ^0.8.0) or explicit require guards."
+    },
+    {
+        "type": "Arithmetic",
+        "location": "        if (!msg.sender.send(amount * sellPrice)) {        // sends ether to the seller. It's important\n",
+        "description": "Multiplication (`amount * sellPrice`) can overflow, producing an unexpectedly small ether value (wrap-around). This can result in sellers receiving much less Ether than intended or cause the send to succeed with an incorrect amount. Additionally, if the multiplied value overflows and becomes large/small in an unintended way, it may lead to logic errors or failed transfers. Mitigation: use SafeMath's mul (or check that `amount == 0 || (amount * sellPrice) / amount == sellPrice`) before calling send, validate `sellPrice` ranges, and ensure the contract holds enough Ether to pay the computed value. Consider upgrading to a Solidity version with built-in overflow checks (>=0.8.0)."
+    }
+]

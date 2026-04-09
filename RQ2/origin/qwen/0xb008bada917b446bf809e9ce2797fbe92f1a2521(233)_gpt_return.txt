@@ -1,0 +1,7 @@
+```json
+{
+  "type": "unchecked_low_level_calls",
+  "location": "addr.send(interestPure);",
+  "description": "The use of the low-level send() function does not check the return value, which can lead to silent failure of ETH transfers. In Solidity ^0.5.0, send() returns false if the transfer fails, but this return value is not being verified. This could result in a situation where the contract state is updated as if the transfer succeeded, but the recipient never actually received the funds. It's recommended to either check the return value or use transfer() which automatically reverts on failure."
+}
+```

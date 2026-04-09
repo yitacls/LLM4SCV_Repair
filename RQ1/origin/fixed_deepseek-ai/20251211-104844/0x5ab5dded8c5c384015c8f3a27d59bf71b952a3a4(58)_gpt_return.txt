@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "PearlBonus",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "fallback",
+        "fix_info": "Fixed arithmetic vulnerability by extracting balance before transfer and preventing reentrancy attacks",
+        "corrected_code": "function () external payable {\n    require(!saleClosed, \"Sale is closed\");\n    require(msg.value >= 1 finney, \"Minimum 1 finney required\");\n    \n    uint256 amount = msg.value * 50000;\n    require(amount <= pearl.balanceOf(this), \"Insufficient pearl tokens\");\n    \n    pearl.transfer(msg.sender, amount);\n    funds += msg.value;\n    \n    uint256 contractBalance = address(this).balance;\n    uint256 partnerShare = contractBalance.mul(share).div(100);\n    uint256 directorShare = contractBalance.sub(partnerShare);\n    \n    director.transfer(directorShare);\n    partner.transfer(partnerShare);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

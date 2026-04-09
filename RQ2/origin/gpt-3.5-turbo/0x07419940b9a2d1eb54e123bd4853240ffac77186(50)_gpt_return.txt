@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(uint tokenCount) public returns (bool) {",
+    "description": "The withdraw function allows any user to withdraw funds without proper access control or permission checks, potentially leading to unauthorized withdrawals and loss of funds."
+}
+```

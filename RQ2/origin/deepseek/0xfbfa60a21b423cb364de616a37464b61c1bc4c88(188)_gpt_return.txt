@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function kill() external onlyOwner { selfdestruct(owner); }",
+    "description": "The contract implements a 'kill' or self-destruct function with only the 'onlyOwner' modifier. While access is controlled, this represents a centralization risk where a single point of failure (the owner) can destroy the contract arbitrarily. Combined with a lack of a timelock or multi-signature requirement, this allows the owner to potentially terminate the contract while user funds (if any) are still at risk, especially since the requirement 'lockedInBets == 0' might be bypassed or insufficient in all cases, possibly leading to unrecoverable user funds."
+}
+```

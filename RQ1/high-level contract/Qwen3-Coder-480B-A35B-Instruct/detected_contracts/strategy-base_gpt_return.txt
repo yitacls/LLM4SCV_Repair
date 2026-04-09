@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(univ2Router2).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60))",
+        "description": "The return value of the Uniswap swap function is not checked, which could lead to silent failure and unexpected behavior if the swap does not execute as intended."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(univ2Router2).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60))",
+        "description": "The return value of the Uniswap swap function is not checked when swapping with a custom path, which could lead to silent failure and unexpected behavior if the swap does not execute as intended."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(sushiRouter).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60))",
+        "description": "The return value of the Sushiswap swap function is not checked, which could lead to silent failure and unexpected behavior if the swap does not execute as intended."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(sushiRouter).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60))",
+        "description": "The return value of the Sushiswap swap function is not checked when swapping with a custom path, which could lead to silent failure and unexpected behavior if the swap does not execute as intended."
+    }
+]
+```

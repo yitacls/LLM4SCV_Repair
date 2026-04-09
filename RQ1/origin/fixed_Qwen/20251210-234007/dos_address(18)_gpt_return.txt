@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "DosGas",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "creditorAddresses",
+            "fix_info": "Added pagination tracking to prevent DoS attacks",
+            "variable_code": "uint256 public lastProcessedIndex;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "emptyCreditors",
+            "fix_info": "Fixed DoS vulnerability by implementing incremental processing instead of clearing all creditors at once",
+            "corrected_code": "function emptyCreditors() public {\n        // Process creditors in batches to prevent DoS\n        uint256 batchSize = 100;\n        uint256 endIndex = lastProcessedIndex + batchSize;\n        \n        if (creditorAddresses.length > 1500) {\n            // Process a batch of creditors\n            if (endIndex >= creditorAddresses.length) {\n                // Clear array when all creditors are processed\n                creditorAddresses = new address[](0);\n                lastProcessedIndex = 0;\n                win = true;\n            } else {\n                // Update the last processed index for next batch\n                lastProcessedIndex = endIndex;\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

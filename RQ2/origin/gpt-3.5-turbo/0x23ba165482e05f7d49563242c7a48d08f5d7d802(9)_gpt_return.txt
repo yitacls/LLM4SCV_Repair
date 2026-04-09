@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The use of send() for sending funds to addresses can lead to potential vulnerabilities as it does not handle errors or return values. This can result in loss of funds or unexpected behavior. Consider using transfer() or revert() for safer fund transfers."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The smart contract checks whether tx.origin is equal to the owner. As the msg.sender could be a contract, which was invoked by the actual owner, this check can potentially cause any function that checks for this requirement before running, be denied access. A better method would be to use msg.sender as the identifier instead of tx.origin, as this reduces the chances of any proxy contracts influencing the transaction. The contract named ERC20Standard, running Solidity version ^0.4.11, has this vulnerability."
+}
+```

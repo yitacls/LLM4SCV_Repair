@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "tx.origin.transfer(availableBalance);  // solhint-disable-line avoid-tx-origin",
+        "description": "The contract transfers Ether to tx.origin without authentication, which can be exploited by any caller to drain the contract's balance. This is a classic unprotected ether withdrawal vulnerability."
+    }
+]
+```

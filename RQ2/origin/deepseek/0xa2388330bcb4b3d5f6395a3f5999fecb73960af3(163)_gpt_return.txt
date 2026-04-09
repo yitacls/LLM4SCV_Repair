@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "if (generationState) {\n       ret = cur_coin.call(bytes4(keccak256(\"pay(address,uint256,uint256)\")), msg.sender, msg.value, price);\n    }",
+    "description": "The low-level call to 'cur_coin' does not check the return value for success or failure. In Solidity 0.4.19, the .call() method returns a boolean indicating success (true) or failure (false), but the contract only stores this value in 'ret' without verifying it. This can lead to silent failures where external calls revert without the calling contract being aware, potentially causing state inconsistencies. Additionally, the call forwards all available gas, making it vulnerable to reentrancy attacks if the called contract is malicious. The return value should be checked and appropriate error handling should be implemented."
+}
+```

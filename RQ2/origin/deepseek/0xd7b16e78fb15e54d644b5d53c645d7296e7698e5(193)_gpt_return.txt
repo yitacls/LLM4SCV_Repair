@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_source == 2) { if (_to == tx.origin) { walletStore.setProfitBalance(_to, profitBalance.sub(_deposited)); } else { uint senderProfitBalance = getProfitBalance(tx.origin); walletStore.setProfitBalance(tx.origin, senderProfitBalance.sub(_deposited)); } }",
+    "description": "The contract performs profit balance deductions based on tx.origin without proper access control validation. When _source == 2, the function deducts _deposited from the profit balance of either _to (if _to == tx.origin) or tx.origin (otherwise). Using tx.origin for authorization is unsafe as it can be manipulated by intermediate contracts (phishing attacks). Additionally, there's no verification that the caller has sufficient profit balance or proper authorization to transfer another user's profit balance when _to != tx.origin. This allows unauthorized or incorrectly attributed balance deductions."
+}
+```

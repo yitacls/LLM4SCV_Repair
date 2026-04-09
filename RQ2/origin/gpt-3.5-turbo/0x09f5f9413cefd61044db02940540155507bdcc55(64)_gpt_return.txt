@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "feeCollector.call.value(fee)();",
+    "description": "The use of call.value() in this statement can result in an unchecked low-level call to the feeCollector address. This can potentially lead to re-entrancy attacks and allow the feeCollector to execute arbitrary code before the state changes occur in the contract."
+}
+```

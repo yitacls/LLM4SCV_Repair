@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contract": "StorageBase",
+    "location": "bool res = msg.sender.send(address(this).balance);",
+    "description": "Low level calls such as `.call()`, `.callcode()`, `.delegatecall()`, and `.send()` in Solidity should be carefully handled since they return false in case there is an exception during execution or the call stack depth limit has been reached. Failing to check the return value may lead to bugs, as the code will continue to execute as if the operation was successful, which results in an unchecked_low_level_calls vulnerability. In this specific contract, the return value of the `send()` call isn't being checked which could potential lead to funds being lost or stuck."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountToSend);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.16, send() returns false if the transfer fails (e.g., due to insufficient gas or recipient contract failure), but the code does not handle this case. This could lead to a situation where currentBalance is set to 0 but the beneficiary never actually receives the funds, resulting in permanent loss of funds."
+}
+```

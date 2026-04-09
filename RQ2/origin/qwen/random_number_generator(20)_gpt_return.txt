@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 x = salt * 100 / max;",
+        "description": "The variable 'x' is derived from 'salt' and 'max' which are predictable values. Since 'salt' is likely a constant or known value and 'max' is an input parameter, this calculation is deterministic and can be manipulated by an attacker to influence the randomness outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 y = salt * block.number / (salt % 5);",
+        "description": "The variable 'y' uses 'block.number' which is publicly known and predictable. Miners can manipulate the block number or anticipate it, making this source of randomness insecure for generating unpredictable values in smart contracts."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 seed = block.number / 3 + (salt % 300) + y;",
+        "description": "The 'seed' calculation relies heavily on 'block.number' which is a publicly known value. Since all components of this calculation are either predictable or manipulable, the resulting seed will not provide true randomness, allowing attackers to predict or influence the random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 h = uint256(blockhash(seed));",
+        "description": "Using 'blockhash(seed)' with a user-influenced seed value makes the randomness predictable. Since 'seed' is calculated from predictable values, an attacker can compute the same 'seed' and thus predict the 'blockhash' result, completely compromising the randomness of the function."
+    }
+]
+```

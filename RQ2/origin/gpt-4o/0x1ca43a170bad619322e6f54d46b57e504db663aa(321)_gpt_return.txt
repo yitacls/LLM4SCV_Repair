@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), _from, _amount, _data);",
+    "description": "The use of the low-level `call` method in the contract is inherently unsafe, as it bypasses Solidity's type checking and error handling. This can lead to unexpected behavior if the called contract does not implement the expected fallback function or reverts due to unforeseen issues. Additionally, the return value of the `call` method is not checked, which could result in the execution of subsequent code even if the call fails."
+}
+```

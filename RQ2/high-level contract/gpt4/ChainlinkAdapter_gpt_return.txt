@@ -1,0 +1,16 @@
+```json
+{
+    "contract": {
+        "name": "ChainlinkAdapter",
+        "solidityVersion": "^0.5.2",
+        "code": "pragma solidity ^0.5.2;\n\nimport {LibMathSigned, LibMathUnsigned} from \"../lib/LibMath.sol\";\nimport \"../interface/IChainlinkFeeder.sol\";\n\ncontract ChainlinkAdapter {\n    using LibMathSigned for int256;\n\n    IChainlinkFeeder public feeder;\n    int256 public constant chainlinkDecimalsAdapter = 10**10;\n\n    constructor(address _feeder) public {\n        feeder = IChainlinkFeeder(_feeder);\n    }\n\n    function price() public view returns (uint256 newPrice, uint256 timestamp) {\n        // SWC-101-Integer Overflow and Underflow: L18\n        newPrice = (feeder.latestAnswer() * chainlinkDecimalsAdapter).toUint256();\n        timestamp = feeder.latestTimestamp();\n    }\n}\n"
+    },
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "newPrice = (feeder.latestAnswer() * chainlinkDecimalsAdapter).toUint256();",
+            "description": "This line of code in the 'price' function is susceptible to an Integer Overflow and Underflow vulnerability. An integer overflow occurs when an arithmetic operation attempts to create a numeric value that is outside of the range that can be represented with a given number of bits – either higher than the maximum or lower than the minimum representable value. This can lead to unexpected behavior and potential security vulnerabilities. In this code, if the multiplication of 'feeder.latestAnswer()' and 'chainlinkDecimalsAdapter' results in a number that is too large to be stored in a uint256, an overflow will occur."
+        }
+    ]
+}
+```

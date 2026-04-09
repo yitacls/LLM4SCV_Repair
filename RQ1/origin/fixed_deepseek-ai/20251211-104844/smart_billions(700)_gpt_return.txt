@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "seed",
+            "fix_info": "Added to store a seeded random value that can be updated with future entropy",
+            "variable_code": "uint private seed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced blockhash-based randomness with a seeded randomness approach that incorporates msg.sender, block.timestamp, and nonce, while maintaining the original function's return structure",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Generate a pseudo-random number using seeded approach\n        uint random = uint(keccak256(abi.encodePacked(\n            seed,\n            block.timestamp,\n            block.difficulty,\n            msg.sender,\n            _lastb,\n            _delta\n        )));\n        \n        // Update seed for future randomness\n        seed = uint(keccak256(abi.encodePacked(random, seed)));\n        \n        // Maintain the original return structure but use the generated random value\n        // Extract 24-bit chunks from the random number to match original format\n        uint result = 0;\n        for (uint i = 0; i < 10; i++) {\n            uint chunk = (random >> (i * 24)) & 0xFFFFFF;\n            result |= chunk << (i * 24);\n        }\n        \n        // Add the delta component (maintaining original logic)\n        result |= (uint(_delta) / hashesSize) << 240;\n        \n        return result;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "initializeSeed",
+            "fix_info": "Added a function to initialize the seed with initial entropy - should be called when contract is deployed",
+            "corrected_code": "function initializeSeed() external {\n        require(seed == 0, \"Seed already initialized\");\n        seed = uint(keccak256(abi.encodePacked(\n            block.timestamp,\n            block.difficulty,\n            block.coinbase\n        )));\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

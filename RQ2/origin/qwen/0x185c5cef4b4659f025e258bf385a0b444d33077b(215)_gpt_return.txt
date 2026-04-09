@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(sender == tx.origin && !isContract(sender));",
+    "description": "The function restricts calls to externally owned accounts (EOAs) only by requiring sender == tx.origin. However, in Solidity ^0.4.25, tx.origin is deprecated for access control because it can be bypassed in certain scenarios, such as when the contract is called through a proxy or another contract that forwards the original external caller. Additionally, !isContract(sender) may not reliably detect all contract types, especially in older Solidity versions, leading to potential unauthorized contract interactions."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowBenign1",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Assumed to be a uint256 state variable from context, no changes required",
+            "variable_code": "uint256 public count;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "run",
+            "fix_info": "Fixed arithmetic underflow vulnerability by using SafeMath library or explicit check. Added SafeMath library usage to prevent underflow when input > count.",
+            "corrected_code": "function run(uint256 input) public {\n        // Using SafeMath to prevent underflow\n        uint256 res = count.sub(input);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "_balanceOf[_to]+=_value;",
+    "description": "Using the addition operator directly without checking for potential overflow or underflow, which can lead to unexpected behavior and vulnerabilities in the contract."
+}
+```

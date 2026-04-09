@@ -1,0 +1,47 @@
+```json
+[{
+    "contract_name": "Deck",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "dealer",
+            "fix_info": "Added state variable to store the dealer address for commit-reveal pattern",
+            "variable_code": "address public dealer;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "commitHash",
+            "fix_info": "Added state variable to store commit hash for random number generation",
+            "variable_code": "bytes32 public commitHash;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "reveal",
+            "fix_info": "Added state variable to store reveal value for random number generation",
+            "variable_code": "uint256 public reveal;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deal",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by implementing a commit-reveal scheme that uses a previously committed hash and reveal value instead of block-dependent values",
+            "corrected_code": "function deal(address player, uint8 cardNumber) internal returns (uint8) {\n\t\trequire(commitHash != 0 && reveal != 0);\n\t\treturn uint8(uint256(keccak256(commitHash, player, cardNumber, reveal)) % 52);\n\t}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "commit",
+            "fix_info": "Added commit function to set up the commit-reveal scheme",
+            "corrected_code": "function commit(bytes32 _commitHash) public {\n\t\trequire(msg.sender == dealer);\n\t\tcommitHash = _commitHash;\n\t}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "revealCommit",
+            "fix_info": "Added reveal function to complete the commit-reveal scheme",
+            "corrected_code": "function revealCommit(uint256 _reveal) public {\n\t\trequire(msg.sender == dealer);\n\t\treveal = _reveal;\n\t}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

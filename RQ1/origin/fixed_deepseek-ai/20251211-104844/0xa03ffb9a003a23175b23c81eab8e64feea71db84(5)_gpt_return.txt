@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "fallback",
+        "fix_info": "Fixed unchecked low-level call vulnerability by replacing send() with transfer() and ensuring proper funds transfer verification",
+        "corrected_code": "function() external payable {\n    require(wallet != address(0), \"Invalid wallet address\");\n    require(msg.value > 0, \"Ether value must be positive\");\n    wallet.transfer(msg.value);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

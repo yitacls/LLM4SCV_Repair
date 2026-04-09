@@ -1,0 +1,21 @@
+【```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-114-Transaction Order Dependence",
+            "location": "Lines 266-305 in sponsorProposal function",
+            "description": "The sponsorProposal function checks for duplicate whitelist or guild kick proposals using proposedToWhitelist and proposedToKick mappings, but these checks are performed after the token transfer. An attacker could front-run a legitimate sponsor transaction by sponsoring a proposal with the same token/member first, causing the legitimate transaction to fail while still collecting the proposal deposit from the victim."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Lines 408-413 in processProposal function",
+            "description": "During emergency processing (when emergencyProcessing is true), failed proposals do not return the tribute tokens to the proposer. This allows the contract to permanently retain tokens that were intended to be returned, effectively acting as an unprotected withdrawal that benefits the DAO at the expense of the proposer."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Lines 638-640 in max function",
+            "description": "The max function uses solidity 0.5.3 which has built-in SafeMath for arithmetic operations, but the function itself performs a direct comparison without protection. While this specific implementation is safe, the contract imports SafeMath but doesn't use it consistently throughout all calculations. However, this particular max function is protected by the compiler version's implicit checks."
+        }
+    ]
+}
+```】

@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added state variable to track contract owner for access control",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function calls to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set the contract owner during deployment",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "sendEthValue",
+            "fix_info": "Added access control (onlyOwner modifier) and improved low-level call handling with return value check and gas stipend",
+            "corrected_code": "function sendEthValue(address _target, bytes _data, uint256 _value) external onlyOwner {\n        require(_target != address(0), \"Invalid target address\");\n        \n        bool success = _target.call.value(_value).gas(2300)(_data);\n        require(success, \"ETH transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

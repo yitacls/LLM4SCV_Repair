@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "NetkillerToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow when calculating minted amount and updating balances",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        uint256 _amount = mintedAmount.mul(10 ** uint256(decimals));\n        balanceOf[target] = balanceOf[target].add(_amount);\n        totalSupply = totalSupply.add(_amount);\n        emit Transfer(this, target, _amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

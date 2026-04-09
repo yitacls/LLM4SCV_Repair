@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BMVCoin",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic vulnerability by adding SafeMath to prevent integer overflow when increasing balance and total supply. Also updated Transfer event syntax to follow best practices.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0));\n    require(mintedAmount > 0);\n    \n    // Using SafeMath functions to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    emit Transfer(address(0), this, mintedAmount);\n    emit Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

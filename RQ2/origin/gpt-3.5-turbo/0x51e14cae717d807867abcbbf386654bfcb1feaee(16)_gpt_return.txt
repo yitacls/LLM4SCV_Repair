@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "This line of code is vulnerable to an arithmetic overflow attack. If the value added to balanceOf[to] is very large, it may exceed the maximum value that a uint256 variable can hold, leading to unexpected behavior and potential security issues."
+}
+```  

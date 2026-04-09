@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(valueToken.allowance(tx.origin, address(this)) >= _amountST);",
+    "description": "The contract incorrectly uses tx.origin instead of msg.sender to check the allowance. This creates a vulnerability where a malicious contract can initiate a stake on behalf of a user who has approved sufficient allowance to the AM1OpenSTValue contract. The attacker can craft a contract that calls stake() with the victim's address as tx.origin, bypassing the intended access control. The proper check should be valueToken.allowance(msg.sender, address(this)) >= _amountST to ensure the caller (msg.sender) has approved the required tokens."
+}
+```

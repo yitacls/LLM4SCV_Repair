@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyOwner { ... }",
+    "description": "The rescueFunds function allows the contract owner to withdraw arbitrary ERC20 tokens from the contract. However, it does not include any checks to ensure the withdrawal permission is limited to specific scenarios or legitimate error handling. Even though there are some checks after the token transfer, they are insufficient to fully prevent misuse of this function by a privileged user (i.e., the contract owner). Therefore, this functionality could potentially lead to unauthorized or unintended withdrawals of funds from the contract."
+}
+```

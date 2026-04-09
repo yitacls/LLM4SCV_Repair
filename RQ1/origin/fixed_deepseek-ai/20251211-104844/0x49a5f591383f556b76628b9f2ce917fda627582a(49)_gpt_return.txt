@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed type to address for better security and clarity",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to replace tx.origin check and ensure proper access control",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"ERC20: caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "1. Removed unnecessary assert(amount >= 0) since uint256 can't be negative\n2. Replaced tx.origin == owner with onlyOwner modifier to prevent phishing attacks\n3. Updated for Solidity ^0.8.0 with overflow protection",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner {\n        require(amount > 0, \"ERC20: amount must be greater than 0\");\n        \n        balances[msg.sender] += amount;\n        totalSupply += amount;\n        \n        emit Transfer(address(0), msg.sender, amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

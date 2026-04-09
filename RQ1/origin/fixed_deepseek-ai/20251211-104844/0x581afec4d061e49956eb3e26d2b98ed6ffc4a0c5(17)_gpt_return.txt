@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "EasyInvestss",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "invested",
+            "fix_info": "Kept original mapping to track investments per address",
+            "variable_code": "mapping(address => uint256) public invested;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "atBlock",
+            "fix_info": "Kept original mapping to track last investment block per address",
+            "variable_code": "mapping(address => uint256) public atBlock;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "RATE_DENOMINATOR",
+            "fix_info": "Added constant for rate calculation denominator to improve readability",
+            "variable_code": "uint256 private constant RATE_DENOMINATOR = 5900;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "PERCENT_MULTIPLIER",
+            "fix_info": "Added constant for percentage multiplier to improve readability",
+            "variable_code": "uint256 private constant PERCENT_MULTIPLIER = 4;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "",
+            "fix_info": "Fixed fallback function by replacing unsafe send() with transfer() and adding overflow protection",
+            "corrected_code": "function () external payable {\n    if (invested[msg.sender] != 0) {\n        uint256 blocksSinceLastInvestment = block.number - atBlock[msg.sender];\n        \n        // Use safe math operations to prevent overflow\n        uint256 amount = invested[msg.sender];\n        amount = amount * PERCENT_MULTIPLIER / 100;\n        amount = amount * blocksSinceLastInvestment / RATE_DENOMINATOR;\n        \n        // Check that contract has enough balance before transfer\n        if (amount <= address(this).balance && amount > 0) {\n            // Use transfer() instead of send() for better error handling\n            msg.sender.transfer(amount);\n        }\n    }\n    \n    // Update state after processing payment to prevent reentrancy\n    atBlock[msg.sender] = block.number;\n    invested[msg.sender] += msg.value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

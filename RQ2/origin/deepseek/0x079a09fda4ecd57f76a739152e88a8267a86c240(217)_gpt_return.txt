@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_itemId));",
+    "description": "The contract uses 'tx.origin' for authorization instead of 'msg.sender'. This creates a security vulnerability where a malicious contract could trick the owner of an item into calling a function that then calls transfer(), making tx.origin equal to the owner's address while msg.sender is the malicious contract's address. This allows unauthorized transfers of tokens. Additionally, the function modifier 'onlyERC721()' is ambiguous and should be inspected for proper access control. The combination of these issues can lead to the theft of NFTs from legitimate owners."
+}
+```

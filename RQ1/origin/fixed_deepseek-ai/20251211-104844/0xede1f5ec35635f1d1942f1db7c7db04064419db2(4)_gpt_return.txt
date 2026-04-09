@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Blocklancer_Payment",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "recipient",
+            "fix_info": "Added recipient address as a state variable to make the contract more maintainable and secure, using a constant to prevent accidental changes",
+            "variable_code": "address private constant RECIPIENT = 0x0581cee36a85Ed9e76109A9EfE3193de1628Ac2A;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Replaced vulnerable low-level call with safer transfer, added require statement to verify transfer success, and named the fallback function explicitly for clarity",
+            "corrected_code": "function() external payable {\n    require(msg.value > 0, \"No value sent\");\n    RECIPIENT.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

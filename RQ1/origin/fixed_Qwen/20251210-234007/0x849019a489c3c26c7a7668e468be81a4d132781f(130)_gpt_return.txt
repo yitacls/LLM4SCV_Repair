@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SimpleDeposit",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "RefundDeposit",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using safeTransfer pattern with require() to ensure send() success",
+            "corrected_code": "function RefundDeposit(address _addr, uint _wei) \n    public \n    payable\n    {\n        if(Depositors[_addr]>0)\n        {\n            if(isAllowed())\n            {\n                require(_addr.send(_wei), \"Transfer failed\");\n                Available-=_wei;\n                Withdrew(_addr,_wei);\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

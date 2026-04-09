@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding proper error handling and return value checking",
+            "corrected_code": "function () external payable {\n\t\trequire(wallet.call.value(msg.value)(), \"Call to wallet failed\");\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HomeyJar",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Added check for low-level call success to prevent unchecked return value",
+            "corrected_code": "function Command(address adr, bytes data) payable public {\n        require(msg.sender == Owner);\n        // Check if the low-level call was successful\n        require(adr.call.value(msg.value)(data));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

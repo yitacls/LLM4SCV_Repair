@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "StandardToken",
+    "contract_version": "^0.4.17",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict contract destruction to owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "destroycontract",
+            "fix_info": "Added access control to prevent unauthorized contract destruction",
+            "corrected_code": "function destroycontract(address _to) onlyOwner {\n    selfdestruct(_to);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

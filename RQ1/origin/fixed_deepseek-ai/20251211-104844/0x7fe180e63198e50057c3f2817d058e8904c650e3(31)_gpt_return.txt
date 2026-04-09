@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "Conference",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "organizer",
+            "fix_info": "No changes needed",
+            "variable_code": "address public organizer;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "registrantsPaid",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint) public registrantsPaid;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "numRegistrants",
+            "fix_info": "No changes needed",
+            "variable_code": "uint public numRegistrants;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOrganizer",
+            "fix_info": "Added modifier to properly restrict access to organizer only",
+            "modifier_code": "modifier onlyOrganizer() {\n        require(msg.sender == organizer, \"Only organizer can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "refundTicket",
+            "fix_info": "Fixed vulnerability by: 1. Using onlyOrganizer modifier instead of early return, 2. Adding proper input validation with require statements, 3. Using transfer() instead of send() for safer fund transfer, 4. Implementing checks-effects-interactions pattern to prevent reentrancy",
+            "corrected_code": "function refundTicket(address recipient, uint amount) public onlyOrganizer {\n        require(amount > 0, \"Amount must be greater than zero\");\n        require(registrantsPaid[recipient] == amount, \"Refund amount does not match paid amount\");\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        \n        // Checks-Effects-Interactions pattern\n        registrantsPaid[recipient] = 0;\n        numRegistrants--;\n        \n        // Safely transfer funds\n        recipient.transfer(amount);\n        \n        // Emit event after state changes and interaction\n        Refund(recipient, amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

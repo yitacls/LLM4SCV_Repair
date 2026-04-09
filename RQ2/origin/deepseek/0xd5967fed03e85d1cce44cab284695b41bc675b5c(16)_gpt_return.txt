@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "caddress.call(id,from,_tos[i],v);",
+        "description": "The low-level call to the external contract at caddress does not check the return value. If the external call fails (e.g., due to insufficient gas, non-existent contract, or revert in the target contract), the transaction will continue execution without any indication of failure. This can lead to silent failures where tokens appear to be transferred but the actual transferFrom operation may have failed. The vulnerability is exacerbated because the function iterates through multiple recipients - a single failed call won't prevent subsequent calls, potentially creating inconsistent state. In Solidity 0.4.0, .call() returns a boolean success value that should be checked, and the entire transaction should be reverted if any transfer fails to maintain atomicity."
+    }
+}
+```

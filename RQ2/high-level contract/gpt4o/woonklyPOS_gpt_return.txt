@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L743 - L769",
+        "description": "The `processReward` function processes rewards and performs external calls to the token's `transferFrom` method, followed by nested function calls that handle internal state changes. This sequencing can lead to a potential reentrancy vulnerability if a malicious token leverages `transferFrom` to make a callback before state mutations are completed. Internal state changes (e.g., `_processReward_2`) should always precede such external token transfer calls to avoid exploitation."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "L874 - L886",
+        "description": "The `_withdrawAllrewardsCOIN` function iterates through all stake holders and attempts to transfer rewards using an external call (`acc.transfer`). If the transfer fails for any single user (e.g., due to a recipient smart contract reverting transactions deliberately or by exceeding provided gas), it could halt the entire loop and effectively deny service to other users."
+    }
+]
+```

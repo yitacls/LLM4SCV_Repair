@@ -1,0 +1,39 @@
+[{
+    "contract_name": "OddsAndEvens",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "Player struct & players mapping",
+            "fix_info": "Introduce a commit-reveal pattern: store commitments and revealed state instead of exposing choices on-chain immediately to prevent front-running.",
+            "variable_code": "struct Player {\n    address addr;\n    bytes32 commit; // commitment = keccak256(number, nonce)\n    uint8 number;\n    bool revealed;\n}\n\nmapping (uint8 => Player) public players; // slots 0 and 1\nuint8 public tot; // number of committed players (0..2)",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "bet",
+            "fix_info": "Keep a single bet amount constant to validate correct payment.",
+            "variable_code": "uint public constant bet = 1 ether;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "committed",
+            "fix_info": "Track whether an address has already committed to prevent duplicate commitments from the same address.",
+            "variable_code": "mapping(address => bool) public committed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "play",
+            "fix_info": "Replace direct submission of a plain number with a commitment (keccak256(number, nonce)). This prevents the second player from seeing the first player's choice in the mempool and front-running it. Validate payment, prevent duplicate commits, and store the commitment. Resolution happens after both players reveal.",
+            "corrected_code": "function play(bytes32 commitment) public payable {\n    // require exact bet\n    require(msg.value == bet);\n    // only two players allowed\n    require(tot < 2);\n    // prevent the same address from committing twice\n    require(!committed[msg.sender]);\n\n    // store commitment (commit = keccak256(number, nonce))\n    players[tot] = Player(msg.sender, commitment, 0, false);\n    committed[msg.sender] = true;\n    tot++;\n\n    // when two commitments are in place we wait for reveals\n    // winner will be decided after both players call reveal()\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "reveal",
+            "fix_info": "New reveal function: players reveal their number and nonce. Verify the reveal against the stored commitment and, after both reveals, call andTheWinnerIs(). This completes the commit-reveal flow and mitigates front-running.",
+            "corrected_code": "function reveal(uint8 number, bytes32 nonce) public {\n    // both players must have committed\n    require(tot == 2);\n\n    uint8 idx;\n    if (players[0].addr == msg.sender) {\n        idx = 0;\n    } else if (players[1].addr == msg.sender) {\n        idx = 1;\n    } else {\n        revert(); // sender is not one of the players\n    }\n\n    // cannot reveal twice\n    require(!players[idx].revealed);\n    // verify the commitment matches keccak256(number, nonce)\n    require(players[idx].commit == keccak256(number, nonce));\n\n    // record reveal\n    players[idx].number = number;\n    players[idx].revealed = true;\n\n    // if both revealed, decide the winner\n    if (players[0].revealed && players[1].revealed) {\n        andTheWinnerIs();\n    }\n}",
+            "change_type": "added"
+        }
+    ]
+}]

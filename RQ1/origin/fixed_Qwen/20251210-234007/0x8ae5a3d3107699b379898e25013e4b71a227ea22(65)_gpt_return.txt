@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "unsoldTokensBack",
+            "fix_info": "Replaced tx.origin with msg.sender to prevent potential phishing attacks and follow best practices for access control",
+            "corrected_code": "function unsoldTokensBack(){ \n\t    require(crowdsaleClosed);\n\t\trequire(msg.sender == owner);\n\t    sharesTokenAddress.transfer(owner, sharesTokenAddress.balanceOf(this));\n\t\ttokenFree = 0;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

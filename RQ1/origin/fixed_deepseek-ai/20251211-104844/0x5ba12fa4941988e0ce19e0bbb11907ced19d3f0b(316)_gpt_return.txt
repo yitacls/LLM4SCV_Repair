@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Deployer",
+    "contract_version": "^0.4.17",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly check authorization",
+            "modifier_code": "modifier onlyOwner {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setVars",
+            "fix_info": "Replaced tx.origin with msg.sender comparison and added onlyOwner modifier",
+            "corrected_code": "function setVars(address _factory, address _owner) public onlyOwner {\n    factory = _factory;\n    owner = _owner;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

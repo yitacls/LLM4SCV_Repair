@@ -1,0 +1,14 @@
+[{
+    "contract_name": "DelegationRequestManager",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "createRequest",
+            "fix_info": "Prevent integer underflow/overflow when computing lockedToDelegate and checking available balance. Use safe subtraction pattern and compare amount against holderBalance - lockedToDelegate instead of amount + lockedToDelegate to avoid overflow.",
+            "corrected_code": "function createRequest(\n        address holder,\n        uint validatorId,\n        uint amount,\n        uint delegationPeriod,\n        string calldata info\n    )\n        external\n        allow(\"DelegationService\")\n        returns (uint delegationId)\n    {\n        ValidatorService validatorService = ValidatorService(\n            contractManager.getContract(\"ValidatorService\")\n        );\n        TokenState tokenState = TokenState(\n            contractManager.getContract(\"TokenState\")\n        );\n        DelegationController delegationController = DelegationController(\n            contractManager.getContract(\"DelegationController\")\n        );\n        require(\n            validatorService.checkMinimumDelegation(validatorId, amount),\n            \"Amount doesn't meet minimum delegation amount\"\n        );\n        require(validatorService.trustedValidators(validatorId), \"Validator is not authorized to accept request\");\n        require(\n            DelegationPeriodManager(\n                contractManager.getContract(\"DelegationPeriodManager\")\n            ).isDelegationPeriodAllowed(delegationPeriod),\n            \"This delegation period is not allowed\"\n        );\n\n        // check that there is enough money (safe arithmetic to avoid under/overflow)\n        uint holderBalance = SkaleToken(contractManager.getContract(\"SkaleToken\")).balanceOf(holder);\n        uint lockedCount = tokenState.getLockedCount(holder);\n        uint purchasedAmount = tokenState.getPurchasedAmount(holder);\n\n        // Compute lockedToDelegate safely (prevent underflow)\n        uint lockedToDelegate = 0;\n        if (lockedCount > purchasedAmount) {\n            lockedToDelegate = lockedCount - purchasedAmount;\n        }\n\n        // Ensure subtraction won't underflow and check availability without using amount + lockedToDelegate\n        require(holderBalance >= lockedToDelegate, \"Invalid token state: locked amount exceeds holder balance\");\n        require(amount <= holderBalance - lockedToDelegate, \"Delegator hasn't enough tokens to delegate\");\n\n        delegationId = delegationController.addDelegation(\n            holder,\n            validatorId,\n            amount,\n            delegationPeriod,\n            now,\n            info\n        );\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

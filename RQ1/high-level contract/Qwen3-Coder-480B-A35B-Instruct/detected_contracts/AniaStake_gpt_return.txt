@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "The contract uses Solidity version 0.8.2, which is outdated and may contain known vulnerabilities or lack the latest security improvements. It is recommended to use a more recent version (e.g., ^0.8.20)."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "Using a floating pragma (^0.8.2) can lead to inconsistent compilation results across different environments. It is safer to pin to a specific compiler version."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < users.length; i++) { ... }",
+        "description": "The loop in `redistributeRewards` iterates over an unbounded array `users`, which can cause the transaction to run out of gas if the array is too large, resulting in a denial-of-service."
+    }
+]
+```

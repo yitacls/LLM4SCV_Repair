@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256(\"donate()\")));",
+    "description": "This contract utilizes `call.value()`, which is a low-level function changing control flow and state variables in Solidity. The return value of this function, which indicates whether the call was successful or not, is not checked. This omission leaves the contract at risk of execution failures that aren't handled correctly, or even reentrancy attacks if used improperly. In Solidity versions 0.5.0 and later, it is suggested to use the functions `transfer()` and `send()` instead of `call.value()`, which throw on failure by default."
+}
+```

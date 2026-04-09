@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "KAPAYcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath library and updated deprecated 'Transfer' event syntax to conform with best practices",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0));\n    \n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

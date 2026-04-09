@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The 'tx.origin' is used for checking the originating address of the transaction, which is a security risk. It is recommended to use 'msg.sender' instead due to the potential vulnerabilities associated with 'tx.origin'. By using 'tx.origin', the contract is susceptible to 'cross-contract caller' attacks where an attacker can exploit the origin of a transaction to bypass access control mechanisms."
+}
+```

@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "L139-199, specifically the loop in updateScore function",
+        "description": "The updateScore function contains a for loop that iterates over all beneficiaries to transfer tokens. If any single token transfer fails, the entire transaction will revert, preventing all beneficiaries from receiving their tokens. This creates a denial of service vulnerability where one failed transfer can block all distributions."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L172-180, specifically the arithmetic operations in updateScore function",
+        "description": "Despite using Solidity 0.8.10 which has built-in overflow protection, the contract still uses SafeMath library for arithmetic operations. The calculations involving lock.releasedAmount.add(releasableAmount) and lock.totalAmount.sub(lock.releasedAmount) could potentially lead to overflow/underflow issues if the values are manipulated or if there are logical errors in the calculation sequence, especially when dealing with large numbers."
+    }
+]
+```

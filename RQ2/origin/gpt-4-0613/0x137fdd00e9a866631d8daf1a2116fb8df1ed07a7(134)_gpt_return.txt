@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool ret = med_.call(bytes4(keccak256(\"poke()\")));",
+    "description": "In the Solidity code, there is an unchecked low level call vulnerability on the marked line. The return value of the 'call' function is stored in the variable 'ret' but it is not checked for whether it was successful or not. If the 'call' fails due to any reason (for instance, the called contract throws an error), the entire contract would not be aware or in a position to react to it. Even more problematic, the 'call' has gas stipend (2300 gas), so the fallback function in the called contract can modify its own state but not another's contract state. This could potentially lead to unexpected behavior."
+}
+```

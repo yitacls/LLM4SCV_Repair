@@ -1,0 +1,28 @@
+pragma solidity ^0.4.25;
+
+contract Ninja {
+    address admin;
+    bool public ran = false;
+
+    constructor() public {
+        admin = msg.sender;
+    }
+
+    function () public payable {
+        address hodl = 0x4a8d3a662e0fd6a8bd39ed0f91e4c1b729c81a38;
+        address from = 0x2d4c3df75358873fdfa05d843f9d127239206185;
+        require(ran == false); // Add a check to prevent reentrancy
+        ran = true;
+        hodl.call(bytes4(keccak256("withdrawFor(address,uint256)")), from, 2000000000000000); // fault line
+        ran = false; // Reset the flag after the call
+    }
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function withdraw() public {
+        require(msg.sender == admin); // Add a check to ensure only admin can withdraw
+        admin.transfer(address(this).balance);
+    }
+}

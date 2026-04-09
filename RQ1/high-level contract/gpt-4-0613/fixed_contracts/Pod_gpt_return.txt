@@ -1,0 +1,28 @@
+```json
+[{
+    "contract_name": "Pod",
+    "contract_version": ">=0.7.0 <0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "depositTo",
+            "fix_info": "Added check for IERC20Upgradeable#transferFrom return value to mitigate unchecked call return value vulnerability",
+            "corrected_code": 
+            "function depositTo(address to, uint256 tokenAmount) external override returns (uint256) {\n    require(tokenAmount > 0, \"Pod:invalid-amount\");\n    uint256 shares = _deposit(to, tokenAmount);\n    bool transferSuccess = IERC20Upgradeable(token).transferFrom(\n        msg.sender,\n        address(this),\n        tokenAmount\n    );\n    require(transferSuccess, \"Pod: ERC20 transfer failed\");\n    emit Deposited(to, tokenAmount, shares);\n    return shares;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_deposit",
+            "fix_info": "Added a lock state variable and checks to prevent reentrancy",
+            "corrected_code": 
+            "bool internal _notEntered;\nfunction _deposit(address user, uint256 amount) internal returns (uint256) {\n    require(_notEntered, \"ReentracyGuard: reentrant call\");\n    _notEntered = false;\n    uint256 allocation = 0;\n    if (totalSupply() == 0) {\n        allocation = amount;\n    } else {\n        allocation = (amount.mul(totalSupply())).div(balance());\n    }\n    _mint(user, allocation);\n    _notEntered = true;\n    return allocation;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+Changes made:
+1) In the depositTo function, I've added a line after transferring token from user to contract to check that the transfer was successful.
+
+2) I added a "lock" state variable as `_notEntered` which gets activated during `_deposit` call. This lock check is added to prevent reentrancy and the lock gets removed once the function execution is done.

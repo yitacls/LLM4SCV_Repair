@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public",
+            "description": "The function uses tx.origin for authorization logic instead of msg.sender, which creates a vulnerability. When _source == 2, the code checks if (_to == tx.origin) to determine whether to subtract _deposited from balance.profitBalance. However, tx.origin refers to the original transaction sender (EOA), not the immediate caller contract. This allows malicious contracts to manipulate the authorization logic by making themselves appear as the tx.origin through indirect calls, potentially bypassing intended access controls or causing incorrect balance deductions."
+        }
+    ]
+}
+```

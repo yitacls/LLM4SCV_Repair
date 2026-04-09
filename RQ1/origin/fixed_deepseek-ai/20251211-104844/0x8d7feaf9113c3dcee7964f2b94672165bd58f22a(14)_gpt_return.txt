@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Vault",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "eth_stored",
+            "fix_info": "Added safe arithmetic by using SafeMath library to prevent overflow/underflow vulnerabilities",
+            "variable_code": "using SafeMath for uint256; mapping(address => uint256) public eth_stored;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic vulnerabilities by implementing SafeMath operations and added reentrancy protection",
+            "corrected_code": "function () public payable {\n    require(msg.value > 0, \"No ether sent\");\n    \n    // Safe addition to prevent overflow\n    eth_stored[msg.sender] = eth_stored[msg.sender].add(msg.value);\n    \n    emit Contribution(msg.sender, msg.value);\n    \n    // Safe multiplication and division using SafeMath\n    uint256 client_share = msg.value.mul(3).div(10);\n    uint256 our_share = msg.value.sub(client_share);\n    \n    // Reentrancy protection pattern\n    uint256 initialBalance = address(this).balance;\n    \n    // Validate calculations before transfers\n    require(client_share.add(our_share) == msg.value, \"Calculation error\");\n    \n    // Perform transfers with checks-effects-interactions pattern\n    if (client_share > 0) {\n        client_wallet.transfer(client_share);\n    }\n    \n    if (our_share > 0) {\n        primary_wallet.transfer(our_share);\n    }\n    \n    // Verify state consistency after transfers\n    require(address(this).balance == initialBalance.sub(msg.value), \"Balance mismatch\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

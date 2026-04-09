@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call{ value: storedEth }(\"\");",
+    "description": "The contract makes an external call to msg.sender before updating the state variables ethRecords[msg.sender] and dcoinRecords[msg.sender]. This allows a malicious contract to re-enter the withdraw function before the state is reset to zero, potentially allowing multiple withdrawals of the same funds. The state variables are only updated after the external call, making this a classic reentrancy vulnerability."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "totalBounty += ticketPrice;",
+    "description": "The addition operation on totalBounty can cause an integer overflow when the accumulated ticket prices exceed the maximum value of the integer type. In Solidity ^0.4.20, there is no automatic overflow protection, which could lead to the totalBounty variable wrapping around to a smaller value, potentially causing incorrect bounty calculations and loss of funds."
+}
+```

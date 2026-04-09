@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "generalManager.send(this.balance);",
+    "description": "The use of send() to transfer funds in EtherprisesLLC contract can lead to vulnerabilities as it does not handle potential failure and exceptions. It is advisable to use transfer() or call.value()() for safer fund transfers."
+}
+```

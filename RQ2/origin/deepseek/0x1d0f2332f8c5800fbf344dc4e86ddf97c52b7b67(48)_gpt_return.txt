@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function ownerWithdrawFees() external {\n        owner.transfer(this.balance);  // fault line\n    }",
+    "description": "The function `ownerWithdrawFees()` lacks any access control modifier, making it publicly callable by any address. In Solidity ^0.4.18, the `owner` variable must be explicitly checked, typically with `require(msg.sender == owner)`, to prevent unauthorized withdrawal of the contract's entire balance. Without this check, any user can drain the contract funds, leading to a critical access control vulnerability."
+}
+```

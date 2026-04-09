@@ -1,0 +1,28 @@
+【```json
+[{
+    "contract_name": "BNum",
+    "contract_version": "0.5.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bmul",
+            "fix_info": "Updated function to mitigate integer overflow and underflow issues by employing SafeMath library.",
+            "corrected_code": "function bmul(uint a, uint b) internal pure returns (uint) { uint c0 = a.mul(b); require(a == 0 || c0.div(a) == b, 'ERR_MUL_OVERFLOW'); uint c1 = c0 + BONE.div(2); require(c1 >= c0, 'ERR_MUL_OVERFLOW'); uint c2 = c1.div(BONE); return c2; }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "bdiv",
+            "fix_info": "Updated function to remove divide by zero issue by employing SafeMath Library.",
+            "corrected_code": "function bdiv(uint a, uint b) internal pure returns (uint) { require(b > 0, 'ERR_DIV_ZERO'); uint c0 = a.mul(BONE); require(a == 0 || c0.div(a) == BONE, 'ERR_DIV_INTERNAL'); uint c1 = c0.add(b.div(2)); uint c2 = c1.div(b); return c2; }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "bpowApprox",
+            "fix_info": "Updated function to remove integer overflow issue by employing SafeMath library.",
+            "corrected_code": "function bpowApprox(uint base, uint exp, uint precision) internal pure returns (uint) { uint a = exp; (uint x, bool xneg) = bsubSign(base, BONE); uint term = BONE; uint sum = term; bool negative = false; for (uint i = 1; term >= precision; i++) { uint bigK = i.mul(BONE); (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE)); term = bmul(term, bmul(c, x)); term = bdiv(term, bigK); if (term == 0) break; if (xneg) negative = !negative; if (cneg) negative = !negative; if (negative) { sum = sum.sub(term); } else { sum = sum.add(term); } } return sum; }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

@@ -1,0 +1,31 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 x = salt * 100 / max;",
+            "description": "The calculation uses a salt value multiplied by a constant (100) and divided by max. This is predictable and not truly random as the salt value is either known or can be manipulated, especially if set by a transaction or stored on-chain."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 y = salt * block.number / (salt % 5);",
+            "description": "This calculation depends on manipulable inputs: salt (which may be predictable or settable) and block.number (which is public and advances predictably). The division by (salt % 5) can cause division by zero if salt % 5 == 0, leading to a revert or predictable output."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 seed = block.number / 3 + (salt % 300) + y;",
+            "description": "The seed derivation combines block.number (predictable), salt (potentially known), and y (from previous predictable calculations). An attacker can precompute or influence the seed by choosing when to call the function, making the randomness predictable."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 h = uint256(blockhash(seed));",
+            "description": "Using blockhash for randomness is insecure because blockhash is only available for the 256 most recent blocks (except the current one). For older blocks, it returns zero. An attacker can delay a transaction to influence which blockhash is used, or call the function when seed references an unavailable block, resulting in predictable output (e.g., h = 0)."
+        },
+        {
+            "type": "LOGICAL_ERROR",
+            "location": "return uint256((h / x)) % max + 1;",
+            "description": "The final calculation divides h by x (where x can be zero if max is large, causing division by zero) and then takes modulo max. Given h and x are derived from predictable sources, the output is not random and can be manipulated by miners or users."
+        }
+    ]
+}
+```

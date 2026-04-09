@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Underflow",
+    "location": "uint res = count - input;",
+    "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflow/underflow. If 'input' is greater than 'count', the subtraction will underflow, causing 'res' to wrap around to an extremely large number (close to 2^256). This vulnerability can be exploited to bypass logic checks, cause unexpected contract behavior, or drain funds. The contract uses compiler version ^0.4.23 which lacks built-in SafeMath protections. Consider using SafeMath library or upgrading to Solidity >=0.8.0 which has built-in overflow/underflow checks."
+}
+```

@@ -1,0 +1,27 @@
+```json
+[
+    {
+        "contract_name": "EasyInvest25",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "function() external payable",
+                "fix_info": "Prevent arithmetic overflow by adjusting the calculation order and adding overflow checks.",
+                "corrected_code": "function() external payable {
+        if (invested[msg.sender] != 0){
+            address kashout = msg.sender;
+            uint256 getout = invested[msg.sender] * 25 / 100 * (block.number - atBlock[msg.sender]) / 5900;
+            require(getout <= address(this).balance, 'Insufficient contract balance');
+            kashout.transfer(getout);  
+        }
+        atBlock[msg.sender] = block.number;
+        invested[msg.sender] += msg.value;
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

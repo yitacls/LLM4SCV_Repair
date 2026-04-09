@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy Vulnerability",
+    "location": "(bool success, ) = recipient.call{value: amount}(\"\");",
+    "description": "The contract is vulnerable to reentrancy attacks because it makes an external call to a user-provided address (recipient) before updating the contract's state. The recipient contract could call back into the Editions contract before the state is updated, potentially allowing multiple withdrawals or other malicious behavior. Although this function is private, if it's called from a public/external function that doesn't implement proper reentrancy guards, the vulnerability can still be exploited."
+}
+```

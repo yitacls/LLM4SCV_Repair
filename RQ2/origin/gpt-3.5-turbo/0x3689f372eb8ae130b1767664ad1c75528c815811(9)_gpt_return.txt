@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "This line of code makes a low-level call to the 'send' method on 'sender' address without checking the return value. If the 'send' call fails, the Ether sent will be lost, and any state changes made before the call will not be rolled back. It is recommended to use 'transfer' or 'call' with proper checks for success/failure instead."
+}
+```

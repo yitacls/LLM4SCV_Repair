@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "user.referrer.transfer(refAmount);",
+    "description": "The contract lacks proper access control by directly transferring referral rewards using transfer() without validating that the referrer address is trusted or implementing a withdrawal pattern. This creates several issues: 1) If the referrer is a contract without payable fallback function, the transfer will fail silently due to the way transfer() behaves in Solidity 0.4.24, potentially blocking the entire doInvest() transaction. 2) There's no protection against reentrancy when transferring funds before state changes (though less critical here since transfer() only forwards 2300 gas). 3) The referrer address is set based on potentially untrusted msg.data without proper validation of the referrer's willingness or ability to receive funds. 4) The direct transfer forces immediate payout rather than allowing the referrer to withdraw when convenient, which could be problematic if the referrer is a contract not designed to handle incoming Ether."
+}
+```

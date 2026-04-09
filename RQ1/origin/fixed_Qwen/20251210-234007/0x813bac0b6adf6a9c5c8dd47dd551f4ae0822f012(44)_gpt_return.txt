@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DREAMCOIN",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "collectExcess",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and using recommended call.value() pattern with explicit success handling",
+            "corrected_code": "function collectExcess() onlyOwner {\n        require(this.balance > 2100000);\n        require(owner.call.value(this.balance - 2100000)());\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

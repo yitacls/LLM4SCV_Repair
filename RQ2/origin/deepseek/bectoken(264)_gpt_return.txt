@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic Overflow/Underflow",
+            "location": "uint256 amount = uint256(cnt) * _value;",
+            "description": "This line contains an integer multiplication that may overflow without proper validation. If _value is sufficiently large such that cnt * _value exceeds 2^256 - 1, the multiplication will wrap around modulo 2^256, resulting in an incorrect (and potentially small) amount being calculated. This could allow an attacker to transfer significantly fewer tokens than intended while still passing the balance check. The vulnerability exists despite the OpenZeppelin SafeMath library being used elsewhere (`.sub()` and `.add()` methods), as the multiplication is performed directly without SafeMath's `.mul()` method."
+        }
+    ]
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ReferralFeeReceiver",
+    "contract_version": "^0.6.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "trade",
+            "fix_info": "Added check to ensure the contract has ether balance before attempting to send ether, preventing unprotected ether withdrawal",
+            "corrected_code": "function trade(Mooniswap mooniswap, IERC20[] memory path) external validPath(path) {\n        TokenInfo storage token = tokenInfo[mooniswap];\n        uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;\n        EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];\n        require(firstUnprocessedEpoch.add(1) == token.currentEpoch, \"Prev epoch already finalized\");\n\n        IERC20[] memory tokens = mooniswap.getTokens();\n        uint256 availableBalance;\n        if (path[0] == tokens[0]) {\n            availableBalance = epochBalance.token0Balance;\n        } else if (path[0] == tokens[1]) {\n            availableBalance = epochBalance.token1Balance;\n        } else {\n            revert(\"Invalid first token\");\n        }\n\n        (uint256 amount, uint256 returnAmount) = _maxAmountForSwap(path, availableBalance);\n        if (returnAmount == 0) {\n            // get rid of dust\n            if (availableBalance > 0) {\n                require(availableBalance == amount, \"availableBalance is not dust\");\n                for (uint256 i = 0; i + 1 < path.length; i += 1) {\n                    Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);\n                    require(_validateSpread(_mooniswap), \"Spread is too high\");\n                }\n                if (path[0].isETH()) {\n                    require(address(this).balance >= availableBalance, \"Insufficient ether balance\");\n                    tx.origin.transfer(availableBalance);  // solhint-disable-line avoid-tx-origin\n                } else {\n                    path[0].safeTransfer(address(mooniswap), availableBalance);\n                }\n            }\n        } else {\n            uint256 receivedAmount = _swap(path, amount, payable(address(this)));\n            epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);\n        }\n\n        if (path[0] == tokens[0]) {\n            epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);\n        } else {\n            epochBalance.token1Balance = epochBalance.token1Balance.sub(amount);\n        }\n\n        if (epochBalance.token0Balance == 0 && epochBalance.token1Balance == 0) {\n            token.firstUnprocessedEpoch = firstUnprocessedEpoch.add(1);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

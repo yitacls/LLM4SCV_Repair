@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The line of code allows only the owner to add a new ambassador. This is a security vulnerability because it disallows other users, and only the owner of the contract has the access control. This is inappropriate if the contract is meant to enable all users to add new ambassadors. Furthermore, the reliance on 'tx.origin' instead of 'msg.sender' can lead to attacks where a malicious contract tricks the owner to unwittingly perform actions."
+}
+```

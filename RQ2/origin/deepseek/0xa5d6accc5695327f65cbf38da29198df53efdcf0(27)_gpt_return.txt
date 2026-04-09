@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; }",
+    "description": "The contract uses a low-level `call.value()` without gas restriction, which transfers control to the recipient's fallback function before updating the state (balances[msg.sender]). An attacker can create a malicious contract that recursively calls CashOut() in its fallback function, repeatedly draining funds until the transaction gas limit is reached, because the balance is only reduced after each external call. In Solidity ^0.4.19, there are no built-in reentrancy guards, making this especially dangerous."
+}
+```】

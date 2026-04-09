@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "x2",
+    "contract_version": "0.5.8",
+    "state_variables": [
+        {
+            "variable_name": "depositCount",
+            "fix_info": "Added to track deposits length independently for safer index access",
+            "variable_code": "uint256 private depositCount = 0;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyValidIndices",
+            "fix_info": "Added modifier to ensure safe array and mapping access",
+            "modifier_code": "modifier onlyValidIndices(uint256 index) {\n        require(index < deposits.length, \"Invalid index\");\n        require(index < depositCount, \"Index out of bounds\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "makeDeposit",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and added proper error handling. Added safe array access checks and state variable tracking.",
+            "corrected_code": "function makeDeposit() internal {\n        require(msg.value == depositAmount, \"Incorrect deposit amount\");\n        \n        // Safe deposit creation with overflow protection\n        uint256 payoutAmount = msg.value.mul(percent).div(100);\n        require(payoutAmount > msg.value, \"Invalid payout calculation\");\n        \n        Deposit memory newDeposit = Deposit(msg.sender, msg.value, payoutAmount, now, 0);\n        deposits.push(newDeposit);\n        depositCount = deposits.length;\n        \n        // Safe depositor tracking\n        if (depositors[msg.sender].length == 0) {\n            depositorsCount += 1;\n        }\n        depositors[msg.sender].push(deposits.length - 1);\n        \n        // Safe amount tracking with overflow protection\n        uint256 newAmountRaised = amountRaised.add(msg.value);\n        require(newAmountRaised >= amountRaised, \"Amount overflow\");\n        amountRaised = newAmountRaised;\n        \n        emit OnDepositReceived(msg.sender, msg.value);\n        \n        // Safe owner transfer\n        uint256 ownerFee = msg.value.mul(10).div(100);\n        require(ownerFee <= msg.value, \"Fee calculation error\");\n        address(uint160(owner)).transfer(ownerFee);\n        \n        // Safe payment processing with boundary checks\n        if (deposits.length > 0 && currentPaymentIndex < deposits.length) {\n            Deposit storage currentDeposit = deposits[currentPaymentIndex];\n            \n            if (address(this).balance >= currentDeposit.payout && \n                currentDeposit.paymentTime == 0) {\n                \n                require(currentDeposit.depositor != address(0), \"Invalid depositor address\");\n                \n                // Replace unsafe send() with safe transfer() and proper state changes\n                currentDeposit.paymentTime = now;\n                uint256 payout = currentDeposit.payout;\n                \n                // Reset payout before transfer to prevent reentrancy\n                currentDeposit.payout = 0;\n                \n                // Safe transfer with address cast for Solidity 0.5.8\n                address payable depositor = address(uint160(currentDeposit.depositor));\n                depositor.transfer(payout);\n                \n                emit OnPaymentSent(depositor, payout);\n                \n                // Safe index increment with overflow protection\n                require(currentPaymentIndex + 1 > currentPaymentIndex, \"Index overflow\");\n                currentPaymentIndex += 1;\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

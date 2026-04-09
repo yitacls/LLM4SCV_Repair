@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "return block.timestamp >= 1546300800;",
+    "description": "This function relies on block.timestamp to determine if a sale has finished. In Solidity, block.timestamp can be manipulated by miners within a limited range (typically up to ~15 seconds). They can choose to include transactions in blocks with timestamps that benefit them, potentially allowing them to influence the timing of sale completion. This creates a vulnerability where malicious miners could extend or shorten the sale period for their advantage."
+}
+```

@@ -1,0 +1,30 @@
+[
+    {
+        "contract_name": "Comptroller",
+        "contract_version": "^0.8.6",
+        "state_variables": [
+            {
+                "variable_name": "_reentrancyStatus",
+                "fix_info": "Added a simple reentrancy guard status variable to prevent reentrant calls (mitigates SWC-107). Initialized to 1 (not entered).",
+                "variable_code": "uint256 private _reentrancyStatus = 1; // 1 = not entered, 2 = entered",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Added nonReentrant modifier (mutex) to protect functions against reentrancy.",
+                "modifier_code": "modifier nonReentrant() {\n    require(_reentrancyStatus != 2, \"reentrant call\");\n    _reentrancyStatus = 2;\n    _;\n    _reentrancyStatus = 1;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "liquidateBorrowAllowed",
+                "fix_info": "Applied nonReentrant modifier to prevent reentrancy during liquidations while preserving original logic and checks.",
+                "corrected_code": "function liquidateBorrowAllowed(\n    address cTokenBorrowed,\n    address cTokenCollateral,\n    address liquidator,\n    address borrower,\n    uint repayAmount\n) override external nonReentrant returns (uint) {\n    // Shh - currently unused\n    liquidator;\n\n    if (!markets[cTokenBorrowed].isListed || !markets[cTokenCollateral].isListed) {\n        return uint(Error.MARKET_NOT_LISTED);\n    }\n\n    uint borrowBalance = CToken(cTokenBorrowed).borrowBalanceStored(borrower);\n\n    /* allow accounts to be liquidated if the market is deprecated */\n    if (isDeprecated(CToken(cTokenBorrowed))) {\n        require(borrowBalance >= repayAmount, \"Can not repay more than the total borrow\");\n    } else {\n        /* The borrower must have shortfall in order to be liquidatable */\n        (Error err, , uint shortfall) = getAccountLiquidityInternal(borrower);\n        if (err != Error.NO_ERROR) {\n            return uint(err);\n        }\n\n        if (shortfall == 0) {\n            return uint(Error.INSUFFICIENT_SHORTFALL);\n        }\n\n        /* The liquidator may not repay more than what is allowed by the closeFactor */\n        uint maxClose = mul_ScalarTruncate(Exp({mantissa: closeFactorMantissa}), borrowBalance);\n        if (repayAmount > maxClose) {\n            return uint(Error.TOO_MUCH_REPAY);\n        }\n    }\n\n    return uint(Error.NO_ERROR);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

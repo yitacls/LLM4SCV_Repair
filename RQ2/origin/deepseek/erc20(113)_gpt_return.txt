@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "_allowed[msg.sender][spender] = value;",
+    "description": "The approve() function allows an approved spender to front-run a user's approval change. If a user wants to change an existing approval from amount X to amount Y, a malicious spender can observe the pending transaction for Y and first submit their own transaction spending X. After that transaction confirms, the approval for Y will still go through, allowing the spender to spend both X and Y amounts (X+Y total). The recommended mitigation is to implement the increaseAllowance()/decreaseAllowance() pattern from OpenZeppelin or require users to first set approval to 0 before setting a new value."
+}
+```

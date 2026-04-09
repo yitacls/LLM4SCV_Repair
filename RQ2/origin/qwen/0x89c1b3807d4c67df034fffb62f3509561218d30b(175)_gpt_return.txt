@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(CANCELLATION_FEE);",
+        "description": "The send() function is used without checking its return value. If the call fails (e.g., due to gas limitations or recipient being a contract that intentionally fails), the transaction will not revert, and the failure will be silently ignored. This can lead to loss of funds or incorrect state updates."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(fee);",
+        "description": "The send() function is used without checking its return value. If the transfer fails, it will not revert the transaction, which may cause inconsistency between state and actual ether transfers."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].requester.call.gas(2300).value(fee)();",
+        "description": "The low-level call() function is used without checking its return value. There's no verification if the ether transfer was successful, making the contract vulnerable to silent failures where the state is updated regardless of whether the funds were actually transferred."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);",
+        "description": "The low-level call() for executing the callback function does not check the return value. If the external call fails or reverts, the contract will continue execution without handling the failure, potentially leading to incorrect behavior or loss of funds."
+    }
+]
+```

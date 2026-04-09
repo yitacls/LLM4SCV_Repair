@@ -1,0 +1,14 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Removed direct use of block.blockhash (insecure source for randomness). The function now accepts an array of bytes32 hashes supplied by the caller (e.g. validated oracle or off-chain provider) and deterministically composes the result. This preserves the original concatenation behavior while avoiding on-chain blockhash-based randomness.",
+            "corrected_code": "function calcHashes(bytes32[] _hashes, uint32 _delta) private constant returns (uint) {\n    // Expect caller to provide the required hashes (e.g. from an oracle or pre-committed values).\n    // This removes reliance on block.blockhash for randomness.\n    require(_hashes.length >= 10);\n\n    uint result = 0;\n    for (uint i = 0; i < 10; i++) {\n        // take lower 24 bits of each provided hash and place it into the packed result\n        result |= ( (uint(_hashes[i]) & 0xFFFFFF) << (24 * i) );\n    }\n\n    // Preserve the original high-order placement of delta-derived value.\n    // Note: hashesSize is expected to be defined elsewhere in the contract.\n    result |= ( (uint(_delta) / hashesSize) << 240 );\n\n    return result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

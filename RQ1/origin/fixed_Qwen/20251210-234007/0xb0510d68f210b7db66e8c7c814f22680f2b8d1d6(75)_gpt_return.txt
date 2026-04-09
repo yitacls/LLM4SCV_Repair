@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Splitter",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fundPuppets",
+            "fix_info": "Fixed unchecked low-level calls by checking return values and using modern Solidity syntax for ETH transfers",
+            "corrected_code": "function fundPuppets() public payable {\n        require(msg.sender == owner);\n        _share = SafeMath.div(msg.value, 4);\n        \n        require(extra[0].send(_share));\n        require(extra[1].send(_share));\n        require(extra[2].send(_share));\n        require(extra[3].send(_share));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

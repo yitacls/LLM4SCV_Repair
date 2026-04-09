@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "_target.call.value(_value)(_data);",
+        "description": "The low-level call function does not check the return value, potentially leading to loss of funds if the call fails. In Solidity versions prior to 0.5.0, `call.value()()` returns a boolean success value which is not validated here. If the external call to `_target` reverts or fails, the transaction will continue execution without handling the failure, giving the false impression that the transfer succeeded. This violates the checks-effects-interactions pattern and can be exploited by malicious contracts. Additionally, this function uses `onlyOwner` modifier but forwards arbitrary `_data`, enabling the owner to execute arbitrary code on the target address."
+    }
+}
+```

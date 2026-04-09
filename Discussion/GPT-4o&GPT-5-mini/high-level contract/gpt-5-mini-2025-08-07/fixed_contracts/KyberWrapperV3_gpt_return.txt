@@ -1,0 +1,14 @@
+[{
+    "contract_name": "KyberWrapperV3",
+    "contract_version": "^0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getSellRate",
+            "fix_info": "Prevent integer overflow/underflow by using DSMath safe mul/div helpers and handle tokens with decimals > 18. Avoid direct unchecked '*' and '/' operations and guard exponent calculation.",
+            "corrected_code": "function getSellRate(address _srcAddr, address _destAddr, uint _srcAmount, bytes memory) public override view returns (uint rate) {\n    (rate, ) = KyberNetworkProxyInterface(KYBER_INTERFACE)\n        .getExpectedRate(IERC20(_srcAddr), IERC20(_destAddr), _srcAmount);\n\n    uint srcDecimals = getDecimals(_srcAddr);\n    uint destDecimals = getDecimals(_destAddr);\n\n    // Adjust rate according to decimal differences safely using DSMath\n    if (srcDecimals < 18) {\n        uint factor = 10 ** (18 - srcDecimals);\n        rate = mul(rate, factor);\n    } else if (srcDecimals > 18) {\n        uint factor = 10 ** (srcDecimals - 18);\n        rate = div(rate, factor);\n    }\n\n    if (destDecimals < 18) {\n        uint factor = 10 ** (18 - destDecimals);\n        rate = div(rate, factor);\n    } else if (destDecimals > 18) {\n        uint factor = 10 ** (destDecimals - 18);\n        rate = mul(rate, factor);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

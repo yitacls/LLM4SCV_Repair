@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This vulnerability lies in the use of 'tx.origin' for access control. 'tx.origin' checks the original address from where the transaction was initiated. This makes it susceptible to attacks such as phishing attacks where an attacker could trick a user to initiate a transaction, yet the contract's logic is executed on behalf of the attacker. It is recommended to use 'msg.sender' instead of 'tx.origin' as this refers to the immediate sender of the transaction or call, making it more secure."
+}
+```

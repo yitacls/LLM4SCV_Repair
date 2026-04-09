@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(_am)()",
+    "description": "The vulnerable function allows an external contract to call back into the Collect function before completing its execution, enabling reentrancy attacks."
+}
+```

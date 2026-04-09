@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Withdrawal",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Ensure the balanceOf mapping stores user balances securely with updated checks.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed potential arithmetic overflow or underflow by using SafeMath. Solidity ^0.4.11 does not include native overflow checks, so explicit validation on msg.value is added.",
+            "corrected_code": "function () payable public { \n    require(msg.value > 0, \"Value must be greater than zero\");\n    uint256 newBalance = balanceOf[msg.sender] + msg.value;\n    require(newBalance >= balanceOf[msg.sender], \"Overflow detected\");\n    balanceOf[msg.sender] = newBalance;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

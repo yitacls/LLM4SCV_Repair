@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "The vulnerability lies in the += operation where balanceOf[to] can potentially overflow, leading to unexpected behavior. It is an arithmetic vulnerability that can cause loss of funds or denial of service."
+}
+```

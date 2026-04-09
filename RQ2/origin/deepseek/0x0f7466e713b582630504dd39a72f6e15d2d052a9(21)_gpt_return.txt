@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100)))",
+    "description": "In Solidity 0.4.25, arithmetic operations are vulnerable to integer overflow/underflow. When calculating 'msg.value * MULTIPLIER', if MULTIPLIER is sufficiently large (e.g., > 100), multiplying by msg.value could exceed the maximum value of uint128 (2^128 - 1), causing an overflow. This overflow leads to incorrect calculation of the third parameter in the Deposit struct, potentially resulting in unexpected contract behavior or loss of funds. While division by 100 occurs after multiplication, it does not prevent overflow if the intermediate product exceeds uint128 bounds before division."
+}
+```

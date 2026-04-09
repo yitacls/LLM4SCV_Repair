@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "msg.sender.send(amount);",
+        "description": "The `send()` function is called without checking its return value. If the ETH transfer to `msg.sender` fails (e.g., due to a revert in a fallback function, out-of-gas, or the recipient being a contract without a payable fallback), the contract will proceed as if the refund succeeded, causing the user to lose their refunded ETH. In Solidity 0.4.x, `send()` returns `false` on failure instead of reverting. A proper pattern would use `require(msg.sender.send(amount))` or transfer the refund amount to a separate withdrawal pattern."
+    }
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Withdrawal",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Ensure balanceOf mapping uses safe arithmetic to prevent overflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added safe arithmetic check to prevent integer overflow when adding msg.value to balance",
+            "corrected_code": "function () payable {\n        uint256 newBalance = balanceOf[msg.sender] + msg.value;\n        require(newBalance >= balanceOf[msg.sender]); // Check for overflow\n        balanceOf[msg.sender] = newBalance;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

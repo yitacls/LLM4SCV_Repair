@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This line uses `tx.origin` for authorization, which is vulnerable to phishing attacks. `tx.origin` refers to the original externally-owned account that initiated the transaction chain, not the immediate caller (`msg.sender`). A malicious contract could trick the owner into calling it, and then the malicious contract would call `mint()`. The check `tx.origin == owner` would still pass (since the owner initiated the chain), but `msg.sender` would be the malicious contract, allowing it to mint tokens to itself. Authorization should always use `msg.sender` for direct contract interactions. Furthermore, this is part of a `mint` function, which should typically have explicit role-based access control (like onlyMinter or onlyOwner modifiers) rather than a simple equality check, even if corrected to use `msg.sender`."
+}
+```

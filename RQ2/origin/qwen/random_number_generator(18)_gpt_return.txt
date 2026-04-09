@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 x = salt * 100 / max;",
+        "description": "The variable 'x' is derived from 'salt' and 'max' which are predictable values. An attacker can calculate this value since it doesn't involve any blockchain randomness, making the random number generation vulnerable to manipulation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 y = salt * block.number / (salt % 5);",
+        "description": "The variable 'y' uses 'block.number' which is publicly known and predictable. Miners can manipulate the block number or wait until they get a favorable number before including the transaction, compromising the randomness of the function."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 seed = block.number / 3 + (salt % 300) + y;",
+        "description": "The 'seed' calculation relies on 'block.number' and other predictable values ('salt', 'y'). Since all components are either public or manipulable, the resulting seed is not truly random and can be predicted by attackers."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 h = uint256(blockhash(seed));",
+        "description": "Using 'blockhash(seed)' with a computed seed value is insecure because the seed derivation process is predictable. Additionally, 'blockhash' only works for the most recent 256 blocks, and using a future block number will return zero, leading to predictable results."
+    }
+]
+```

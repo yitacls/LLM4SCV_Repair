@@ -1,0 +1,14 @@
+[{
+    "contract_name": "EBU",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replace unchecked low-level call with checks for call success and optional return-data boolean; validate array lengths and mark array params memory to avoid unexpected storage usage.",
+            "corrected_code": "function transfer(address from, address caddress, address[] memory _tos, uint[] memory v) public returns (bool) {\n    require(_tos.length > 0);\n    require(_tos.length == v.length);\n    bytes4 id = bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n\n    for (uint i = 0; i < _tos.length; i++) {\n        // perform low-level call but check success\n        bool success = caddress.call(id, from, _tos[i], v[i]);\n        require(success);\n\n        // Some tokens do not return a boolean (return nothing) while others return a bool.\n        // If there is return data, ensure it is a truthy boolean (non-zero).\n        uint256 retSize;\n        assembly { retSize := returndatasize }\n        if (retSize > 0) {\n            bytes memory ret = new bytes(retSize);\n            assembly { returndatacopy(add(ret, 32), 0, retSize) }\n            uint256 returnedValue;\n            assembly { returnedValue := mload(add(ret, 32)) }\n            require(returnedValue != 0);\n        }\n    }\n\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

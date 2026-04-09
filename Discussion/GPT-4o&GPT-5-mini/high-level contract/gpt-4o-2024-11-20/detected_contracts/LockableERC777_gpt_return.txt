@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _burn (L399-422)",
+    "description": "The `_burn` function calls an external function `_callTokensToSend` before updating the state variables `_totalSupply` and `_balances`. This can allow a reentrant call during the external call to `tokensToSend`, potentially leading to inconsistent or exploited balance behavior if not properly handled."
+}
+```

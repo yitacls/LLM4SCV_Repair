@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "return (a + b >= a);",
+    "description": "The safeToAdd function is vulnerable to integer overflow. In Solidity ^0.4.25, arithmetic operations on uint types can overflow without reverting. When a + b exceeds the maximum value of uint, it wraps around to a smaller value, making the condition (a + b >= a) potentially false even when addition should be unsafe. This can lead to incorrect validation of addition safety and potential overflow vulnerabilities in the calling code."
+}
+```

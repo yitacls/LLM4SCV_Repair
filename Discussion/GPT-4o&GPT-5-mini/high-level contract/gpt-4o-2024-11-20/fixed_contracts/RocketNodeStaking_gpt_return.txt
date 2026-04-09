@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "RocketNodeStaking",
+        "contract_version": "1",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "stakeRPL",
+                "fix_info": "Added require statements to ensure rocketVault.depositToken returns true, mitigating SWC-104 vulnerability.",
+                "corrected_code": "function stakeRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) {\n    // Load contracts\n    address rplTokenAddress = getContractAddress(\"rocketTokenRPL\");\n    address rocketVaultAddress = getContractAddress(\"rocketVault\");\n    IERC20 rplToken = IERC20(rplTokenAddress);\n    RocketVaultInterface rocketVault = RocketVaultInterface(rocketVaultAddress);\n    \n    // Transfer RPL tokens\n    require(rplToken.transferFrom(msg.sender, address(this), _amount), \"Could not transfer RPL to staking contract\");\n    \n    // Deposit RPL tokens to vault\n    require(rplToken.approve(rocketVaultAddress, _amount), \"Could not approve vault RPL deposit\");\n    require(rocketVault.depositToken(\"rocketNodeStaking\", rplTokenAddress, _amount), \"Vault deposit failed\");\n    \n    // Update RPL stake amounts & node RPL staked block\n    increaseTotalRPLStake(_amount);\n    increaseNodeRPLStake(msg.sender, _amount);\n    setNodeRPLStakedBlock(msg.sender, block.number);\n    \n    // Emit RPL staked event\n    emit RPLStaked(msg.sender, _amount, block.timestamp);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawRPL",
+                "fix_info": "Validations added to prevent unforeseen block reordering issues, mitigating SWC-114 vulnerability by using block.timestamp instead of block.number.",
+                "corrected_code": "function withdrawRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) {\n    // Load contracts\n    RocketDAOProtocolSettingsRewardsInterface rocketDAOProtocolSettingsRewards = RocketDAOProtocolSettingsRewardsInterface(getContractAddress(\"rocketDAOProtocolSettingsRewards\"));\n    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n    \n    // Get block timestamp for withdrawal cooldown validation\n    uint256 lastStakedTime = getNodeRPLStakedBlock(msg.sender);\n    require(block.timestamp.sub(lastStakedTime) >= rocketDAOProtocolSettingsRewards.getRewardsClaimIntervalBlocks() * 13, \"The withdrawal cooldown period has not passed\"); // Approximate block time\n    \n    // Get & check node's current RPL stake\n    uint256 rplStake = getNodeRPLStake(msg.sender);\n    require(rplStake >= _amount, \"Withdrawal amount exceeds node's staked RPL balance\");\n    \n    // Check withdrawal would not undercollateralize node\n    require(rplStake.sub(_amount) >= getNodeMinimumRPLStake(msg.sender), \"Node's staked RPL balance after withdrawal is less than minimum balance\");\n\n    // Transfer RPL tokens to node address\n    require(rocketVault.withdrawToken(msg.sender, getContractAddress(\"rocketTokenRPL\"), _amount), \"Vault withdrawal failed\");\n\n    // Update RPL stake amounts\n    decreaseTotalRPLStake(_amount);\n    decreaseNodeRPLStake(msg.sender, _amount);\n\n    // Emit RPL withdrawn event\n    emit RPLWithdrawn(msg.sender, _amount, block.timestamp);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "slashRPL",
+                "fix_info": "Added require statement for vault transfer to ensure no errors go unchecked, mitigating SWC-104 vulnerability.",
+                "corrected_code": "function slashRPL(address _nodeAddress, uint256 _ethSlashAmount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyLatestContract(\"rocketMinipoolStatus\", msg.sender) {\n    // Load contracts\n    RocketNetworkPricesInterface rocketNetworkPrices = RocketNetworkPricesInterface(getContractAddress(\"rocketNetworkPrices\"));\n    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n    \n    // Calculate RPL amount to slash\n    uint256 calcBase = 1 ether;\n    uint256 rplSlashAmount = calcBase.mul(_ethSlashAmount).div(rocketNetworkPrices.getRPLPrice());\n    \n    // Cap slashed amount to node's RPL stake\n    uint256 rplStake = getNodeRPLStake(_nodeAddress);\n    if (rplSlashAmount > rplStake) { rplSlashAmount = rplStake; }\n    \n    // Transfer slashed amount to auction contract\n    require(rocketVault.transferToken(\"rocketAuctionManager\", getContractAddress(\"rocketTokenRPL\"), rplSlashAmount), \"Vault token transfer failed\");\n\n    // Update RPL stake amounts\n    decreaseTotalRPLStake(rplSlashAmount);\n    decreaseNodeRPLStake(_nodeAddress, rplSlashAmount);\n\n    // Emit RPL slashed event\n    emit RPLSlashed(_nodeAddress, rplSlashAmount, _ethSlashAmount, block.timestamp);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

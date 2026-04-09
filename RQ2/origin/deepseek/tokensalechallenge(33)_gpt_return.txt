@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "msg.sender.transfer(numTokens * PRICE_PER_TOKEN);",
+    "description": "This line contains an integer overflow vulnerability due to Solidity 0.4.x's default unchecked arithmetic. When numTokens * PRICE_PER_TOKEN exceeds the maximum value of uint256 (2²⁵⁶ - 1), the multiplication will wrap around rather than revert, potentially allowing attackers to receive far less ether than intended or even cause the transfer to underflow. Additionally, using transfer() with arbitrary user input can lead to reentrancy concerns in this version, though the primary issue is the unchecked overflow in multiplication."
+}
+```

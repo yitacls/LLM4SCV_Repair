@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "AKC",
+        "contract_version": "0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Fixed unchecked low-level call vulnerability by using call.value().gas() pattern to return a boolean success indicator and checking for execution success.",
+                "corrected_code": "function transferFrom(address _from, address _to, uint256 _amount, bytes _data, string _custom_fallback)\n    public\n    returns (bool success)\n{\n    if (isContract(controller)) {\n        if (!TokenController(controller).onTransfer(_from, _to, _amount))\n            revert();\n    }\n    require(super.transferFrom(_from, _to, _amount));\n    if (isContract(_to)) {\n        if (_to == address(this)) revert();\n        ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);\n        bytes4 selector = bytes4(keccak256(bytes(_custom_fallback)));\n        (bool callSuccess, ) = address(receiver).call.gas(gasleft())(abi.encodeWithSelector(selector, _from, _amount, _data));\n        require(callSuccess, \"Low-level call to fallback function failed\");\n    }\n    emit ERC223Transfer(_from, _to, _amount, _data);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

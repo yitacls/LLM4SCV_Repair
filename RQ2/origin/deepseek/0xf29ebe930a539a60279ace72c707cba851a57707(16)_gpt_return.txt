@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "target.call.value(msg.value)()",
+        "description": "The low-level call to `target` does not check the return value. If the call fails (e.g., due to out of gas, revert, or the contract not existing), the contract will continue executing without reverting, causing the subsequent `owner.transfer` to proceed even though the intended external call may have failed. This can lead to loss of funds (if msg.value was sent) or unexpected state changes. In Solidity 0.4.24, use `require(target.call.value(msg.value)())` or check the boolean return value."
+    }
+]
+```

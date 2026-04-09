@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function sudicideAnyone() { selfdestruct(msg.sender); }",
+    "description": "The 'sudicideAnyone' function is publicly accessible without any access control modifiers, allowing any caller to forcibly destroy the contract and send its remaining Ether balance to themselves (msg.sender). This could be exploited by malicious actors to disrupt contract functionality and steal funds. The function name appears intentionally obfuscated ('sudicide' vs 'suicide'), which may indicate an attempt to hide the vulnerability."
+}
+```

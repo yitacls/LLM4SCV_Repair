@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "bool ret = med_.call(bytes4(keccak256(\"poke()\")));",
+        "description": "The low-level call to 'med_.call()' does not check the return value or handle potential failures. In Solidity < 0.5.0, low-level calls return 'false' on failure rather than reverting. The 'ret' variable is assigned but never used, leaving call failures unhandled. This could allow the transaction to proceed even when the external call fails, potentially leaving the contract in an inconsistent state."
+    },
+    {
+        "type": "unsafe_external_call",
+        "location": "med_.call(bytes4(keccak256(\"poke()\")));",
+        "description": "The function uses raw call data with 'keccak256(\"poke()\")' to calculate the function selector, which may lead to incorrect function invocation if the target contract's function signature doesn't match. Additionally, the call forwards all remaining gas by default, which could enable reentrancy attacks if the target contract is malicious, though the 'note' and 'auth' modifiers may provide some protection."
+    }
+]
+```

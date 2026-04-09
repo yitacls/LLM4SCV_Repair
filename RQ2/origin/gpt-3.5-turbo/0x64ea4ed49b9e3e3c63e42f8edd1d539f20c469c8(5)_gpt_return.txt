@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The use of wallet.send(msg.value) in this context can be vulnerable to reentrancy attacks, where an external contract could call back into the current contract before the send operation is complete, potentially leading to unexpected behavior."
+}
+```

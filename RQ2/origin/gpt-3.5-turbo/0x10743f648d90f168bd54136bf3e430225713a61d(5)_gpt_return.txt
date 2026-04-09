@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The use of send() for transferring Ether does not handle errors and may lead to vulnerabilities. It is recommended to use transfer() or a more robust error handling mechanism."
+}
+```

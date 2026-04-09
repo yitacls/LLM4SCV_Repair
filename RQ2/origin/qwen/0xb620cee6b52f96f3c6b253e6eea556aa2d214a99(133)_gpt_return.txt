@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.call.value(1 wei)();",
+    "description": "The low-level call to the owner address does not check the return value, which means if the call fails (e.g., owner contract rejects the transfer or runs out of gas), the contract will not handle the failure properly. This could lead to unexpected behavior or loss of funds. In Solidity 0.4.23, low-level calls return a boolean indicating success/failure, but this return value is ignored here."
+}
+```

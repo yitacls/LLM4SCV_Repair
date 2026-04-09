@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public",
+    "description": "The function deposit() should only be called by specified roles. However, it's called with the modifier onlyReserveFundContract, without explicitly checking who the caller is. A potential bad actor could execute this function without proper authorization, leading to unauthorized access and manipulation of contract state variables."
+}
+```

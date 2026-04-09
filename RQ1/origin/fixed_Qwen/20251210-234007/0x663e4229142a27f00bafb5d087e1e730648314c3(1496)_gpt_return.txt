@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ClockAuction",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low-level call by adding proper error handling and using transfer instead of send for better gas management",
+            "corrected_code": "function withdrawBalance() external {\n        address nftAddress = address(nonFungibleContract);\n\n        require(\n            msg.sender == owner ||\n            msg.sender == nftAddress\n        );\n        // Fixed unchecked low-level call by using transfer with proper error handling\n        nftAddress.transfer(this.balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

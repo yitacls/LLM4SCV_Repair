@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "withdraw function",
+    "description": "The vulnerability is present in the 'withdraw' function where it performs calculations that could consume too much gas during a transaction, leading to a potential denial-of-service (DoS) attack. Specifically, the function involves complex calculations and commission calculations that may cause high gas consumption and exceed the block gas limit."
+}
+```

@@ -1,0 +1,28 @@
+```json
+[
+    {
+        "contract_name": "AllocationStaking",
+        "contract_version": "0.6.12",
+        "functions": [
+            {
+                "function_name": "fund",
+                "fix_info": "Added SafeMath functions to prevent integer overflow/underflow when updating `endTimestamp` and `totalRewards`.",
+                "corrected_code": "function fund(uint256 _amount) public {\n    require(block.timestamp < endTimestamp, \"fund: too late, the farm is closed\");\n    erc20.safeTransferFrom(address(msg.sender), address(this), _amount);\n    endTimestamp = endTimestamp.add(_amount.div(rewardPerSecond));\n    totalRewards = totalRewards.add(_amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "totalPending",
+                "fix_info": "Added SafeMath functions to handle subtractions and multiplications safely, ensuring no underflow occurs.",
+                "corrected_code": "function totalPending() external view returns (uint256) {\n    if (block.timestamp <= startTimestamp) {\n        return 0;\n    }\n\n    uint256 lastTimestamp = block.timestamp < endTimestamp ? block.timestamp : endTimestamp;\n    return rewardPerSecond.mul(lastTimestamp.sub(startTimestamp)).sub(paidOut);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "erc20Transfer",
+                "fix_info": "Added SafeMath `add` function to handle addition safely when updating `paidOut` to avoid overflow.",
+                "corrected_code": "function erc20Transfer(address _to, uint256 _amount) internal {\n    erc20.transfer(_to, _amount);\n    paidOut = paidOut.add(_amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

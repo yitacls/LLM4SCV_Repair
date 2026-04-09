@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyOwner",
+        "description": "The function allows the owner to withdraw any ERC20 tokens from the contract. While it checks that the balances of token0 and token1 do not decrease and that the contract retains at least _BASE_SUPPLY tokens, it does not have specific protections against unintended ether withdrawals. Since the contract handles ETH through payable functions (e.g., deposit, swap), this could potentially lead to loss of Ether if not carefully managed, especially since there's no explicit check or handling for Ether balance in this function."
+    }
+]
+```

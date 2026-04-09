@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "calcHashes function lines using block.blockhash(_lastb) through block.blockhash(_lastb+9)",
+    "description": "The contract uses multiple consecutive block hashes to generate randomness for lottery outcomes. This is vulnerable because: 1) Block hashes are predictable for miners who can influence or withhold blocks, 2) When _lastb references blocks more than 256 blocks old, block.blockhash() returns 0, creating predictable patterns, 3) In a private chain or with miner collusion, the outcome can be manipulated. The function combines 9 consecutive block hashes (each truncated to 24 bits) to form a 216-bit 'random' value, making it susceptible to mining manipulation attacks where miners can discard unfavorable blocks or reorganize the chain."
+}
+```

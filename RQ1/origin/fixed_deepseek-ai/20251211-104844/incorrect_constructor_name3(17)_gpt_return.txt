@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Missing",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner",
+            "modifier_code": "    modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Constructor",
+            "fix_info": "Changed function name to constructor() to use proper Solidity constructor syntax and prevent accidental public invocation",
+            "corrected_code": "    constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

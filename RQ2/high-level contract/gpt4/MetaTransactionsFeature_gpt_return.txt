@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "modifier refundsAttachedEth() at line 100-107",
+    "description": "The modifier refundsAttachedEth() includes a condition to refund ETH to the original sender. However, it is not protected against re-entrancy attack, as it calls the low level function msg.sender.transfer() after making changes to the state of the contract. An attacker can potentially create a contract that calls the function that uses this modifier, and the fallback function of the attacker contract can call back into the function, causing the contract's state to be altered."
+}
+```

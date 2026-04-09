@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "require(msg.sender.call.value(_user.r_payout)());",
+    "description": "This line performs an external call to `msg.sender` before updating the contract's state. In Solidity < 0.6.0, `.call.value()` forwards all remaining gas by default, enabling the recipient contract's fallback function to re-enter `_finalizePreviousRoll` (or other functions) multiple times before `_stats.totalWon` is updated. Since `_stats.totalWon += _user.r_payout` occurs after the external call, an attacker could repeatedly trigger payouts before the balance is deducted, potentially draining the contract's funds."
+}
+```

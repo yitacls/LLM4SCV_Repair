@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance - SubX);",
+    "description": "The send() function returns a boolean value indicating success or failure, but this return value is not checked. In Solidity 0.4.11, send() only forwards 2300 gas, which may be insufficient for operations in the recipient's fallback function, causing the transfer to fail. However, the contract continues execution without handling this failure, potentially leaving funds trapped in the contract when the owner expects them to be transferred. This violates the checks-effects-interactions pattern and creates reliability issues."
+}
+```

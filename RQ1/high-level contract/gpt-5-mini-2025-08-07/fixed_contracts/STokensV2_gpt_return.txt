@@ -1,0 +1,29 @@
+[
+    {
+        "contract_name": "STokensV2",
+        "contract_version": "v2",
+        "state_variables": [
+            {
+                "variable_name": "MAX_REWARD_HISTORY",
+                "fix_info": "Added a cap on the length of rewardRate/lastMovingRewardTimestamp history to prevent unbounded loops that can lead to DoS via block gas limit.",
+                "variable_code": "uint256 private constant MAX_REWARD_HISTORY = 100;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setRewardRate",
+                "fix_info": "Added a check to prevent unbounded growth of the reward history arrays (defense-in-depth against DoS with block gas limit). Preserved original behavior otherwise.",
+                "corrected_code": "function setRewardRate(uint256 rewardRate)\n\tpublic\n\tvirtual\n\toverride\n\treturns (bool success)\n{\n\t// range checks for rewardRate. Since rewardRate cannot be more than 100%, the max cap\n\t// is _valueDivisor * 100, which then brings the fees to 100 (percentage)\n\trequire(rewardRate <= _valueDivisor.mul(100), \"ST17\");\n\trequire(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"ST2\");\n\t// Prevent unbounded growth of the reward history arrays which could cause loops to run out of gas\n\trequire(_lastMovingRewardTimestamp.length < MAX_REWARD_HISTORY, \"ST_HISTORY_LIMIT\");\n\t_rewardRate.push(rewardRate);\n\t_lastMovingRewardTimestamp.push(block.timestamp);\n\temit SetRewardRate(rewardRate);\n\n\treturn true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_calculatePendingRewards",
+                "fix_info": "Rewrote the iteration to a forward-safe bounded loop and used explicit interval arithmetic. This removes unsafe decrementing loops and keeps semantics intact. Combined with MAX_REWARD_HISTORY cap, this prevents DoS via long reward history while computing identical results.",
+                "corrected_code": "function _calculatePendingRewards(\n\tuint256 principal,\n\tuint256 lastRewardTimestamp\n) internal view returns (uint256 pendingRewards) {\n\t// return 0 if principal is zero or no time elapsed\n\tif (principal == 0 || block.timestamp <= lastRewardTimestamp) return 0;\n\n\tuint256 n = _lastMovingRewardTimestamp.length;\n\tif (n == 0) return 0;\n\n\tfor (uint256 i = 0; i < n; i++) {\n\t\tuint256 start = _lastMovingRewardTimestamp[i];\n\t\tuint256 end = (i == n - 1) ? block.timestamp : _lastMovingRewardTimestamp[i + 1];\n\n\t\t// defensive: skip invalid intervals\n\t\tif (end <= start) continue;\n\n\t\t// if the whole interval is before or equal to lastRewardTimestamp, skip\n\t\tif (lastRewardTimestamp >= end) continue;\n\n\t\t// compute effective start for this interval\n\t\tuint256 from = lastRewardTimestamp > start ? lastRewardTimestamp : start;\n\t\tif (end <= from) continue;\n\n\t\tuint256 rewardBlocks = end.sub(from);\n\n\t\t// principal * rewardRate[i] / 100 * rewardBlocks / _valueDivisor\n\t\tuint256 _temp = principal.mulDiv(_rewardRate[i], 100);\n\t\tuint256 _simpleInterestOfInterval = _temp.mulDiv(rewardBlocks, _valueDivisor);\n\t\tpendingRewards = pendingRewards.add(_simpleInterestOfInterval);\n\t}\n\n\treturn pendingRewards;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

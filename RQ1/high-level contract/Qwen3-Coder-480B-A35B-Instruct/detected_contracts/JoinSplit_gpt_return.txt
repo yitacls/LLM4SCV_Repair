@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "let kn := calldataload(sub(add(notes, mul(calldataload(notes), 0xc0)), 0xa0))",
+        "description": "The calculation `mul(calldataload(notes), 0xc0)` can overflow if `calldataload(notes)` is large, leading to an incorrect memory offset when loading `kn`. This can result in reading from or writing to unintended memory locations."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "let notes := add(0x104, calldataload(0x184))",
+        "description": "The calculation `add(0x104, calldataload(0x184))` can overflow if `calldataload(0x184)` is sufficiently large, potentially causing `notes` to point to an invalid or unexpected memory location."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "let noteIndex := add(add(notes, 0x20), mul(i, 0xc0))",
+        "description": "The multiplication `mul(i, 0xc0)` and subsequent addition can lead to an overflow, especially when `i` is large, causing an incorrect memory offset for accessing note data. This may result in out-of-bounds memory access or incorrect proof validation."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "let b := add(0x320, mul(n, 0x80))",
+        "description": "The multiplication `mul(n, 0x80)` can overflow if `n` is sufficiently large, leading to an incorrect calculation of the memory pointer `b`. This can cause memory corruption or incorrect outcomes during the blinding factor computation."
+    }
+]
+```

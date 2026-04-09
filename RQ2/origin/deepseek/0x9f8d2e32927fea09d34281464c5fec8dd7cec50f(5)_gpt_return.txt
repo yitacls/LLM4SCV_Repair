@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.call(msg.value)",
+    "description": "This low-level call does not check the return value, making it vulnerable to failures. In Solidity 0.4.23, the `call` function returns a boolean indicating success (true) or failure (false). If the call fails (e.g., if the receiving contract runs out of gas, reverts, or the `wallet` address is a contract without a payable fallback function), the return value is ignored, potentially leaving funds locked or causing inconsistent state without the caller being aware. Additionally, in the given context, the syntax `wallet.call(msg.value)` is incorrect—it should be `wallet.call.value(msg.value)()` to transfer Ether. This may result in no Ether being transferred at all, as `msg.value` is passed as a data parameter instead of value. The recommended fix is to use `address.transfer()` or `address.send()` for simple Ether transfers (which automatically revert or return false on failure), or to explicitly check the return value of `call` and handle failures appropriately."
+}
+```

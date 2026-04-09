@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "EGFToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to use SafeMath library to prevent overflow",
+            "variable_code": "using SafeMath for uint256;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Type updated to uint256 for SafeMath compatibility",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Not owner\"); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mine",
+            "fix_info": "Added SafeMath operations to prevent overflow, maintained original functionality",
+            "corrected_code": "function mine(address target, uint256 amount) public onlyOwner {\n        totalSupply = totalSupply.add(amount);\n        balanceOf[target] = balanceOf[target].add(amount);\n        emit AddSupply(amount);\n        emit Transfer(address(0), target, amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

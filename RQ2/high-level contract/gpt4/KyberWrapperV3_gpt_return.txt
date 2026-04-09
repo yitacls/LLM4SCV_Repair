@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "getSellRate function, rate calculation",
+    "description": "The getSellRate function calculates the rate based on an expected rate and decimal differences. However, it does not adequately check whether overflow or underflow conditions can occur when performing the operations. If an overflow or underflow condition happens, this might lead to unexpected behavior such as wrong rate calculation."
+}
+```

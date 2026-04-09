@@ -1,0 +1,29 @@
+[
+    {
+        "contract_name": "Gate",
+        "contract_version": "0.5.11",
+        "state_variables": [
+            {
+                "variable_name": "pendingEth",
+                "fix_info": "Added a pull-based pending ETH mapping to avoid DoS when an external recipient's fallback/receive fails during multiFill. Funds that cannot be pushed are credited here so users can withdraw later.",
+                "variable_code": "mapping(address => uint256) public pendingEth;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "multiFill",
+                "fix_info": "Reworked multiFill to avoid single failed external transfer reverting the whole batch (DoS). Uses an initial reservation of available balance, attempts to send with low-level call, and on failure credits pendingEth for the owner (pull pattern). Preserves original behavior of transferring TMV to timviWallet and emitting events.",
+                "corrected_code": "function multiFill(uint256[] calldata _ids) external onlyAdmin() payable {\n    // Admin can top up contract and trigger batch fills in one tx\n    emit Funded(msg.value);\n\n    // Reserve the available balance at the start to ensure we don't overcommit\n    uint256 available = address(this).balance;\n\n    for (uint256 i = 0; i < _ids.length; i++) {\n        uint256 id = _ids[i];\n\n        require(orders[id].owner != address(0), \"Order doesn't exist\");\n\n        uint256 tmv = orders[id].amount;\n        uint256 eth = tmv2eth(tmv);\n\n        require(available >= eth, \"Not enough funds\");\n        // Reserve the amount for this order (whether transfer succeeds or not)\n        available = available.sub(eth);\n\n        address payable owner = orders[id].owner;\n\n        // Remove order first to avoid reentrancy issues\n        delete orders[id];\n\n        // Transfer TMV to timvi wallet as original logic\n        IToken(settings.tmvAddress()).transfer(timviWallet, tmv);\n\n        // Attempt to send ETH; if it fails, record it in pendingEth so owner can withdraw later\n        (bool success, ) = owner.call.value(eth)(\"\");\n        if (!success) {\n            // Credit pending withdrawals (pull pattern) instead of reverting the whole batch\n            pendingEth[owner] = pendingEth[owner].add(eth);\n        }\n\n        emit OrderFilledPool(id, owner, tmv, eth);\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawPending",
+                "fix_info": "New pull-based withdrawal function allowing users to claim ETH that couldn't be pushed during multiFill. This avoids DoS by letting recipients initiate the transfer themselves. Reverts on transfer failure because the recipient initiates the call.",
+                "corrected_code": "function withdrawPending() external {\n    uint256 amount = pendingEth[msg.sender];\n    require(amount > 0, \"No pending funds\");\n\n    // Zero out before transfer to prevent reentrancy\n    pendingEth[msg.sender] = 0;\n\n    (bool success, ) = msg.sender.call.value(amount)(\"\");\n    require(success, \"Transfer failed\");\n\n    emit GateFundsWithdrawn(amount);\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]

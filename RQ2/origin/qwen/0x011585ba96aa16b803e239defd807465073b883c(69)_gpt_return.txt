@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.11, send() can fail silently and return false instead of throwing an exception. This means that if the send() call fails (e.g., due to gas limitations or the recipient contract rejecting the transfer), the contract will not be aware of the failure and will continue execution, potentially leading to incorrect state management and loss of funds. The returned boolean value from send() should be checked and handled appropriately."
+}
+```

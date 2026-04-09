@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function initialize(address _measure, address _asset) external { ... }",
+        "description": "The initialize function does not restrict access, allowing any address to call it and potentially overwrite critical state variables like 'measure', 'asset', and 'factory'. This could lead to unauthorized control over the contract's core functionality."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function claim(address user) external returns (uint256) { ... }",
+        "description": "The claim function performs external calls (asset.transfer) after updating state but before fully settling all state changes. Specifically, the user's balance is zeroed out only after the transfer, which can allow a malicious contract to reenter and claim rewards multiple times if the token used is maliciously crafted to exploit this."
+    }
+]
+```

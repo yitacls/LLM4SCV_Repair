@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "ERC20Standard",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mint",
+                "fix_info": "Add access control modifier to restrict minting to only the owner.",
+                "corrected_code": "function mint(uint256 amount) public onlyOwner {
+    require(amount >= 0);
+    balances[msg.sender] += amount;
+    totalSupply += amount;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

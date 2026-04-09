@@ -1,0 +1,62 @@
+```json
+[
+    {
+        "contract_name": "Vault",
+        "contract_version": "0.6.6",
+        "state_variables": [
+            {
+                "variable_name": "notEntered",
+                "fix_info": "Replaced with ReentrancyGuard from OpenZeppelin pattern",
+                "variable_code": "",
+                "change_type": "deleted"
+            },
+            {
+                "variable_name": "reentrancyStatus",
+                "fix_info": "Added proper reentrancy guard status",
+                "variable_code": "uint256 private constant _NOT_ENTERED = 1;\nuint256 private constant _ENTERED = 2;\nuint256 private _status;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Fixed reentrancy guard to use proper OpenZeppelin pattern",
+                "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Fixed reentrancy guard initialization",
+                "corrected_code": "function initialize(address _prevVault) external {\n    require(!isInitialized);\n    prevVault = Withdrawable(_prevVault);\n    isInitialized = true;\n    _status = _NOT_ENTERED;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "submitBurnProof",
+                "fix_info": "Fixed integer overflow vulnerability and added SafeMath multiplication",
+                "corrected_code": "function submitBurnProof(\n    bytes memory inst,\n    uint heights,\n    bytes32[] memory instPaths,\n    bool[] memory instPathIsLefts,\n    bytes32 instRoots,\n    bytes32 blkData,\n    uint[] memory sigIdxs,\n    uint8[] memory sigVs,\n    bytes32[] memory sigRs,\n    bytes32[] memory sigSs\n) public nonReentrant {\n    require(inst.length >= 130);\n    BurnInstData memory data = parseBurnInst(inst);\n    require(data.meta == 243 && data.shard == 1);\n\n    require(!isWithdrawed(data.itx), errorToString(Errors.ALREADY_USED));\n    withdrawed[data.itx] = true;\n\n    if (data.token == ETH_TOKEN) {\n        require(address(this).balance >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n    } else {\n        uint8 decimals = getDecimals(data.token);\n        if (decimals > 9) {\n            data.amount = data.amount.safeMul(10 ** (uint(decimals) - 9));\n        }\n        require(IERC20(data.token).balanceOf(address(this)) >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n    }\n\n    verifyInst(\n        inst,\n        heights,\n        instPaths,\n        instPathIsLefts,\n        instRoots,\n        blkData,\n        sigIdxs,\n        sigVs,\n        sigRs,\n        sigSs\n    );\n\n    withdrawRequests[data.to][data.token] = withdrawRequests[data.to][data.token].safeAdd(data.amount);\n    totalDepositedToSCAmount[data.token] = totalDepositedToSCAmount[data.token].safeAdd(data.amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "execute",
+                "fix_info": "Fixed transaction order dependence and unprotected ether withdrawal vulnerabilities",
+                "corrected_code": "function execute(\n    address token,\n    uint amount,\n    address recipientToken,\n    address exchangeAddress,\n    bytes calldata callData,\n    bytes calldata timestamp,\n    bytes calldata signData\n) external payable nonReentrant {\n    //verify ower signs data from input\n    address verifier = verifySignData(abi.encode(exchangeAddress, callData, timestamp, amount), signData);\n\n    // migrate from preVault\n    migrateBalance(verifier, token);\n    require(withdrawRequests[verifier][token] >= amount, errorToString(Errors.WITHDRAW_REQUEST_TOKEN_NOT_ENOUGH));\n\n    // update balance of verifier first (Checks-Effects pattern)\n    totalDepositedToSCAmount[token] = totalDepositedToSCAmount[token].safeSub(amount);\n    withdrawRequests[verifier][token] = withdrawRequests[verifier][token].safeSub(amount);\n\n    // define number of eth spent for forwarder.\n    uint ethAmount = msg.value;\n    if (token == ETH_TOKEN) {\n        ethAmount = ethAmount.safeAdd(amount);\n        // Validate the withdrawal amount does not exceed contract balance\n        require(address(this).balance >= ethAmount, errorToString(Errors.TOKEN_NOT_ENOUGH));\n        // Use .call with proper gas limits and check success\n        (bool ethSuccess, ) = exchangeAddress.call{value: ethAmount, gas: 100000}(\n            callData\n        );\n        require(ethSuccess, errorToString(Errors.INTERNAL_TX_ERROR));\n    } else {\n        // transfer token to exchangeAddress.\n        require(IERC20(token).balanceOf(address(this)) >= amount, errorToString(Errors.TOKEN_NOT_ENOUGH));\n        IERC20(token).transfer(exchangeAddress, amount);\n        require(checkSuccess(), errorToString(Errors.INTERNAL_TX_ERROR));\n        // Only send msg.value if provided, not the token amount\n        if (msg.value > 0) {\n            (bool succ, ) = exchangeAddress.call{value: msg.value, gas: 100000}(\n                callData\n            );\n            require(succ, errorToString(Errors.INTERNAL_TX_ERROR));\n        }\n    }\n    \n    // Call external function and get returned amount\n    uint returnedAmount = callExtFunc(recipientToken, ethAmount, callData, exchangeAddress);\n\n    // update withdrawRequests\n    withdrawRequests[verifier][recipientToken] = withdrawRequests[verifier][recipientToken].safeAdd(returnedAmount);\n    totalDepositedToSCAmount[recipientToken] = totalDepositedToSCAmount[recipientToken].safeAdd(returnedAmount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "callExtFunc",
+                "fix_info": "Added checks for external call safety and validation",
+                "corrected_code": "function callExtFunc(address recipientToken, uint ethAmount, bytes memory callData, address exchangeAddress) internal returns (uint) {\n    // get balance of recipient token before trade to compare after trade.\n    uint balanceBeforeTrade = balanceOf(recipientToken);\n    if (recipientToken == ETH_TOKEN) {\n        balanceBeforeTrade = balanceBeforeTrade.safeSub(msg.value);\n    }\n    require(address(this).balance >= ethAmount, errorToString(Errors.TOKEN_NOT_ENOUGH));\n    \n    // Limit gas to prevent griefing attacks\n    (bool success, bytes memory result) = exchangeAddress.call{value: ethAmount, gas: 100000}(callData);\n    require(success, \"External call failed\");\n    \n    // Validate result length to prevent malformed returns\n    require(result.length >= 64, \"Invalid return data length\");\n    \n    (address returnedTokenAddress, uint returnedAmount) = abi.decode(result, (address, uint));\n    require(returnedTokenAddress == recipientToken && balanceOf(recipientToken).safeSub(balanceBeforeTrade) == returnedAmount, errorToString(Errors.INVALID_RETURN_DATA));\n\n    return returnedAmount;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed integer overflow vulnerability in withdraw function",
+                "corrected_code": "function withdraw(\n    bytes memory inst,\n    uint heights,\n    bytes32[] memory instPaths,\n    bool[] memory instPathIsLefts,\n    bytes32 instRoots,\n    bytes32 blkData,\n    uint[] memory sigIdxs,\n    uint8[] memory sigVs,\n    bytes32[] memory sigRs,\n    bytes32[] memory sigSs\n) public nonReentrant {\n    require(inst.length >= 130);\n    BurnInstData memory data = parseBurnInst(inst);\n    require(data.meta == 241 && data.shard == 1);\n\n    require(!isWithdrawed(data.itx), errorToString(Errors.ALREADY_USED));\n    withdrawed[data.itx] = true;\n\n    if (data.token == ETH_TOKEN) {\n        require(address(this).balance >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n    } else {\n        uint8 decimals = getDecimals(data.token);\n        if (decimals > 9) {\n            data.amount = data.amount.safeMul(10 ** (uint(decimals) - 9));\n        }\n        require(IERC20(data.token).balanceOf(address(this)) >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n    }\n\n    verifyInst(\n        inst,\n        heights,\n        instPaths,\n        instPathIsLefts,\n        instRoots,\n        blkData,\n        sigIdxs,\n        sigVs,\n        sigRs,\n        sigSs\n    );\n\n    if (data.token == ETH_TOKEN) {\n        (bool success, ) = data.to.call{value: data.amount, gas: 100000}(\"\");\n        require(success, errorToString(Errors.INTERNAL_TX_ERROR));\n    } else {\n        IERC20(data.token).transfer(data.to, data.amount);\n        require(checkSuccess(), errorToString(Errors.INTERNAL_TX_ERROR));\n    }\n    emit Withdraw(data.token, data.to, data.amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

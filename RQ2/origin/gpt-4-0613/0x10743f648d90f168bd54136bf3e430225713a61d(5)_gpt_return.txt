@@ -1,0 +1,10 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contract": "CYBRPurchaseAddress",
+    "vulnerability": {
+        "location": "wallet.send(msg.value);",
+        "description": "Low-level calls like .send() in Solidity can fail silently, meaning they return false if they encounter an exception rather than propagating the exception. If not properly checked, these calls can lead to potential significant vulnerabilities, such as unexpected behavior if the call fails."
+    }
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(){ developer.transfer(this.balance); require(token.transfer(developer, token.balanceOf(address(this)))); }",
+    "description": "The withdraw function has no access control modifier (like onlyOwner) and allows any caller to transfer both the contract's Ether balance and all tokens held by the contract to the 'developer' address. This enables any user to permanently drain all assets from the contract, effectively bricking its functionality and stealing funds intended for the legitimate developer or other authorized parties."
+}
+```

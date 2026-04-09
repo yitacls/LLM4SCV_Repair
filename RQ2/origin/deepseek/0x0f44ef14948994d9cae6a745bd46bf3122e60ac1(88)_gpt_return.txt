@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout);",
+    "description": "The `.send()` call is not checked for its return value. In Solidity 0.5.8, `.send()` returns a boolean indicating success, but failing to check this return value means failed transfers will go unnoticed. This can leave the contract in an inconsistent state where paymentTime is set but funds aren't actually transferred, and the currentPaymentIndex is incremented regardless of transfer success. Use `.transfer()` (which automatically reverts on failure) or explicitly check the return value of `.send()` and handle failures appropriately."
+}
+```

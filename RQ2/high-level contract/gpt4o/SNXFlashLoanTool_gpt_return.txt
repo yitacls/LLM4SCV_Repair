@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "Line 54: `type(uint256).max`",
+        "description": "`type(uint256).max` is used to get the maximum value of uint256. Although this is valid in Solidity ^0.7.6, later versions now recommend using constants defined elsewhere or direct usage shall follow standard practices. This could potentially lead to readability issues or compatibility challenges in upgraded environments."
+    },
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "Line 122: `IERC20(token).balanceOf(address(this))`",
+        "description": "Direct calls to a token contract's balance function can potentially raise issues with newer standards, especially when interfaces evolve. This can lead to potential compatibility concerns in the future."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Line 143: `(bool success, ) = exchange.call(data);`",
+        "description": "`call` is used to interact with an external contract, which can introduce the possibility of a reentrancy attack if the external contract performs an unexpected callback to this contract. This could allow an attacker to exploit the contract's logic by modifying the state in an unintended way before the transaction is complete."
+    }
+]
+```

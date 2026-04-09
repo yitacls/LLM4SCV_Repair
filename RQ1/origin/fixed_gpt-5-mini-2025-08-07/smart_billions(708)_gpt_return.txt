@@ -1,0 +1,46 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added an owner variable so a trusted party can set an external entropy seed instead of using blockhash-dependent randomness.",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "externalSeed",
+            "fix_info": "Added an externally-settable seed (must be provided by a trusted off-chain source / oracle) to remove dependence on blockhash for randomness.",
+            "variable_code": "bytes32 public externalSeed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to restrict who can set the external seed.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced use of block.blockhash (unpredictable and manipulable) with a keccak256-derived value using an externally committed seed. Preserves original output layout: ten 24-bit segments (240 bits) combined, with the upper bits holding (_delta / hashesSize).",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Use an externally committed seed to avoid BAD_RANDOMNESS from blockhash.\n    // The function preserves the original layout: 10 segments of 24 bits (240 bits)\n    // filled from a keccak256-derived value, then OR in ((_delta / hashesSize) << 240).\n    bytes32 seed = keccak256(externalSeed, _lastb, _delta);\n    uint r = uint(seed);\n    uint result = 0;\n    for (uint i = 0; i < 10; i++) {\n        uint part = (r >> (i * 24)) & 0xFFFFFF;\n        result |= part << (i * 24);\n    }\n    result |= ((uint(_delta) / hashesSize) << 240);\n    return result;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setSeed",
+            "fix_info": "Allows the contract owner to set/update the externalSeed used for randomness. This must be supplied by a trusted off-chain source or oracle to ensure unpredictability.",
+            "corrected_code": "function setSeed(bytes32 _seed) public onlyOwner {\n    externalSeed = _seed;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "SmartBillions",
+            "fix_info": "Constructor to set the deploying address as owner so seed management is restricted.",
+            "corrected_code": "function SmartBillions() public {\n    owner = msg.sender;\n}",
+            "change_type": "added"
+        }
+    ]
+}]

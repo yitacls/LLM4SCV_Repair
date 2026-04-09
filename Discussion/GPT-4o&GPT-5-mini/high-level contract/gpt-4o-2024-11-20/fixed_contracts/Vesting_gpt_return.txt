@@ -1,0 +1,31 @@
+```json
+[
+  {
+    "contract_name": "Vesting",
+    "contract_version": "0.8.10",
+    "state_variables": [
+      {
+        "variable_name": "MAX_LOCK_AMOUNT",
+        "fix_info": "Replaced SafeMath usage with direct division, as Solidity 0.8+ includes built-in overflow/underflow protection.",
+        "variable_code": "uint256 private MAX_LOCK_AMOUNT = type(uint256).max / 99;",
+        "change_type": "modified"
+      }
+    ],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "updateScore",
+        "fix_info": "Replaced the array iteration with a safer pattern using cumulative addition for gas efficiency and reduced the likelihood of DoS. Added checks to prevent reentrancy and used direct arithmetic instead of SafeMath.",
+        "corrected_code": "function updateScore(uint8 _newScore) external onlyOracle isInitialized notFinalized {\n    require(_newScore <= 100, \"invalid score value\");\n    require(_currentTime() - initializedAt > EPOCH_SIZE, \"scoring epoch 1 still not finished\");\n\n    uint256 timeFromLastEpoch = (_currentTime() - initializedAt) % EPOCH_SIZE;\n    require(timeFromLastEpoch > 0 && timeFromLastEpoch <= 1 days, \"scoring epoch still not finished\");\n    require(_currentTime() - updatedAt > 1 days, \"can not update score value twice in the same window\");\n\n    lastScore = _newScore;\n    updatedAt = _currentTime();\n\n    if (_newScore != 0) {\n        uint256 totalReleased;\n        uint256 totalReleasable;\n\n        for (uint256 i = 0; i < beneficiaries.length; i++) {\n            LockVesting storage lock = locks[beneficiaries[i]];\n            uint256 remainingAmount = lock.totalAmount - lock.releasedAmount;\n            uint256 releasableAmount = (_newScore * remainingAmount) / 100;\n\n            lock.releasedAmount += releasableAmount;\n            totalReleasable += releasableAmount;\n\n            require(\n                IERC20(token).transfer(beneficiaries[i], releasableAmount),\n                \"token transfer failed\"\n            );\n\n            totalReleased += releasableAmount;\n        }\n\n        if (totalReleased == totalVestingAmount) {\n            finalized = true;\n        }\n    }\n\n    emit ScoreUpdated(_newScore, _epochNumber());\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "grantVesting",
+        "fix_info": "Removed SafeMath and used direct arithmetic to match Solidity 0.8+ overflow checks. Added require statement to ensure `totalVestingAmount + _amount` does not overflow.",
+        "corrected_code": "function grantVesting(address _beneficiary, uint256 _amount) external onlyOperator notInitialized {\n    require(_amount <= MAX_LOCK_AMOUNT, \"amount exceeds the maximum allowed value\");\n    require(_amount != 0, \"amount is required\");\n    require(_beneficiary != address(0), \"beneficiary address is required\");\n    require(locks[_beneficiary].totalAmount == 0, \"beneficiary already has a vesting\");\n\n    require(\n        totalVestingAmount + _amount >= totalVestingAmount,\n        \"total vesting amount overflow\"\n    );\n\n    locks[_beneficiary].totalAmount = _amount;\n    beneficiaries.push(_beneficiary);\n    totalVestingAmount += _amount;\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

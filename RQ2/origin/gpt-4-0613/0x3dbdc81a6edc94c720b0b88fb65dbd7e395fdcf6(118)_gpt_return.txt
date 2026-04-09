@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.send(this.balance);",
+    "description": "In Solidity, low level calls such as .call() and .send() return a boolean depending on the success of the call. In this case, the code does not check this return value, leading to a potential scenario where the calling contract assumes the call was successful when it was not. This can result in state changes in the calling contract that do not reflect what has actually occurred and may allow an attacker to cause the contract to become 'stuck' or inappropriate distribution of funds."
+}
+```

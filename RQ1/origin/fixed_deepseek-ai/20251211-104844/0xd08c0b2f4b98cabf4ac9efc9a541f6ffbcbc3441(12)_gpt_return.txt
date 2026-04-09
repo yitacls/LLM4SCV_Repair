@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Coin",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Added overflow protection by declaring with safe math library",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "minter",
+            "fix_info": "Added to track authorized minter address",
+            "variable_code": "address public minter;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyMinter",
+            "fix_info": "Added modifier to check if msg.sender is minter",
+            "modifier_code": "modifier onlyMinter() { require(msg.sender == minter, \"Only minter can call this\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library and adding proper access control",
+            "corrected_code": "function mint(address receiver, uint256 amount) public onlyMinter {\n    require(receiver != address(0), \"Invalid receiver address\");\n    balances[receiver] = balances[receiver].add(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

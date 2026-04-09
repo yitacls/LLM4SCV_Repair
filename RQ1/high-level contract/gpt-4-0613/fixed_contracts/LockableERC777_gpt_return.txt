@@ -1,0 +1,21 @@
+The SWC-107-Reentrancy vulnerability pertains to the function `_burn` in the provided contract. The existing `_burn` method in the contract directly alters the contract state before it calls other contract's methods. 
+
+The issue is that `_callTokensToSend` can call any arbitrary contract potentially creating a re-entrancy attack.
+To prevent re-entrancy in Solidity contracts, we should always remember to make interaction (i.e., calling other contracts' functions or sending ether) the very last thing in a function.
+
+Here is the corrected code:
+
+【```json
+[{
+    "contract_name": "LockableERC777",
+    "contract_version": "0.5.3",
+    "functions": [
+        {
+            "function_name": "_burn",
+            "fix_info": "Reorder lines within the function to ensure interactions are last, thereby mitigating re-entrancy threats.",
+            "corrected_code": "function _burn(\n   address operator,\n   address from,\n   uint256 amount,\n   bytes memory data,\n   bytes memory operatorData\n) private {\n    require(from != address(0), \"ERC777: burn from the zero address\");\n\n    // Update state variables\n    _totalSupply = _totalSupply.sub(amount);\n    _balances[from] = _balances[from].sub(amount);\n\n    emit Burned(\n        operator, from, amount, data, operatorData\n    );\n    emit Transfer(from, address(0), amount);\n\n    _callTokensToSend(\n        operator, from, address(0), amount, data, operatorData\n    );\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

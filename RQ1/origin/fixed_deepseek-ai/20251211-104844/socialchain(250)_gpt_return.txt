@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "1.0",
+    "state_variables": [
+        {
+            "variable_name": "decimals",
+            "fix_info": "Assuming decimals is already defined as `uint8` state variable",
+            "variable_code": "uint8 public decimals = 18;",
+            "change_type": "null"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferMulti",
+            "fix_info": "Fixed multiple vulnerabilities: 1) Replaced unsafe uint8 casts with uint256 to prevent overflow, 2) Reset amount to 0 at start to avoid unexpected accumulation, 3) Changed from unchecked addition to SafeMath or explicit overflow checks, 4) Separated validation and execution phases, 5) Added zero-address check, 6) Added zero-value check, 7) Changed parameters to memory arrays",
+            "corrected_code": "function transferMulti(address[] memory _to, uint256[] memory _value) public returns (uint256) {\n    require(_to.length == _value.length, \"Token: Arrays length mismatch\");\n    require(_to.length > 0, \"Token: Empty arrays\");\n    \n    uint256 length = _to.length;\n    uint256 amount = 0;\n    \n    // First loop: calculate total amount and validate inputs\n    for (uint256 i = 0; i < length; i++) {\n        require(_to[i] != address(0), \"Token: Invalid recipient address\");\n        require(_value[i] > 0, \"Token: Invalid transfer amount\");\n        \n        uint256 scaledValue = _value[i] * 10 ** uint256(decimals);\n        amount += scaledValue;\n        require(amount >= scaledValue, \"Token: Overflow in amount calculation\");\n    }\n    \n    // Check sender balance\n    require(balanceOf[msg.sender] >= amount, \"Token: Insufficient balance\");\n    \n    // Second loop: execute transfers\n    for (uint256 i = 0; i < length; i++) {\n        uint256 scaledValue = _value[i] * 10 ** uint256(decimals);\n        \n        // Update balances with overflow checks\n        balanceOf[_to[i]] += scaledValue;\n        require(balanceOf[_to[i]] >= scaledValue, \"Token: Overflow in recipient balance\");\n        \n        balanceOf[msg.sender] -= scaledValue;\n        \n        emit Transfer(msg.sender, _to[i], scaledValue);\n    }\n    \n    return amount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "mapping(address => bool) public hasAccess;",
+        "description": "A state variable 'hasAccess' is declared but it's not used anywhere in the contract. This is superfluous code and could potentially confuse contract users or auditors."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "ApeAllowanceModule public allowanceModule;",
+        "description": "The contract declares a state variable 'allowanceModule' of type 'ApeAllowanceModule' but it isn't used anywhere in the contract. The declaration of this state variable is unnecessary and could lead to confusion or mistakes."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function apeWithdrawSimpleToken(uint256 _amount) public",
+        "description": "The function 'apeWithdrawSimpleToken' allows anyone to withdraw any amount of 'simpleToken' from the contract. This could be easily exploitable if a malicious user decides to drain all the 'simpleToken's from the contract."
+    }
+]
+```

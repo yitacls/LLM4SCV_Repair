@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for access control in the mint() function, which is vulnerable to phishing attacks. Since 'tx.origin' returns the original sender of the entire transaction chain, a malicious contract could trick the owner into calling a function that subsequently calls HXL.mint(), thereby bypassing the intended authorization. This violates the principle of least privilege. The recommended fix is to replace 'tx.origin' with 'msg.sender' for authentication. Additionally, the 'assert(amount >= 0);' statement is redundant because 'uint256 amount' cannot be negative by definition, but it does not pose a security risk in this context."
+}
+```

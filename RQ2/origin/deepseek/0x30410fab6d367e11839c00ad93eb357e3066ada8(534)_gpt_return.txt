@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "modifier OnlyOwner() {\n    require(tx.origin == state.owner, \"Owner\");\n    _;\n}",
+    "description": "The contract uses `tx.origin` for authorization instead of `msg.sender`. This is a vulnerability because `tx.origin` returns the original external account that started the transaction chain. This can be exploited through phishing attacks where a malicious contract calls this function - the `tx.origin` would be the victim's address, not the malicious contract's address. This allows unauthorized access to owner-only functions if the victim interacts with a malicious contract. According to Solidity best practices, `msg.sender` should be used for authorization as it represents the immediate caller of the function."
+}
+```

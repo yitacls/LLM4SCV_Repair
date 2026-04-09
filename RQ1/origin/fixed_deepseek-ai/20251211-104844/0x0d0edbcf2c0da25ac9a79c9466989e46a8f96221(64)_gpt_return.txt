@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MyEthDice",
+    "contract_version": ">=0.4.22 <0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawFunds",
+            "fix_info": "Replaced vulnerable send() with transfer() and added reentrancy guard pattern. The send() function has a limited gas stipend of 2300 gas and returns a boolean that was not being checked. Using transfer() ensures the call reverts on failure, and the reentrancy guard prevents recursive calls.",
+            "corrected_code": "function withdrawFunds(address payable receiver, uint withdrawAmount) external onlyOwner {\n        require(withdrawAmount <= address(this).balance, \"amount larger than balance.\");\n        receiver.transfer(withdrawAmount);\n        updateMaxProfit();\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

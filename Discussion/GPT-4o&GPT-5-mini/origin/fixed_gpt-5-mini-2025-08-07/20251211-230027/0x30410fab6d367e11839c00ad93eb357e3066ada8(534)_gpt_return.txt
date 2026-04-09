@@ -1,0 +1,14 @@
+[{
+    "contract_name": "BetHorde",
+    "contract_version": "^0.8.7",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "OnlyOwner",
+            "fix_info": "Replaced insecure tx.origin check with msg.sender to enforce correct access control (prevents phishing via intermediate contracts). Preserves original semantics: only the owner can call owner-restricted functions.",
+            "modifier_code": "modifier OnlyOwner() {\n    require(msg.sender == state.owner, \"Owner\");\n    _;\n  }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": []
+}]

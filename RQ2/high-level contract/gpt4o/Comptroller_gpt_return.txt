@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function liquidateBorrowAllowed(...) located around lines 465-501",
+    "description": "The Comptroller contract's `liquidateBorrowAllowed` function is potentially vulnerable to a reentrancy attack, as it does not properly lock state changes before calling external contracts. Specifically, this function relies on external calls to other contracts within its execution flow (e.g., fetching the borrow balance and market data). Without reentrancy guards, a malicious contract could exploit this function to re-enter and manipulate the state before the function completes. This could lead to unintended state modifications, including bypassing collateral/borrow limits or improperly accounting balances."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "hodl.call(bytes4(keccak256(\"withdrawFor(address,uint256)\")),from,2000000000000000);",
+    "description": "The contract uses a low-level 'call' without checking the return value. In Solidity 0.4.25, low-level calls like 'call' return a boolean indicating success, but this return value is ignored. If the external call to the address 'hodl' fails (e.g., due to insufficient gas, reversion, or non-existent contract), the transaction will continue execution silently without reverting, potentially leading to unexpected state inconsistencies or loss of funds. Additionally, using 'keccak256' to compute function selectors at runtime is gas-inefficient and risky; the selector should be hardcoded as a constant. The fallback function also lacks access controls, allowing anyone to trigger this arbitrary external call."
+}
+```

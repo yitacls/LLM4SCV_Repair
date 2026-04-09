@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "LinearFinance",
+    "contract_version": ">=0.6.0 <0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Added payable modifier to properly handle Ether transfers and prevent unprotected withdrawal vulnerability",
+            "corrected_code": "function mint(address account, uint256 amount) external payable onlyAdmin {\n    require(totalSupply().add(amount) <= MAX_SUPPLY, \"LinearFinance: max supply exceeded\");\n    _mint(account, amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "burn",
+            "fix_info": "Added payable modifier to properly handle Ether transfers and prevent unprotected withdrawal vulnerability",
+            "corrected_code": "function burn(address account, uint amount) external payable onlyAdmin {\n    _burn(account, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

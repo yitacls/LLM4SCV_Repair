@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DimonCoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Fixed arithmetic operations to prevent underflow and overflow vulnerabilities. Changed balance and allowance checks to use proper comparison operators. Added SafeMath-style checks for arithmetic operations.",
+            "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(3 * 32) returns (bool success) {\n\n        if (_value == 0) { \n            Transfer(_from, _to, _value);\n            return true; \n        }\n        \n        uint256 fromBalance = balances[_from];\n        uint256 allowance = allowed[_from][msg.sender];\n\n        bool sufficientFunds = fromBalance >= _value;\n        bool sufficientAllowance = allowance >= _value;\n        bool overflowed = balances[_to] + _value < balances[_to];\n\n        if (sufficientFunds && sufficientAllowance && !overflowed) {\n            balances[_to] = balances[_to] + _value;\n            balances[_from] = balances[_from] - _value;\n            \n            allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;\n            \n            Transfer(_from, _to, _value);\n            return true;\n        } else { return false; }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

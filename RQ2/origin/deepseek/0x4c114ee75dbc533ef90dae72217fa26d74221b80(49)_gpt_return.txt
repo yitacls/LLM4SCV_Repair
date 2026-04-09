@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "This line uses tx.origin for authorization, which is vulnerable to phishing attacks. tx.origin returns the original sender of the entire transaction chain, not the immediate caller (msg.sender). A malicious contract could trick the owner into initiating a transaction where the owner is the tx.origin, allowing the malicious contract to bypass the authorization check. Additionally, if the owner's address changes, previously authorized contracts may break. The condition 'assert(amount >= 0)' is redundant since uint256 values cannot be negative, but it does not pose a security risk in this context."
+        }
+    ]
+}
+```

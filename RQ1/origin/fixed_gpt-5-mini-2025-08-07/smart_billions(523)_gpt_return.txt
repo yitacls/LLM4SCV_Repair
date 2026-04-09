@@ -1,0 +1,14 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "betOf",
+            "fix_info": "Removed use of block.blockhash for deriving randomness (BAD_RANDOMNESS). Now requires the precommitted off-chain hash mechanism (getHash/hashFirst) to resolve bets. If the oracle (hashFirst) is not initialized or the hash load fails, the function returns 0 or refunds the bet as appropriate. This prevents miner-influence over outcome while preserving original payout logic when the trusted hash is available.",
+            "corrected_code": "function betOf(address _who) constant external returns (uint) {\n    Bet memory player = bets[_who];\n\n    // Basic checks preserved\n    if ((player.value == 0) ||\n        (player.blockNum <= 1) ||\n        (block.number < player.blockNum) ||\n        (block.number >= player.blockNum + (10 * hashesSize))) {\n        return 0;\n    }\n\n    // Do NOT use block.blockhash(...) for randomness here — miners can influence it.\n    // Rely on the precommitted off-chain hash mechanism instead (getHash/hashFirst).\n    // If oracle has not been initialized, we cannot safely resolve the bet now.\n    if (hashFirst == 0) {\n        return 0;\n    }\n\n    uint32 hash = getHash(player.blockNum);\n    if (hash == 0x1000000) {\n        // load hash failed: return player's stake\n        return uint(player.value);\n    }\n\n    return betPrize(player, uint24(hash));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

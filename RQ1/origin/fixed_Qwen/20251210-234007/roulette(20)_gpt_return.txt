@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Roulette",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "pastBlockTime",
+            "fix_info": "Replaced timestamp-based restriction with block number-based restriction to prevent miner manipulation",
+            "variable_code": "uint256 public pastBlockNumber;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "",
+            "fix_info": "Fixed time manipulation vulnerability by replacing 'now' with 'block.number' and using block.number for fairness check instead of timestamp",
+            "corrected_code": "function () public payable {\n        require(msg.value == 10 ether); // must send 10 ether to play\n        require(block.number != pastBlockNumber); // only 1 transaction per block\n        pastBlockNumber = block.number;\n        if(block.number % 15 == 0) { // winner\n            msg.sender.transfer(this.balance);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

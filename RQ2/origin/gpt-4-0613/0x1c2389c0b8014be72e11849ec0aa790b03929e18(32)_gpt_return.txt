@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for access control. This makes it possible for a malicious contract to force the sender address to be the address of the contract creator. This is a security flaw as it gives any contract that is directly called by the owner the same permissions as the owner. This can allow unintended privileged actions. Therefore, it is considered safer to use msg.sender for access control as it refers to the original caller."
+}
+```

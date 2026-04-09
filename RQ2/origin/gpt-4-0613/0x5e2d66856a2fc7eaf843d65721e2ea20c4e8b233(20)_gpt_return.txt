@@ -1,0 +1,9 @@
+This is the result in JSON format:
+
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = msg.sender.send(address(this).balance);",
+    "description": "The low level call 'send' is used to send ether to the contract's owner. This call does not throw an exception when it fails, rather, it returns false. In this function, the return value of the 'send' call isn't checked which could lead to unnoticed failures. Futhermore, the 'send' function only provides 2300 gas which might not be sufficient for all operations in the recipient function."
+}
+```

@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "randomnessProvider",
+            "fix_info": "Added a variable to store randomness seeds from trusted oracle",
+            "variable_code": "address private randomnessProvider;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "randomnessSeed",
+            "fix_info": "Added a variable to store committed randomness seeds",
+            "variable_code": "bytes32 private randomnessSeed;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "hashesSize",
+            "fix_info": "This variable was already present but referenced in the original function",
+            "variable_code": "",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyRandomnessProvider",
+            "fix_info": "Added modifier to restrict access to randomness update functions",
+            "modifier_code": "modifier onlyRandomnessProvider() {\n    require(msg.sender == randomnessProvider, \"Only randomness provider can call\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced blockhash-based randomness with a secure randomness seed approach. This function now uses a committed randomness seed instead of blockhash, which is predictable and manipulable by miners.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Use randomnessSeed instead of blockhash for secure randomness\n    // The randomnessSeed should be set by a trusted oracle before this function is called\n    require(randomnessSeed != 0, \"Randomness seed not initialized\");\n    \n    // Combine the randomness seed with _delta and other parameters to generate hash\n    bytes32 combinedHash = keccak256(abi.encodePacked(randomnessSeed, _lastb, _delta));\n    \n    // Convert the first 32 bytes of the hash to uint and apply similar masking\n    uint hashValue = uint(combinedHash);\n    \n    // Apply similar bitmasking operations as the original function but using secure hash\n    return (hashValue & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setRandomnessProvider",
+            "fix_info": "Added function to set the trusted randomness provider address",
+            "corrected_code": "function setRandomnessProvider(address _provider) external {\n    require(msg.sender == owner, \"Only owner can set randomness provider\");\n    require(_provider != address(0), \"Invalid provider address\");\n    randomnessProvider = _provider;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "updateRandomnessSeed",
+            "fix_info": "Added function for randomness provider to update the seed",
+            "corrected_code": "function updateRandomnessSeed(bytes32 _seed) external onlyRandomnessProvider {\n    randomnessSeed = _seed;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,70 @@
+[{
+    "contract_name": "Pod",
+    "contract_version": ">=0.7.0 <0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "_locked",
+            "fix_info": "Add a reentrancy guard flag to prevent reentrant calls on functions performing external calls.",
+            "variable_code": "bool private _locked;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "A simple reentrancy guard modifier to protect external entry points that perform external calls/interactions.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!_locked, \"Pod:reentrant-call\");\n    _locked = true;\n    _;\n    _locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "_safeTransferFrom",
+            "fix_info": "Added a safe low-level transferFrom wrapper that checks call success and optional boolean return to handle non-standard ERC20s.",
+            "corrected_code": "function _safeTransferFrom(IERC20Upgradeable _token, address sender, address recipient, uint256 amount) internal {\n    (bool success, bytes memory data) = address(_token).call(\n        abi.encodeWithSelector(_token.transferFrom.selector, sender, recipient, amount)\n    );\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"Pod: transferFrom-failed\");\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "_safeTransfer",
+            "fix_info": "Added a safe low-level transfer wrapper that checks call success and optional boolean return to handle non-standard ERC20s.",
+            "corrected_code": "function _safeTransfer(IERC20Upgradeable _token, address recipient, uint256 amount) internal {\n    (bool success, bytes memory data) = address(_token).call(\n        abi.encodeWithSelector(_token.transfer.selector, recipient, amount)\n    );\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"Pod: transfer-failed\");\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "_safeApprove",
+            "fix_info": "Added a safe low-level approve wrapper that checks call success and optional boolean return to handle non-standard ERC20s.",
+            "corrected_code": "function _safeApprove(IERC20Upgradeable _token, address spender, uint256 amount) internal {\n    (bool success, bytes memory data) = address(_token).call(\n        abi.encodeWithSelector(_token.approve.selector, spender, amount)\n    );\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"Pod: approve-failed\");\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "depositTo",
+            "fix_info": "Reordered operations to follow checks-effects-interactions and used safe transferFrom wrapper to check return value. Added nonReentrant to prevent reentrancy.",
+            "corrected_code": "function depositTo(address to, uint256 tokenAmount) external override nonReentrant returns (uint256) {\n    require(tokenAmount > 0, \"Pod:invalid-amount\");\n\n    // Transfer tokens from sender to this contract first (checks-effects-interactions)\n    _safeTransferFrom(IERC20Upgradeable(token), msg.sender, address(this), tokenAmount);\n\n    // Allocate Shares from deposit amount (state update)\n    uint256 shares = _deposit(to, tokenAmount);\n\n    // Emit Deposited\n    emit Deposited(to, tokenAmount, shares);\n\n    return shares;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Added nonReentrant modifier to protect the withdraw flow which performs external calls during _burnShares.",
+            "corrected_code": "function withdraw(uint256 shareAmount) external override nonReentrant returns (uint256) {\n    // Check User Balance\n    require(balanceOf(msg.sender) >= shareAmount, \"Pod:insufficient-shares\");\n\n    // Burn Shares and Return Tokens\n    uint256 tokens = _burnShares(shareAmount);\n\n    // Emit Withdrawl\n    emit Withdrawl(msg.sender, tokens, shareAmount);\n\n    return tokens;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_burnShares",
+            "fix_info": "Replaced unchecked ERC20 transfer with safe transfer wrapper to ensure transfer success. Preserved original logic and order of operations.",
+            "corrected_code": "function _burnShares(uint256 shares) internal returns (uint256) {\n    // Calculate Percentage Returned from Burned Shares\n    uint256 amount = (balance().mul(shares)).div(totalSupply());\n\n    // Burn Shares\n    _burn(msg.sender, shares);\n\n    // Check balance\n    IERC20Upgradeable _token = IERC20Upgradeable(token);\n    uint256 currentBalance = _token.balanceOf(address(this));\n\n    // Withdrawl Exceeds Current Token Balance\n    if (amount > currentBalance) {\n        // Calculate Withdrawl Amount\n        uint256 _withdraw = amount.sub(currentBalance);\n\n        // Withdraw from Prize Pool\n        uint256 exitFee = _withdrawFromPool(_withdraw);\n\n        // Add Exit Fee to Withdrawl Amount\n        amount = amount.sub(exitFee);\n    }\n\n    // Transfer Deposit Token to Message Sender (use safe transfer)\n    _safeTransfer(_token, msg.sender, amount);\n\n    // Return Token Withdrawl Amount\n    return amount;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawERC20",
+            "fix_info": "Replaced unchecked ERC20 transfer with safe transfer wrapper and added nonReentrant to prevent reentrancy via token callbacks. Kept manager-only access.",
+            "corrected_code": "function withdrawERC20(IERC20Upgradeable _target, uint256 amount) external override onlyManager nonReentrant returns (bool) {\n    // Lock token/ticket/pool ERC20 transfers\n    require(\n        address(_target) != address(token) &&\n            address(_target) != address(ticket) &&\n            address(_target) != address(pool),\n        \"Pod:invalid-target-token\"\n    );\n\n    // Transfer Token using safe call\n    _safeTransfer(_target, msg.sender, amount);\n\n    emit ERC20Withdrawn(address(_target), amount);\n\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimPodPool",
+            "fix_info": "Used safe approve wrapper when approving POOL for the drop contract to ensure approval succeeded for non-standard tokens.",
+            "corrected_code": "function claimPodPool() public returns (uint256) {\n    uint256 _claimedAmount = faucet.claim(address(this));\n\n    // Approve POOL transfer safely.\n    if (_claimedAmount > 0) {\n        _safeApprove(IERC20Upgradeable(pool), address(drop), _claimedAmount);\n\n        // Add POOL to TokenDrop balance\n        drop.addAssetToken(_claimedAmount);\n    }\n\n    // Claimed Amount\n    return _claimedAmount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

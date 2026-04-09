@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "TokenSale",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No change needed to owner variable",
+            "variable_code": "address private owner;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly restrict access to owner",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced tx.origin vulnerability with msg.sender check using onlyOwner modifier",
+            "corrected_code": "function addMeByRC() public onlyOwner {\n        rc[msg.sender] = true;\n        emit NewRC(msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Function deposit() - L71-L76, Function _withdrawSome() - L79-L82, Function harvest() - L112-L116, L126-L130, L133-L137, L161-L164, L167-L170",
+    "description": "The contract does not inspect the return value after making an external function call to the approve, deposit, withdraw and safeTransfer methods in various instances. This could present a vulnerability if the execution of these functions fail, leading to undesired and unexpected behavior in the contract's execution."
+}
+```

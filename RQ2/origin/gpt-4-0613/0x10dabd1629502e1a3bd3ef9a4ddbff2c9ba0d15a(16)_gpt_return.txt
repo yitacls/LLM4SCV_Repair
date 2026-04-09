@@ -1,0 +1,9 @@
+Here's the vulnerabilities JSON in the requested format:
+
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization which is a security risk. tx.origin is generally considered dangerous as it can potentially be coerced by any contract in the call chain. In this case, an attacker contract could trick tx.origin into performing actions only meant for the owner."
+}
+```

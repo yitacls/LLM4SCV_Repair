@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The vulnerability lies in the use of tx.origin for access control. Using tx.origin for access control is not recommended as it can lead to vulnerabilities such as privilege escalation attacks. It is safer to use msg.sender for access control in Solidity smart contracts."
+}
+```

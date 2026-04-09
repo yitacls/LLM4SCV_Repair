@@ -1,0 +1,23 @@
+```json
+{
+    "contract_name": "ChrisBell",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes needed to the state variable declaration",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability by using SafeMath library. Added require statement to prevent overflow when adding to recipient's balance. Maintained original functionality.",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(balances[msg.sender] >= _value);\n    require(_to != address(0));\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}
+```

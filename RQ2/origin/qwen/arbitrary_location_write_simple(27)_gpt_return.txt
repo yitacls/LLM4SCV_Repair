@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(0 <= bonusCodes.length);",
+    "description": "The access control check is improperly implemented as the condition '0 <= bonusCodes.length' is always true since array lengths are unsigned integers and cannot be negative. This means the function does not properly validate that the caller has permission to execute this operation, potentially allowing unauthorized users to manipulate the bonusCodes array."
+}
+```

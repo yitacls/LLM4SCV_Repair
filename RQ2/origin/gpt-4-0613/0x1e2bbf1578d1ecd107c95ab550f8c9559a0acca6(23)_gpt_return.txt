@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[_to] += _value;",
+    "description": "This line of code might lead to an integer overflow or underflow. If _value is such that when added to balanceOf[_to] exceeds the maximum value an unsigned integer can store (2^256 - 1), integer overflow would occur and the balance would wrap around and become very small, leading to assets being created from nothing. Similarly, an underflow can occur if _value is greater than balanceOf[msg.sender], the subtraction operation would lead to a result that is not in the range of an unsigned integer. This could result in the balance of the sender appearing to be very large."
+}
+```

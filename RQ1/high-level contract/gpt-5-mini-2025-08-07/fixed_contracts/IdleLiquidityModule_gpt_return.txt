@@ -1,0 +1,20 @@
+[{
+    "contract_name": "IdleLiquidityModule",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "rebalance",
+            "fix_info": "Added checks to prevent underflow when subtracting constants from swapped token amounts. Ensures swapped amounts are sufficient before performing subtraction.",
+            "corrected_code": "function rebalance(uint256 tokenId, IPositionManager positionManager)\n        public\n        onlyWhitelistedKeeper\n        activeModule(address(positionManager), tokenId)\n    {\n        uint24 tickDistance = _checkDistanceFromRange(tokenId);\n        (, bytes32 rebalanceDistance) = positionManager.getModuleInfo(tokenId, address(this));\n\n        if (tickDistance > 0 && uint24(uint256(rebalanceDistance)) <= tickDistance) {\n            (, , address token0, address token1, uint24 fee, , , , , , , ) = INonfungiblePositionManager(\n                uniswapAddressHolder.nonfungiblePositionManagerAddress()\n            ).positions(tokenId);\n\n            (int24 tickLower, int24 tickUpper) = _calcTick(tokenId, fee);\n\n            (, uint256 amount0Closed, uint256 amount1Closed) = IClosePosition(address(positionManager)).closePosition(\n                tokenId,\n                false\n            );\n\n            (uint256 token0Swapped, uint256 token1Swapped) = ISwapToPositionRatio(address(positionManager))\n                .swapToPositionRatio(\n                    ISwapToPositionRatio.SwapToPositionInput(\n                        token0,\n                        token1,\n                        fee,\n                        amount0Closed,\n                        amount1Closed,\n                        tickLower,\n                        tickUpper\n                    )\n                );\n\n            // Prevent underflow when subtracting the safety margin (10)\n            require(token0Swapped >= 10 && token1Swapped >= 10, \"Insufficient swapped amounts\");\n\n            IMint(address(positionManager)).mint(\n                IMint.MintInput(token0, token1, fee, tickLower, tickUpper, token0Swapped - 10, token1Swapped - 10)\n            );\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_calcTick",
+            "fix_info": "Performed signed arithmetic in higher precision (int256) and added checks to avoid division by zero and to ensure results fit into int24 to prevent integer overflow/underflow when casting back to int24.",
+            "corrected_code": "function _calcTick(uint256 tokenId, uint24 fee) internal view returns (int24, int24) {\n        (, , , , , int24 tickLower, int24 tickUpper, , , , , ) = INonfungiblePositionManager(\n            uniswapAddressHolder.nonfungiblePositionManagerAddress()\n        ).positions(tokenId);\n\n        int256 tickDelta = int256(tickUpper) - int256(tickLower);\n\n        IUniswapV3Pool pool = IUniswapV3Pool(\n            UniswapNFTHelper._getPoolFromTokenId(\n                tokenId,\n                INonfungiblePositionManager(uniswapAddressHolder.nonfungiblePositionManagerAddress()),\n                uniswapAddressHolder.uniswapV3FactoryAddress()\n            )\n        );\n\n        (, int24 tick, , , , , ) = pool.slot0();\n\n        // Compute tick spacing in signed 256-bit to avoid overflow in intermediate steps\n        int256 tickSpacing = int256(uint256(fee)) / 50;\n        require(tickSpacing != 0, \"Invalid tick spacing\");\n\n        int256 lower = ((int256(tick) - tickDelta) / tickSpacing) * tickSpacing;\n        int256 upper = ((int256(tick) + tickDelta) / tickSpacing) * tickSpacing;\n\n        // Ensure results fit into int24 before casting back\n        require(lower >= int256(type(int24).min) && lower <= int256(type(int24).max), \"tick lower overflow\");\n        require(upper >= int256(type(int24).min) && upper <= int256(type(int24).max), \"tick upper overflow\");\n\n        return (int24(lower), int24(upper));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

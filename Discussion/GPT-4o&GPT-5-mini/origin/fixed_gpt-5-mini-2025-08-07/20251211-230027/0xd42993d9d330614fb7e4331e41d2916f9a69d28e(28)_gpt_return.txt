@@ -1,0 +1,21 @@
+[{
+    "contract_name": "PresalerVoting",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "MAX_VOTING_DURATION_HOURS",
+            "fix_info": "Added an upper bound to voting duration to prevent unbounded timestamp arithmetic and potential overflow/manipulation risks. Keeps duration reasonable (e.g. max 7 days).",
+            "variable_code": "uint constant MAX_VOTING_DURATION_HOURS = 168; // max 7 days",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "startVoting",
+            "fix_info": "Replaced ambiguous use of now with explicit block.timestamp, enforced a sensible bounds check on durationHrs to prevent overflow and reduce miner timestamp manipulation impact, and used a safe inline max for block numbers. Explicit visibility added.",
+            "corrected_code": "function startVoting(uint startBlockNr, uint durationHrs) onlyOwner public {\n    // enforce sensible bounds to limit attacker/miner influence and avoid overflow\n    require(durationHrs >= 1 && durationHrs <= MAX_VOTING_DURATION_HOURS);\n\n    // ensure start block is no earlier than current block\n    VOTING_START_BLOCKNR = startBlockNr > block.number ? startBlockNr : block.number;\n\n    // compute duration in seconds (safe due to bounds above) and set end time using block.timestamp\n    uint durationSecs = durationHrs * 1 hours;\n    VOTING_END_TIME = block.timestamp + durationSecs;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

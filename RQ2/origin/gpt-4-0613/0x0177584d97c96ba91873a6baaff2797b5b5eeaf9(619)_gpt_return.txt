@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The smart contract uses 'tx.origin' for authorization which could be vulnerable to attacks. It checks whether the original sender of the transaction (not the current execution contract's caller) is the owner. This can enable a malicious contract indirectly called by the owner to pass this check and potentially perform unauthorized actions."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call.value(amountToWithdraw)(\"\");",
+    "description": "The contract performs an external call to the user's address before updating the state variable 'userBalances[msg.sender]' to zero. This allows a malicious contract to recursively call 'withdrawBalance()' multiple times before the balance is cleared, draining funds from the contract. In Solidity ^0.4.0, this is particularly dangerous as there were no built-in reentrancy guards. The vulnerability is exacerbated by using 'call.value()' which forwards all remaining gas by default."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100)));",
+    "description": "This contract contains an arithmetic vulnerability where it multiplies the user's value input by a MULTIPLIER and divides it by 100. This could be potentially vulnerable to an overflow, which could yield unexpected results. Also, because Solidity wraps integer arithmetic by default, it also does not include a check to ensure the result is less than or equal to the maximum safe value of uint128, which san possibly lead to an overflow."
+}
+```

@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint b = block.number;",
+        "description": "使用block.number作为随机数源是不安全的，因为矿工可以预测或操纵区块号，从而影响随机数的生成。在智能合约中，这会导致可预测的结果，使攻击者能够利用这种可预测性获得不公平的优势。"
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint timestamp = block.timestamp;",
+        "description": "使用block.timestamp作为随机数源是不安全的，因为矿工可以在一定程度上操纵区块时间戳，从而影响随机数的生成。这种可预测性使得攻击者能够计算出有利的结果，破坏游戏的公平性。"
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return uint8(uint256(keccak256(block.blockhash(b), player, cardNumber, timestamp)) % 52);",
+        "description": "虽然使用了keccak256哈希函数，但由于输入的随机数源（block.number, block.timestamp）本身不安全，导致整个随机数生成机制都不可靠。攻击者可以通过预测或操纵这些区块属性来计算出可预测的卡牌结果，从而获得不公平的游戏优势。"
+    }
+]
+```

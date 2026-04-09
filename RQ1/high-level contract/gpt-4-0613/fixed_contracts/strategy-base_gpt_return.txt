@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "StrategyBase",
+        "contract_version": "^0.6.7",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_swapUniswap",
+                "fix_info": "Checked for any errors in the Uniswap swapExactTokensForTokens function call",
+                "corrected_code": "bool result = UniswapRouterV2(univ2Router2).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60)); require(result, \"Uniswap swap failed.\");",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapUniswapWithPath",
+                "fix_info": "Checked for any errors in the Uniswap swapExactTokensForTokens function call",
+                "corrected_code": "bool result = UniswapRouterV2(univ2Router2).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60)); require(result, \"Uniswap swap failed.\");",
+                "change_type": "modified"
+            },            
+            {
+                "function_name": "_swapSushiswap",
+                "fix_info": "Checked for any errors in the Sushiswap swapExactTokensForTokens function call",
+                "corrected_code": "bool result = UniswapRouterV2(sushiRouter).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60)); require(result, \"Sushiswap swap failed.\");",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapSushiswapWithPath",
+                "fix_info": "Checked for any errors in the Sushiswap swapExactTokensForTokens function call",
+                "corrected_code": "bool result = UniswapRouterV2(sushiRouter).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60)); require(result, \"Sushiswap swap failed.\");",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

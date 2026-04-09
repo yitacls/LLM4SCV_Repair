@@ -1,0 +1,50 @@
+```json
+[
+    {
+        "contract_name": "Ore",
+        "contract_version": "^0.4.21",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "No change needed for this variable declaration itself",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "safeAdd",
+                "fix_info": "Added safe arithmetic modifier to prevent overflow/underflow",
+                "modifier_code": "modifier safeAdd(uint256 a, uint256 b) {\n        uint256 c = a + b;\n        require(c >= a, \"SafeMath: addition overflow\");\n        _;\n    }",
+                "change_type": "added"
+            },
+            {
+                "modifier_name": "safeSub",
+                "fix_info": "Added safe arithmetic modifier to prevent overflow/underflow",
+                "modifier_code": "modifier safeSub(uint256 a, uint256 b) {\n        require(b <= a, \"SafeMath: subtraction overflow\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic vulnerabilities by implementing safe addition and subtraction to prevent overflows",
+                "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n        require(balanceOf[msg.sender] >= value, \"Insufficient balance\");\n        \n        // Safe subtraction to prevent underflow\n        balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], value);\n        \n        // Safe addition to prevent overflow\n        balanceOf[to] = safeAdd(balanceOf[to], value);\n        \n        emit Transfer(msg.sender, to, value);\n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "safeAdd",
+                "fix_info": "Added internal function for safe addition to prevent overflow",
+                "corrected_code": "function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a, \"SafeMath: addition overflow\");\n        return c;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "safeSub",
+                "fix_info": "Added internal function for safe subtraction to prevent underflow",
+                "corrected_code": "function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a, \"SafeMath: subtraction overflow\");\n        return a - b;\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

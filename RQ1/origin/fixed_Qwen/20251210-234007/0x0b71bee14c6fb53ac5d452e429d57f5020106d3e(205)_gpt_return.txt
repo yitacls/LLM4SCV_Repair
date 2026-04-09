@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ZeroBTCWorldCup",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "register",
+            "fix_info": "Removed tx.origin check which is vulnerable to phishing attacks and doesn't add security value. Kept the player registration check to prevent double registration.",
+            "corrected_code": "function register()\n        public\n        payable\n    {\n        address _customerAddress = msg.sender;\n        require(!playerRegistered[_customerAddress]);\n        require(BTCTKN.transferFrom(_customerAddress, address(this), entryFee));\n        registeredPlayers = SafeMath.addint256(registeredPlayers, 1);\n        playerRegistered[_customerAddress] = true;\n        playerGamesScored[_customerAddress] = 0;\n        playerList.push(_customerAddress);\n        require(playerRegistered[_customerAddress]);\n        prizePool  = prizePool.add(ninetyPercent);\n        givethPool = givethPool.add(fivePercent);\n        adminPool  = adminPool.add(fivePercent);\n        emit Registration(_customerAddress);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

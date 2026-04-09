@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Removed reliance on block.blockhash for randomness generation as it's predictable and vulnerable to manipulation. Replaced with a more secure approach using keccak256 hash of block.coinbase, block.timestamp, and _delta parameter.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Fix BAD_RANDOMNESS vulnerability by using more secure entropy sources\n        bytes32 entropy = keccak256(block.coinbase, block.timestamp, _delta);\n        return( ( uint(entropy) & 0xFFFFFFFFFFFF )\n            | ( ( uint(entropy >> 48) & 0xFFFFFFFFFFFF ) << 48 )\n            | ( ( uint(entropy >> 96) & 0xFFFFFFFFFFFF ) << 96 )\n            | ( ( uint(entropy >> 144) & 0xFFFFFFFFFFFF ) << 144 )\n            | ( ( uint(_delta) / hashesSize) << 240));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

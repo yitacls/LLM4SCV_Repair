@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "function fund(uint256 _amount) public { require(block.timestamp < endTimestamp, \"fund: too late, the farm is closed\"); erc20.safeTransferFrom(address(msg.sender), address(this), _amount); endTimestamp += _amount.div(rewardPerSecond); totalRewards = totalRewards.add(_amount); }",
+            "description": "The computed value of `endTimestamp += _amount.div(rewardPerSecond);` is susceptible to an integer overflow if a significantly large value of `_amount` is passed."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "function totalPending() external view returns (uint256) { if (block.timestamp <= startTimestamp) { return 0; } uint256 lastTimestamp = block.timestamp < endTimestamp ? block.timestamp : endTimestamp; return rewardPerSecond.mul(lastTimestamp - startTimestamp).sub(paidOut); }",
+            "description": "The subtraction `lastTimestamp - startTimestamp` does not validate if `lastTimestamp` is smaller than `startTimestamp`, leading to a potential underflow when calculating total pending rewards."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "function erc20Transfer(address _to, uint256 _amount) internal { erc20.transfer(_to, _amount); paidOut += _amount; }",
+            "description": "The addition `paidOut += _amount` can lead to an overflow, as there is no check to ensure that `paidOut` does not exceed its maximum allowable value."
+        }
+    ]
+}
+```

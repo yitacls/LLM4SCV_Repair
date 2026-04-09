@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call to 'adr' does not check the return value. In Solidity < 0.4.19, the .call() method returns a boolean indicating success (true) or failure (false), but this return value is ignored. This can lead to silent failures where ether is transferred but the called contract reverts, or a malicious contract deliberately returns false. The call should be checked and handled appropriately, for example: 'bool success = adr.call.value(msg.value)(data); require(success);'. Additionally, in versions ^0.4.19, the code is using the deprecated .call.value()() syntax and should use the newer '{value: ...}' pattern with proper return value handling."
+}
+```

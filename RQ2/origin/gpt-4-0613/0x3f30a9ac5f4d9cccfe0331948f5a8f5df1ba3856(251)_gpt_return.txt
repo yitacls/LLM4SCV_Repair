@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function sell(uint256 amount) public",
+    "description": "The sell function in the MyAdvancedToken contract is available to all public users. This means that anyone can call this function and sell tokens, even if they don't own any. This can lead to unexpected behavior and possibilities for abuse like draining the contract's funds. It's recommended to add proper access control measures to restrict who can perform certain actions in your contract."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Line 279-285 in the _buy function",
+    "description": "The contract transfers ARC tokens to the recipient before calling the external function factoryManager.batchMint. This creates a reentrancy vulnerability where the recipient contract can call back into the EternalHeroesFactory contract before the batchMint operation is completed, potentially leading to unexpected behavior or loss of funds."
+}
+```

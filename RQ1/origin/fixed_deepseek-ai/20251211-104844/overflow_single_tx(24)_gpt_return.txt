@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "IntegerOverflowSingleTransaction",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Added SafeMath library usage to prevent overflow in arithmetic operations",
+            "variable_code": "using SafeMath for uint256;\n    uint256 public count;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers were added or modified",
+            "modifier_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "overflowmultostate",
+            "fix_info": "Replaced multiplication operation with SafeMath mul() to prevent integer overflow",
+            "corrected_code": "    function overflowmultostate(uint256 input) public {\n        count = count.mul(input);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

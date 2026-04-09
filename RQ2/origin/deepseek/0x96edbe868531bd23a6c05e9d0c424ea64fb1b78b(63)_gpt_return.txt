@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { acc.balance-=_am; ... }",
+    "description": "The contract performs an external call (msg.sender.call.value(_am)()) to transfer ETH before updating the internal state (acc.balance -= _am). This violates the Checks-Effects-Interactions pattern. An attacker can create a malicious contract that calls the Collect function again in its fallback/receive function, re-entering the contract before the balance is deducted. Since the condition 'acc.balance >= _am' would still hold true in the reentrant call (as the balance hasn't been updated yet), the attacker can repeatedly drain funds from the contract."
+}
+```

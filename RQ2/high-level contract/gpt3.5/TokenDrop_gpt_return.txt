@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "L82-88",
+            "description": "This vulnerability allows anyone to withdraw Ether from the contract without any restrictions which could lead to loss of funds."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "L141-155",
+            "description": "This vulnerability allows potential reentrancy attacks where the contract state is not properly updated before external calls, enabling potential recursive calls leading to unexpected behavior."
+        }
+    ]
+}
+```

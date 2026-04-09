@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "AKC",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Fixed unchecked low-level call by adding a success check and proper error handling",
+            "corrected_code": "function transferFrom(address _from, address _to, uint256 _amount, bytes _data, string _custom_fallback)\n        public\n        returns (bool success)\n    {\n        if (isContract(controller)) {\n            if (!TokenController(controller).onTransfer(_from, _to, _amount))\n               revert();\n        }\n        require(super.transferFrom(_from, _to, _amount));\n        if (isContract(_to)) {\n            if(_to == address(this)) revert();\n            ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);\n            bool success = receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), _from, _amount, _data);\n            require(success, \"Contract call failed\");\n        }\n        emit ERC223Transfer(_from, _to, _amount, _data);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DiceLuck100",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Replaced send() with transfer() to properly handle failed transfers and prevent silent failures. The send() function can fail silently, while transfer() will throw an exception on failure, ensuring proper error handling.",
+            "corrected_code": "function withdraw() onlyOwner public{\n        msg.sender.transfer(address(this).balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

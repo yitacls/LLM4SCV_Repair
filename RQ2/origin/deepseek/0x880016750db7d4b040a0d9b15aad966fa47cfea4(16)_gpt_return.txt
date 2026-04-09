@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[msg.sender] -= value;  \n\t\t\tbalanceOf[to] += value;",
+    "description": "This contract uses Solidity version ^0.4.25 which does not have built-in overflow/underflow protection (SafeMath was introduced as a library and became default in Solidity 0.8.0). The operations 'balanceOf[msg.sender] -= value' and 'balanceOf[to] += value' are vulnerable to integer overflow/underflow attacks. An attacker could:\n1. Cause underflow by transferring more tokens than they own (making balanceOf[msg.sender] wrap around to a very large number)\n2. Cause overflow by receiving tokens that make balanceOf[to] exceed maximum uint256 value\nThis vulnerability allows malicious manipulation of token balances, potentially creating tokens out of thin air or draining accounts."
+}
+```

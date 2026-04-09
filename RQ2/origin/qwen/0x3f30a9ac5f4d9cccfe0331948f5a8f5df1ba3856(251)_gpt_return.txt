@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function sell(uint256 amount) public {",
+    "description": "The sell function lacks proper access control mechanisms. It is marked as public, allowing any external address to call it without authentication. This could enable unauthorized users to sell tokens and drain the contract's ether balance. The function should implement proper access controls such as requiring the caller to be the contract owner or an authorized user, or implement additional security checks to prevent unauthorized access."
+}
+```

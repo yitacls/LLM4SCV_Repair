@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "TokenSale",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added owner-only access control modifier",
+                "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Caller is not the owner\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "addMeByRC",
+                "fix_info": "Replaced tx.origin with msg.sender for proper ownership check and added onlyOwner modifier",
+                "corrected_code": "function addMeByRC() public onlyOwner {\n    rc[msg.sender] = true;\n    emit NewRC(msg.sender);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

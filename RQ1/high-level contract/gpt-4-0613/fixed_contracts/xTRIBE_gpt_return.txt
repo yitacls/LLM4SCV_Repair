@@ -1,0 +1,57 @@
+The SWC-105-Unprotected Ether Withdrawal vulnerability indicates that there's a function in the contract that allows for withdrawal of ether (or in the case of this contract, emitting voting balance events without the appropriate checks or restrictions). The function "emitVotingBalances" is what we need to solve. 
+This function is likely intended to be an administrative function, limited to certain addresses. 
+But as the code is now, anyone can call this function which can lead to abuse. 
+
+One approach to solving this issue is by using an "onlyOwner" or similar modifier. If an "onlyOwner" contract modifier is added to the function "emitVotingBalances", it would only allow the owner of the contract to emit voting balances.
+
+We can modify the function like so: 
+
+```solidity
+function emitVotingBalances(address[] calldata accounts) external onlyOwner {
+    uint256 size = accounts.length;
+
+    for (uint256 i = 0; i < size; ) {
+        emit DelegateVotesChanged(accounts[i], 0, getVotes(accounts[i]));
+
+        unchecked {
+            i++;
+        }
+    }
+}
+```
+We also require the "onlyOwner" modifier code:
+
+```solidity
+modifier onlyOwner() {
+    require(msg.sender == _owner);
+    _;
+}
+```
+
+As per your requirement, here is the fixed contract code in JSON format.
+
+```json
+[{
+    "contract_name": "xTRIBE",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a modifier to restrict access to only the contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == _owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "emitVotingBalances",
+            "fix_info": "Fixed Unprotected Ether Withdrawal by adding 'onlyOwner' modifier to the function.",
+            "corrected_code": "function emitVotingBalances(address[] calldata accounts) external onlyOwner {\n    uint256 size = accounts.length;\n\n    for (uint256 i = 0; i < size; ) {\n        emit DelegateVotesChanged(accounts[i], 0, getVotes(accounts[i]));\n\n        unchecked {\n            i++;\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+Note: This fix assumes that "_owner" is defined and set as the contract deployer or the designated owner. If "_owner" is not defined, you need to add an "_owner" state variable and a constructor for setting the owner during contract deployment. The assumption is based on the provided part of the code. Adjustments may be needed based on the full contract code. The proposed solution also assumes that there're no restrictions on who can be selected as a delegate or add to the voting power. Please examine these assumptions carefully.

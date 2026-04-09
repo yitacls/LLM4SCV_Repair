@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "company_funding",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed visibility from public to private/external to prevent unintended access. Made variable immutable if owner is set only once at deployment.",
+            "variable_code": "address private immutable owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace the insecure tx.origin check with msg.sender authentication",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Not contract owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Replaced tx.origin with onlyOwner modifier for secure access control. Updated selfdestruct to newer Solidity version's selfdestruct pattern.",
+            "corrected_code": "function clear() public onlyOwner {\n        address payable recipient = payable(owner);\n        selfdestruct(recipient);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize owner variable at deployment",
+            "corrected_code": "constructor(address _owner) {\n        owner = _owner;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

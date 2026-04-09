@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.call(amount);",
+    "description": "In Solidity version ^0.4.19, the low-level 'call' method does not revert on failure by default. This line uses 'owner.call(amount)' to transfer Ether to the owner without checking the return value. If the call fails (e.g., due to insufficient gas, the owner being a contract with a fallback function that reverts, or running out of gas), the transaction will not revert, and the contract will proceed as if the transfer succeeded, potentially leaving funds locked or causing inconsistent state. Additionally, the code is vulnerable to reentrancy attacks because it does not follow the checks-effects-interactions pattern. The recommended fix is to use the 'transfer' method (which automatically reverts on failure and limits gas to 2300) or to check the return value of 'call' and handle failures explicitly."
+}
+```

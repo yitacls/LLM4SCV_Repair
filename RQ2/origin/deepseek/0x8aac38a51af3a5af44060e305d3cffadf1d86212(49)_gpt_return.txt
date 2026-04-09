@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This line of code uses `tx.origin` for authorization, which is a vulnerable access control pattern. In Solidity, `tx.origin` returns the original sender of the entire transaction chain, not the immediate caller (`msg.sender`). This makes the contract susceptible to phishing attacks where a malicious contract could trick the owner into initiating a transaction, causing `tx.origin` to equal the owner's address while `msg.sender` is the malicious contract's address. This would allow the malicious contract to bypass the authorization check and mint tokens. The `assert(amount >= 0)` statement is also redundant as `uint256` values are always non-negative by definition."
+}
+```

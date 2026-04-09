@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint res = count * input;",
+    "description": "The multiplication operation 'count * input' can result in an integer overflow when the product exceeds the maximum value that can be stored in a uint256 variable. In Solidity version ^0.4.23, arithmetic operations do not automatically check for overflow conditions, which can lead to unexpected behavior and security vulnerabilities. The result of the multiplication is stored in an unchecked manner, potentially causing the result to wrap around to a much smaller value."
+}
+```

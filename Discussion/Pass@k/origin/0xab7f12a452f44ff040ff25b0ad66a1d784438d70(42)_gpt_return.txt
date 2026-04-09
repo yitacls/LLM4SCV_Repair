@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "FidgETHSpinner",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fidget",
+                "fix_info": "Fixed arithmetic vulnerability by updating the order of operations and ensuring proper calculations.",
+                "corrected_code": "function fidget(address _to) payable { require(_to != address(0)); require(block.number <= endBlock); require(msg.value >= 0.03 ether); require(juicyBonus > 0); uint rate = normalRate * juicyBonus; uint tokens = msg.value * rate; weiRaised += msg.value; juicyBonus--; spin(_to, tokens); Fidget(msg.sender, _to, msg.value, juicyBonus, rate, tokens); wallet.transfer(msg.value); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

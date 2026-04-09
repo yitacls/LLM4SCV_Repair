@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 65-69",
+        "description": "The `getLockedCount` function iterates over the delegationIds array retrieved from `getDelegationsByHolder`. If the array is too lengthy, it may exceed the block gas limit and make the function unusable. This can lead to a denial of service for users trying to retrieve their locked tokens."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 238-245",
+        "description": "The `getPurchasedAmount` function also iterates over `_endingDelegations[holder]` using a for loop. If `_endingDelegations[holder]` becomes too large, the function could exceed the block gas limit, causing a denial of service for the holder."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "Lines 259-265",
+        "description": "In the `endingDelegatedToUnlocked` function, there is logic that handles state changes and adjustments to balances without sufficient access control checks. This could allow unauthorized modifications to the `_totalDelegated`, `_purchased`, and other mappings, potentially leading to loss of Ether or token mismanagement."
+    }
+]
+```

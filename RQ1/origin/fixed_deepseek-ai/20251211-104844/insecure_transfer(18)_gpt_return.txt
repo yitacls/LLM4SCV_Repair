@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowAdd",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No modification needed to the mapping itself, but overflow protection is handled in functions",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added overflow protection for balance addition using SafeMath library functions",
+            "corrected_code": "function transfer(address _to, uint256 _value) public {\n    /* Check if sender has balance */\n    require(balanceOf[msg.sender] >= _value);\n    \n    // Safe subtraction is not strictly needed for this operation since we checked the balance,\n    // but using SafeMath for consistency\n    balanceOf[msg.sender] = balanceOf[msg.sender] - _value;\n    \n    // Prevent overflow when adding to recipient's balance\n    require(balanceOf[_to] + _value >= balanceOf[_to]);\n    balanceOf[_to] += _value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "IntegerOverflowMultiTxMultiFuncFeasible",
+        "contract_version": "^0.4.23",
+        "state_variables": [
+            {
+                "variable_name": "count",
+                "fix_info": "Type changed to uint256 (no overflow in subtraction with SafeMath)",
+                "variable_code": "uint256 public count;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "run",
+                "fix_info": "Applied SafeMath for subtraction to prevent underflow vulnerability",
+                "corrected_code": "function run(uint256 input) public {\n    if (initialized == 0) {\n        return;\n    }\n    require(input <= count, \"Subtraction would result in underflow\");\n    count -= input;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

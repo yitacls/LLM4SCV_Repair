@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Arithmetic Integer Overflow/Underflow",
+    "location": "totalSupply += amount;",
+    "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflows or underflows. The `mine` function allows the owner to arbitrarily increase `totalSupply` by any `amount`. If `totalSupply` is already close to its maximum value (2^256 - 1), adding `amount` could cause it to overflow, wrapping around to a very small number and breaking the token's supply invariant. Similarly, `balanceOf[target] += amount;` could overflow the target's balance. This vulnerability could be exploited to mint enormous, incorrect token amounts or corrupt supply tracking. Recommended fixes: 1) Use OpenZeppelin's SafeMath library for arithmetic operations, or 2) Upgrade to Solidity 0.8.0 or higher which has built-in overflow checks."
+}
+```】

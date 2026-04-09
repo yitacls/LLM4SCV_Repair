@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-131-Presence of unused variables",
+            "location": "L17",
+            "description": "The private constants ONE_WAD_U and ONE_WAD_S are declared but not used within the contract. This can lead to unnecessary gas costs and could confuse developers reading the code."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "L500-502",
+            "description": "The function mintShareTokenTo(address guy, uint256 amount) at line 500-502 of the code does not check the return value of the shareToken.mint() function. This can result in vulnerabilities if the mint operation fails and the contract is not handling the error."
+        }
+    ]
+}
+```  

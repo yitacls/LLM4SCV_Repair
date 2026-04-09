@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "L46-L49",
+        "description": "The `commit` function allows the commitment to be created but does not prevent reordering or reusing a commitment from an earlier block. This means a malicious actor can monitor the blockchain for commitments and front-run a subsequent function call based on the same name and secret, exploiting the time gap between making and using commitments."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "L56-L65",
+        "description": "The `register` function attempts to transfer excess Ether back to the sender (`msg.sender.transfer(msg.value - cost);`) without checking the return value from the `transfer` method. If the call fails (e.g., due to a gas stipend issue or malicious fallback function in msg.sender), the funds may be lost or the execution may behave unexpectedly."
+    }
+]
+```

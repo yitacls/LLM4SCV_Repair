@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "ProgressiveToken",
+    "contract_version": "0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Added safe math protection and visibility specifier",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyPositiveAmount",
+            "fix_info": "Added modifier to check for positive amounts and prevent overflow",
+            "modifier_code": "modifier onlyPositiveAmount(uint256 amount) {\n        require(amount > 0, \"Amount must be positive\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow and reentrancy vulnerabilities, added proper safe math checks, fixed logical issues with balances",
+            "corrected_code": "function sell(uint256 amount) public onlyPositiveAmount(amount) returns (uint256 revenue) {\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance to sell\");\n        \n        uint256 reward = getReward(now);\n        \n        // Safe math addition to prevent overflow\n        uint256 potentialSupply = currentSupply + reward;\n        require(potentialSupply >= currentSupply, \"Addition overflow\");\n        require(potentialSupply <= totalSupply, \"Exceeds total supply\");\n        \n        // Check for overflow when adding to contract balance\n        uint256 newContractBalance = balanceOf[this] + amount;\n        require(newContractBalance >= balanceOf[this], \"Contract balance overflow\");\n        \n        // Safe math multiplication for revenue calculation\n        revenue = amount * sellPrice;\n        require(revenue / amount == sellPrice, \"Revenue calculation overflow\");\n        \n        // Check contract has enough Ether to pay revenue\n        require(address(this).balance >= revenue, \"Contract insufficient Ether balance\");\n        \n        // State changes before external call to prevent reentrancy\n        balanceOf[this] = newContractBalance;\n        balanceOf[msg.sender] -= amount;\n        \n        // Safe math for miner reward\n        uint256 newMinerBalance = balanceOf[block.coinbase] + reward;\n        require(newMinerBalance >= balanceOf[block.coinbase], \"Miner reward overflow\");\n        balanceOf[block.coinbase] = newMinerBalance;\n        \n        updateCurrentSupply();\n        \n        // External call at the end, with transfer pattern\n        msg.sender.transfer(revenue);\n        \n        emit Transfer(msg.sender, this, amount);\n        return revenue;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

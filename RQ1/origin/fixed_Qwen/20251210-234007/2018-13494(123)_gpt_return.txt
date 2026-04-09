@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SusanTokenERC20",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added overflow protection using SafeMath library or manual overflow checks to prevent arithmetic overflow vulnerabilities",
+            "corrected_code": "function mintToken(address target, uint256 initialSupply) public{\n        require(balanceOf[target] <= balanceOf[target] + initialSupply, \"Overflow in balance calculation\");\n        require(totalSupply <= totalSupply + initialSupply, \"Overflow in total supply calculation\");\n        balanceOf[target] += initialSupply;\n        totalSupply += initialSupply;\n        Transfer(0, msg.sender, initialSupply);\n        Transfer(msg.sender, target, initialSupply);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

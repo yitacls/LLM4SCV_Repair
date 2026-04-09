@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "commitHash",
+            "fix_info": "Added commit-reveal scheme variable to store hashed seed values for secure randomness",
+            "variable_code": "bytes32 public commitHash;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "revealDeadline",
+            "fix_info": "Added deadline for randomness reveal to prevent manipulation",
+            "variable_code": "uint256 public revealDeadline;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "chooseWinner",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by implementing commit-reveal scheme with external entropy source instead of predictable blockchain variables",
+            "corrected_code": "function chooseWinner(bytes32 seed) private {\n        // Validate that we're past the reveal deadline\n        require(block.number > revealDeadline, \"Reveal deadline not passed\");\n        \n        // Validate the seed against the commit hash\n        require(keccak256(seed) == commitHash, \"Invalid seed provided\");\n\n        bytes32 randHash = keccak256(seed, block.blockhash(block.number - 1));\n\n        uint winningNumber = uint(randHash) % totalTickets;\n        address winningAddress = contestants[winningNumber].addr;\n        RaffleResult(raffleId, winningNumber, winningAddress, address(0), address(0), 0, randHash);\n\n        // Start next raffle\n        raffleId++;\n        nextTicket = 0;\n        blockNumber = block.number;\n        \n        // Reset commit hash for next raffle\n        commitHash = 0;\n        revealDeadline = 0;\n\n        // Distribute prize and fee\n        winningAddress.transfer(prize);\n        feeAddress.transfer(fee);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "startRaffle",
+            "fix_info": "Added commit-reveal initialization for secure randomness",
+            "corrected_code": "function startRaffle(bytes32 _commitHash) private {\n        commitHash = _commitHash;\n        revealDeadline = block.number + 25; // Allow reveal after 25 blocks\n        // ... existing startRaffle logic\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

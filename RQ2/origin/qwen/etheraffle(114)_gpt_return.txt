@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;",
+        "description": "The use of block.coinbase as a source of randomness is vulnerable to manipulation by miners. Miners can influence the coinbase address and potentially predict or manipulate the outcome of the random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "address seed2 = contestants[uint(msg.sender) % totalTickets].addr;",
+        "description": "Using msg.sender in random number generation is predictable and can be manipulated by attackers. Since the sender can control their transaction timing and potentially influence when their transaction gets included, this creates a vulnerability in the randomness."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint seed3 = block.difficulty;",
+        "description": "block.difficulty is not a secure source of randomness. While it may seem unpredictable, it can be influenced by miners and is publicly known, making it unsuitable for generating secure random numbers in smart contracts."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "blockNumber = block.number;",
+        "description": "Storing block.number for potential future use in randomness generation is problematic as it's a publicly known value that can be predicted and exploited by attackers to manipulate the outcome of the random selection process."
+    }
+]
+```

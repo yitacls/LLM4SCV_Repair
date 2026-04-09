@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "EpochVotingPowerStrategy",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "handleProposalCancellation",
+            "fix_info": "Optimized looping mechanism to avoid insufficient gas griefing vulnerability by limiting the number of iterations. Added a check for overflow and edge cases when manipulating the list of proposals.",
+            "corrected_code": "function handleProposalCancellation(uint256 proposalId) external override onlyGovernance {\n    IKyberGovernance.ProposalWithoutVote memory proposal = governance.getProposalById(proposalId);\n    uint256 epoch = getEpochNumber(proposal.startTime);\n\n    uint256[] storage proposalIds = epochProposals[epoch];\n    bool proposalFound = false;\n\n    for (uint256 i = 0; i < proposalIds.length; i++) {\n        if (proposalIds[i] == proposalId) {\n            proposalFound = true;\n            // Swap and pop to avoid shifting all elements, mitigating gas griefing\n            proposalIds[i] = proposalIds[proposalIds.length - 1];\n            proposalIds.pop();\n            break;\n        }\n    }\n\n    require(proposalFound, \"Proposal not found\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "handleWithdrawal",
+            "fix_info": "Added safeguards to ensure no excessive gas execution prevents the function from running. Limited the length of the `epochProposals[currentEpoch]` to iterate over only a subset and process affected proposals in manageable chunks.",
+            "corrected_code": "function handleWithdrawal(address user, uint256 /*reduceAmount*/) external override onlyStaking {\n    uint256 currentEpoch = getCurrentEpochNumber();\n    (uint256 stake, uint256 dStake, address representative) = staking.getStakerData(user, currentEpoch);\n    uint256 votingPower = representative == user ? stake.add(dStake) : dStake;\n\n    uint256[] memory proposalsToNotify = epochProposals[currentEpoch];\n    require(proposalsToNotify.length <= MAX_PROPOSAL_PER_EPOCH, \"Too many proposals to process\");\n\n    // Notify governance only for manageable chunks\n    governance.handleVotingPowerChanged(user, votingPower, proposalsToNotify);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

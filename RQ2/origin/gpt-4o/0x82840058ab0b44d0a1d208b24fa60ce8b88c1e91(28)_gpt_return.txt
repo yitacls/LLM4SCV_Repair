@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner, 'onlyOwner: insufficient privilege');",
+    "description": "The use of 'tx.origin' to check ownership is insecure and introduces a vulnerability to phishing attacks. It is possible for an attacker to trick an owner into executing an operation using a malicious contract, thus bypassing access control mechanisms. The proper way to perform access control checks is to use 'msg.sender' instead of 'tx.origin'."
+}
+```

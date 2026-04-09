@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "TRAC_drop",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "pay_user__",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "using SafeMath for uint256;\nuint256 public pay_user__;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "raised",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "using SafeMath for uint256;\nuint256 public raised;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Refund_user",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations for addition",
+            "corrected_code": "function Refund_user() payable {\n    require(refund_balance[1]==0 || fair);\n    address current__user_ = msg.sender;\n    if(fair || current__user_ == msg.sender) {\n        pay_user__ = pay_user__.add(msg.value);  // fixed line\n        raised = raised.add(msg.value);  \n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

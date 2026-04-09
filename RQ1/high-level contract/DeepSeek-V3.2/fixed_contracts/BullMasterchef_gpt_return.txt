@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "MasterChef",
+        "contract_version": "0.8.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_massUpdatePools",
+                "fix_info": "Fixed SWC-128 DoS With Block Gas Limit by limiting the number of pools updated in a single transaction and allowing batch processing.",
+                "corrected_code": "    /// @dev Update reward variables for all pools in batches to avoid gas limit issues.\n    function massUpdatePools(uint256 startIndex, uint256 endIndex) external {\n        require(startIndex < endIndex, \"massUpdatePools: invalid range\");\n        require(endIndex <= poolInfo.length, \"massUpdatePools: endIndex out of bounds\");\n        \n        uint256 gasLeft = gasleft();\n        uint256 gasThreshold = 500000; // Adjust based on network conditions\n        \n        for (uint256 pid = startIndex; pid < endIndex; ++pid) {\n            _updatePool(pid);\n            \n            // Check gas remaining to prevent hitting block gas limit\n            if (gasleft() < gasThreshold) {\n                break;\n            }\n        }\n    }\n    \n    /// @dev Internal function to update all pools (only used in specific controlled cases)\n    function _massUpdatePools() private {\n        uint256 length = poolInfo.length;\n        // For safety, we limit gas usage in private function too\n        uint256 gasLeft = gasleft();\n        uint256 gasThreshold = 500000;\n        \n        for (uint256 pid = 0; pid < length; ++pid) {\n            _updatePool(pid);\n            \n            if (gasleft() < gasThreshold) {\n                break;\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "add",
+                "fix_info": "Modified to not call _massUpdatePools when adding new pools to avoid gas limit issues with many existing pools.",
+                "corrected_code": "    /// @dev Add a new lp to the pool. If _withRewards is true also add the same pool to rewardDistribution contract. Can only be called by the owner.\n    function add(uint32 _allocPoint, IBEP20 _lpToken, uint16 _depositFeeBP, uint32 _harvestInterval, bool _withRewards) public onlyOwner nonDuplicated(_lpToken) {\n        require(_depositFeeBP <= 1500, \"add: deposit fee can't be more than 15%\");\n        require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"add: invalid harvest interval\");\n        \n        // Only update the specific pool being added, not all pools\n        // We'll update reward distribution separately if needed\n        totalAllocPoint = totalAllocPoint.add(_allocPoint);\n        poolExistence[_lpToken] = true;\n        uint256 lastRewardBlock = block.number > startBlock ? block.number : startBlock;\n        \n        poolInfo.push(PoolInfo({\n            lpToken: _lpToken,\n            allocPoint: _allocPoint,\n            lastRewardBlock: lastRewardBlock,\n            accBullPerShare: 0,\n            depositFeeBP: _depositFeeBP,\n            harvestInterval: _harvestInterval,\n            totalStrength: 0\n        }));\n        \n        if(_withRewards) {\n            uint16 pid = uint16(poolInfo.length - 1);\n            rewardDistribution.add(_lpToken, pid);\n        }\n        \n        // Update just the new pool to ensure proper initialization\n        if (poolInfo.length > 0) {\n            _updatePool(poolInfo.length - 1);\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "set",
+                "fix_info": "Modified to not call _massUpdatePools when setting pool parameters to avoid gas limit issues.",
+                "corrected_code": "    /// @dev Update the given pool's BULL allocation point and deposit fee. Can only be called by the owner.\n    function set(uint256 _pid, uint32 _allocPoint, uint16 _depositFeeBP, uint32 _harvestInterval) public onlyOwner {\n        require(_depositFeeBP <= 10000, \"set: invalid deposit fee basis points\");\n        require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"set: invalid harvest interval\");\n        require(_pid < poolInfo.length, \"set: pool doesn't exist\");\n        \n        // Update the specific pool only\n        _updatePool(_pid);\n        \n        // Adjust total allocation points\n        totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);\n        \n        // Update pool parameters\n        poolInfo[_pid].allocPoint = _allocPoint;\n        poolInfo[_pid].depositFeeBP = _depositFeeBP;\n        poolInfo[_pid].harvestInterval = _harvestInterval;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "updateEmissionRate",
+                "fix_info": "Modified to not call _massUpdatePools when updating emission rate to avoid gas limit issues.",
+                "corrected_code": "    /// @dev Update the emission of bull per block.\n    function updateEmissionRate(uint128 _bullPerBlock) public onlyOwner {\n        // Instead of updating all pools, we can update them gradually or when needed\n        // For now, we just update the rate - pools will update on next interaction\n        bullPerBlock = _bullPerBlock;\n        \n        // Optionally, owner can call massUpdatePools with specific ranges later\n        emit EmissionRateUpdated(msg.sender, bullPerBlock, _bullPerBlock);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

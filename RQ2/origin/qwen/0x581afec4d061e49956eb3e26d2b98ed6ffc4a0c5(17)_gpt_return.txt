@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.24, send() returns false on failure but the contract does not handle this case. This can lead to silent failures where the transfer fails but the contract continues execution, potentially allowing attackers to exploit the vulnerability by causing the send to fail while still having their investment recorded."
+}
+```

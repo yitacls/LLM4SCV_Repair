@@ -1,0 +1,23 @@
+Here are the detected vulnerabilities in the provided Solidity smart contract:
+
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function fund(uint256 _amount) (line 129 to 134)",
+        "description": "This function manipulates the number of endTimestamp to determine the farming end time. An integer overflow can occur if a large value of _amount or rewardPerSecond is provided, which may lead to incorrect computation of endTimestamp and totalRewards."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function totalPending() (line 207 to 214)",
+        "description": "This function computes the total pending rewards. An integer overflow can occur if the subtraction results in a negative value or multiplication results in a large value, leading to an incorrect calculation of the total pending amount."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function erc20Transfer(address _to, uint256 _amount) (line 472 to 475)",
+        "description": "This function adds the transfer amount to the paidOut variable. An integer overflow can occur if the _amount is large enough to make paidOut go past the maximum uint256 value, which may lead to incorrect tracking of total paid out amount."
+    }
+]
+```
+
+Note: The line numbers are assuming that the first line of the contract starts with the SPDX-License-Identifier declaration.

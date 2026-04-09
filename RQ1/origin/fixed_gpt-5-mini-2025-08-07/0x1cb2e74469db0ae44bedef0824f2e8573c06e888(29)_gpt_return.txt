@@ -1,0 +1,30 @@
+[
+    {
+        "contract_name": "Owned",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Use a properly declared owner state variable (unchanged semantics). Access control will be enforced using msg.sender instead of tx.origin to prevent phishing via intermediary contracts.",
+                "variable_code": "address public owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to centralize and enforce ownership checks using msg.sender (secure against tx.origin attacks).",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transferOwnership",
+                "fix_info": "Replaced insecure tx.origin check with onlyOwner modifier (uses msg.sender). Added non-zero address check to prevent burning ownership.",
+                "corrected_code": "function transferOwnership(address _newOwner) public onlyOwner {\n        require(_newOwner != address(0));\n        owner = _newOwner;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

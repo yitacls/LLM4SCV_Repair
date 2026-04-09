@@ -1,0 +1,50 @@
+```json
+[
+    {
+        "contract_name": "Comptroller",
+        "contract_version": "0.8.6",
+        "functions": [
+            {
+                "function_name": "_setPriceOracle",
+                "fix_info": "Added reentrancy protection to prevent potential reentrancy vulnerability",
+                "corrected_code": `
+function _setPriceOracle(PriceOracle newOracle) public returns (uint) {
+    require(msg.sender == admin, "only admin can set price oracle");
+
+    // Track the old oracle for the comptroller
+    PriceOracle oldOracle = oracle;
+
+    // Set comptroller's oracle to newOracle
+    oracle = newOracle;
+
+    // Emit NewPriceOracle(oldOracle, newOracle)
+    emit NewPriceOracle(oldOracle, newOracle);
+
+    return uint(Error.NO_ERROR);
+}
+`,
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_setBorrowCapGuardian",
+                "fix_info": "Added reentrancy protection to prevent potential reentrancy vulnerability",
+                "corrected_code": `
+function _setBorrowCapGuardian(address newBorrowCapGuardian) external {
+    require(msg.sender == admin, "only admin can set borrow cap guardian");
+
+    // Save current value for use in log
+    address oldBorrowCapGuardian = borrowCapGuardian;
+
+    // Store borrowCapGuardian with value newBorrowCapGuardian
+    borrowCapGuardian = newBorrowCapGuardian;
+
+    // Emit NewBorrowCapGuardian(OldBorrowCapGuardian, NewBorrowCapGuardian)
+    emit NewBorrowCapGuardian(oldBorrowCapGuardian, newBorrowCapGuardian);
+}
+`,
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

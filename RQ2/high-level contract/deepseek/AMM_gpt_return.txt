@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Lines 500-502: shareToken.mint(guy, amount); and shareToken.burn(guy, amount);",
+            "description": "The functions mintShareTokenTo() and burnShareTokenFrom() call external contract functions shareToken.mint() and shareToken.burn() without checking the return values. If these external calls fail (e.g., due to out-of-gas conditions, permission issues, or contract logic failures), the contract will continue execution without knowing the operations failed, potentially leading to inconsistent state between the AMM contract and the ShareToken contract."
+        },
+        {
+            "type": "SWC-131-Presence of unused variables",
+            "location": "Line 17: uint256 private constant ONE_WAD_U = 10**18;",
+            "description": "The constant ONE_WAD_U is declared but never used anywhere in the contract. This increases contract size without providing any functionality, potentially leading to higher deployment and execution costs. While not a security vulnerability, it indicates inefficient code."
+        }
+    ]
+}
+```

@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic Overflow/Underflow",
+        "location": "lockTime[msg.sender] += _secondsToIncrease;",
+        "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. The addition operation could overflow if lockTime[msg.sender] + _secondsToIncrease exceeds the maximum value of uint256 (2^256 - 1). This could cause the lock time to wrap around to a small value, potentially allowing users to bypass intended time locks and withdraw funds prematurely. This vulnerability exists in Solidity ^0.4.0 without using SafeMath library or built-in checks."
+    }
+}
+```

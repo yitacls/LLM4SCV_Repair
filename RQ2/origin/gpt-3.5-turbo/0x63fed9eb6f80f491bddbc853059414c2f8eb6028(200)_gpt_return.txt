@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "tx.origin == _customerAddress",
+    "description": "The use of tx.origin for access control is a vulnerability as it exposes the contract to potential attacks. tx.origin represents the original sender of the transaction, which can be different from the direct caller of the function. It is recommended to use msg.sender for access control to ensure the security of the contract."
+}
+```

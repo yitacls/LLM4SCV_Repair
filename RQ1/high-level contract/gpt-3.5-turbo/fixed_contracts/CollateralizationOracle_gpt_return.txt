@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "CollateralizationOracle",
+        "contract_version": "^0.8.4",
+        "functions": [
+            {
+                "function_name": "pcvStats",
+                "fix_info": "Fixed potential integer overflow in calculating protocolControlledValue and userCirculatingFei.",
+                "corrected_code": "function pcvStats() public override view returns (uint256 protocolControlledValue, uint256 userCirculatingFei, int256 protocolEquity, bool validityStatus) {\n        uint256 _protocolControlledFei = 0;\n        validityStatus = !paused();\n\n        for (uint256 i = 0; i < tokensInPcv.length(); i++) {\n            address _token = tokensInPcv.at(i);\n            uint256 _totalTokenBalance  = 0;\n\n            for (uint256 j = 0; j < tokenToDeposits[_token].length(); j++) {\n                address _deposit = tokenToDeposits[_token].at(j);\n\n                if (!excludedDeposits[_deposit]) {\n                    (uint256 _depositBalance, uint256 _depositFei) = IPCVDepositBalances(_deposit).resistantBalanceAndFei();\n                    _totalTokenBalance += _depositBalance;\n                    _protocolControlledFei += _depositFei;\n                }\n            }\n\n            if (_totalTokenBalance != 0) {\n                (Decimal.D256 memory _oraclePrice, bool _oracleValid) = IOracle(tokenToOracle[_token]).read();\n                if (!_oracleValid) {\n                    validityStatus = false;\n                }\n                protocolControlledValue = protocolControlledValue + _oraclePrice.mul(_totalTokenBalance).asUint256();\n            }\n        }\n        userCirculatingFei = fei().totalSupply() - _protocolControlledFei;\n        protocolEquity = int256(protocolControlledValue) - int256(userCirculatingFei);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

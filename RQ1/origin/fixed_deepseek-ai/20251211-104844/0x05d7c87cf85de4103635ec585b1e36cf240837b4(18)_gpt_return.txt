@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "MMMultiplierX",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "fallback",
+        "fix_info": "Fixed arithmetic overflow vulnerability in uint128 casting and multiplication operation using SafeMath pattern. Added overflow check before multiplication.",
+        "corrected_code": "function () public payable {\n        if(msg.value > 0){\n            require(gasleft() >= 220000, \"We require more gas!\");\n            require(msg.value <= maxDep);\n            \n            totalIn += msg.value;\n            \n            // Safe multiplication to prevent overflow\n            uint256 multipliedValue = msg.value;\n            multipliedValue = multipliedValue * MULTIPLIER;\n            require(multipliedValue / MULTIPLIER == msg.value, \"Multiplication overflow\");\n            \n            // Safe division and casting\n            uint128 reward = uint128(multipliedValue / 100);\n            require(uint256(reward) == multipliedValue / 100, \"Casting overflow\");\n            \n            uint128 depositValue = uint128(msg.value);\n            require(uint256(depositValue) == msg.value, \"Casting overflow\");\n            \n            queue.push(Deposit(msg.sender, depositValue, reward));\n            pay();\n        }\n    }",
+        "change_type": "modified"
+    }]
+}]
+```

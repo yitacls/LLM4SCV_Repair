@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MalaysianCoin",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferAny",
+            "fix_info": "Fixed arithmetic overflow vulnerability by moving balance deduction outside the loop and adding overflow checks",
+            "corrected_code": "function transferAny(address[] addresses, uint256 _value)\n{\n    require(_value <= balances[msg.sender]);\n    require(_value * addresses.length <= balances[msg.sender]);\n    \n    balances[msg.sender] -= _value * addresses.length;\n    \n    for (uint i = 0; i < addresses.length; i++) {\n        balances[addresses[i]] += _value;\n        Transfer(msg.sender, addresses[i], _value);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

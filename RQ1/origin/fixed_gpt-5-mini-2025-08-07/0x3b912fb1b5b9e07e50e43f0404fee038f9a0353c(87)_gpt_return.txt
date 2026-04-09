@@ -1,0 +1,28 @@
+[{
+    "contract_name": "CountryCoin",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed owner type to address payable to allow .transfer and ensure explicit payable recipient. Keep visibility public for external inspection.",
+            "variable_code": "address payable public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added an onlyOwner modifier that uses msg.sender for access control instead of tx.origin to prevent phishing via intermediary contracts.",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier (msg.sender) and used address(this).balance for clarity. Kept original functionality of sending contract balance to owner.",
+            "corrected_code": "function withdraw() public onlyOwner {\n        owner.transfer(address(this).balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

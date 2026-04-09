@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if (!owner.send(this.balance)) { throw; }",
+    "description": "The withdraw() function uses the deprecated and unsafe .send() method along with checking all remaining gas (via the default behavior of .send()). In Solidity ^0.4.25, .send() forwards 2300 gas, which is insufficient for reentrancy in most cases, but this pattern is still considered dangerous and outdated. More critically, the contract does not follow the checks-effects-interactions pattern; it changes state (this.balance reduction) only after the external call. If owner is a malicious contract, it could potentially reenter (though limited by 2300 gas in .send()) or cause the transaction to always revert if it does not implement a payable fallback function, making the contract unusable. Best practice is to use transfer() in 0.4.x, or better, use a withdrawal pattern where the owner pulls funds."
+}
+```

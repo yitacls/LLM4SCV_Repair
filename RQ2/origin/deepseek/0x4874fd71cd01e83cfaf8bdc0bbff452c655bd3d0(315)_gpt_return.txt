@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. An attacker can create a malicious contract that calls TokenSale.addMeByRC(). When the owner interacts with the attacker's contract, tx.origin will be the owner's address, passing the check and allowing the attacker (msg.sender) to be added to the RC list. Additionally, the function lacks a visibility specifier (defaults to public) but this isn't the primary issue. The use of Solidity 0.4.25 also means the contract lacks modern security features."
+}
+```

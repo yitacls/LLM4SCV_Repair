@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "CoinByInsomnia",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "No state variables were added or modified",
+            "variable_code": "",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers were added or modified",
+            "modifier_code": "",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability by using SafeMath library and checking for overflow in recipient balance addition",
+            "corrected_code": "    function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(balanceOf[msg.sender] >= _value);\n        require(_to != address(0));\n        \n        // Check for overflow in recipient's balance\n        require(balanceOf[_to] + _value >= balanceOf[_to]);\n        \n        balanceOf[msg.sender] = balanceOf[msg.sender] - _value;\n        balanceOf[_to] = balanceOf[_to] + _value;\n        \n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "The vulnerability is in the `withdraw` function, specifically in the external call at line 6: `if(msg.sender.call.value(_amount)()) { _amount; }`.",
+    "description": "This function uses a low-level `call.value()` to send ether to `msg.sender`. This method forwards all remaining gas by default, which allows a malicious contract receiving the ether to re-enter the `withdraw` function before the balance is updated (i.e., before `balances[msg.sender] -= _amount` is executed). Since the balance check (`if(balances[msg.sender] >= _amount)`) passes again during the re-entry, the attacker can repeatedly drain funds from the contract. The correct pattern is to apply the checks-effects-interactions principle: update the state (balance) before making any external calls."
+}
+```

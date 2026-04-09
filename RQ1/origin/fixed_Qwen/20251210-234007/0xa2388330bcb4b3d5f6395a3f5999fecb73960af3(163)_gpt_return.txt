@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BTRCTOKEN",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added check for return value of low-level call to prevent unchecked low-level call vulnerability",
+            "corrected_code": "function () public workingFlag payable {\n    bool ret = false;\n    if (generationState) {\n       ret = cur_coin.call(bytes4(keccak256(\"pay(address,uint256,uint256)\")), msg.sender, msg.value, price);\n       require(ret, \"Low-level call failed\");\n    }\n    PaymentGot(ret);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

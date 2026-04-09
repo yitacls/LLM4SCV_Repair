@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function transferTokenProportionToOrigin(IERC20 token, uint256 mul, uint256 div) external",
+            "description": "This function lacks access control and can be called by any external account. It allows arbitrary withdrawal of token balances from the contract based on parameters mul and div provided by the caller. Combined with tx.origin usage, this enables any user to transfer any proportion of the contract's token balance to themselves (the transaction originator) without authorization checks."
+        },
+        {
+            "type": "access_control",
+            "location": "require(token.transfer(tx.origin, amount));",
+            "description": "The use of tx.origin for authorization is insecure as it references the original transaction sender rather than the immediate caller (msg.sender). This can be exploited through phishing attacks where a malicious contract calls this function, making tx.origin the victim's address, potentially leading to unauthorized transfers. Additionally, there are no ownership or role-based checks to restrict who can invoke this function."
+        }
+    ]
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "GPowerToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "isIco",
+            "fix_info": "Fixed potential arithmetic overflow by using SafeMath operations or rearranging the comparison to prevent overflow when calculating 35*24*60*60",
+            "corrected_code": "function isIco() constant public returns (bool ico) {\n    bool result = (icoStart + 3024000 >= now);  // 35*24*60*60 = 3024000, pre-calculated to avoid overflow\n    if(enableIco){\n        return true;\n    }\n    else{\n        return result;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

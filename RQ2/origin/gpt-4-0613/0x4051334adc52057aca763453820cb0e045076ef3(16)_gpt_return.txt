@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],v);",
+    "description": "This function uses low-level call method to send ether. It's an unchecked call which lacks proper error handling, and potentially poses re-entrancy-attack. This vulnerability occurs as Ethereum does not mandate a contract call return/error check, and the contract's state would change even if the call fails."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balances[_from] -= _value;",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. When subtracting _value from balances[_from], if _value is greater than balances[_from], an underflow will occur, resulting in an extremely large balance value for the sender. This vulnerability can be exploited to create arbitrary token balances. The same issue exists in the line 'allowed[_from][msg.sender] -= _value;'. The code checks 'balances[_from] >= _value' before the subtraction, which prevents the underflow in normal execution, but this pattern is still vulnerable to reentrancy attacks or if the state changes between the check and the subtraction. Use SafeMath library or upgrade to Solidity >=0.8.0 which has built-in overflow/underflow protection."
+}
+```

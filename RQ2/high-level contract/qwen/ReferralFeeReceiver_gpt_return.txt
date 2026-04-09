@@ -1,0 +1,46 @@
+```json
+[{
+    "contract_name": "ReferralFeeReceiver",
+    "contract_version": "^0.6.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "updateReward",
+            "fix_info": "Applied reentrancy guard by moving external calls after state updates and using checks-effects-interactions pattern. The state changes now happen before any external interactions.",
+            "corrected_code": "function updateReward(address referral, uint256 amount) external override {\n    Mooniswap mooniswap = Mooniswap(msg.sender);\n    TokenInfo storage token = tokenInfo[mooniswap];\n    UserInfo storage user = userInfo[referral];\n    uint256 currentEpoch = token.currentEpoch;\n\n    // Add new reward to current epoch\n    user.share[mooniswap][currentEpoch] = user.share[mooniswap][currentEpoch].add(amount);\n    token.epochBalance[currentEpoch].totalSupply = token.epochBalance[currentEpoch].totalSupply.add(amount);\n\n    // Collect all processed epochs and advance user token epoch\n    _collectProcessedEpochs(user, token, mooniswap, currentEpoch);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "freezeEpoch",
+            "fix_info": "Applied reentrancy guard by ensuring all state changes happen before external calls. Added nonReentrant-like behavior by updating state before external interactions.",
+            "corrected_code": "function freezeEpoch(Mooniswap mooniswap) external validPool(mooniswap) validSpread(mooniswap) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    uint256 currentEpoch = token.currentEpoch;\n    require(token.firstUnprocessedEpoch == currentEpoch, \"Previous epoch is not finalized\");\n\n    IERC20[] memory tokens = mooniswap.getTokens();\n    uint256 token0Balance = tokens[0].uniBalanceOf(address(this));\n    uint256 token1Balance = tokens[1].uniBalanceOf(address(this));\n    \n    // State update before external call\n    token.currentEpoch = currentEpoch.add(1);\n    \n    mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));\n    \n    token.epochBalance[currentEpoch].token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);\n    token.epochBalance[currentEpoch].token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "trade",
+            "fix_info": "Applied reentrancy guard by moving external calls (_swap) after state updates. All token balance changes are done before the swap operation to prevent reentrancy attacks.",
+            "corrected_code": "function trade(Mooniswap mooniswap, IERC20[] memory path) external validPool(mooniswap) validPath(path) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;\n    EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];\n    require(firstUnprocessedEpoch.add(1) == token.currentEpoch, \"Prev epoch already finalized\");\n\n    IERC20[] memory tokens = mooniswap.getTokens();\n    uint256 availableBalance;\n    if (path[0] == tokens[0]) {\n        availableBalance = epochBalance.token0Balance;\n    } else if (path[0] == tokens[1]) {\n        availableBalance = epochBalance.token1Balance;\n    } else {\n        revert(\"Invalid first token\");\n    }\n\n    (uint256 amount, uint256 returnAmount) = _maxAmountForSwap(path, availableBalance);\n    \n    if (path[0] == tokens[0]) {\n        epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);\n    } else {\n        epochBalance.token1Balance = epochBalance.token1Balance.sub(amount);\n    }\n\n    if (epochBalance.token0Balance == 0 && epochBalance.token1Balance == 0) {\n        token.firstUnprocessedEpoch = firstUnprocessedEpoch.add(1);\n    }\n    \n    if (returnAmount == 0) {\n        // get rid of dust\n        if (availableBalance > 0) {\n            require(availableBalance == amount, \"availableBalance is not dust\");\n            for (uint256 i = 0; i + 1 < path.length; i += 1) {\n                Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);\n                require(_validateSpread(_mooniswap), \"Spread is too high\");\n            }\n            if (path[0].isETH()) {\n                tx.origin.transfer(availableBalance);  // solhint-disable-line avoid-tx-origin\n            } else {\n                path[0].safeTransfer(address(mooniswap), availableBalance);\n            }\n        }\n    } else {\n        uint256 receivedAmount = _swap(path, amount, payable(address(this)));\n        epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Applied reentrancy guard by using checks-effects-interactions pattern. State is updated (user.balance = 1) before external token transfer.",
+            "corrected_code": "function claim(Mooniswap[] memory pools) external {\n    UserInfo storage user = userInfo[msg.sender];\n    for (uint256 i = 0; i < pools.length; ++i) {\n        Mooniswap mooniswap = pools[i];\n        TokenInfo storage token = tokenInfo[mooniswap];\n        _collectProcessedEpochs(user, token, mooniswap, token.currentEpoch);\n    }\n\n    uint256 balance = user.balance;\n    if (balance > 1) {\n        // Avoid erasing storage to decrease gas footprint for referral payments\n        user.balance = 1;\n        inchToken.transfer(msg.sender, balance - 1);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimCurrentEpoch",
+            "fix_info": "Applied reentrancy guard by updating state before external transfer. The user's share is zeroed out before the token transfer occurs.",
+            "corrected_code": "function claimCurrentEpoch(Mooniswap mooniswap) external validPool(mooniswap) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    UserInfo storage user = userInfo[msg.sender];\n    uint256 currentEpoch = token.currentEpoch;\n    uint256 balance = user.share[mooniswap][currentEpoch];\n    if (balance > 0) {\n        user.share[mooniswap][currentEpoch] = 0;\n        token.epochBalance[currentEpoch].totalSupply = token.epochBalance[currentEpoch].totalSupply.sub(balance);\n        mooniswap.transfer(msg.sender, balance);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimFrozenEpoch",
+            "fix_info": "Applied reentrancy guard by updating all state variables before any external transfers. User epoch tracking is updated before token transfers occur.",
+            "corrected_code": "function claimFrozenEpoch(Mooniswap mooniswap) external validPool(mooniswap) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    UserInfo storage user = userInfo[msg.sender];\n    uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;\n    uint256 currentEpoch = token.currentEpoch;\n\n    require(firstUnprocessedEpoch.add(1) == currentEpoch, \"Epoch already finalized\");\n    require(user.firstUnprocessedEpoch[mooniswap] == firstUnprocessedEpoch, \"Epoch funds already claimed\");\n\n    user.firstUnprocessedEpoch[mooniswap] = currentEpoch;\n    uint256 share = user.share[mooniswap][firstUnprocessedEpoch];\n\n    if (share > 0) {\n        EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];\n        uint256 totalSupply = epochBalance.totalSupply;\n        user.share[mooniswap][firstUnprocessedEpoch] = 0;\n        epochBalance.totalSupply = totalSupply.sub(share);\n\n        IERC20[] memory tokens = mooniswap.getTokens();\n        epochBalance.token0Balance = _transferTokenShare(tokens[0], epochBalance.token0Balance, share, totalSupply);\n        epochBalance.token1Balance = _transferTokenShare(tokens[1], epochBalance.token1Balance, share, totalSupply);\n        epochBalance.inchBalance = _transferTokenShare(inchToken, epochBalance.inchBalance, share, totalSupply);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

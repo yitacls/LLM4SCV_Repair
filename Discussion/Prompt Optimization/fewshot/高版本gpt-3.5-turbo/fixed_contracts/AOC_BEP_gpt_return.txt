@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "AOC_BEP",
+        "contract_version": "0.8.9",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Fix the incorrect constructor name.",
+                "corrected_code": "constructor() initializer {\n        _mint(_msgSender(), (1000 * 10**9 * 10**18));\n        ltafPercentage = 50;\n\n        addLevels(1, 1640995200, 1704153599, 20);\n        addLevels(2, 1704153600, 1767311999, 15);\n        addLevels(3, 1767312000, 1830383999, 10);\n        addLevels(4, 1830384000, 0, 5);\n\n        // initializing\n        __Pausable_init();\n        __Ownable_init();\n        __Context_init();\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawBNBFromContract",
+                "fix_info": "Add a check to ensure the contract doesn't send Ether to unknown addresses.",
+                "corrected_code": "function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner payable {\n        require(recipient != address(0), \"Address cant be zero address\");\n        require(amount <= address(this).balance, \"withdrawBNBFromContract: withdraw amount exceeds BNB balance\");\n        (bool success, ) = recipient.call{value: amount}(\"\");\n        require(success, \"Ether transfer failed\");\n        emit BNBFromContractTransferred(amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

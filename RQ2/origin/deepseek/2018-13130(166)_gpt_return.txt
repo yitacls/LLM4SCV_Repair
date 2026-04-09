@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic Vulnerability",
+            "location": "balances[_to] += _amount; and totalSupply += _amount;",
+            "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for integer overflow/underflow. The operations 'balances[_to] += _amount' and 'totalSupply += _amount' can overflow if the resulting value exceeds the maximum value of uint256 (2^256 - 1), leading to incorrect token balances and total supply. This can be exploited to mint an unexpectedly large number of tokens, breaking the token economics. Mitigation requires using SafeMath library for arithmetic operations or upgrading to Solidity 0.8.0+ which has built-in overflow checks."
+        }
+    ]
+}
+```

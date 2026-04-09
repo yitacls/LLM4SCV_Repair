@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L275-282",
+        "description": "The `depositTo` function calls `_deposit` to mint shares based on the user's deposit. Afterward, it transfers tokens from the user to the contract. This can lead to a reentrancy attack if the `_deposit` or token contract invokes an untrusted contract that re-enters this method."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "L279",
+        "description": "The `IERC20Upgradeable(token).transferFrom` call does not check the return value. If the token contract does not return a boolean value or the transfer fails silently, it could lead to unexpected behavior."
+    }
+]
+```

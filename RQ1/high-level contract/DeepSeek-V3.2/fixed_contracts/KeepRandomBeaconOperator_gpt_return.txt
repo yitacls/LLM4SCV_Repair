@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "KeepRandomBeaconOperator",
+        "contract_version": "^0.5.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "relayEntry",
+                "fix_info": "Removed weak chain randomness vulnerability by replacing direct use of block attributes for random number generation. Instead, the random number is derived from the verified BLS signature combined with previous entry and blockhash to provide cryptographic randomness.",
+                "corrected_code": "    /**\n     * @dev Creates a new relay entry and stores the associated data on the chain.\n     * @param _groupSignature Group BLS signature over the concatenation of the\n     * previous entry and seed.\n     */\n    function relayEntry(bytes memory _groupSignature) public nonReentrant {\n        require(isEntryInProgress(), \"Entry was submitted\");\n        require(!hasEntryTimedOut(), \"Entry timed out\");\n        \n        bytes memory groupPubKey = groups.getGroupPublicKey(signingRequest.groupIndex);\n        \n        require(\n            BLS.verify(\n                groupPubKey,\n                signingRequest.previousEntry,\n                _groupSignature\n            ),\n            \"Invalid signature\"\n        );\n        \n        emit RelayEntrySubmitted();\n        \n        // Generate cryptographically secure random number using multiple sources\n        bytes memory seedForRandom = abi.encodePacked(\n            _groupSignature,\n            signingRequest.previousEntry,\n            blockhash(block.number - 1)\n        );\n        uint256 randomNumber = uint256(keccak256(seedForRandom));\n        \n        bytes memory entry = abi.encode(randomNumber);\n        \n        // Spend no more than groupSelectionGasEstimate + 40000 gas max\n        // This will prevent relayEntry failure in case the service contract is compromised\n        signingRequest.serviceContract.call.gas(groupSelectionGasEstimate.add(40000))(\n            abi.encodeWithSignature(\n                \"entryCreated(uint256,bytes,address)\",\n                signingRequest.relayRequestId,\n                entry,\n                msg.sender\n            )\n        );\n        \n        if (signingRequest.callbackFee > 0) {\n            executeCallback(signingRequest, randomNumber);\n        }\n        \n        (uint256 groupMemberReward, uint256 submitterReward, uint256 subsidy) = newEntryRewardsBreakdown();\n        groups.addGroupMemberReward(groupPubKey, groupMemberReward);\n        \n        stakingContract.magpieOf(msg.sender).call.value(submitterReward)(\"\");\n        \n        if (subsidy > 0) {\n            signingRequest.serviceContract.call.gas(35000).value(subsidy)(abi.encodeWithSignature(\"fundRequestSubsidyFeePool()\"));\n        }\n        \n        currentEntryStartBlock = 0;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "executeCallback",
+                "fix_info": "Modified to use the generated random number instead of deriving it from just the signature",
+                "corrected_code": "    /**\n     * @dev Executes customer specified callback for the relay entry request.\n     * @param signingRequest Request data tracked internally by this contract.\n     * @param entry The generated random number.\n     */\n    function executeCallback(SigningRequest memory signingRequest, uint256 entry) internal {\n        uint256 callbackFee = signingRequest.callbackFee;\n        \n        // Make sure not to spend more than what was received from the service contract for the callback\n        uint256 gasLimit = callbackFee.div(gasPriceWithFluctuationMargin(priceFeedEstimate));\n        \n        bytes memory callbackReturnData;\n        uint256 gasBeforeCallback = gasleft();\n        (, callbackReturnData) = signingRequest.serviceContract.call.gas(gasLimit)(abi.encodeWithSignature(\"executeCallback(uint256,uint256)\", signingRequest.relayRequestId, entry));\n        uint256 gasAfterCallback = gasleft();\n        uint256 gasSpent = gasBeforeCallback.sub(gasAfterCallback);\n        \n        Reimbursements.reimburseCallback(\n            stakingContract,\n            priceFeedEstimate,\n            gasLimit,\n            gasSpent,\n            callbackFee,\n            callbackReturnData\n        );\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

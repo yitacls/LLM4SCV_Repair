@@ -1,0 +1,77 @@
+```json
+[{
+    "contract_name": "SwapsUser",
+    "contract_version": "0.5.17",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_swapsCall",
+            "fix_info": "Added SafeMath subtraction and addition methods for avoiding integer overflow and underflow",
+            "corrected_code": "function _swapsCall(
+                                address[5] memory addrs,
+                                uint256[3] memory vals,
+                                bytes32 loanId,
+                                bool miscBool, // bypassFee
+                                bytes memory loanDataBytes)
+                                internal
+                                returns (uint256, uint256)
+                            {
+                                // ...
+
+                                if (tradingFee != 0) {
+                                    vals[2] = vals[2]
+                                        .add(tradingFee);
+                                }
+
+                                // ...
+
+                                if (tradingFee != 0) {
+                                    sourceTokenAmountUsed = sourceTokenAmountUsed.add(tradingFee); // using SafeMath method for addition
+                                }
+
+                                // ...
+                                
+                                if (tradingFee != 0) {
+                                    _payTradingFee(
+                                        addrs[4], // user
+                                        loanId, // loanId,
+                                        addrs[1], // destToken
+                                        tradingFee
+                                    );
+
+                                    destTokenAmountReceived = destTokenAmountReceived.sub(tradingFee); // using SafeMath method for subtraction
+                                }
+
+                                return (destTokenAmountReceived, sourceTokenAmountUsed);
+                            }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_swapsExpectedReturn",
+            "fix_info": "Added SafeMath subtraction method for avoiding integer underflow",
+            "corrected_code": "function _swapsExpectedReturn(
+                                address sourceToken,
+                                address destToken,
+                                uint256 sourceTokenAmount)
+                                internal
+                                view
+                                returns (uint256)
+                            {
+                                uint256 tradingFee = _getTradingFee(sourceTokenAmount);
+                                if (tradingFee != 0) {
+                                    sourceTokenAmount = sourceTokenAmount
+                                        .sub(tradingFee); // using SafeMath method for subtraction
+                                }
+
+                                // ...
+
+                                return sourceTokenAmount
+                                    .mul(sourceToDestRate)
+                                    .div(sourceToDestPrecision);
+                            }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

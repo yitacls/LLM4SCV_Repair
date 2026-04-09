@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function set(uint256 key, uint256 value) public { map[key] = value; }",
+    "description": "The set() function is declared as public without any access control modifiers (such as onlyOwner, require, or modifier checks). In Solidity 0.4.24, this allows any external account or contract to call this function and arbitrarily modify the map array's contents, which could lead to unauthorized state changes, data corruption, or disruption of contract logic. Given the contract name 'Map', this function likely manages critical mapping data that should be restricted to certain authorized parties."
+}
+```

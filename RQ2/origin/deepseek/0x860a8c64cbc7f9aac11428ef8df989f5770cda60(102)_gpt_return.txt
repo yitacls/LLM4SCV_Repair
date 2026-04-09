@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function destroyContract(address _recipient) external onlyOwner",
+    "description": "The contract implements a `destroyContract` function with the `onlyOwner` modifier, but this is insufficient in Solidity ^0.4.24 as the `onlyOwner` modifier pattern must be explicitly implemented and secured. The vulnerability arises from the fact that access control depends entirely on the correctness and security of the missing modifier implementation. If the modifier is not properly implemented (e.g., lacks ownership validation or uses a flawed ownership mechanism), any address could call this function to self-destruct the contract and send any remaining Ether to `_recipient`, leading to loss of funds and contract functionality."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(this.balance); // <LEAKING_VUL>",
+    "description": "This function lacks access control, allowing any caller to trigger the transfer of the contract's entire remaining balance back to themselves after the distribution loop. Since the function is public and unprotected, malicious actors can repeatedly call multiSendEth with arbitrary addresses (including their own) to drain the contract's funds. Additionally, the calculation 'msg.value / addresses.length' may lead to rounding errors in Solidity 0.4.x, leaving residual ETH in the contract that the attacker can also withdraw via this line. The vulnerability enables theft of any ETH held by the contract, not just the amount sent in the current call."
+}
+```

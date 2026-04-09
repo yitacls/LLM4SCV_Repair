@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PornTokenV2Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic vulnerability by adding SafeMath operations to prevent overflow/underflow. Replaced unsafe arithmetic operations with checked operations. Also improved the ether transfer to use transfer() instead of send() for better gas handling and security.",
+            "corrected_code": "function () payable {\n        require(!crowdsaleClosed);\n        uint amount = msg.value;\n        if (beneficiary == msg.sender && currentBalance > 0) {\n            uint amountToSend = currentBalance;\n            currentBalance = 0;\n            beneficiary.transfer(amountToSend);  // Using transfer instead of send for better error handling\n        } else if (amount > 0) {\n            // Using safe addition to prevent overflow\n            balanceOf[msg.sender] = balanceOf[msg.sender].add(amount);\n            amountRaised = amountRaised.add(amount);\n            currentBalance = currentBalance.add(amount);\n            // Using safe division and multiplication for token calculation\n            uint tokensToTransfer = (amount.div(price)).mul(1 ether);\n            tokenReward.transfer(msg.sender, tokensToTransfer);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The 'tx.origin' variable is used for access control in the 'addWhitelist' function, which allows any contract or external account that calls this function to add an address to the whitelist. This is a vulnerability as using 'tx.origin' for access control is not considered secure due to the potential of chain of transactions being exploited. It is recommended to use 'msg.sender' instead of 'tx.origin' for access control."
+}
+```

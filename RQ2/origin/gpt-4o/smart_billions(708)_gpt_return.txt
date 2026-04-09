@@ -1,0 +1,59 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return( ( uint(block.blockhash(_lastb  )) & 0xFFFFFF )",
+        "description": "The use of block.blockhash to generate random values is insecure because block hashes can be influenced or predicted by miners, leading to potential exploitation of the randomness."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+1)) & 0xFFFFFF ) << 24 )",
+        "description": "The block.blockhash function is repeatedly used with different offsets to derive randomness, but each of these values remains predictable or manipulatable within a short window."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+2)) & 0xFFFFFF ) << 48 )",
+        "description": "Further use of block.blockhash with sequential blocks does not improve randomness and remains vulnerable to miner manipulation or predictability."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+3)) & 0xFFFFFF ) << 72 )",
+        "description": "Similar to the previous cases, the reliance on block.blockhash as a source of randomness makes this calculation insecure against adversarial control."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+4)) & 0xFFFFFF ) << 96 )",
+        "description": "The use of block.blockhash for randomness is insufficient because these hashes are known or predictable within the block range where they are accessible."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+5)) & 0xFFFFFF ) << 120 )",
+        "description": "The vulnerability persists as the approach does not introduce any secure source of entropy, leaving it susceptible to influence by miners or attackers."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+6)) & 0xFFFFFF ) << 144 )",
+        "description": "Sequential usage of block.blockhash with bitwise operations does not offer sufficient cryptographic randomness and remains as predictable as the block hashes themselves."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+7)) & 0xFFFFFF ) << 168 )",
+        "description": "This statement increases dependency on block.blockhash values, all of which are insecure and predictable within the valid range of blocks."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+8)) & 0xFFFFFF ) << 192 )",
+        "description": "The algorithm continues to base its randomness on predictable block.hash values, lacking the security needed for reliable entropy."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+9)) & 0xFFFFFF ) << 216 )",
+        "description": "An additional dependence on an insecure random source that is manipulatable by miners, further compounding the issue of predictable output."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(_delta) / hashesSize) << 240 )",
+        "description": "While _delta is used here with some calculation, it does not sufficiently mitigate the insecurity introduced by the reliance on block.blockhash values, as _delta itself might be influenced or predictable depending on contract calls."
+    }
+]
+```

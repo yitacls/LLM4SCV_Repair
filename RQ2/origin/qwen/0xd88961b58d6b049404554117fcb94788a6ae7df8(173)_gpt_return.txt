@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "tokens[_token].marketsCount = tokens[_token].marketsCount+1;",
+    "description": "The addition operation on tokens[_token].marketsCount is vulnerable to integer overflow. In Solidity versions >= 0.4.24 but before 0.8.0, arithmetic operations do not automatically check for overflow/underflow. If tokens[_token].marketsCount reaches the maximum value for its data type (e.g., 2^256 - 1 for uint256), adding 1 will cause an overflow, wrapping around to 0. This could lead to markets being overwritten or other unexpected behavior. The SafeMath library should be used or upgrade to Solidity 0.8.0+ where overflow checks are automatic."
+}
+```

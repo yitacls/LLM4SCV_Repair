@@ -1,0 +1,9 @@
+```json
+{
+    "type": "access_control",
+    "contract_name": "VoipToken",
+    "version": "^0.4.18",
+    "location": "owner.transfer(etherBalance);",
+    "description": "In the function 'withdraw', all the funds can be transferred by the contract's owner. If a malicious actor gains control of the owner account or the owner account gets compromised, then all funds within the contract can be stolen. It's a vulnerability because this function overrides any need for consensus or conditions to execute financial transactions. There's no check of any conditions or restrictions before the transaction which can result in fund thefts or losses."
+}
+```

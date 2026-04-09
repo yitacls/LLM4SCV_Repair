@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balances[_recipient] += _value;",
+    "description": "In Solidity ^0.4.16, integer arithmetic operations do not have built-in overflow/underflow protection. The operation 'balances[_recipient] += _value' could overflow if the sum exceeds the maximum value of uint256 (2^256 - 1), causing the balance to wrap around to a small number. Similarly, 'totalSupply += _value' could overflow. Although 'require(_value >= 0)' is present, it's redundant since _value is uint256 (always non-negative), and it doesn't prevent overflow. This vulnerability could allow malicious exploitation to manipulate token balances and total supply."
+}
+```

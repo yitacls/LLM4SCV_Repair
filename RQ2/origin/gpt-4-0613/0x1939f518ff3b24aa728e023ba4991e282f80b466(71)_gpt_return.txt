@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The low-level .send() function is used to send ether from this contract to a specified address. It does not throw an exception when the call fails, but rather returns a boolean value indicating the success of the operation. If the return value is not checked, this could lead to unexpected behavior as the call could fail silently. The functionality could be exploited, for example, if the recipient contract throws an error, or if the gas stipend for the transfer is depleted."
+}
+```

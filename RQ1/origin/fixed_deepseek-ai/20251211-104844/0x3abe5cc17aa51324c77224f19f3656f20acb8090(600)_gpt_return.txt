@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "Swapper",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added private state variable to store contract owner address",
+                "variable_code": "address private owner;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "ethToJot",
+                "fix_info": "Added public state variable to store eth exchange rate",
+                "variable_code": "uint public ethToJot;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to restrict access to owner only",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "setEth",
+                "fix_info": "Replaced tx.origin with msg.sender check and upgraded Solidity version for safety",
+                "corrected_code": "function setEth(uint _newEth) public onlyOwner {\n        ethToJot = _newEth;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "constructor",
+                "fix_info": "Added constructor to initialize contract owner",
+                "corrected_code": "constructor() {\n        owner = msg.sender;\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

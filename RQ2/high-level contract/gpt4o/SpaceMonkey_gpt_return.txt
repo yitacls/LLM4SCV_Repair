@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function transfer(address recipient, uint256 amount, bytes calldata data) external returns (bool)",
+        "description": "This function allows calling an external contract via IERC223Recipient's tokenFallback after transferring tokens. This external call is executed before completing the token transfer process, creating a vulnerability where state variables could be maliciously updated by re-entered code."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "function allowance(address owner, address spender) public view override returns (uint256)",
+        "description": "The 'owner' in the function parameter shadows the state variable 'owner' in the contract. Such shadowing introduces ambiguity, makes the code less readable, and can cause erroneous behavior."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "function _approve(address owner, address spender, uint256 amount) private",
+        "description": "The 'owner' in the function parameter shadows the state variable 'owner' in the contract. This might lead to unintended outcomes when interacting with the state variable within this function."
+    }
+]
+```

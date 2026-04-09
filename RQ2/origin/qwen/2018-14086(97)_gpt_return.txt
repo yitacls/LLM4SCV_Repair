@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceOf[this] += amount;",
+    "description": "The addition operation on balanceOf[this] += amount; is vulnerable to arithmetic overflow. In Solidity ^0.4.23, arithmetic operations are not protected against overflow/underflow by default. If the amount added to balanceOf[this] exceeds the maximum value for uint, it will wrap around to zero, potentially causing incorrect balance tracking."
+}
+```

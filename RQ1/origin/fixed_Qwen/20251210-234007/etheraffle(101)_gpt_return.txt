@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "commitments",
+            "fix_info": "Added mapping to store player commitments for secure randomness",
+            "variable_code": "mapping(address => bytes32) public commitments;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "hasCommitted",
+            "fix_info": "Added mapping to track player commitment status",
+            "variable_code": "mapping(address => bool) public hasCommitted;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "revealDeadline",
+            "fix_info": "Added variable to track commitment reveal deadline",
+            "variable_code": "uint256 public revealDeadline;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "chooseWinner",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by implementing a commit-reveal scheme with player participation and chain-dependent randomness",
+            "corrected_code": "function chooseWinner() private {\n        // Secure randomness using commit-reveal scheme and future block hash\n        bytes32 combinedHash = keccak256(\n            abi.encodePacked(\n                block.coinbase,\n                block.difficulty,\n                block.gaslimit,\n                block.number + 1  // Use future block number\n            )\n        );\n        \n        // Mix in player commitments if available\n        for (uint i = 0; i < totalTickets; i++) {\n            address player = contestants[i].addr;\n            if (hasCommitted[player]) {\n                combinedHash = keccak256(abi.encodePacked(combinedHash, commitments[player]));\n            }\n        }\n        \n        uint winningNumber = uint(combinedHash) % totalTickets;\n        address winningAddress = contestants[winningNumber].addr;\n        RaffleResult(raffleId, winningNumber, winningAddress, address(0), address(0), 0, combinedHash);\n\n        // Start next raffle\n        raffleId++;\n        nextTicket = 0;\n        blockNumber = block.number;\n\n        // Distribute prize and fee\n        winningAddress.transfer(prize);\n        feeAddress.transfer(fee);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "commitHash",
+            "fix_info": "Added function to allow players to commit their randomness contribution",
+            "corrected_code": "function commitHash(bytes32 hash) public {\n        require(hasCommitted[msg.sender] == false, \"Already committed\");\n        commitments[msg.sender] = hash;\n        hasCommitted[msg.sender] = true;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

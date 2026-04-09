@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The vulnerability is in the addition operation where the value of _value can be manipulated to cause an integer overflow. This can result in unexpected behavior in the contract, potentially leading to loss of funds or denial of service."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SportsIconPrivateVesting",
+    "contract_version": "^0.7.5",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "claim",
+            "fix_info": "Added safe transfer with return value check to prevent SWC-104 vulnerability",
+            "corrected_code": "    function claim() external override returns (uint256) {\n        uint256 tokens = freeTokens(msg.sender);\n        require(tokens > 0, \"No tokens available to claim\");\n        \n        claimedOf[msg.sender] = claimedOf[msg.sender].add(tokens);\n        \n        bool success = token.transfer(msg.sender, tokens);\n        require(success, \"Token transfer failed\");\n\n        emit LogTokensClaimed(msg.sender, tokens);\n\n        return tokens;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

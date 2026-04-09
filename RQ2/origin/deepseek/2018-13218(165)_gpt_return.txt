@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "amount * sellPrice in line: if (!msg.sender.send(amount * sellPrice))",
+    "description": "In Solidity ^0.4.2, there is no built-in overflow/underflow protection for integer arithmetic. When multiplying amount (uint256) by sellPrice (uint256), if the result exceeds 2^256-1, it will wrap around (overflow), potentially causing the contract to send far less ether than intended. This could allow attackers to purchase tokens at a fraction of their intended price. SafeMath library should be used or upgrade to Solidity 0.8.x+ which has built-in overflow checks."
+}
+```

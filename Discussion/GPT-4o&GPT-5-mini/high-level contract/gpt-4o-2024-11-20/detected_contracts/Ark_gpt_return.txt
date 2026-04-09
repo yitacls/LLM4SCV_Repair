@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity 0.6.9;",
+        "description": "The contract uses an outdated version of Solidity (0.6.9), which may not include the latest security patches. It is recommended to use a newer stable version of Solidity, such as 0.8.x, to benefit from compiler-level security improvements and features."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \"insufficient funds\");",
+        "description": "The function `withdrawForLoss` does not properly handle scenarios where the `_balanceOf` call fails, leading to a potential denial-of-service (DoS) condition. If the `_balanceOf` call fails or reverts, the entire transaction may revert, blocking any withdrawals. Proper error handling or try/catch mechanisms should be implemented to mitigate this risk."
+    }
+]
+```

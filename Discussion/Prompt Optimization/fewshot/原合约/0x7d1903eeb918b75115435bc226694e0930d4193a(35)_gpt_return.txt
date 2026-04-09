@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "TokenERC20",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "toggleLockIn",
+                "fix_info": "Replace tx.origin with msg.sender for improved security.",
+                "corrected_code": "function toggleLockIn() public {
+    require(msg.sender == owner);
+    lockIn = !lockIn;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "return totalSupply_;  // fault line",
+    "description": "The total supply of tokens is directly being exposed and accessed by any external entity without any access control mechanism. This can lead to a security risk as it allows anyone to view the total supply, which can potentially be exploited by malicious actors."
+}
+```

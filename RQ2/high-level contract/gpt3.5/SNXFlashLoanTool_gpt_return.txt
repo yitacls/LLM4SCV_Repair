@@ -1,0 +1,18 @@
+```json
+{
+    "type": "SWC-111-Use of Deprecated Solidity Functions",
+    "location": "Line 54",
+    "description": "The contract uses the type(uint256).max which is deprecated in Solidity. It should be replaced with type(uint256).max."
+},
+{
+    "type": "SWC-111-Use of Deprecated Solidity Functions",
+    "location": "Line 122",
+    "description": "The external function transferToken uses the deprecated onlyOwner modifier which should be replaced with the modern Ownable from OpenZeppelin."
+},
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Line 143",
+    "description": "The swap function potentially has reentrancy vulnerability as there is a call to an external contract before the state change in the contract. Consider following the Checks-Effects-Interactions pattern to prevent reentrancy attacks."
+}
+```
+```

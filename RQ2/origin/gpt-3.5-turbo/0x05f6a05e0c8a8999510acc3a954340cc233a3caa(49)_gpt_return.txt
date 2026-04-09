@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The usage of tx.origin to verify the message sender is susceptible to impersonation attacks. It is recommended to use msg.sender instead for access control checks."
+}
+```

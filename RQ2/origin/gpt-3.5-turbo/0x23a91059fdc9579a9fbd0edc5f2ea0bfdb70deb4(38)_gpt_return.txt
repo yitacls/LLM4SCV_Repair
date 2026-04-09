@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract is vulnerable to reentrancy as the transfer of funds to msg.sender is done before updating the balance of the sender. This allows an attacker to call the CashOut function and invoke a malicious contract that would re-enter CashOut before the balance update, allowing for potential exploit."
+}
+```

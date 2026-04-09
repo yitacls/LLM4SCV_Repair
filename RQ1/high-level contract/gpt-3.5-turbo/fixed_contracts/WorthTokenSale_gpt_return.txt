@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "WorthTokenSale",
+        "contract_version": "0.8.10",
+        "functions": [
+            {
+                "function_name": "withdrawCrypto",
+                "fix_info": "Added a check to ensure beneficiary is not the zero address before transferring funds.",
+                "corrected_code": "function withdrawCrypto(address payable beneficiary) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n        require(address(this).balance > 0, 'No Crypto inside contract');\n        (bool success, ) = beneficiary.call{value: address(this).balance}('');\n        require(success, 'Transfer failed.');\n        emit CryptoWithdrawn(beneficiary, address(this).balance);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

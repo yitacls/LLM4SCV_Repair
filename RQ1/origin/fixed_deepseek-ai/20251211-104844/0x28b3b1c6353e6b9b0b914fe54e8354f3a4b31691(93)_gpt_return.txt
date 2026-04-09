@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "VRFtoken",
+        "contract_version": "^0.4.15",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed from public visibility to private to prevent unwanted external access",
+                "variable_code": "address private owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to properly check ownership using msg.sender rather than tx.origin",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "burn",
+                "fix_info": "Replaced tx.origin check with proper modifier-based access control and improved security",
+                "corrected_code": "function burn(uint256 amount) public onlyOwner returns (bool) {\n        require(balances[msg.sender] >= amount);\n        \n        balances[msg.sender] -= amount;\n        currentSupply -= amount;\n        Burn(msg.sender, amount);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

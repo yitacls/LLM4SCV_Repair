@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic Overflow/Underflow",
+        "location": "balances[msg.sender] -= totalAmount; and balances[_addresses[b]] += _amounts[b];",
+        "description": "This contract is vulnerable to integer overflow/underflow because it uses Solidity 0.4.18 which does not have built-in overflow protection. The operations 'totalAmount += _amounts[a]' and 'balances[msg.sender] -= totalAmount' could overflow/underflow without SafeMath. Additionally, the loop 'for (uint a = 0; a < _amounts.length; a++)' could exceed gas limits when approaching the 100 address limit, potentially causing transaction failures."
+    }
+}
+```

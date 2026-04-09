@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function mint() is vulnerable because it uses tx.origin for authentication. tx.origin always refers to the original caller of a transaction. An attacker-controlled contract could trick the original caller into calling this contract, then the tx.origin would be the attacker, allowing the attacker to mint arbitrary tokens. The recommended practice is to use msg.sender instead of tx.origin, because msg.sender refers to the immediate caller of a contract, which is more secure."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "revenue = amount * sellPrice;",
+    "description": "In Solidity 0.4.21, integers are not safe from overflow/underflow by default. The multiplication of amount and sellPrice could exceed the maximum value of uint (2^256 - 1), causing an integer overflow that wraps around to a smaller value. This vulnerability allows attackers to receive incorrect amounts of ether when selling tokens. As sellPrice is a state variable that can be set by contract owners, if set to a high value, legitimate calculations could overflow. This should be replaced with SafeMath operations or upgraded to Solidity 0.8.x with built-in overflow checks."
+}
+```

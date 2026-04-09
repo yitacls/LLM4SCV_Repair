@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 fromBalance = balances[_from];\nuint256 allowance = allowed[_from][msg.sender];\n\nbool sufficientFunds = fromBalance <= _value;\nbool sufficientAllowance = allowance <= _value;\nbool overflowed = balances[_to] + _value > balances[_to];",
+    "description": "The contract is vulnerable to arithmetic overflow and underflow attacks. The balance addition (balances[_to] + _value) and subtraction operations (balances[_from] -= _value) are not protected by SafeMath or similar overflow/underflow checks. Additionally, the condition logic is inverted - it should check if fromBalance >= _value and allowance >= _value, but instead uses <= which would allow transfers with insufficient funds or allowance."
+}
+```

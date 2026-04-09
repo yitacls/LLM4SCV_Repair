@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DelegationRequestManager",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "createRequest",
+            "fix_info": "Fixed integer underflow vulnerability in lockedToDelegate calculation by using SafeMath or explicit overflow check. Also ensured all arithmetic operations are safe.",
+            "corrected_code": "function createRequest(\n        address holder,\n        uint validatorId,\n        uint amount,\n        uint delegationPeriod,\n        string calldata info\n    )\n        external\n        allow(\"DelegationService\")\n        returns (uint delegationId)\n    {\n        ValidatorService validatorService = ValidatorService(\n            contractManager.getContract(\"ValidatorService\")\n        );\n        TokenState tokenState = TokenState(\n            contractManager.getContract(\"TokenState\")\n        );\n        DelegationController delegationController = DelegationController(\n            contractManager.getContract(\"DelegationController\")\n        );\n        require(\n            validatorService.checkMinimumDelegation(validatorId, amount),\n            \"Amount doesn't meet minimum delegation amount\"\n        );\n        require(validatorService.trustedValidators(validatorId), \"Validator is not authorized to accept request\");\n        require(\n            DelegationPeriodManager(\n                contractManager.getContract(\"DelegationPeriodManager\")\n            ).isDelegationPeriodAllowed(delegationPeriod),\n            \"This delegation period is not allowed\"\n        );\n        // check that there is enough money\n        // FIX: Prevent underflow by checking if lockedToDelegate > purchasedAmount\n        uint holderBalance = SkaleToken(contractManager.getContract(\"SkaleToken\")).balanceOf(holder);\n        uint lockedToDelegate = tokenState.getLockedCount(holder);\n        uint purchasedAmount = tokenState.getPurchasedAmount(holder);\n        require(lockedToDelegate >= purchasedAmount, \"Invariant violation: locked count less than purchased\");\n        lockedToDelegate = lockedToDelegate - purchasedAmount;\n        require(holderBalance >= amount + lockedToDelegate, \"Delegator hasn't enough tokens to delegate\");\n\n        delegationId = delegationController.addDelegation(\n            holder,\n            validatorId,\n            amount,\n            delegationPeriod,\n            now,\n            info\n        );\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

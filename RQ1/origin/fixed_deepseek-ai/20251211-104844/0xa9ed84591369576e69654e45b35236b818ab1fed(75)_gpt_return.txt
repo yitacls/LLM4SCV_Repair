@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "lockEtherPay",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "beneficiary",
+            "fix_info": "No changes needed - assumed to be a state variable storing the beneficiary address",
+            "variable_code": "address public beneficiary;",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "token_reward",
+            "fix_info": "No changes needed - assumed to be an ERC20 token contract instance",
+            "variable_code": "IERC20 public token_reward;",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "isReleased",
+            "fix_info": "No changes needed - boolean state variable",
+            "variable_code": "bool public isReleased;",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "isLocked",
+            "fix_info": "No changes needed - boolean state variable",
+            "variable_code": "bool public isLocked;",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed - assumed to be a standard ownership modifier",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "release",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing with safeTransfer and adding proper return value check",
+            "corrected_code": "function release() onlyOwner public {\n    require(isLocked);\n    require(!isReleased);\n    require(lockOver());\n    \n    uint256 token_amount = tokenBalance();\n    \n    // Using safeTransfer instead of low-level call for ERC20 token transfer\n    require(token_reward.transfer(beneficiary, token_amount));\n    \n    emit TokenReleased(beneficiary, token_amount);\n    isReleased = true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

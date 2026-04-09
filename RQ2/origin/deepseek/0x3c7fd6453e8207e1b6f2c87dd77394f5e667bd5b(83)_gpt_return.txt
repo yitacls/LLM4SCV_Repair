@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "Using tx.origin for authorization creates a phishing vulnerability. This check can be bypassed if the owner interacts with a malicious contract, as tx.origin will return the original externally-owned account (EOA) that initiated the transaction chain, not the immediate caller. A malicious contract could trick the owner into calling it, and then that contract could call mint(), passing the authorization check since tx.origin is still the owner."
+        },
+        {
+            "type": "access_control",
+            "location": "The mint function modifier/visibility",
+            "description": "The mint function is declared as 'public' without additional access control modifiers (like onlyOwner). While there is a tx.origin check, this is insufficient and exploitable as described. Proper access control would use msg.sender == owner or an OpenZeppelin Ownable pattern with modifier onlyOwner."
+        },
+        {
+            "type": "logic",
+            "location": "require(_amount >= 0);",
+            "description": "This check is redundant because uint256 (unsigned integer) cannot be negative. It will always be true, providing no security benefit and potentially indicating flawed logic."
+        }
+    ]
+}
+```

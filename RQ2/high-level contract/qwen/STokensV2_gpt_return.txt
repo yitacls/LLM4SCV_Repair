@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "STokensV2",
+    "contract_version": ">=0.7.0",
+    "state_variables": [
+        {
+            "variable_name": "_rewardRate",
+            "fix_info": "Added maximum limit constant to prevent unbounded array growth",
+            "variable_code": "uint256[] private _rewardRate;\n    uint256 private constant MAX_REWARD_RATE_HISTORY = 1000;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "setRewardRate",
+            "fix_info": "Fixed DoS vulnerability by limiting the size of reward rate history array and implementing circular buffer pattern",
+            "corrected_code": "function setRewardRate(uint256 rewardRate)\n\t\tpublic\n\t\tvirtual\n\t\toverride\n\t\treturns (bool success)\n\t{\n\t\t// range checks for rewardRate. Since rewardRate cannot be more than 100%, the max cap\n\t\t// is _valueDivisor * 100, which then brings the fees to 100 (percentage)\n\t\trequire(rewardRate <= _valueDivisor.mul(100), \"ST17\");\n\t\trequire(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"ST2\");\n        \n        // Prevent DoS by limiting array size - implement circular buffer\n        if (_rewardRate.length >= MAX_REWARD_RATE_HISTORY) {\n            // Shift elements to the left to maintain fixed size\n            for (uint256 i = 1; i < _rewardRate.length; i++) {\n                _rewardRate[i-1] = _rewardRate[i];\n                _lastMovingRewardTimestamp[i-1] = _lastMovingRewardTimestamp[i];\n            }\n            // Remove last element\n            _rewardRate.pop();\n            _lastMovingRewardTimestamp.pop();\n        }\n        \n\t\t_rewardRate.push(rewardRate);\n\t\t_lastMovingRewardTimestamp.push(block.timestamp);\n\t\temit SetRewardRate(rewardRate);\n\n\t\treturn true;\n\t}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_calculatePendingRewards",
+            "fix_info": "Added bounds checking to prevent infinite loop and optimized loop iterations to prevent gas exhaustion",
+            "corrected_code": "function _calculatePendingRewards(\n\t\tuint256 principal,\n\t\tuint256 lastRewardTimestamp\n\t) internal view returns (uint256 pendingRewards) {\n\t\tuint256 _index;\n\t\tuint256 _rewardBlocks;\n\t\tuint256 _simpleInterestOfInterval;\n\t\tuint256 _temp;\n\t\t// return 0 if principal or timeperiod is zero\n\t\tif (principal == 0 || block.timestamp.sub(lastRewardTimestamp) == 0)\n\t\t\treturn 0;\n\t\t// calculate rewards for each interval period between rewardRate changes\n\t\tuint256 _lastMovingRewardLength = _lastMovingRewardTimestamp.length.sub(\n\t\t\t1\n\t\t);\n        \n        // Prevent DoS by limiting iterations - use minimum of array length and max history\n        uint256 maxIterations = _lastMovingRewardLength > MAX_REWARD_RATE_HISTORY ? \n                                MAX_REWARD_RATE_HISTORY : _lastMovingRewardLength;\n        uint256 startIndex = _lastMovingRewardLength > MAX_REWARD_RATE_HISTORY ? \n                             _lastMovingRewardLength - MAX_REWARD_RATE_HISTORY : 0;\n\n\t\tfor (_index = _lastMovingRewardLength; _index >= startIndex && _index < type(uint256).max; ) {\n\t\t\t// logic applies for all indexes of array except last index\n\t\t\tif (_index < _lastMovingRewardTimestamp.length.sub(1)) {\n\t\t\t\tif (_lastMovingRewardTimestamp[_index] > lastRewardTimestamp) {\n\t\t\t\t\t_rewardBlocks = (_lastMovingRewardTimestamp[_index.add(1)])\n\t\t\t\t\t\t.sub(_lastMovingRewardTimestamp[_index]);\n\t\t\t\t\t_temp = principal.mulDiv(_rewardRate[_index], 100);\n\t\t\t\t\t_simpleInterestOfInterval = _temp.mulDiv(\n\t\t\t\t\t\t_rewardBlocks,\n\t\t\t\t\t\t_valueDivisor\n\t\t\t\t\t);\n\t\t\t\t\tpendingRewards = pendingRewards.add(\n\t\t\t\t\t\t_simpleInterestOfInterval\n\t\t\t\t\t);\n\t\t\t\t} else {\n\t\t\t\t\t_rewardBlocks = (_lastMovingRewardTimestamp[_index.add(1)])\n\t\t\t\t\t\t.sub(lastRewardTimestamp);\n\t\t\t\t\t_temp = principal.mulDiv(_rewardRate[_index], 100);\n\t\t\t\t\t_simpleInterestOfInterval = _temp.mulDiv(\n\t\t\t\t\t\t_rewardBlocks,\n\t\t\t\t\t\t_valueDivisor\n\t\t\t\t\t);\n\t\t\t\t\tpendingRewards = pendingRewards.add(\n\t\t\t\t\t\t_simpleInterestOfInterval\n\t\t\t\t\t);\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\t\t\t// logic applies only for the last index of array\n\t\t\telse {\n\t\t\t\tif (_lastMovingRewardTimestamp[_index] > lastRewardTimestamp) {\n\t\t\t\t\t_rewardBlocks = (block.timestamp).sub(\n\t\t\t\t\t\t_lastMovingRewardTimestamp[_index]\n\t\t\t\t\t);\n\t\t\t\t\t_temp = principal.mulDiv(_rewardRate[_index], 100);\n\t\t\t\t\t_simpleInterestOfInterval = _temp.mulDiv(\n\t\t\t\t\t\t_rewardBlocks,\n\t\t\t\t\t\t_valueDivisor\n\t\t\t\t\t);\n\t\t\t\t\tpendingRewards = pendingRewards.add(\n\t\t\t\t\t\t_simpleInterestOfInterval\n\t\t\t\t\t);\n\t\t\t\t} else {\n\t\t\t\t\t_rewardBlocks = (block.timestamp).sub(lastRewardTimestamp);\n\t\t\t\t\t_temp = principal.mulDiv(_rewardRate[_index], 100);\n\t\t\t\t\t_simpleInterestOfInterval = _temp.mulDiv(\n\t\t\t\t\t\t_rewardBlocks,\n\t\t\t\t\t\t_valueDivisor\n\t\t\t\t\t);\n\t\t\t\t\tpendingRewards = pendingRewards.add(\n\t\t\t\t\t\t_simpleInterestOfInterval\n\t\t\t\t\t);\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tif (_index == startIndex) break;\n\t\t\telse {\n\t\t\t\t_index = _index.sub(1);\n\t\t\t}\n\t\t}\n\t\treturn pendingRewards;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "L4-5",
+        "description": "The contract has unused import statements, which do not affect the contract but make the code harder to read and maintain."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "L34-41",
+        "description": "Shadowing makes it nearly impossible to access the variable being shadowed and should be avoided. The variables are only accessible via this.variable and are hidden by declarations in derived contracts."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "L270-289",
+        "description": "The contract enables the withdraw function without prerequisite checks such as role-based restrictions or validation checks, this could potentially lead to unauthorized ether withdrawals from the contract."
+    }
+]
+```

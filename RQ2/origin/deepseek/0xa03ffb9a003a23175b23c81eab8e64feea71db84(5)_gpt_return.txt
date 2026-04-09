@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The contract uses `send()` without checking its return value. In Solidity 0.4.23, `send()` forwards a limited 2300 gas and returns a boolean indicating success or failure. If the `wallet` address is a contract whose fallback function consumes more than 2300 gas, or reverts, the `send()` will fail but execution will continue. This can lead to a loss of funds where the contract believes the transfer succeeded when it actually failed. The function should check the return value and handle failures appropriately."
+}
+```

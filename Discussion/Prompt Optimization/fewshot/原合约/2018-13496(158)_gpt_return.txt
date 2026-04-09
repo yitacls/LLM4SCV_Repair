@@ -1,0 +1,23 @@
+```json
+[
+    {
+        "contract_name": "RajTest",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Add overflow check before updating balanceOf and totalSupply.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyCrowdsaleAgent public {
+    require(balanceOf[target] + mintedAmount >= balanceOf[target]);
+    balanceOf[target] += mintedAmount;
+    totalSupply += mintedAmount;
+    Transfer(this, target, mintedAmount);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

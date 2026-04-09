@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "rocketVault.depositToken(\"rocketNodeStaking\", rplTokenAddress, _amount);",
+        "description": "The return value of the external call to `rocketVault.depositToken` is not checked, which may lead to unexpected behavior if the call fails silently."
+    },
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "require(block.number.sub(getNodeRPLStakedBlock(msg.sender)) >= rocketDAOProtocolSettingsRewards.getRewardsClaimIntervalBlocks(), \"The withdrawal cooldown period has not passed\");",
+        "description": "The check relies on `block.number`, which can be manipulated by miners to some extent, making the contract vulnerable to transaction order dependence or front-running attacks."
+    }
+]
+```

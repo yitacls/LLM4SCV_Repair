@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_to == tx.origin) {    // fault line",
+    "description": "The condition '_to == tx.origin' for access control within the 'deposit' function is potentially vulnerable as it allows the sender of the transaction (tx.origin) to manipulate the profit balance of another address. This can lead to unauthorized transfers or modifications of profit balances, potentially compromising the financial integrity and security of the contract."
+}
+```

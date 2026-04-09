@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MMTCoinToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath overflow protection for balanceOf and totalSupply updates",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(balanceOf[target] + mintedAmount >= balanceOf[target], \"Balance overflow\");\n        require(totalSupply + mintedAmount >= totalSupply, \"Total supply overflow\");\n        \n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

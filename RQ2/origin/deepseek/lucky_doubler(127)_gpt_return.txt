@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function rand(uint max) constant private returns (uint256 result)",
+    "description": "The rand() function uses block.blockhash(block.number - 1) to generate randomness, which is predictable and vulnerable to miner manipulation. Miners can influence or pre-compute the blockhash, and on many Ethereum clients, block.blockhash() returns 0 for the current block or blocks older than 256 blocks. This makes the 'random' number generation gameable, allowing attackers to predict or influence outcomes in the LuckyDoubler contract."
+}
+```

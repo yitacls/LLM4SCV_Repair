@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "keepMyEther",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Added check for successful low-level call to prevent unchecked return value vulnerability",
+            "corrected_code": "function withdraw() public {\n        // Check if the low-level call was successful\n        require(msg.sender.call.value(balances[msg.sender])());\n        balances[msg.sender] = 0;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

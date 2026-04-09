@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool result = _addr.send( balanceToWithdraw() );",
+    "description": "The send() function is a low-level call that returns false when it fails, but the return value is not properly checked or handled. In Solidity 0.4.24, if the send() call fails (e.g., due to gas stipend exhaustion or recipient contract rejection), it will return false but execution will continue. This can lead to unexpected behavior where the withdrawal appears to succeed but no funds are actually transferred, while the state variable lastDate[_addr] is still updated, potentially preventing legitimate retries."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DosOneFunc",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "ifillArray",
+            "fix_info": "Added gas limitation check and prevented excessive loop iterations that could cause DoS. Limited the loop to only execute when there's sufficient gas and added early termination condition.",
+            "corrected_code": "function ifillArray() public returns (bool){\n        if(listAddresses.length < 1500) {\n            uint gasStart = msg.gas;\n            uint iterations = 0;\n            // Limit iterations to prevent gas exhaustion\n            while(iterations < 50 && listAddresses.length < 1500) {\n                // Check if we're running low on gas\n                if(gasStart - (gasStart - msg.gas) > 50000) break;\n                listAddresses.push(msg.sender);\n                iterations++;\n            }\n            return true;\n        } else {\n            listAddresses = new address[](0);\n            return false;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

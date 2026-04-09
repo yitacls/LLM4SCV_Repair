@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PriceFeed",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "post",
+            "fix_info": "Added check for low-level call return value to prevent unchecked call vulnerabilities",
+            "corrected_code": "function post(uint128 val_, uint32 zzz_, address med_) public note auth\n{\n    val = val_;\n    zzz = zzz_;\n    bool ret = med_.call(bytes4(keccak256(\"poke()\")));\n    require(ret, \"Low-level call failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

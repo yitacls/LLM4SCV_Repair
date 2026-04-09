@@ -1,0 +1,10 @@
+The JSON is as follows:
+
+```json
+{
+	"type": "access_control",
+	"contract": "pyramidMKII",
+	"location": "require(tx.origin == owner && _sze >= 1 ether, \"error blksze\");",
+	"description": "The contract's access control vulnerability is derived from the improper use of 'tx.origin' for authorization. The 'tx.origin' usage can lead to significant security holes as it refers to the original sender of the transaction, potentially allowing contracts between the origin sender and the contract to be exploited."
+}
+```

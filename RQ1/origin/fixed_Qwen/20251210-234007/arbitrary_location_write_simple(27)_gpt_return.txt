@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "PopBonusCode",
+            "fix_info": "Fixed access control vulnerability by adding proper authorization check and preventing underflow by checking if array is not empty before decrementing length",
+            "corrected_code": "function PopBonusCode() public {\n    // Check that the caller is authorized (assuming there should be some authorization)\n    require(msg.sender == owner, \"Unauthorized access\");\n    \n    // Prevent underflow by checking if array has elements before popping\n    require(bonusCodes.length > 0, \"No bonus codes to pop\");\n    bonusCodes.length--;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

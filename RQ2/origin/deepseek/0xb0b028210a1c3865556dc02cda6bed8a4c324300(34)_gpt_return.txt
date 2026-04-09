@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic Overflow/Underflow",
+        "location": "balances[_to] += _value; and balances[_from] -= _value;",
+        "description": "In Solidity version ^0.4.16, integer arithmetic operations do not automatically check for overflow/underflow. The operations `balances[_to] += _value` and `balances[_from] -= _value` can result in integer overflow (when adding) or underflow (when subtracting), potentially allowing attackers to manipulate token balances. For example, if `balances[_from]` is less than `_value`, the subtraction will underflow, resulting in an extremely large balance. This vulnerability was mitigated in Solidity 0.8.0+ with built-in overflow checks, but in this version requires explicit use of SafeMath library or condition checks."
+    }
+}
+```

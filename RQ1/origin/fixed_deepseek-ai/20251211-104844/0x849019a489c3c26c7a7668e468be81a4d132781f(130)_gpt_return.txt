@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "SimpleDeposit",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "Depositors",
+            "fix_info": "Kept as original as it's referenced in the function but not defined in the provided code snippet",
+            "variable_code": "mapping (address => uint256) public Depositors;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "Available",
+            "fix_info": "Kept as original as it's referenced in the function but not defined in the provided code snippet",
+            "variable_code": "uint256 public Available;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "RefundDeposit",
+            "fix_info": "1. Changed send() to transfer() for safer ether transfer with built-in revert on failure. 2. Added check for _wei value not exceeding Depositors balance. 3. Updated function visibility and removed unnecessary payable modifier since function doesn't receive eth. 4. Added require statements for input validation. 5. Added withdraw pattern with state changes before external call to prevent reentrancy. 6. Updated Withdrew event (assuming it exists, added definition).",
+            "corrected_code": "function RefundDeposit(address _addr, uint256 _wei) public {\n    require(_addr != address(0), \"Invalid address\");\n    require(Depositors[_addr] >= _wei, \"Insufficient deposit balance\");\n    require(_wei > 0, \"Withdrawal amount must be greater than 0\");\n    \n    if (isAllowed()) {\n        Depositors[_addr] -= _wei;\n        Available -= _wei;\n        \n        _addr.transfer(_wei);\n        \n        Withdrew(_addr, _wei);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

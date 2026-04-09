@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability - Integer Overflow/Underflow",
+    "location": "balances[msg.sender] -= _value; and balances[_to] += _value;",
+    "description": "In Solidity version ^0.4.18, arithmetic operations are unchecked by default, making them vulnerable to integer overflow/underflow. The operation 'balances[msg.sender] -= _value' could underflow if _value is greater than the sender's balance (though prevented by the require statement). The 'balances[_to] += _value' operation could overflow if the recipient's balance plus _value exceeds uint256's maximum value (2^256 - 1), potentially allowing malicious users to artificially inflate token balances. This vulnerability was fixed in Solidity 0.8.0 with built-in safe arithmetic, but requires explicit 'unchecked' blocks or SafeMath library in 0.4.18."
+}
+```

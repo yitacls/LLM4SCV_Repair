@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BaseToken",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for balance calculations. The original code was vulnerable to overflow when calculating previousBalances and in the assertion check.",
+            "corrected_code": "function _transfer(address _from, address _to, uint _value) internal {\n        require(_to != 0x0);\n        require(balanceOf[_from] >= _value);\n        require(balanceOf[_to] + _value > balanceOf[_to]);\n        uint previousBalances = balanceOf[_from].add(balanceOf[_to]);\n        balanceOf[_from] = balanceOf[_from].sub(_value);\n        balanceOf[_to] = balanceOf[_to].add(_value);\n        assert(balanceOf[_from].add(balanceOf[_to]) == previousBalances);\n        Transfer(_from, _to, _value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

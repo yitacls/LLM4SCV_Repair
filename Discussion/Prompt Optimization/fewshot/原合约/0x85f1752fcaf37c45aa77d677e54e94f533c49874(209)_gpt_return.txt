@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "CoinCrowdICO",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "addMeByRC",
+                "fix_info": "Add access control to only allow the owner to set ambassador addresses.",
+                "corrected_code": "function addMeByRC(address _ambassadorAddr) public {
+    require(msg.sender == owner);
+    ambassadorAddressOf[msg.sender] = _ambassadorAddr;
+    NewAmbassador(_ambassadorAddr, msg.sender);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

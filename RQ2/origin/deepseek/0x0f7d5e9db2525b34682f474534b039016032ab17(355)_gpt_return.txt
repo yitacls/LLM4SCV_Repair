@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(fee);",
+    "description": "The `send()` function returns a boolean value indicating success or failure, but this return value is not checked. In Solidity 0.4.24, if the send fails (e.g., if the owner is a contract with a fallback function that reverts or runs out of gas), the transaction will continue execution without reverting, leaving the contract's balance stuck. This is dangerous as it creates a silent failure mode where Ether transfers can fail without alerting the caller. It should be replaced with `transfer()` (which automatically reverts on failure) or the return value of `send()` should be explicitly checked and handled."
+}
+```

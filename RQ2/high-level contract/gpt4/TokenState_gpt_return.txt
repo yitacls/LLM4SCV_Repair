@@ -1,0 +1,18 @@
+The vulnerabilities in the smart contract can be represented in JSON format as below:
+
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "L65",
+        "description": "The getLockedCount() function could be at risk of denial of service attack due to how Ethereum handles loops of indeterminate length. If the length of delegationIds from getDelegationsByHolder() function call becomes extremely large, it could consume more gas than the current block gas limit allows, thereby causing the transaction to fail."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "L259-265",
+        "description": "The code contains a function 'endingDelegatedToUnlocked()' which transfers the amount to a holder without proper access control mechanisms. This could allow for unauthorized withdrawals or manipulation of balances if exploited."
+    }
+]
+```
+
+These vulnerabilities expose the contract to potential attacks. They should be addressed by introducing appropriate access control checks and mitigating options to avoid block gas limit in looping operations.

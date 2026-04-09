@@ -1,0 +1,25 @@
+Here is the information in JSON format:
+
+```json
+{
+    "contract": "GAWToken",
+    "version": "0.4.18",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function close() public onlyOwner",
+            "description": "Access control vulnerability in the function 'close'. Only the contract owner can call this function, making it possible for the contract owner to force the contract to self destruct."
+        },
+        {
+            "type": "leaking_vulnerability",
+            "location": "selfdestruct(owner)",
+            "description": "Potential leaking vulnerability. The contract sends its balance to the 'owner' address when it self-destructs."
+        },
+        {
+            "type": "suicidal_vulnerability",
+            "location": "selfdestruct(owner)",
+            "description": "Suicidal vulnerability. The contract can be killed by its owner, which means that the contract may stop functioning unexpectedly."
+        }
+    ]
+}
+```

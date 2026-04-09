@@ -1,0 +1,28 @@
+[{
+    "contract_name": "PENNY_BY_PENNY",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "reentrancyLock",
+            "fix_info": "Added a reentrancy guard state variable to provide an additional protection layer against reentrant calls.",
+            "variable_code": "bool private reentrancyLock;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a modifier that prevents reentrant entry into functions by using a simple mutex (checks and sets reentrancyLock).",
+            "modifier_code": "modifier nonReentrant() {\n    require(!reentrancyLock);\n    reentrancyLock = true;\n    _;\n    reentrancyLock = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Collect",
+            "fix_info": "Fixed reentrancy by applying checks-effects-interactions pattern, using explicit storage reference, and adding nonReentrant modifier. Use transfer for safer ETH transfer semantics in ^0.4.19.",
+            "corrected_code": "function Collect(uint _am) public payable nonReentrant {\n    // explicit storage reference to the caller's account\n    Account storage acc = Acc[msg.sender];\n\n    // checks\n    require(acc.balance >= MinSum && acc.balance >= _am && now > acc.unlockTime);\n\n    // effects: update state before any external calls\n    acc.balance -= _am;\n\n    // interactions: external calls after state changes\n    // Log may be an external contract; nonReentrant prevents reentry during these calls\n    Log.AddMessage(msg.sender, _am, \"Collect\");\n\n    // use transfer to forward 2300 gas and revert on failure\n    msg.sender.transfer(_am);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,27 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L247 - L251",
+    "description": "The 'deposit' function is vulnerable to reentrancy. The LP token transfer is done before updating the user's shares, allowing potential reentrancy where an external malicious contract may call back into the 'deposit' function."
+}
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L272 - L306",
+    "description": "The 'withdraw' function is vulnerable to reentrancy. The LP token transfer is done before updating the user's shares, allowing potential reentrancy where an external malicious contract may call back into the 'withdraw' function."
+}
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L310 - L329",
+    "description": "The 'emergencyWithdraw' function is vulnerable to reentrancy. The LP token transfer is done before resetting the user's shares and reward debt, allowing potential reentrancy where an external malicious contract may call back into the 'emergencyWithdraw' function."
+}
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L378 - L381",
+    "description": "The 'balance' function is vulnerable to reentrancy. It calls 'harvest' and 'withdrawAll' on the strategy before setting a new strategy, leaving a window for reentrancy attacks."
+}
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "L384 - L389",
+    "description": "The 'setPoolStrategy' function does not check the return value of 'withdrawAll', leaving the contract open to potential issues if 'withdrawAll' fails and the function continues execution assuming success."
+}
+```

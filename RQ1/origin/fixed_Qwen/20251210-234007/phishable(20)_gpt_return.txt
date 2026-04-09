@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Phishable",
+    "contract_version": "^0.4.22",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawAll",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender for proper authentication",
+            "corrected_code": "function withdrawAll(address _recipient) public {\n        require(msg.sender == owner);\n        _recipient.transfer(this.balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

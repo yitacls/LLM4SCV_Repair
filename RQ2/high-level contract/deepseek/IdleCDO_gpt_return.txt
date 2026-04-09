@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 242-258 in the _deposit function",
+    "description": "The _deposit function contains a reentrancy vulnerability where external calls are made after state updates. Specifically, the function calls _mintShares() which performs external calls via the mint function on IdleCDOTranche contract, and then calls safeTransferFrom to transfer tokens. The correct order should be: 1) Transfer tokens from user, 2) Update state variables, 3) Mint shares. The current implementation violates the Checks-Effects-Interactions pattern and could allow reentrancy attacks if the IdleCDOTranche contract contains callbacks or if token.safeTransferFrom has callback hooks."
+}
+```

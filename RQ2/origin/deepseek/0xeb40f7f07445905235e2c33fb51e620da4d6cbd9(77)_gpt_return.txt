@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "Line 19: (bool success, ) = payable(msg.sender).call{ value: amountProfit }(\"\");",
+    "description": "The contract performs an external call to msg.sender before updating the investor's state (specifically before setting active = false when dateEnd is reached). An attacker can create a malicious contract that calls back into receive() when receiving ETH. Since the investor's active status is still true and dateUpdate has been updated, the attacker could repeatedly trigger the profit withdrawal path before active is finally set to false, potentially draining contract funds."
+}
+```

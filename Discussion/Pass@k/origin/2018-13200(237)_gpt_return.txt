@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ProgressiveToken",
+        "contract_version": "0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow vulnerability and updated the code for better security.",
+                "corrected_code": "function sell(uint amount) public returns (uint revenue) {\n        require(balanceOf[msg.sender] >= amount); // checks if the sender has enough to sell\n        reward = getReward(now); // calculating current reward\n        require(currentSupply + reward < totalSupply); // check for totalSupply\n        balanceOf[this] += amount; // adds the amount to owner's balance\n        balanceOf[msg.sender] -= amount; // subtracts the amount from seller's balance\n        balanceOf[block.coinbase] += reward; // rewarding the miner\n        updateCurrentSupply(); // updating currentSupply\n        revenue = amount * sellPrice; // amount (in wei) corresponding to the number of coins\n        require(revenue > 0, 'Invalid revenue amount');\n        require(address(this).balance >= revenue, 'Contract balance is insufficient to fulfill the transaction');\n        if (!msg.sender.send(revenue)) {\n            revert('Failed to send revenue to the seller');\n        } else {\n            emit Transfer(msg.sender, this, amount); // executes an event reflecting on the change\n            return revenue; // ends function and returns\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

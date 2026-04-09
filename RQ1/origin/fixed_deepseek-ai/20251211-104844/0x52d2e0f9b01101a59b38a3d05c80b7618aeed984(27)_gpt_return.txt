@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EtherGet",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getTokens",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and using .transfer() for 0 wei value to prevent potential reentrancy and improve gas efficiency",
+            "corrected_code": "function getTokens(uint num, address addr) public {\n        for(uint i = 0; i < num; i++) {\n            // Use .transfer() for 0 wei as it's safer and gas-efficient\n            // In Solidity 0.4.x, address.transfer() is available and throws on failure\n            addr.transfer(0);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

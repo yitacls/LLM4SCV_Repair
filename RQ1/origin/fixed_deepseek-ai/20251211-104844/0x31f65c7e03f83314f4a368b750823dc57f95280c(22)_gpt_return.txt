@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "UNT",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "No changes needed to state variable declaration",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "safeAdd",
+                "fix_info": "Added safe math modifier to prevent overflow in addition operations",
+                "modifier_code": "modifier safeAdd(uint256 a, uint256 b) {\n        require(a + b >= a, \"SafeMath: addition overflow\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by adding safe addition check and using SafeMath pattern to prevent integer overflow/underflow",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(balances[msg.sender] >= _value);\n        require(_to != address(0), \"Invalid recipient address\");\n        \n        balances[msg.sender] -= _value;\n        \n        // Safe addition using require to prevent overflow\n        require(balances[_to] + _value >= balances[_to], \"SafeMath: addition overflow\");\n        balances[_to] += _value;\n        \n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

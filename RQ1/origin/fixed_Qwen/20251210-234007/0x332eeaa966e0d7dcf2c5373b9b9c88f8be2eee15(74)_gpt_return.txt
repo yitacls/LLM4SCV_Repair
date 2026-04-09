@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EGFToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed totalSupply to use SafeMath for arithmetic operations to prevent overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mine",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations for addition",
+            "corrected_code": "function mine(address target, uint amount) public onlyOwner {\n        totalSupply = totalSupply.add(amount);\n        balanceOf[target] = balanceOf[target].add(amount);\n        emit AddSupply(amount);\n        emit Transfer(0, target, amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

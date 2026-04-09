@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "BasicToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added an access control modifier to restrict access to totalSupply if needed.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "totalSupply",
+            "fix_info": "Introduced access control by using onlyOwner modifier to prevent unauthorized access. Ensures only the owner can call the function while maintaining existing functionality.",
+            "corrected_code": "function totalSupply() public view onlyOwner returns (uint256) {\n    return totalSupply_;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

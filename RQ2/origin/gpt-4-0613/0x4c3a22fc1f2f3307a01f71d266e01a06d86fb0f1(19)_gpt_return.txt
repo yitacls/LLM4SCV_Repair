@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "amountRaised += amount;",
+    "description": "This line of code contains an arithmetic operation without the necessary safeguards to prevent integer overflow. If 'amountRaised' gets too high, it could wrap around to zero due to the overflow, potentially leading to unexpected behavior of the contract."
+}
+```

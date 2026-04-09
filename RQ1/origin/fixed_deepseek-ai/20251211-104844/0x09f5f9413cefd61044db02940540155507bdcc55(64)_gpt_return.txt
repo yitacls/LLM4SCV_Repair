@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "TwoCoinsOneMoonGame",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "feeCollector",
+                "fix_info": "Explicitly defined as payable address to handle Ether transfers",
+                "variable_code": "address payable public feeCollector;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "balance",
+                "fix_info": "Mapping address to uint256 to track user balances",
+                "variable_code": "mapping(address => uint256) public balance;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of call.value() and added reentrancy protection",
+                "corrected_code": "function withdraw() public {\n    // Store initial balances to prevent reentrancy\n    uint256 userBalance = balance[msg.sender];\n    uint256 feeBalance = balance[feeCollector];\n    \n    require(userBalance > 0, \"No balance to withdraw\");\n    \n    // Reset balances BEFORE making external calls\n    balance[msg.sender] = 0;\n    \n    // Withdraw fee collector's balance first if exists\n    if (feeBalance != 0) {\n        balance[feeCollector] = 0;\n        feeCollector.transfer(feeBalance);\n    }\n    \n    // Withdraw user's balance\n    msg.sender.transfer(userBalance);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

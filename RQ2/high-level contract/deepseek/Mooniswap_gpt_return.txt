@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Lines 331-341, rescueFunds function",
+    "description": "The rescueFunds function allows the contract owner to withdraw arbitrary amounts of any ERC20 token (including ETH) from the contract without proper restrictions. While there are checks to ensure token0 and token1 balances aren't decreased below current levels, these checks don't prevent the owner from withdrawing other tokens or ETH that may have been accidentally sent to the contract. Additionally, the function doesn't implement proper timelocks, multisig requirements, or emergency governance mechanisms, giving the owner unilateral withdrawal power which could be abused if the owner's private key is compromised or if the owner acts maliciously."
+}
+```

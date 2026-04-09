@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "adr.call.value(msg.value)(data);",
+            "description": "This statement allows for unchecked low-level calls to be made, which can result in unexpected behavior or security vulnerabilities. It is important to properly validate and handle the return value of the call to prevent potential issues."
+        }
+    ]
+}
+```

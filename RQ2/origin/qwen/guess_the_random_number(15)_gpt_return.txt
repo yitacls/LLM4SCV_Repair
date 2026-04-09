@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "answer = uint8(keccak256(block.blockhash(block.number - 1), now));",
+    "description": "The contract uses block.blockhash(block.number - 1) and now (block.timestamp) as sources of randomness, which are predictable and can be manipulated by miners. Since these values are publicly known before the transaction is included in a block, an attacker can compute the 'random' number off-chain and submit a winning guess. The blockhash of the previous block and the current timestamp are not truly random and can be exploited to always win the game."
+}
+```

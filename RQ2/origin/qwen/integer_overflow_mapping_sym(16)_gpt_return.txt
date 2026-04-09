@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Underflow",
+    "location": "map[k] -= v;",
+    "description": "The subtraction operation on the mapping value can cause an arithmetic underflow when the value v is greater than the current value stored at map[k]. Since the Solidity version is ^0.4.11, there is no built-in overflow/underflow protection. This can lead to unexpected behavior where the result wraps around to a very large number due to unsigned integer underflow."
+}
+```

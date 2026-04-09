@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "_result = DonQuixoteToken.balanceOf(_user);",
+    "description": "The function tokenOf allows any caller to query the token balance of any user address without proper access control or authorization checks. This could potentially expose sensitive balance information or be used in reconnaissance attacks. In Solidity ^0.4.25, this represents an access control vulnerability where the function should implement proper authorization mechanisms to restrict who can query user balances."
+}
+```

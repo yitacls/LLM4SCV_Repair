@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "OddsAndEvens",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "players",
+            "fix_info": "Added commit hash to prevent front-running by making player data immutable after submission",
+            "variable_code": "mapping(uint => Player) public players;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "commits",
+            "fix_info": "Added commit-reveal mechanism to prevent front-running",
+            "variable_code": "mapping(address => bytes32) public commits;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "play",
+            "fix_info": "Implemented commit-reveal scheme to prevent front-running vulnerability. Players now commit their choice hash first, then reveal it after opponent commits.",
+            "corrected_code": "function commit(bytes32 hash) payable {\n    if (msg.value != 1 ether) throw;\n    commits[msg.sender] = hash;\n}\n\nfunction reveal(uint number, uint nonce) {\n    if (commits[msg.sender] == 0) throw;\n    bytes32 hash = sha3(number, nonce);\n    if (commits[msg.sender] != hash) throw;\n    players[tot] = Player(msg.sender, number);\n    tot++;\n    if (tot == 2) andTheWinnerIs();\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

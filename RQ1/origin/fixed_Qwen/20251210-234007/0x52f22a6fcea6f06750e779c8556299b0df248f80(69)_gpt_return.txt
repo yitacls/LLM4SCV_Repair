@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TimedPonziToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferTokens",
+            "fix_info": "Fixed arithmetic underflow/overflow vulnerabilities by adding SafeMath-style checks for all balance operations and ensuring proper validation",
+            "corrected_code": "function transferTokens(address _from, address _to, uint256 _value) internal {\n\t\tif (balanceOfOld[_from] < _value)\n\t\t\trevert();\n\t\tif(now < nextSellTime[_from])\n\t\t\trevert();\n\t\tif (_to == address(this)) {\n\t\t\tsell(_value);\n\t\t} else {\n\t\t    int256 payoutDiff = (int256) (earningsPerShare * _value);\n\t\t    balanceOfOld[_from] = balanceOfOld[_from].sub(_value);\n\t\t    balanceOfOld[_to] = balanceOfOld[_to].add(_value);\n\t\t    payouts[_from] = payouts[_from].sub(payoutDiff);\n\t\t    payouts[_to] = payouts[_to].add(payoutDiff);\n\t\t}\n\t\tTransfer(_from, _to, _value);\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

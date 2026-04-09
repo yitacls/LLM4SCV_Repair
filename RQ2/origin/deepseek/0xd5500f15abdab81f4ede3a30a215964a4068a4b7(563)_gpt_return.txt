@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(bids[T_id][msg.sender])(\"\")",
+    "description": "The contract uses the low-level call.value() method to transfer funds before updating the state (setting bids[T_id][msg.sender] to 0). This creates a classic reentrancy vulnerability where a malicious contract receiving the ether can recursively call back into the withdraw() function before its balance is zeroed out, potentially draining all funds from the contract. The vulnerability is compounded by: 1) State update occurs after external call, 2) Use of call.value() forwards all remaining gas by default in Solidity <0.6.0, 3) The require(success) doesn't prevent reentrancy. In Solidity ^0.5.0, this pattern is particularly dangerous as call.value() doesn't have gas limits by default."
+}
+```

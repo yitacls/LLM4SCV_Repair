@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "CryptoCurrencyNetwork",
+    "contract_version": "^0.4.22",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Owner address should be explicitly declared to prevent implicit declaration issues",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict function access to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier and explicit ownership validation. Also improved error handling by checking if transfer succeeds.",
+            "corrected_code": "function withdraw() public onlyOwner {\n        uint256 etherBalance = address(this).balance;\n        require(etherBalance > 0, \"No Ether balance to withdraw\");\n        \n        // Reset the owner's balance before transfer to prevent reentrancy\n        address payable recipient = address(uint160(owner));\n        uint256 amount = etherBalance;\n        \n        // Transfer with explicit validation\n        recipient.transfer(amount);\n        \n        // Emit event for transparency\n        emit Withdrawal(recipient, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set the initial owner, which is a best practice in Solidity 0.4.22+",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Function tokensReceived",
+    "description": "In the function 'tokensReceived', it allows an external contract to be called while the current contract's state is not finalized. If the called contract calls back into the current contract, the states might be different from the First Come First Serve (FCFS) policy, causing unexpected behaviors such as balance updates or leading to further attack."
+}
+```

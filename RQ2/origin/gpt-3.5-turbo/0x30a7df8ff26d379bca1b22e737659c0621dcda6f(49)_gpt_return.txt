@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The 'tx.origin' should not be used for access control as it does not provide the most secure method. It is recommended to use 'msg.sender' instead to check the sender's address to enhance security."
+}
+```

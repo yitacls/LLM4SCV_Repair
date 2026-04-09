@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Integer Overflow/Underflow",
+            "location": "if(balances[_from] < _feeSmt + _value) revert();",
+            "description": "The addition '_feeSmt + _value' can overflow without safe math checks. If _feeSmt + _value exceeds 2^256-1, it will wrap around to a small number, potentially allowing transfers that should be prevented. This vulnerability affects multiple arithmetic operations in the contract including balances[_to] + _value, balances[msg.sender] + _feeSmt, and balances[_from] -= _value + _feeSmt."
+        },
+        {
+            "type": "Integer Overflow/Underflow", 
+            "location": "if(balances[_to] + _value < balances[_to] || balances[msg.sender] + _feeSmt < balances[msg.sender]) revert();",
+            "description": "While this check attempts to prevent overflow by verifying the result doesn't wrap around, it's insufficient as it only catches overflow after it occurs. The check itself uses unsafe addition that could overflow before the comparison. Additionally, this pattern doesn't prevent underflow in the subsequent subtraction 'balances[_from] -= _value + _feeSmt'."
+        },
+        {
+            "type": "Integer Underflow",
+            "location": "balances[_from] -= _value + _feeSmt;",
+            "description": "If _value + _feeSmt > balances[_from], this subtraction will underflow, resulting in an extremely large balance for _from due to unsigned integer wrap-around. Although there's a prior check 'if(balances[_from] < _feeSmt + _value) revert()', this uses the same unsafe addition that could overflow, potentially bypassing the check."
+        }
+    ]
+}
+```

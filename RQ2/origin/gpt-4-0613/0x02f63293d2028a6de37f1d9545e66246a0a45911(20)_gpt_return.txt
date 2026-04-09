@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "DragonsBurned += _amount;",
+    "description": "This contract might be vulnerable to an overflow attack. The amount of DragonsBurned can grow unlimitedly, potentially exceeding the limit for a uint256 value. An attacker could use this to cause an integer overflow, making the DragonsBurned variable reset to zero."
+} 
+```

@@ -1,0 +1,28 @@
+[{
+    "contract_name": "Hold",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "amountRaised",
+            "fix_info": "Ensure explicit uint256 type and use SafeMath to prevent overflow when incrementing. Kept visibility public for external inspection.",
+            "variable_code": "uint256 public amountRaised;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "SafeMathLibrary",
+            "fix_info": "Added SafeMath library (OpenZeppelin style) for safe arithmetic operations in Solidity ^0.4.25.",
+            "modifier_code": "library SafeMath {\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        if (a == 0) { return 0; }\n        uint256 c = a * b;\n        require(c / a == b);\n        return c;\n    }\n\n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b > 0);\n        uint256 c = a / b;\n        return c;\n    }\n\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a);\n        return a - b;\n    }\n\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a);\n        return c;\n    }\n}\n\n// Enable SafeMath for uint256 in the contract:\nusing SafeMath for uint256;",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Use SafeMath.add to safely increment amountRaised and explicitly use uint256 for amount to avoid arithmetic overflow.",
+            "corrected_code": "function () payable public {\n    uint256 amount = msg.value;\n    // use SafeMath to prevent overflow when increasing amountRaised\n    amountRaised = amountRaised.add(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

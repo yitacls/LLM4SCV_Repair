@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_recipient.send(1);",
+    "description": "The use of '.send()' to transfer Ether in this contract can be dangerous as it does not revert in case of failure. This can result in loss of funds if the receiver's fallback function consumes too much gas or if it is an external contract with a fallback function that has malicious logic. It is recommended to use '.transfer()' or implement more secure handling of the call."
+}
+```

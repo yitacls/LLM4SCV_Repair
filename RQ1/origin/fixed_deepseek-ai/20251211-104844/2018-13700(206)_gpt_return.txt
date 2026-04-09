@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "IPMCoin",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Unchanged - arithmetic vulnerability is fixed through safe math operations in functions",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Unchanged - arithmetic vulnerability is fixed through safe math operations in functions",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Unchanged - existing modifier remains the same",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by implementing safe addition using require statements and changed transfer event parameters to comply with common standards",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0));\n    require(mintedAmount > 0);\n    \n    // Safe addition to prevent overflow\n    require(balanceOf[target] + mintedAmount >= balanceOf[target]);\n    require(totalSupply + mintedAmount >= totalSupply);\n    \n    balanceOf[target] += mintedAmount;\n    totalSupply += mintedAmount;\n    \n    // Using standard transfer event format - from, to, value\n    Transfer(address(0), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

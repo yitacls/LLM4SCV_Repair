@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "ERC20token",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Added SafeMath library for uint256 to prevent arithmetic overflow/underflow vulnerabilities",
+            "variable_code": "using SafeMath for uint256;\nmapping(address => uint256) balances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "allowed",
+            "fix_info": "Added SafeMath library for uint256 to prevent arithmetic overflow/underflow vulnerabilities",
+            "variable_code": "mapping(address => mapping(address => uint256)) allowed;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "SafeMath",
+            "fix_info": "Added SafeMath library to protect against arithmetic vulnerabilities",
+            "modifier_code": "library SafeMath {\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        if (a == 0) {\n            return 0;\n        }\n        uint256 c = a * b;\n        require(c / a == b);\n        return c;\n    }\n    \n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b > 0);\n        uint256 c = a / b;\n        return c;\n    }\n    \n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a);\n        return a - b;\n    }\n    \n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a);\n        return c;\n    }\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Replaced vanilla arithmetic operations with SafeMath operations to prevent overflow/underflow, added zero address check, and improved require statement",
+            "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0));\n    require((balances[_from] >= _value) && (allowed[_from][msg.sender] >= _value) && (_value > 0));\n    \n    balances[_to] = balances[_to].add(_value);\n    balances[_from] = balances[_from].sub(_value);\n    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);\n    \n    Transfer(_from, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

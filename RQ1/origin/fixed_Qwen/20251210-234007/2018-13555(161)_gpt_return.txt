@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "JaxBox",
+    "contract_version": "^0.4.17",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow when calculating totalTokenToMint and updating balances",
+            "corrected_code": "function mintToken(uint256 tokensToMint) onlyOwner \n        {\n            uint256 totalTokenToMint = safeMul(tokensToMint, (10 ** 18));\n            balanceOf[owner] = safeAdd(balanceOf[owner], totalTokenToMint);\n            totalSupply = safeAdd(totalSupply, totalTokenToMint);\n            Transfer(0, owner, totalTokenToMint);\n        }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

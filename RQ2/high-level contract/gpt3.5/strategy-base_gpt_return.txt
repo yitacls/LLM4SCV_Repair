@@ -1,0 +1,23 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _swapUniswap",
+    "description": "The contract calls UniswapRouterV2 contract's swapExactTokensForTokens function without checking the return value which can result in unexpected behavior if the swap fails."
+},
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _swapUniswapWithPath",
+    "description": "The contract calls UniswapRouterV2 contract's swapExactTokensForTokens function without checking the return value which can result in unexpected behavior if the swap fails."
+},
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _swapSushiswap",
+    "description": "The contract calls UniswapRouterV2 contract's swapExactTokensForTokens function without checking the return value which can result in unexpected behavior if the swap fails."
+},
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function _swapSushiswapWithPath",
+    "description": "The contract calls UniswapRouterV2 contract's swapExactTokensForTokens function without checking the return value which can result in unexpected behavior if the swap fails."
+}
+```
+```

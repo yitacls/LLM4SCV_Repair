@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract has an access control vulnerability. It uses tx.origin for authorization, which is a security risk. It should be msg.sender instead. tx.origin represents the original initiator of the transaction, which can be a malicious contract. It means that if another contract called this one, the other contract could be able to gain the permissions of the original sender, potentially causing unexpected behavior or loss. In contrast, msg.sender refers to the immediate sender of the call, and would correctly restrict access to the intended parties only."
+}
+```

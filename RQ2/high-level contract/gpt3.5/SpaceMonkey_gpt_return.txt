@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "function transfer(address recipient, uint256 amount, bytes calldata data) external",
+            "description": "This function allows reentrancy by calling an external contract's tokenFallback function before completing the transfer. This can lead to possible reentrancy attacks."
+        },
+        {
+            "type": "SWC-119-Shadowing State Variables",
+            "location": "function allowance(address owner, address spender)",
+            "description": "The function parameter names (owner, spender) shadow state variable names, which can lead to confusion and potentially unintended behavior."
+        },
+        {
+            "type": "SWC-119-Shadowing State Variables",
+            "location": "function _setFees(uint256 holderFee, uint256 liquidityFee, uint256 extraLiquidityFee)",
+            "description": "This function sets multiple fee variables but the naming of the liquidityFee parameter can cause confusion as it shadows a state variable name."
+        },
+        {
+            "type": "SWC-119-Shadowing State Variables",
+            "location": "function _takeLiquidity(address sender, uint256 tLiquidity)",
+            "description": "The naming of the tLiquidity parameter shadows the state variable, which can lead to code maintenance issues and potential bugs."
+        }
+    ]
+}
+```

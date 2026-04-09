@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SimpleWallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sendMoney",
+            "fix_info": "Added check for low-level call success to prevent unchecked return values",
+            "corrected_code": "function sendMoney(address _target, uint _value) public onlyOwner {\n        // Check if the call was successful\n        require(_target.call.value(_value)(), \"Low level call failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

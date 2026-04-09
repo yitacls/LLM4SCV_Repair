@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "x2",
+    "contract_version": "0.5.8",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "makeDeposit",
+            "fix_info": "Fixed unchecked low level call vulnerability by adding success check for send() and reverting on failure",
+            "corrected_code": "function makeDeposit() internal {\n        require(msg.value == depositAmount);\n        Deposit memory newDeposit = Deposit(msg.sender, msg.value, msg.value.mul(percent).div(100), now, 0);\n        deposits.push(newDeposit);\n        if (depositors[msg.sender].length == 0) depositorsCount += 1;\n        depositors[msg.sender].push(deposits.length - 1);\n        amountRaised = amountRaised.add(msg.value);\n        emit OnDepositReceived(msg.sender, msg.value);\n        owner.transfer(msg.value.mul(10).div(100));\n        if (address(this).balance >= deposits[currentPaymentIndex].payout && deposits[currentPaymentIndex].paymentTime == 0) {\n            deposits[currentPaymentIndex].paymentTime = now;\n            require(deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout), \"Payment failed\");\n            emit OnPaymentSent(deposits[currentPaymentIndex].depositor, deposits[currentPaymentIndex].payout);\n            currentPaymentIndex += 1;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

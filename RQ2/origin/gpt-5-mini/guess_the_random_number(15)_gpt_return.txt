@@ -1,0 +1,5 @@
+{
+  "type": "BAD_RANDOMNESS",
+  "location": "answer = uint8(keccak256(block.blockhash(block.number - 1), now));",
+  "description": "The contract derives a random number from keccak256(block.blockhash(block.number - 1), now) and then casts it to uint8. Both inputs are predictable: block.blockhash(block.number - 1) is the hash of the previous block (readable from the chain) and now (block.timestamp) is settable/biased by the miner within a small range. Additionally, casting to uint8 reduces the outcome space to only 256 possible values. Together these make the 'random' value trivially predictable or manipulable (by miners or off-chain attackers who can compute the value), enabling an attacker to correctly guess the number with high probability. Use a secure source of randomness (e.g., an on-chain VRF like Chainlink VRF) or a commit-reveal scheme instead."
+}

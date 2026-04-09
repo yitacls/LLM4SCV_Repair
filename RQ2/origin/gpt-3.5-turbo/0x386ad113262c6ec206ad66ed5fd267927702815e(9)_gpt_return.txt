@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(amount);",
+    "description": "The use of <address>.send() is prone to failure as it does not handle potential exceptions or return error statuses. It is recommended to use .transfer() or implement additional error handling to manage failure scenarios."
+}
+```

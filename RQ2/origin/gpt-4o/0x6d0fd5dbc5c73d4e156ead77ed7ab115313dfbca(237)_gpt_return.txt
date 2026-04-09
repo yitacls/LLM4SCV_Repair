@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_itemId));",
+    "description": "The `tx.origin` check is used to verify the ownership of the `_itemId`. This is a known vulnerability because `tx.origin` can be manipulated in the context of certain phishing attacks. An attacker can trick a user into executing this function through a malicious contract, bypassing proper access control mechanisms. Using `msg.sender` instead is a safer and recommended approach to validate the sender."
+}
+```

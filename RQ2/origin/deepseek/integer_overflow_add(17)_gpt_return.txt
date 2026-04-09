@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "count += input;",
+    "description": "This addition operation is vulnerable to integer overflow in Solidity versions prior to 0.8.0. Since the contract uses ^0.4.19, there are no built-in overflow checks. An attacker could call this function with a large input value that causes 'count + input' to exceed the maximum value of uint256 (2^256 - 1), resulting in the value wrapping around to a small number instead of reverting. This could lead to incorrect accounting, token minting exploits, or other logic errors depending on how 'count' is used elsewhere in the contract."
+}
+```

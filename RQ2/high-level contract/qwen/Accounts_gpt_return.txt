@@ -1,0 +1,40 @@
+```json
+[{
+    "contract_name": "Accounts",
+    "contract_version": "0.5.14",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getBorrowETH",
+            "fix_info": "Fixed SWC-128 DoS with block gas limit by adding a limit to iterations to prevent excessive gas consumption",
+            "corrected_code": "    function getBorrowETH(\n        address _accountAddr\n    ) public view returns (uint256 borrowETH) {\n        uint tokenNum = globalConfig.tokenInfoRegistry().getCoinLength();\n        // Limit iterations to prevent gas exhaustion - SWC-128 fix\n        uint maxIterations = tokenNum > 50 ? 50 : tokenNum;\n        for(uint i = 0; i < maxIterations; i++) {\n            if(isUserHasBorrows(_accountAddr, uint8(i))) {\n                address tokenAddress = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n                uint divisor = INT_UNIT;\n                if(tokenAddress != ETH_ADDR) {\n                    divisor = 10 ** uint256(globalConfig.tokenInfoRegistry().getTokenDecimals(tokenAddress));\n                }\n                borrowETH = borrowETH.add(getBorrowBalanceCurrent(tokenAddress, _accountAddr).mul(globalConfig.tokenInfoRegistry().priceFromIndex(i)).div(divisor));\n            }\n        }\n        return borrowETH;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getDepositETH",
+            "fix_info": "Fixed SWC-128 DoS with block gas limit by adding a limit to iterations to prevent excessive gas consumption",
+            "corrected_code": "    function getDepositETH(\n        address _accountAddr\n    ) public view returns (uint256 depositETH) {\n        uint tokenNum = globalConfig.tokenInfoRegistry().getCoinLength();\n        // Limit iterations to prevent gas exhaustion - SWC-128 fix\n        uint maxIterations = tokenNum > 50 ? 50 : tokenNum;\n        for(uint i = 0; i < maxIterations; i++) {\n            if(isUserHasDeposits(_accountAddr, uint8(i))) {\n                address tokenAddress = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n                uint divisor = INT_UNIT;\n                if(tokenAddress != ETH_ADDR) {\n                    divisor = 10**uint256(globalConfig.tokenInfoRegistry().getTokenDecimals(tokenAddress));\n                }\n                depositETH = depositETH.add(getDepositBalanceCurrent(tokenAddress, _accountAddr).mul(globalConfig.tokenInfoRegistry().priceFromIndex(i)).div(divisor));\n            }\n        }\n        return depositETH;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getBorrowPower",
+            "fix_info": "Fixed SWC-128 DoS with block gas limit by adding a limit to iterations to prevent excessive gas consumption",
+            "corrected_code": "    function getBorrowPower(address _borrower) public view returns (uint256 power) {\n        uint tokenNum = globalConfig.tokenInfoRegistry().getCoinLength();\n        // Limit iterations to prevent gas exhaustion - SWC-128 fix\n        uint maxIterations = tokenNum > 50 ? 50 : tokenNum;\n        for(uint8 i = 0; i < maxIterations; i++) {\n            if (isUserHasDeposits(_borrower, i)) {\n                address token = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n                uint divisor = INT_UNIT;\n                if(token != ETH_ADDR) {\n                    divisor = 10**uint256(globalConfig.tokenInfoRegistry().getTokenDecimals(token));\n                }\n                power = power.add(getDepositBalanceCurrent(token, _borrower)\n                    .mul(globalConfig.tokenInfoRegistry().priceFromIndex(i))\n                    .mul(globalConfig.tokenInfoRegistry().getBorrowLTV(token)).div(100)\n                    .div(divisor)\n                );\n            }\n        }\n        return power;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "isAccountLiquidatable",
+            "fix_info": "Fixed SWC-128 DoS with block gas limit by adding a limit to iterations to prevent excessive gas consumption",
+            "corrected_code": "    function isAccountLiquidatable(address _borrower) external returns (bool) {\n        uint tokenNum = globalConfig.tokenInfoRegistry().getCoinLength();\n        // Limit iterations to prevent gas exhaustion - SWC-128 fix\n        uint maxIterations = tokenNum > 50 ? 50 : tokenNum;\n        for(uint8 i = 0; i < maxIterations; i++) {\n            if (isUserHasDeposits(_borrower, i) || isUserHasBorrows(_borrower, i)) {\n                address token = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n                globalConfig.bank().newRateIndexCheckpoint(token);\n            }\n        }\n        uint256 liquidationThreshold = globalConfig.liquidationThreshold();\n        uint256 liquidationDiscountRatio = globalConfig.liquidationDiscountRatio();\n        uint256 totalBorrow = getBorrowETH(_borrower);\n        uint256 totalCollateral = getDepositETH(_borrower);\n        return totalBorrow.mul(100) > totalCollateral.mul(liquidationThreshold) && totalBorrow.mul(100) <= totalCollateral.mul(liquidationDiscountRatio);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Fixed SWC-128 DoS with block gas limit by adding a limit to iterations to prevent excessive gas consumption",
+            "corrected_code": "    function claim(address _account) public onlyAuthorized returns(uint){\n        uint256 coinLength = globalConfig.tokenInfoRegistry().getCoinLength();\n        // Limit iterations to prevent gas exhaustion - SWC-128 fix\n        uint maxIterations = coinLength > 50 ? 50 : coinLength;\n        for(uint8 i = 0; i < maxIterations; i++) {\n            if (isUserHasDeposits(_account, i) || isUserHasBorrows(_account, i)) {\n                address token = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n                AccountTokenLib.TokenInfo storage tokenInfo = accounts[_account].tokenInfos[token];\n                uint256 currentBlock = getBlockNumber();\n                globalConfig.bank().updateMining(token);\n                if (isUserHasDeposits(_account, i)) {\n                    globalConfig.bank().updateDepositFINIndex(token);\n                    uint256 accruedRate = globalConfig.bank().getDepositAccruedRate(token, tokenInfo.getLastDepositBlock());\n                    calculateDepositFIN(tokenInfo.getLastDepositBlock(), token, _account, currentBlock);\n                    tokenInfo.deposit(0, accruedRate, currentBlock);\n                }\n                if (isUserHasBorrows(_account, i)) {\n                    globalConfig.bank().updateBorrowFINIndex(token);\n                    uint256 accruedRate = globalConfig.bank().getBorrowAccruedRate(token, tokenInfo.getLastBorrowBlock());\n                    calculateBorrowFIN(tokenInfo.getLastBorrowBlock(), token, _account, currentBlock);\n                    tokenInfo.borrow(0, accruedRate, currentBlock);\n                }\n            }\n        }\n        uint _FINAmount = FINAmount[_account];\n        FINAmount[_account] = 0;\n        return _FINAmount;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

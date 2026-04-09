@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(owner, balance);",
+    "description": "The low-level call to transfer tokens does not check the return value, making the contract vulnerable to silent failures. If the token contract returns false on failure (as per ERC20 standard) or reverts, this failure is ignored, potentially leaving tokens stranded. Additionally, since this occurs in a loop before selfdestruct, the entire destroy operation could fail silently. The call should be replaced with token.transfer(owner, balance) or the return value should be explicitly checked."
+}
+```

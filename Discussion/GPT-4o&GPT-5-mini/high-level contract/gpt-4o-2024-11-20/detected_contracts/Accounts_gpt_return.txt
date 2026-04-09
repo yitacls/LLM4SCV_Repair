@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "for(uint i = 0; i < tokenNum; i++)",
+    "description": "The `getDepositETH` and `getBorrowETH` functions iterate through all tokens in the `tokenInfoRegistry` for a given user. If the number of tokens (`tokenNum`) is large, this can lead to exceeding the block gas limit, causing transactions to fail. This creates a Denial of Service (DoS) vulnerability, particularly for accounts with a large number of tokens."
+}
+```

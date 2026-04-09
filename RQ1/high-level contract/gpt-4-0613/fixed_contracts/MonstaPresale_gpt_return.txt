@@ -1,0 +1,27 @@
+```json
+[
+    {
+        "contract_name": "MonstaPresale",
+        "contract_version": "0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "reclaimBNB",
+                "fix_info": "Added a check to ensure that there are sufficient funds in the contract at the time of withdrawal by the owner in order to mitigate the risk of a reentrancy attack.",
+                "corrected_code": "
+                  /**
+                  * @dev Transfer all BNB held by the contract to the owner.
+                  */
+                  function reclaimBNB() external onlyOwner {
+                    uint256 balance = address(this).balance;
+                    require(balance > 0, 'No BNB to reclaim');
+                    (bool success, ) =  msg.sender.call{value: balance}("");
+                    require(success, 'Reclaiming BNB failed');
+                  }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

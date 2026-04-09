@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.value(msg.value)(data)",
+    "description": "The low-level .call() method is used without checking the return value. This can lead to silent failures where contract calls that fail (e.g., due to running out of gas, reverts, or non-existent contracts) will not propagate errors to the caller. In Solidity 0.4.24, .call() returns a boolean indicating success, but this return value is ignored. This could cause the contract to continue execution as if the external call succeeded, potentially leading to inconsistent state or loss of funds."
+}
+```

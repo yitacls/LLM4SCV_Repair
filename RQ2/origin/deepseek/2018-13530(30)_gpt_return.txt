@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability - Integer Overflow",
+    "location": "balanceOf[target] += amount; totalSupply += amount;",
+    "description": "In Solidity ^0.4.13, arithmetic operations are susceptible to integer overflows/underflows due to the absence of built-in overflow protection. The addition operations in this contract could overflow when balanceOf[target] + amount exceeds 2^256 - 1 or when totalSupply + amount exceeds 2^256 - 1, causing values to wrap around to zero. This could allow attackers to manipulate token balances or total supply. The vulnerability is exacerbated because: 1) There are no SafeMath checks, 2) No validation on the amount parameter, 3) No upper bounds checking. This was fixed in Solidity 0.8.0 with automatic overflow checks."
+}
+```

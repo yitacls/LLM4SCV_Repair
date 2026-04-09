@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "function updateScore(uint8 _newScore), specifically within the for-loop that iterates over beneficiaries",
+        "description": "The contract attempts to transfer tokens to beneficiaries using `IERC20(token).transfer`. If one beneficiary's transfer fails (due to an issue with their address, wallet, or any other reason), it will prevent the rest of the loop from completing and could block the execution of this function. This potentially allows one failed transfer to disrupt the entire vesting process, creating a denial-of-service scenario."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function updateScore(uint8 _newScore), specifically in the calculation of `remainingAmount` and `releasableAmount`",
+        "description": "Even though Solidity 0.8.x provides built-in overflow and underflow protection, the usage of unchecked arithmetic in `remainingAmount = lock.totalAmount.sub(lock.releasedAmount)` and `releasableAmount = _newScore.mul(remainingAmount).div(100)` can make calculations vulnerable to errors if any unexpected condition occurs, like extreme input values or logical inconsistencies in the state variables."
+    }
+]
+```

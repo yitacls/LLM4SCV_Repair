@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "Oraclize",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "cbAddresses",
+            "fix_info": "Made private for better encapsulation and access control",
+            "variable_code": "mapping(address => address) private cbAddresses;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to ensure only contract owner can call sensitive functions",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Only owner can call this function\"); _; }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "notZeroAddress",
+            "fix_info": "Added validation modifier to prevent zero address assignments",
+            "modifier_code": "modifier notZeroAddress(address _addr) { require(_addr != address(0), \"Address cannot be zero\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setCbAddress",
+            "fix_info": "Added new secure function to set callback addresses with proper access control",
+            "corrected_code": "function setCbAddress(address _cbAddress) public onlyOwner notZeroAddress(_cbAddress) { cbAddresses[msg.sender] = _cbAddress; }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "cbAddress",
+            "fix_info": "Fixed access control vulnerability by adding proper validation, removing tx.origin dependency, and ensuring only authorized users can access their callback addresses",
+            "corrected_code": "function cbAddress() public view returns (address _cbAddress) { require(cbAddresses[msg.sender] != address(0), \"No callback address set for sender\"); _cbAddress = cbAddresses[msg.sender]; }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

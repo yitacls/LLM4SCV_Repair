@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value( fomo3d.getBuyPrice() *2 )();",
+    "description": "The call function is used without explicitly checking the return value, which can lead to unexpected behavior if the call fails. This can result in loss of funds or other security risks."
+}
+```

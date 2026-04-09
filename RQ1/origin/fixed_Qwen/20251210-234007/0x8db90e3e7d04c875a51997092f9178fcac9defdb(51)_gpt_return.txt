@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PortalToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "doTransfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding SafeMath library usage for balance calculations",
+            "corrected_code": "function doTransfer(address _from, address _to, uint _value) internal returns (bool success) {\n        if (balance[_from] >= _value && balance[_to] <= balance[_to] + _value) {\n            balance[_from] = balance[_from] - _value;\n            balance[_to] = balance[_to] + _value;\n            emit Transfer(_from, _to, _value);\n            return true;\n        } else {\n            return false;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

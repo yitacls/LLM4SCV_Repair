@@ -1,0 +1,34 @@
+As mentioned, the vulnerability in the code lies in possibility of integer overflow and underflow in the "_calcTick" function. In this function, calculations are performed with int24 types which might not necessarily be able to handle such large numbers and might wrap around from their maximum to minimum values or vice versa(i.e., overflow or underflow). This can be prevented by introducing safe math operations.
+
+Here is the corrected "_calcTick" function encapsulated in the required JSON format:
+
+```json
+[
+  {
+    "contract_name": "IdleLiquidityModule",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "_calcTick",
+        "fix_info": "Added SafeMath for int24 to avoid overflow and underflow",
+        "corrected_code": "function _calcTick(uint256 tokenId, uint24 fee) internal view returns (int24, int24) {\n\t(, , , , , int24 tickLower, int24 tickUpper, , , , , ) = INonfungiblePositionManager(\n\tuniswapAddressHolder.nonfungiblePositionManagerAddress())\n\t.positions(tokenId);\n\n\tint24 tickDelta = tickUpper.sub(tickLower);\n\n\tIUniswapV3Pool pool = IUniswapV3Pool(\n\tUniswapNFTHelper._getPoolFromTokenId(tokenId,\n\tINonfungiblePositionManager(uniswapAddressHolder.nonfungiblePositionManagerAddress()),\n\tuniswapAddressHolder.uniswapV3FactoryAddress())\n\t);\n\n\t(, int24 tick, , , , , ) = pool.slot0();\n\tint24 tickSpacing = int24(fee).div(50);\n\treturn (((tick.sub(tickDelta)).div(tickSpacing)).mul(tickSpacing), ((tick.add(tickDelta)).div(tickSpacing)).mul(tickSpacing));\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```
+
+Noteworthy changes are as follows:
+
+1) "added SafeMath for int24" to avoid overflow or underflow: This was done by replacing regular operations  with their safe math operations (.sub, .add, .div, .mul) to prevent overflow or underflow. This ensures excessive large or small values don't result in unexpected outcome by wrapping around to their minimum or maximum values.  
+
+Be sure to also import SafeMath for int24 into your contract:
+
+`import"@openzeppelin/contracts/math/SignedSafeMath.sol";`
+
+Then, apply it to the int24 data type:
+
+`using SignedSafeMath for int24;`

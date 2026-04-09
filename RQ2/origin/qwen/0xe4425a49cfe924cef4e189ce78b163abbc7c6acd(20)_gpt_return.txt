@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if (releaseWallet.send(address(this).balance)) {",
+    "description": "The contract is vulnerable to reentrancy attack because it performs external call (releaseWallet.send) after transferring tokens but before fully updating the contract state. An malicious contract could re-enter the fallback function before the daily limit check is properly enforced, potentially draining the token balance. The external call should be performed after all state changes and validations are completed."
+}
+```

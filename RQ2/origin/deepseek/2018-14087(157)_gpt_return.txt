@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "uint amount = msg.value * buyPrice;",
+    "description": "This code is vulnerable to integer overflow. Since both msg.value and buyPrice are integers (msg.value is in wei, buyPrice is tokens per wei), multiplying them without proper overflow protection can result in an incorrect amount if the product exceeds 2^256 - 1, especially on older Solidity versions (<0.8.0) that don't have built-in overflow checks. This could allow attackers to receive fewer tokens than intended or cause other unexpected behavior in the token transfer."
+}
+```

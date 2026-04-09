@@ -1,0 +1,5 @@
+{
+    "type": "access_control",
+    "location": "function addMeByRC() public {\n    require(tx.origin == owner);  // fault line\n    rc[ msg.sender ]  = true;\n    emit NewRC(msg.sender);\n}",
+    "description": "The function uses tx.origin for authorization (require(tx.origin == owner)). Using tx.origin to authenticate the caller is unsafe because tx.origin is the original external account that started the transaction, not the immediate caller. An attacker can exploit this by having the owner (an EOA) interact with a malicious contract that forwards a call to TokenSale.addMeByRC; tx.origin will still be the owner and the check will pass, allowing the attacker-controlled intermediary (msg.sender) to gain privileged state (rc[msg.sender] = true). The correct check is to use msg.sender (require(msg.sender == owner)) or, better, use a well-audited access control pattern such as Ownable and an onlyOwner modifier. In general, avoid tx.origin for access control to prevent phishing/contract-call delegation attacks."
+}

@@ -1,0 +1,11 @@
+```json
+{
+    "name": "ERC20Standard",
+    "version": "^0.4.11",
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "The contract checks whether the origin of the transaction is the owner. This means that an attacker could reuse a transaction by the owner to mint tokens. 'tx.origin' is the externally owned address that initiated the transaction chain, which can be dangerous if used for authentication. This allows a potential attacker to impersonate the contract owner and execute a function with their permissions."
+    }
+}
+```

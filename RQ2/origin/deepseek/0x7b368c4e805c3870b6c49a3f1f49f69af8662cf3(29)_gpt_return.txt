@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { acc.balance-=_am; ... }",
+    "description": "The contract performs an external call via 'msg.sender.call.value(_am)()' before updating the internal state (acc.balance). This violates the checks-effects-interactions pattern. If msg.sender is a malicious contract, its fallback or receive function can recursively call back into the Collect function before 'acc.balance' is reduced, allowing the attacker to drain funds by repeatedly withdrawing the same balance. The vulnerability is exacerbated by using the low-level .call() method which forwards all remaining gas by default in Solidity ^0.4.25."
+}
+```

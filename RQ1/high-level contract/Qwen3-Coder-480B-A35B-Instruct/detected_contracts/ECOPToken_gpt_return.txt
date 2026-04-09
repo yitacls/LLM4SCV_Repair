@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "transferOwnership function in owned contract",
+        "description": "The transferOwnership function does not check the return value of the address transfer operation, which could lead to unexpected behavior if the ownership transfer fails silently."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "pwr function in SafeMath library",
+        "description": "The pwr function in SafeMath library has an unchecked call return value issue marked by the comment SWC-104-Unchecked Call Return Value: L196 - L210, where the mul function call within the loop may not properly handle overflow scenarios."
+    }
+]
+```

@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function deposit(address dst, uint256 wad) public returns (uint256 transferAmt)",
+        "description": "The deposit function is vulnerable to reentrancy attacks because it calls an external contract (IERC20(underlying).transferFrom()) before updating the contract's internal state (underlyingBalance and balanceOf). An attacker could potentially re-enter this function and manipulate the state."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function deposit(address dst) public override returns (uint256 transferAmt)",
+        "description": "This deposit function is also vulnerable to reentrancy as it performs external calls (IERC20(underlying).balanceOf()) before updating the internal state (underlyingBalance and balanceOf). An attacker could re-enter and cause inconsistent state updates."
+    },
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "function deposit(address dst) public override returns (uint256 transferAmt)",
+        "description": "The deposit function's behavior depends on the order of transactions. Since it calculates the transfer amount based on the difference between the current balance and underlyingBalance, external transfers to the contract can affect the calculation, leading to unexpected behavior or manipulation."
+    }
+]
+```

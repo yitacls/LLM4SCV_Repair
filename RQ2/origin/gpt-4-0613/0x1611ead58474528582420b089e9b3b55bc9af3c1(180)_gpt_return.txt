@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(target.call.value(value)());",
+    "description": "The contract lacks access control mechanisms, allowing any user to call the sendEthValue function and potentially transfer Ether to any address they specify. Additionally, the use of low-level call function has been deprecated in later Solidity versions due to associated security risks. Anyone can call this function and execute arbitrary function calls due to its lack of protections, meaning the contract's Ether could be drained."
+}
+```

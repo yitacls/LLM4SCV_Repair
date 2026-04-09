@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "TimedCrowdsale",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "saleEndTime",
+                "fix_info": "Added immutable end time variable to prevent miner manipulation",
+                "variable_code": "uint256 public immutable saleEndTime;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Added constructor to initialize sale end time at deployment",
+                "corrected_code": "constructor(uint256 _saleEndTime) public {\n        require(_saleEndTime > block.timestamp, \"End time must be in the future\");\n        saleEndTime = _saleEndTime;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "isSaleFinished",
+                "fix_info": "Changed to use immutable sale end time instead of hardcoded timestamp to prevent miner timestamp manipulation",
+                "corrected_code": "function isSaleFinished() view public returns (bool) {\n        return block.timestamp >= saleEndTime;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

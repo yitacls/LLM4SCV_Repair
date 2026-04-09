@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "RUSS_PFXXXVIII_III_883",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Add overflow check before updating balances.",
+                "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {								
+                    require(balanceOf[msg.sender] >= value && balanceOf[to] + value >= balanceOf[to]);							
+                    balanceOf[msg.sender] -= value;  
+                    balanceOf[to] += value;            
+                    emit Transfer(msg.sender, to, value);							
+                    return true;							
+                }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

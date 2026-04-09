@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value( fomo3d.getBuyPrice() *2 )();",
+    "description": "The low-level call operation does not check the return value, which means the function will not detect if the call fails. In Solidity ^0.4.24, low-level calls like .call.value() return a boolean indicating success or failure, but this return value is not being checked. If the call fails (e.g., due to insufficient gas, reverts in the called contract, or other issues), the function will continue execution as if the call succeeded, potentially leading to unexpected behavior or loss of funds."
+}
+```

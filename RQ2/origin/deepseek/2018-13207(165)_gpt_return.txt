@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[this] += amount; balanceOf[msg.sender] -= amount; amount * sellPrice",
+    "description": "The contract uses Solidity 0.4.2 which does not have built-in SafeMath protection. The arithmetic operations in balanceOf[this] += amount and balanceOf[msg.sender] -= amount could underflow if amount > balanceOf[msg.sender] (though there's a check, it might be bypassed in edge cases). More critically, amount * sellPrice could overflow if the product exceeds 2^256-1. This could allow attackers to pay much less Ether than intended or cause unexpected behavior when calculating payment amounts."
+}
+```

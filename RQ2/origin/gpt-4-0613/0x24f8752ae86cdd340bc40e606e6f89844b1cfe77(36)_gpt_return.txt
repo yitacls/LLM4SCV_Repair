@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amount);",
+    "description": "This vulnerability occurs because the .send() function is used to transfer ether which may fail silently, causing issues within the smart contract. Using .send() rather than .transfer() doesn't throw an exception when there are failures, allowing execution to continue. The low-level .call() function has similar behavior. The value of the transfer is not checked, which can lead to re-entrancy attacks if followed by a state change that the send() could affect."
+}
+```

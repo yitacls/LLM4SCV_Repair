@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function isValidCDP (lines 156-166)",
+        "description": "The calculation `collateralValueTimes100Point00000 / debtValueAdjusted` on line 165 can potentially overflow if `collateralValueTimes100Point00000` becomes excessively large due to the multiplication `collateralValue * 10000000` (line 159). While Solidity 0.8+ automatically checks for overflows, proper testing and input validation are necessary to ensure correct behavior in edge cases."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "_calculateValues function (lines 230-240)",
+        "description": "Within the `_calculateValues` function at line 237, the multiplication `collateralValue * 10000000` may result in an overflow. Although Solidity 0.8+ includes built-in checks for overflow errors, relying solely on these checks can lead to unexpected issues in contract execution when large values are used as inputs."
+    }
+]
+```

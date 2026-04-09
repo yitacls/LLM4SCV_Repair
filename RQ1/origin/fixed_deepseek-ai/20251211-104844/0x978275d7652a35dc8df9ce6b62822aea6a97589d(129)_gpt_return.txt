@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "RefStorage",
+    "contract_version": "0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "prize",
+            "fix_info": "Made private to prevent external reading of sensitive data",
+            "variable_code": "uint256 private prize;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "restricted",
+            "fix_info": "Enhanced modifier to validate that only authorized accounts can call restricted functions",
+            "modifier_code": "modifier restricted() {\n    require(msg.sender == owner || authorized[msg.sender], \"Not authorized\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "newTicket",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender, added reentrancy guard, and improved validation",
+            "corrected_code": "function newTicket() external restricted nonReentrant {\n    players[msg.sender].tickets++;\n    uint256 tickets = players[msg.sender].tickets;\n    uint256 checkpoint = players[msg.sender].checkpoint;\n    address referrer = players[msg.sender].referrer;\n    \n    if (referrer != address(0) && (tickets - checkpoint) % interval == 0) {\n        uint256 totalPrize = prize * 2;\n        uint256 contractBalance = token.balanceOf(address(this));\n        \n        if (contractBalance >= totalPrize) {\n            players[msg.sender].checkpoint = tickets;\n            \n            require(token.transfer(msg.sender, prize), \"Transfer to player failed\");\n            emit BonusSent(msg.sender, prize);\n            \n            require(token.transfer(referrer, prize), \"Transfer to referrer failed\");\n            emit BonusSent(referrer, prize);\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

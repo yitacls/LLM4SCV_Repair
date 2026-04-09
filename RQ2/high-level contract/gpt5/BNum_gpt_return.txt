@@ -1,0 +1,28 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "SWC-101-Integer Overflow and Underflow",
+      "location": "function bmul(uint a, uint b) - lines:\n    uint c0 = a * b;\n    require(a == 0 || c0 / a == b, \"ERR_MUL_OVERFLOW\");",
+      "description": "The code performs the raw multiplication 'c0 = a * b' using Solidity 0.5.12, which does not automatically revert on overflow. Although the subsequent require attempts to detect overflow (by checking c0 / a == b), the initial multiplication will wrap on overflow before the check. This pattern is fragile and flagged as an integer overflow risk. If an overflow occurs, the multiplication result wraps and the require will correctly revert in most cases, but performing unchecked arithmetic before validation is error-prone and can lead to subtle bugs. Recommended mitigation: use a SafeMath-style checked multiplication (or upgrade to Solidity >=0.8 where arithmetic checks are built-in) or perform validation on operands prior to the multiplication.",
+      "snippet": "function bmul(uint a, uint b)\n    internal pure\n    returns (uint)\n{\n    uint c0 = a * b;\n    require(a == 0 || c0 / a == b, \"ERR_MUL_OVERFLOW\");\n    uint c1 = c0 + (BONE / 2);\n    require(c1 >= c0, \"ERR_MUL_OVERFLOW\");\n    uint c2 = c1 / BONE;\n    return c2;\n}"
+    },
+    {
+      "type": "SWC-101-Integer Overflow and Underflow",
+      "location": "function bdiv(uint a, uint b) - lines:\n    uint c0 = a * BONE;\n    require(a == 0 || c0 / a == BONE, \"ERR_DIV_INTERNAL\");",
+      "description": "The multiplication 'c0 = a * BONE' can overflow in Solidity 0.5.12 before the subsequent overflow-detection require() is evaluated. As with bmul, the check tries to detect wrapping after the fact, but performing the unchecked multiplication is unsafe and may cause wrapped values to propagate until the require triggers, increasing risk of subtle failures. Recommended mitigation: validate operands before multiplication, use SafeMath multiplication, or compile with Solidity >=0.8 where overflow reverts automatically.",
+      "snippet": "function bdiv(uint a, uint b)\n    internal pure\n    returns (uint)\n{\n    require(b != 0, \"ERR_DIV_ZERO\");\n    uint c0 = a * BONE;\n    require(a == 0 || c0 / a == BONE, \"ERR_DIV_INTERNAL\"); // bmul overflow\n    uint c1 = c0 + (b / 2);\n    require(c1 >= c0, \"ERR_DIV_INTERNAL\"); //  badd require\n    uint c2 = c1 / b;\n    return c2;\n}"
+    },
+    {
+      "type": "SWC-101-Integer Overflow and Underflow",
+      "location": "function bpowApprox(uint base, uint exp, uint precision) - line:\n    uint bigK = i * BONE;",
+      "description": "The expression 'i * BONE' can overflow if loop counter 'i' grows large enough. There is no explicit check for overflow on bigK. Although the loop condition (term >= precision) typically limits 'i', a crafted input or unexpected state values could cause 'i' to increase and the multiplication to wrap, leading to incorrect computations or downstream errors. Recommended mitigation: check that 'i' stays within safe bounds before multiplying or use SafeMath for this multiplication.",
+      "snippet": "for (uint i = 1; term >= precision; i++) {\n    uint bigK = i * BONE;\n    (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));\n    ...\n}"
+    },
+    {
+      "type": "SWC-101-Integer Overflow and Underflow",
+      "location": "function bpowApprox(uint base, uint exp, uint precision) - line:\n    term = bmul(term, bmul(c, x));",
+      "description": "Nested bmul calls perform multiplications inside bmul which compute 'a * b' prior to internal overflow checks. While bmul contains a require to detect overflow, the raw multiplication still occurs and will wrap in Solidity 0.5.12 before being validated. If an overflow happens, the contract will revert (due to the subsequent require), but performing unchecked intermediate arithmetic remains a risky pattern. It is safer to avoid constructing chained multiplications that rely on internal post-multiplication checks. Recommended mitigation: break the operations to validate inputs before multiplication or use SafeMath to make intent explicit.",
+      "snippet": "for (uint i = 1; term >= precision; i++) {\n    ...\n    term = bmul(term, bmul(c, x));\n    term = bdiv(term, bigK);\n    ...\n}"
+    }
+  ]
+}

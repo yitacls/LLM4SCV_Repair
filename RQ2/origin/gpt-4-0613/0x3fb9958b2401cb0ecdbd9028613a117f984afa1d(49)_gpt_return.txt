@@ -1,0 +1,12 @@
+```json
+{
+    "contract_name": "ERC20Standard",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract uses tx.origin for access control, which is a security risk. In Solidity, tx.origin is the address of the sender of the transaction, while msg.sender is the address from which the current function call was made. A malignant contract could trick the contract into believing it’s the owner and call this function. Therefore, the owner-based access control check might be bypassed if a function call is made from a contract that is owned by the attacker. Switching to msg.sender is recommended as it only refers to the sender of the current external function call."
+        }
+    ]
+}
+```

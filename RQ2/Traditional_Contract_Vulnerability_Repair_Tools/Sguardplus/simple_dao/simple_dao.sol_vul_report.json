@@ -1,0 +1,1 @@
+{"REN": [{"function_name": "SimpleDAO::withdraw", "strategys": [{"type": "move", "repair_location": [19, 20]}, {"type": "modifier", "repair_location": []}]}], "IOU": [], "TXO": [], "UCR": [{"function_name": "SimpleDAO::withdraw", "strategys": [{"type": "check", "repair_location": [19]}]}], "USI": []}

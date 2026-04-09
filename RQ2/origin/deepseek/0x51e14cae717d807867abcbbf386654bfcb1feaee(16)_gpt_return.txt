@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow (Arithmetic)",
+    "location": "balanceOf[to] += value;",
+    "description": "In Solidity ^0.4.21, arithmetic operations are unchecked by default, meaning no validation occurs for integer overflow/underflow. In this transfer function, the operation 'balanceOf[to] += value;' could overflow if the sum exceeds the maximum value for uint256 (2^256 - 1). This could be exploited by a malicious actor who transfers a large amount to another address, causing the balance to wrap around to a small value. This vulnerability was mitigated in Solidity 0.8.0 with the introduction of built-in overflow checks. To fix this, either upgrade the compiler to 0.8.0+ or use SafeMath library for arithmetic operations in this version."
+}
+```

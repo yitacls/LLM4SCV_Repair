@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The send() function returns a boolean indicating success or failure, but this return value is not checked. In Solidity 0.4.24, send() forwards only 2,300 gas to the recipient, which may be insufficient for any fallback function execution, causing the transfer to fail silently. Since the return value is not verified, the contract will continue executing (updating atBlock[msg.sender] and invested[msg.sender]) even if the transfer fails, potentially locking user funds or causing incorrect state updates. Additionally, the code does not follow the Checks-Effects-Interactions pattern, making it vulnerable to reentrancy attacks when combined with other vulnerabilities, though the limited gas from send() reduces this specific risk."
+}
+```

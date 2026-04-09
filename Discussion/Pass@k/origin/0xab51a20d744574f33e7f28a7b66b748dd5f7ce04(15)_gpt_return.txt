@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "EthDickMeasuringGame",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed TIME_MANIPULATION vulnerability by removing the use of 'now' and using 'block.timestamp' instead.",
+                "corrected_code": "function () public payable {\n        require(largestPenis < msg.value);\n        largestPenis = msg.value;\n        withdrawDate = block.timestamp + 2 days;\n        largestPenisOwner = msg.sender;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

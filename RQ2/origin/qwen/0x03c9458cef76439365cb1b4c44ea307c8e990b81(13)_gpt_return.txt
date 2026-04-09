@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authentication, which is vulnerable to phishing attacks. Malicious contracts can trick the owner into calling the transfer function, as tx.origin will still reference the original user (owner) rather than the malicious contract. This allows unauthorized access to the transfer function. The fix is to use msg.sender instead of tx.origin for authentication."
+}
+```

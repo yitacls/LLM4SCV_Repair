@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(etherBalance);",
+    "description": "The withdraw() function is protected by the onlyOwner modifier, which is correct in restricting access. However, the vulnerability is more subtle: this line directly transfers the contract's entire ether balance to the owner's address without any withdrawal pattern or pull payment mechanism. In case the owner is a contract address with a fallback function that reverts (e.g., due to gas limits or intentional behavior) or runs out of gas, the transfer will fail, potentially locking all funds in the contract permanently. While the access control itself is not breached, this pattern introduces a denial-of-service risk for the legitimate owner. A safer approach would be to use a withdrawal pattern where the owner withdraws to a designated address or uses call with gas stipends, but note that the contract uses Solidity ^0.4.22, where transfer() forwards a fixed 2300 gas which is insufficient for complex fallback functions."
+}
+```

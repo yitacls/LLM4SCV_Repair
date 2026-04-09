@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EthereumLegit",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerabilities by using SafeMath operations for balance calculations and ether transfer validation",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balanceOf[msg.sender] < amount ) throw;\n        balanceOf[this] = balanceOf[this].add(amount);\n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n        if (!msg.sender.send(amount * sellPrice)) {\n            throw;\n        } else {\n            Transfer(msg.sender, this, amount);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

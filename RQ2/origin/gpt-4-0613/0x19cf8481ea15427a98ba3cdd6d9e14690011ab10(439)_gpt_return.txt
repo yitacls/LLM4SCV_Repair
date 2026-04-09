@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance - SubX);",
+    "description": "This contract's function PartialFundsTransfer makes a low-level call using .send(). There is no check on the .send() method's return value, which can cause a potential risk if the sending of Ether fails. The send() function in Solidity does not throw an exception when the call fails, instead returns false. Therefore, failing to handle the false-case may lead to unexpected behavior. It is recommended to replace it with the transfer() function which throws an exception on failure, or consider handling the false case accordingly."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "In Solidity versions prior to 0.5.0, the `send()` function returns a boolean value indicating the success or failure of the ether transfer. This return value is not checked, which means if the transfer fails (e.g., due to out-of-gas, the recipient contract's fallback function reverting, or the recipient address being a contract not designed to receive ether), the contract will continue execution as if the transfer succeeded. This can lead to loss of funds or inconsistent contract state. The recommended fix is to either use `transfer()` (which automatically reverts on failure in versions <0.5.0) or explicitly check the return value and revert on failure: require(wallet.send(msg.value))."
+}
+```

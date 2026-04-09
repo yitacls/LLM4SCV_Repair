@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "MultiPartnersWallet",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Marked owner as immutable for better gas optimization and security",
+            "variable_code": "address public immutable owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Created modifier to replace tx.origin check with msg.sender owner check",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier and changed selfdestruct to address payable cast",
+            "corrected_code": "function clear() public onlyOwner {\n        selfdestruct(payable(owner));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

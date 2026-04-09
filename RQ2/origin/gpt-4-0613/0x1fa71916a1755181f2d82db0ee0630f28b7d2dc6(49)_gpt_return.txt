@@ -1,0 +1,12 @@
+```json
+{
+  "contractName": "BankhadCoin",
+  "vulnerabilities": [
+    {
+      "type": "access_control",
+      "location": "require(tx.origin == owner);",
+      "description": "The access control mechanism in this contract is based on the 'tx.origin', which can lead to vulnerabilities if a contract forwards a call to another contract. 'tx.origin' refers to the original sender of the transaction, this can be manipulated for malicious intents, leading to attacks like phishing attacks. The use of 'msg.sender' is recommended over using 'tx.origin' since it refers to the sender of the current external function call, meaning the immediate sender."
+    }
+  ]
+}
+```

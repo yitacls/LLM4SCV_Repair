@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "GemstoneToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Kept original mapping but protected against overflow in mintToken function",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed from default uint256 to use SafeMath protection against overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Kept original owner restriction without modification",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding overflow checks, added event emission for solidity version 0.4.16",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Addition overflow detected\");\n    \n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Total supply overflow detected\");\n    \n    balanceOf[target] = newBalance;\n    totalSupply = newTotalSupply;\n    \n    emit Transfer(address(0), this, mintedAmount);\n    emit Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

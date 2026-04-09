@@ -1,0 +1,21 @@
+[{
+    "contract_name": "PwnFoMo3D",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "fomo3d",
+            "fix_info": "Keep a typed reference to the external contract address. Ensure an IFomo3D interface (declaring getBuyPrice) is available in the contract scope so calls are type-checked. If IFomo3D is not present, declare it as: interface IFomo3D { function getBuyPrice() external view returns (uint256); }",
+            "variable_code": "address public fomo3d;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "gotake",
+            "fix_info": "Prevent unchecked low-level call by checking the return boolean and validating the contract balance before sending. Preserve original behavior of forwarding value to the fomo3d fallback by using call with empty calldata, but require success so failures do not silently pass.",
+            "corrected_code": "function gotake() public {\n    // Query the current buy price from the external FoMo3D contract\n    uint256 price = IFomo3D(fomo3d).getBuyPrice();\n    uint256 amount = price * 2;\n\n    // Ensure this contract has enough balance to forward\n    require(address(this).balance >= amount, \"Insufficient balance\");\n\n    // Forward funds to the external contract's fallback and require success\n    (bool success, ) = fomo3d.call.value(amount)(\"\");\n    require(success, \"External call failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

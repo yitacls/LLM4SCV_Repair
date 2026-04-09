@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The contract uses .send() without checking the return value. In Solidity 0.4.24, .send() returns a boolean indicating success (true) or failure (false). If the call fails (e.g., recipient contract reverts or runs out of gas with the 2300 gas stipend), .send() returns false, but the contract does not handle this failure, potentially leaving funds locked in the contract and users unable to receive their dividends. Additionally, the arbitrary address 'sender' receives only 2300 gas, which may be insufficient for any complex logic, increasing the risk of failure."
+}
+```

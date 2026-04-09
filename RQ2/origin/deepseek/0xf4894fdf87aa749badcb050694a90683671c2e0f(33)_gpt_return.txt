@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Reentrancy with Arithmetic Overflow/Underflow",
+        "location": "balanceOf[msg.sender] += msg.value;",
+        "description": "In Solidity 0.4.25, integer arithmetic operations are unchecked by default, making balanceOf[msg.sender] += msg.value vulnerable to overflow. A malicious contract could call deposit() with a msg.value that causes balanceOf[msg.sender] to exceed uint256 limits. Additionally, the owner.transfer(msg.value) call occurs before updating balanceOf, creating a reentrancy risk if the owner is a malicious contract with a fallback function that calls deposit() again, though transfer() limits gas to 2300 which mitigates this. However, the primary issue is the unchecked arithmetic in older Solidity versions."
+    }
+}
+```

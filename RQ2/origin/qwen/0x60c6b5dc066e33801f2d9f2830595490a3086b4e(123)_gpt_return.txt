@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Reentrancy Vulnerability",
+        "location": "(bool success, ) = msg.sender.call{value: amount}(\"\");",
+        "description": "The contract makes an external call to transfer ETH to msg.sender before updating the balance and totalSupply. This creates a reentrancy vulnerability where the recipient could be a malicious contract that calls back into the withdraw function before the state changes are applied, potentially allowing multiple withdrawals of the same funds."
+    }
+]
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyReserveFundContract",
+            "fix_info": "Ensure this modifier checks that only an authorized contract can execute the deposit.",
+            "modifier_code": "modifier onlyReserveFundContract() { require(msg.sender == reserveFundContract, \"Access restricted to ReserveFundContract\"); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Patched an access control vulnerability where tx.origin was improperly used, which could lead to replay or phishing attacks. Replaced tx.origin checks with msg.sender for better security and modified the logic to prevent unauthorized or unexpected accesses.",
+            "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public {\n    require(_to != address(0x0), \"User address cannot be empty\");\n    require(_deposited > 0, \"Package value must be > 0\");\n\n    Balance storage balance = userWallets[_to];\n    bool firstDeposit = balance.deposited.length == 0;\n    \n    balance.deposited.push(_deposited);\n\n    uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n    uint profitSourceIncreaseAmount = _deposited * 10;\n\n    balance.totalDeposited = balance.totalDeposited.add(_deposited);\n    balance.profitableBalance = balance.profitableBalance.add(profitableIncreaseAmount);\n    balance.profitSourceBalance = balance.profitSourceBalance.add(profitSourceIncreaseAmount);\n\n    if (_source == 2) {\n        require(msg.sender == _to, \"Only the user can manipulate their profit balance\"); // Fix to ensure proper access control.\n        \n        balance.profitBalance = balance.profitBalance.sub(_deposited);\n        emit ProfitBalanceChanged(msg.sender, _to, int(_deposited) * -1, 1);\n    }\n\n    citizen.addF1DepositedToInviter(_to, _deposited);\n    addRewardToInviters(_to, _deposited, _source, _sourceAmount);\n\n    if (firstDeposit) {\n        citizen.increaseInviterF1HaveJoinedPackage(_to);\n    }\n\n    if (profitableIncreaseAmount > 0) {\n        emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n        emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (msg.sender == owner) { revert(); }",
+    "description": "The onlyOwner modifier incorrectly reverts execution when the caller IS the owner, rather than when the caller is NOT the owner. In the original condition that was commented (if (msg.sender != owner)), the modifier would allow the owner to proceed and block others. The current code inverts this logic, blocking the owner but allowing any other address to bypass the modifier. This is a critical access control vulnerability where owner-only functions become accessible to anyone except the actual owner. The vulnerable pattern stems from incorrectly comparing sender equality instead of inequality."
+}
+```

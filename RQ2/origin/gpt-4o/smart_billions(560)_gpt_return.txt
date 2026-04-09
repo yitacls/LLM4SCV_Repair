@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "hash = uint24(block.blockhash(player.blockNum));",
+    "description": "The vulnerability arises from using the block.blockhash function to derive a random value. This is not secure because blockhash is predictable by miners. Miners can manipulate the block number and selectively choose blocks favorable to them. This makes the random number generation exploitable, compromising the fairness of the lottery system."
+}
+```

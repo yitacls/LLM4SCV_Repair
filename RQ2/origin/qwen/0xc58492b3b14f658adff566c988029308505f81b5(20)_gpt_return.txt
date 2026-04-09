@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "lastDepositor.send(msg.value);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.11, send() returns false if the transfer fails (e.g., recipient is a contract without payable fallback function, or recipient's fallback function fails, or gas is insufficient), but the code doesn't handle this failure case. This could lead to loss of funds as the contract continues execution even when the payment to lastDepositor fails."
+}
+```

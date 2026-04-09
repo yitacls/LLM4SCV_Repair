@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "timelock",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback function",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability by using SafeMath library. In Solidity 0.4.x, arithmetic operations can overflow/underflow silently. The freezeBlocks value could cause an overflow in the addition operation if block.number + freezeBlocks exceeds uint maximum value.",
+            "corrected_code": "function() payable public {\n    locker storage l = lockers[msg.sender];\n    l.freedom = add(block.number, freezeBlocks);  // Use SafeMath to prevent overflow\n    l.bal = add(l.bal, msg.value);  // Use SafeMath to prevent overflow\n    Locked(msg.sender, msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(token.asmTransfer(tx.origin, amount));",
+    "description": "The function transferTokenProportionToOrigin uses tx.origin for authorization instead of msg.sender. This allows malicious contracts to trick users into calling this function, where tx.origin would be the user's address (the original transaction sender) rather than the malicious contract's address. As a result, the function would transfer tokens proportionally from the MultiChanger contract's balance to the user (tx.origin), which could enable unauthorized token withdrawals when combined with social engineering or phishing attacks. Additionally, the use of .asmTransfer (likely a low-level call) without proper return value validation in Solidity 0.4.24 could lead to failures being ignored if the function returns false, though the require() statement mitigates this. However, reliance on tx.origin for access control violates best practices and introduces a significant authorization vulnerability."
+}
+```

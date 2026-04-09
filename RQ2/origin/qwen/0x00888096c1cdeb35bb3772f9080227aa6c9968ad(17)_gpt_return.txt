@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(){\n      developer.transfer(this.balance);\n      require(token.transfer(developer, token.balanceOf(address(this))));\n  }",
+    "description": "The withdraw function lacks proper access control modifiers, allowing any user to call it and withdraw all contract funds and tokens to the developer address. In Solidity ^0.4.13, this function should have visibility modifiers (public/private) and access restrictions (onlyOwner or similar) to prevent unauthorized withdrawals. This creates a critical security vulnerability where anyone can drain the contract's balance."
+}
+```

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Reentrancy",
+            "location": "Line 7-9: (bool success, ) = payable(msg.sender).call{ value: etherAmount }(\"\"); require(success);",
+            "description": "The contract uses call.value() to send Ether before updating the state (depositedEther[msg.sender] -= etherAmount). This allows a malicious contract to re-enter the withdrawEtherInternal function through a fallback/receive function before the balance is deducted, potentially draining funds multiple times. The vulnerability is exacerbated because the state update occurs after the external call, classic reentrancy pattern. Mitigation: Apply checks-effects-interactions pattern by updating state before making external calls or use reentrancy guards."
+        }
+    ]
+}
+```

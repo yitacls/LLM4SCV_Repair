@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "setValidators function",
+    "description": "In the function setValidators, it allows arbitrary address to withdraw any Ether balance that the contract owns. The vulnerability exists at the code segment ' (bool sent, ) = msg.sender.call{value: reward}(\"\"); require(sent, \"Failed to send Ether\"); '. There is no proper access control that restricts which addresses can execute this function, thus, allowing potentially malicious actors to drain the contract of its Ether."
+}
+```

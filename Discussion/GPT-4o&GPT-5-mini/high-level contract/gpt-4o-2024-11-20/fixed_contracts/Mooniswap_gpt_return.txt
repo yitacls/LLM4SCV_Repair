@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Mooniswap",
+        "contract_version": "^0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "rescueFunds",
+                "fix_info": "Added checks to ensure the specified token is not one of the pool tokens (token0 or token1). Prevents unauthorized withdrawal of essential liquidity tokens.",
+                "corrected_code": "function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyOwner {\n    require(token != token0 && token != token1, \"Mooniswap: cannot withdraw pool tokens\");\n\n    uint256 initialBalance = token.uniBalanceOf(address(this));\n    token.uniTransfer(msg.sender, amount);\n    uint256 finalBalance = token.uniBalanceOf(address(this));\n\n    require(finalBalance.add(amount) == initialBalance, \"Mooniswap: withdrawal failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

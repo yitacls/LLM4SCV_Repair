@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "This code uses the low-level `send()` function to transfer Ether without checking its return value. In Solidity versions prior to 0.4.23, `send()` returns `false` if the transfer fails (e.g., due to insufficient gas or a recipient contract that reverts). This contract does not verify the return value, meaning failed Ether transfers will go unnoticed, potentially causing funds to be locked in the contract. Additionally, it's recommended to use `transfer()` for simple Ether transfers where the contract's balance is trusted, as it automatically reverts on failure."
+}
+```】

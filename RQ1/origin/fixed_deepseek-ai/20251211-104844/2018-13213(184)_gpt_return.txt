@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "TravelCoinToken",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Changed to uint256 type to prevent arithmetic overflow",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to restrict sensitive operations",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Not owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow, added SafeMath, replaced deprecated 'throw', improved send pattern, updated event emission",
+            "corrected_code": "function sell(uint256 amount) public {\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        \n        uint256 etherAmount = amount.mul(sellPrice);\n        require(etherAmount / amount == sellPrice, \"Multiplication overflow\");\n        \n        balanceOf[address(this)] = balanceOf[address(this)].add(amount);\n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n        \n        msg.sender.transfer(etherAmount);\n        \n        emit Transfer(msg.sender, address(this), amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setSellPrice",
+            "fix_info": "Added function to safely update sellPrice with onlyOwner restriction",
+            "corrected_code": "function setSellPrice(uint256 _sellPrice) public onlyOwner {\n        require(_sellPrice > 0, \"Price must be positive\");\n        sellPrice = _sellPrice;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

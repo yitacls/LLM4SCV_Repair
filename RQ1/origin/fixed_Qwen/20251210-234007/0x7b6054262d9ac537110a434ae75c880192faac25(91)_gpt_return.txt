@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StarToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "issue",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding SafeMath checks for addition operations and removed redundant require statement",
+            "corrected_code": "function issue(address _recipient, uint256 _value) onlyICO returns (bool success) {\n        balances[_recipient] = balances[_recipient].add(_value);\n        totalSupply = totalSupply.add(_value);\n        Transfer(0, owner, _value);\n        Transfer(owner, _recipient, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

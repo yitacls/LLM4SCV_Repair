@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "The addition operation on balanceOf[target] and totalSupply can overflow without any overflow protection. In Solidity ^0.4.23, there is no automatic overflow checking, which means that if mintedAmount is large enough, it could cause the balance or total supply to wrap around to a very small value, potentially leading to incorrect accounting and loss of funds."
+}
+```

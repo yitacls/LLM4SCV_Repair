@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EthReceiver",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "unlockTime",
+            "fix_info": "Changed type from uint to uint256 to prevent potential overflow issues in older Solidity versions",
+            "variable_code": "uint256 public unlockTime;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Put",
+            "fix_info": "1. Changed visibility to external for gas optimization since it's called externally only; 2. Fixed arithmetic overflow by using SafeMath or explicit checks; 3. Replaced deprecated 'now' with 'block.timestamp'; 4. Added validation for overflow when adding to unlockTime; 5. Used explicit ether unit conversion; 6. Added require statements for better error handling",
+            "corrected_code": "function Put(address _receiver) external payable {\n    require(_receiver != address(0), \"Invalid receiver address\");\n    \n    if ((!closed && msg.value > 0.5 ether) || sender == address(0)) {\n        sender = msg.sender;\n        receiver = _receiver;\n        \n        // Safe addition to prevent overflow\n        require(unlockTime <= (unlockTime + block.timestamp), \"Overflow detected in unlockTime calculation\");\n        unlockTime += block.timestamp;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

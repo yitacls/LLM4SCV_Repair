@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[msg.sender] -= totalAmount; and balances[_addresses[b]] += _amounts[b];",
+    "description": "In Solidity 0.4.8, arithmetic operations do not automatically check for overflow/underflow. The subtraction 'balances[msg.sender] -= totalAmount' could underflow if totalAmount > balances[msg.sender], and the addition 'balances[_addresses[b]] += _amounts[b]' could overflow if the sum exceeds the maximum uint value. Although there's a check 'balances[msg.sender] >= totalAmount', it's insufficient for preventing overflow in the addition operations. This vulnerability could allow unauthorized balance manipulation."
+}
+```

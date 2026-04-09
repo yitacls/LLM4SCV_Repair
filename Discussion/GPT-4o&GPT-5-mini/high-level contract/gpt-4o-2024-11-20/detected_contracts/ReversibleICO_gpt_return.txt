@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "Line 835: address(uint160(_participantAddress)).transfer(participantPendingEth.add(_sentValue));",
+        "description": "The use of `transfer` can introduce a denial of service vulnerability since it forwards a fixed amount of 2300 gas to the receiving address. If the recipient's fallback function requires more than 2300 gas (e.g., for writing to storage), the call will fail, potentially blocking Ether withdrawals."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "Line 1203: address(uint160(_participantAddress)).transfer(totalRefundedETH);",
+        "description": "The function uses `transfer` to send Ether to a participant. If the participant's address is a contract and their fallback function requires more than 2300 gas, the transfer will fail, potentially leading to Denial of Service for the rICO participants."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "Line 1323: address(uint160(_participantAddress)).transfer(returnEthAmount);",
+        "description": "Similar to other occurrences of `transfer`, this line is susceptible to DoS vulnerabilities when the recipient address is a contract with a fallback function that uses more than 2300 gas."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "Line 1370: address(uint160(_to)).transfer(ethBalance);",
+        "description": "This line uses `transfer` to send the contract's entire Ether balance to the `_to` address during the escape hatch operation. If `_to` is a contract that needs more than 2300 gas in its fallback function, the escape hatch could fail."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "Line 948: uint8 currentStage = getCurrentStage();",
+        "description": "The local variable `currentStage` in the `acceptContributions` function shadows the state variable `stageCount`. This can lead to confusion and introduce errors in understanding or maintaining the contract, as the developer might mistakenly think the local variable affects or references the state variable."
+    }
+]
+```

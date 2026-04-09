@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "M_BANK",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "Collect",
+                "fix_info": "Add reentrancy guard to prevent reentrancy vulnerability.",
+                "corrected_code": "function Collect(uint _am) public payable {
+        var acc = Acc[msg.sender];
+        require(acc.balance >= MinSum && acc.balance >= _am && now > acc.unlockTime);
+        acc.balance -= _am;
+        LogFile.AddMessage(msg.sender, _am, 'Collect');
+        require(msg.sender.call.value(_am)());
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

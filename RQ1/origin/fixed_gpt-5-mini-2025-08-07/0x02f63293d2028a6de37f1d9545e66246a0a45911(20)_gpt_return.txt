@@ -1,0 +1,28 @@
+[{
+    "contract_name": "Burner",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "DragonsBurned",
+            "fix_info": "Explicit visibility and initialized; use safe-add pattern in function to prevent overflow when incrementing the counter.",
+            "variable_code": "uint256 public DragonsBurned = 0;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyDragon",
+            "fix_info": "Preserve existing access control modifier. Example implementation kept for context; no behavioral change.",
+            "modifier_code": "modifier onlyDragon { require(msg.sender == dragon); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "dragonHandler",
+            "fix_info": "Prevent arithmetic overflow by computing the new total first and checking it with require before updating state; add explicit visibility.",
+            "corrected_code": "function dragonHandler(uint256 _amount) onlyDragon public {\n    Dragon drag = Dragon(dragon);\n    drag.burnDragons(_amount);\n\n    // Safe addition: compute new total and ensure no overflow before updating state\n    uint256 newTotal = DragonsBurned + _amount;\n    require(newTotal >= DragonsBurned);\n    DragonsBurned = newTotal;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "TransferHelper.safeTransfer(collateral, pair, IERC20Minimal(collateral).balanceOf(address(this)));",
+    "description": "The distribute function does not implement proper controls or validation for the transfer of tokens. If an attacker gains the DEFAULT_ADMIN_ROLE, they can execute the distribute function and transfer all tokens of the specified collateral held by the contract to an attacker-specified Uniswap pair. This could result in loss of tokens held by the contract. Proper access controls and validations should be implemented to ensure only authorized and legitimate transfers occur."
+}
+```

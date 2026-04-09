@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DaddyToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow when multiplying mintedAmount by 10**18 and when updating balance and total supply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public returns (bool) {\n        mintedAmount = safeMul(mintedAmount, 10**18);\n        balanceOf[target] = safeAdd(balanceOf[target], mintedAmount);\n        totalSupply = safeAdd(totalSupply, mintedAmount);\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

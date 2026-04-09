@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Reentrancy",
+    "location": "if (releaseWallet.send(address(this).balance)) { }",
+    "description": "The contract uses `send()` to transfer Ether to `releaseWallet` after transferring tokens to `msg.sender`. Since `tokenReward.transfer(msg.sender, ...)` is called first, if `tokenReward` is a malicious ERC20 token contract that implements a callback in its `transfer` function (e.g., via `transferAndCall` or a similar pattern), it could re-enter the fallback function before `lastdate[address(msg.sender)]` is updated and the Ether transfer occurs. This could allow an attacker to bypass the 1-day waiting period (`require(now-lastdate[address(msg.sender)] >= 1 days)`) because `lastdate` has not been set for the current call yet, potentially draining the contract's Ether balance multiple times. The use of `send()` (which forwards only 2300 gas) mitigates this risk for typical reentrancy attacks, but if the attacker's callback is lightweight, it might still succeed. Additionally, the state variable `lastdate[address(msg.sender)]` is updated after the token transfer, violating the checks-effects-interactions pattern."
+}
+```】

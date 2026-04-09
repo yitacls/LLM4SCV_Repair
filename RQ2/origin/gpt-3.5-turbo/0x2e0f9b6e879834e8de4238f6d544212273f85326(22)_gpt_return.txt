@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[msg.sender] -= _value;",
+    "description": "This line can potentially lead to integer underflow if the value of _value is greater than balances[msg.sender], resulting in unexpected behavior and possible loss of funds."
+}
+```

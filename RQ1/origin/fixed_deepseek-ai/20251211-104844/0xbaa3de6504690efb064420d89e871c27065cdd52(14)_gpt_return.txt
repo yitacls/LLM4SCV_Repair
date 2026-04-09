@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "Proxy",
+        "contract_version": "^0.4.23",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to restrict proxy calls to owner only, preventing unauthorized low-level calls",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call proxy\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "proxy",
+                "fix_info": "Added owner restriction, checked return value, and added reentrancy guard to fix unchecked low-level call vulnerability",
+                "corrected_code": "function proxy(address target, bytes data) public payable onlyOwner returns (bool) {\n        require(target != address(0), \"Invalid target address\");\n        \n        bool success;\n        (success, ) = target.call.value(msg.value)(data);\n        \n        require(success, \"Proxy call failed\");\n        return success;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "constructor",
+                "fix_info": "Added constructor to set contract owner during deployment",
+                "corrected_code": "address public owner;\n    \n    constructor() public {\n        owner = msg.sender;\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

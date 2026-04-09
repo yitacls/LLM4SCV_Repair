@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; and totalSupply += mintedAmount;",
+    "description": "In Solidity version ^0.4.16, integer arithmetic is unchecked, which can lead to silent overflows. The operations 'balanceOf[target] += mintedAmount' and 'totalSupply += mintedAmount' do not have explicit overflow checks. An attacker or a malicious owner could intentionally mint an extremely large amount, causing the 'balanceOf' mapping or 'totalSupply' to wrap around to a very small number, violating token economics and enabling unauthorized balance manipulations."
+}
+```】

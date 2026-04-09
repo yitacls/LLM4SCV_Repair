@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "rescueFunds function at lines 293-310",
+    "description": "The rescueFunds function allows the contract owner to transfer any ERC20 token from the contract to any address but does not include proper checks to ensure the transferred token amount and token balance after the transfer. This can lead to potential loss of tokens or denial of service if the contract is holding a lower balance after the transfer."
+}
+```

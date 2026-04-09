@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[msg.sender] -= _value;",
+    "description": "The subtraction operation is performed without checking for underflow. If balances[msg.sender] is less than _value, it will cause an underflow vulnerability, resulting in incorrect balance calculations. This can lead to unauthorized token creation or balance manipulation."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "token.transfer(msg.sender, tokens);",
+    "description": "In the claim function, the return value of token.transfer is not being checked. If the transfer fails, the contract's state would still be updated as if it was successful. This can lead to discrepancies between the contract's state and the actual token balances."
+}
+```

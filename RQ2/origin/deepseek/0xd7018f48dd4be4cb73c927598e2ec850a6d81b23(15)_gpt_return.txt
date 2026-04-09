@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "This line contains an integer addition that is vulnerable to overflow. In Solidity versions prior to 0.8.0 (specifically ^0.4.19 here), integer arithmetic operations wrap around on overflow/underflow without automatic checks. This addition could overflow when the sum of balanceOf[_from] and balanceOf[_to] exceeds the maximum value of a uint (2^256 - 1), causing previousBalances to wrap around to a small value. Although the subsequent assert statement validates the conservation of total supply, an overflow here would make the assert pass incorrectly (since both sides would wrap around equally), allowing the transfer to complete while silently corrupting the total balance tracking."
+}
+```】

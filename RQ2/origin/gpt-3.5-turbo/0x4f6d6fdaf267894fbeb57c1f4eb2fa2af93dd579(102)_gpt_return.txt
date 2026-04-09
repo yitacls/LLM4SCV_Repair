@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "balances[tx.origin];    // fault line",
+    "description": "The code uses tx.origin to determine the sender's address for balance verification, which is a vulnerability that can be exploited in certain scenarios. Using tx.origin can lead to unexpected behavior as it returns the address of the original external account that initiated the transaction, not the direct caller."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(_recipient, _value);",
+    "description": "The low-level 'call' function is used to transfer ERC20 tokens without checking its return value. ERC20 tokens may return a boolean success value, and some tokens may not revert on failure. In Solidity 0.4.24, the 'call' function returns a boolean, but this return value is ignored. This could lead to silent failures where token transfers appear to succeed but actually fail. Additionally, using 'call' with arbitrary data could pose reentrancy risks. The recommended approach is to either use the standard ERC20 'transfer' function (which reverts on failure in compliant tokens) or explicitly check the return value of the low-level call."
+}
+```

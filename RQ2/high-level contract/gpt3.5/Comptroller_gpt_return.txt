@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function liquidateBorrowAllowed",
+    "description": "There is a potential vulnerability to reentrancy in the liquidateBorrowAllowed function due to allowing accounts to be liquidated even if the market is deprecated, bypassing the liquidity check."
+}
+```

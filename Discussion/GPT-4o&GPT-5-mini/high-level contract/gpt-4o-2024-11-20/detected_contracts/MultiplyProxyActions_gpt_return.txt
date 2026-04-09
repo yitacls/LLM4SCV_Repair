@@ -1,0 +1,34 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function convertTo18(address gemJoin, uint256 amt) internal returns (uint256 wad) {\n    wad = amt.mul(10**(18 - IJoin(gemJoin).dec()));\n}",
+        "description": "The `convertTo18` function does not check for overflow or underflow when performing multiplication on the `amt` parameter. If `amt` and `10**(18 - IJoin(gemJoin).dec())` result in a value exceeding `uint256` limits, this will cause unexpected behavior."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function increaseMultipleDepositCollateral(...){\n...\ngem.deposit{value: msg.value}();\n...\n}",
+        "description": "The call to `gem.deposit{value: msg.value}()` is not checked for success or failure, which could lead to silent failures. This can be exploited if the `deposit` function in the `gem` contract fails or reverts."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function _increaseMP(...){\n...\nrequire(IERC20(DAI).approve(address(exchange), exchangeData.fromTokenAmount.add(cdpData.depositDai)), \"MPA / Could not approve Exchange for DAI\");\n...\n}",
+        "description": "The `approve` function for calling the DAI contract does not ensure that the approval succeeded. Failure in this step could cause downstream operations to fail silently."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function toRad(uint256 wad) internal pure returns (uint256 rad) {\n    rad = wad.mul(10**27);\n}",
+        "description": "The `toRad` function does not check for overflow when multiplying `wad` by `10**27`. Large values of `wad` may lead to an overflow, causing incorrect computations and potential vulnerabilities."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function _withdrawGem(...){\n...\nIERC20(address(gem)).transfer(destination, amount);\n...\n}",
+        "description": "The `transfer` function call on the ERC20 token is not checked for success. If the transfer fails, the remaining operations may behave incorrectly."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function _getDrawDart(...){\n...\ndart = uint256(dart).mul(rate) < wad.mul(RAY) ? dart + 1 : dart;\n...\n}",
+        "description": "In `_getDrawDart`, the operation `dart + 1` does not check for overflow. If `dart` is at the upper boundary of its range, adding 1 may cause an unchecked overflow."
+    }
+]
+```

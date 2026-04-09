@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Within the `sellToUniswap` function where `pair.getReserves()` is called",
+    "description": "The code makes an external call to `pair.getReserves()` within a loop, which can potentially lead to reentrancy vulnerabilities. If the called contract performs an unexpected reentrant call back to the current contract, it can interrupt the flow and change the state unexpectedly. It is crucial to avoid external calls during a loop or ensure proper state changes are handled before the external call."
+}
+```

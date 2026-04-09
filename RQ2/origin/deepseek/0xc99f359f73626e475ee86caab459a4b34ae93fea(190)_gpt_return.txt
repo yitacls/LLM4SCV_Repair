@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(now < 1520694000 && tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);",
+    "description": "The migrateDungeon function has insufficient access control mechanisms that can be exploited. First, it uses 'tx.origin' for authorization, which is vulnerable to phishing attacks as 'tx.origin' returns the original sender of the entire transaction chain, not the immediate caller. A malicious contract could trick the authorized address into calling it, thereby gaining access. Second, the time-based restriction 'now < 1520694000' (April 10, 2018) is a hardcoded deadline that has long passed, permanently disabling the function for legitimate use while the 'tx.origin' check remains the sole, flawed gate. Collectively, this creates a scenario where only the specified address (0x47169f...) could have called it before the deadline, but now the function is effectively locked or reliant on a dangerous authorization pattern."
+}
+```

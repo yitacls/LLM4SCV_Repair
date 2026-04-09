@@ -1,0 +1,19 @@
+```json
+[{
+    "contract_name": "BalancerLBPSwapper",
+    "contract_version": "v1.0",
+    "state_variables": [
+        {
+            "variable_name": "pool",
+            "fix_info": "Added a reentrancy guard to prevent external calls from re-entering.",
+            "variable_code": "using ReentrancyGuard for address;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "init",
+            "fix_info": "Added a reentrancy guard and ensured it is not prone to transaction-order dependency by always validating the initialization state upfront.",
+            "corrected_code": "function init(IWeightedPool _pool) external nonReentrant { require(address(pool) == address(0),\"OnlyDirectory gre-added ```SafeNames AddFinal.''<?>abilti..<Addressdd nonRepe-guard proper\",\",
+            sql

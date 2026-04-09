@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity 0.8.11;",
+        "description": "The contract uses a fixed Solidity version (0.8.11), which can lead to inconsistencies during deployment across different environments. It's recommended to use a floating pragma such as ^0.8.0 to allow for minor version updates that include security fixes and optimizations."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "function _approve(address owner, address spender, uint256 amount)",
+        "description": "The _approve function shadows the 'owner' parameter, which has the same name as the state variable '_owner'. This can cause confusion and potential bugs due to unintended referencing of the local variable instead of the state variable."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function setCharges(...)",
+        "description": "The require statements in the setCharges function validate percentages but do not prevent setting fees higher than 100%, potentially leading to incorrect fee calculations. The checks are ineffective as they allow values up to 100*10^decimals, which may exceed logical limits depending on decimal precision."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < cacheLength; i++) {...}",
+        "description": "The loop iterating over _excluded array in _getCurrentSupply function could become computationally expensive with a large number of excluded addresses, potentially causing out-of-gas errors and rendering certain functions unusable."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function takeCharges(...)",
+        "description": "In takeCharges, when adding tokens to the surcharge wallets, it incorrectly references _isExcludedFromSurcharge1 for the surcharge2 wallet instead of _isExcludedFromSurcharge2, leading to incorrect behavior in balance tracking."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 timePassed = block.timestamp - (startTime + (initialLock * 1 days));",
+        "description": "Although Solidity 0.8.x includes overflow/underflow protection by default, explicit checks or SafeMath-like patterns should still be considered for clarity and correctness. The subtraction here assumes block.timestamp >= (startTime + initialLock), which might not always hold true depending on input validation elsewhere in contract."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "require(initialLock >= 0, ...)",
+        "description": "The requirement check 'require(initialLock >= 0, ...)' is redundant because initialLock is of type uint256, which cannot be negative. This line has no effect and can be removed."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "_transferFromExcluded(...)",
+        "description": "The _transferFromExcluded function performs operations similar to other transfer functions but without affecting reward distribution logic despite being intended for excluded accounts. The lack of specific handling makes this case indistinguishable from standard transfers."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "_transferBothExcluded(...)",
+        "description": "Similar to _transferFromExcluded, _transferBothExcluded handles transfers between two excluded accounts but doesn't introduce any additional logic beyond what's already handled in _doTransfer, making its existence questionable."
+    }
+]
+```

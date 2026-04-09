@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "MyAdvancedToken7",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Added uint256 type to prevent arithmetic overflow/underflow",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added owner modifier for safer access control",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath, fixed reentrancy vulnerability by updating state before external call, added proper event emission and access control",
+            "corrected_code": "function sell(uint256 amount) public {\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        \n        // Calculate payment amount with overflow protection\n        uint256 payment = amount.mul(sellPrice);\n        require(payment >= amount, \"Payment calculation overflow\");\n        \n        // Update balances first (Checks-Effects-Interactions pattern)\n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n        balanceOf[address(this)] = balanceOf[address(this)].add(amount);\n        \n        // Emit transfer event\n        Transfer(msg.sender, address(this), amount);\n        \n        // Send ether to seller (reentrancy protected by updating state first)\n        require(msg.sender.send(payment), \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

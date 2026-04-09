@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.send(amount); // fault line",
+    "description": "The contract uses send() to return excess ether after the presale closes, but does not follow the checks-effects-interactions pattern. The state variable 'presaleClosed' is set to true AFTER the external call. If the recipient is a malicious contract with a fallback function, it could recursively call the fallback function of this Presale contract. However, since 'presaleClosed' is still false during the recursive call, the attacker could bypass the 'require(!presaleClosed)' check and potentially drain remaining tokens or disrupt the presale closing logic. This is a reentrancy vulnerability, though its impact is limited in this specific case because the fallback function requires 'availableSupply' to be zero before reaching the send() call, and 'availableSupply' is already set to zero before the external call, preventing further token transfers. The vulnerability still represents a deviation from secure patterns and could have side effects."
+}
+```

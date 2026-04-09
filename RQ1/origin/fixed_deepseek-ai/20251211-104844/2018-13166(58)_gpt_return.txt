@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "AthletiCoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Address mapping for token balances",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "existing"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Total token supply with safe arithmetic",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "existing"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "isOwner",
+            "fix_info": "Basic ownership modifier",
+            "modifier_code": "modifier isOwner() { require(msg.sender == owner); _; }",
+            "change_type": "existing"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath library and improved event parameters",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) isOwner public {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be greater than zero\");\n    \n    // Using safe arithmetic operations\n    balanceOf[target] = SafeMath.add(balanceOf[target], mintedAmount);\n    totalSupply = SafeMath.add(totalSupply, mintedAmount);\n    \n    // Emitting proper transfer events with correct parameters\n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

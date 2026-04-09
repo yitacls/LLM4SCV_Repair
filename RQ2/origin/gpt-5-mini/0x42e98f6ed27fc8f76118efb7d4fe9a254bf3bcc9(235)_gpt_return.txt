@@ -1,0 +1,5 @@
+{
+    "type": "access_control",
+    "location": "function withdrawEther() public {\n    if (address(this).balance > 0)\n        owner.send(address(this).balance); // <LEAKING_VUL>\n}",
+    "description": "The withdrawEther function is declared public and lacks any access restriction (e.g. onlyOwner). As written, any external caller can invoke this function and trigger a transfer of the contract's entire balance to the stored owner address. This is an access-control flaw: callers other than the intended privileged account can force contract-side withdrawals. Additionally, the code uses owner.send(...) without checking the returned boolean, so failures are ignored; while this is secondary to the access-control issue, it can lead to unexpected behavior (silent failure to transfer). Recommended mitigation: restrict the function to the owner (require(msg.sender == owner) or an onlyOwner modifier) and check the result of low-level calls or use transfer/require patterns appropriate for the Solidity version."
+}

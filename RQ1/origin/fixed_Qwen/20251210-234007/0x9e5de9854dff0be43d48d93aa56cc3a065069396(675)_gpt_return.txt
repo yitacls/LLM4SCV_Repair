@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ArtworkCore",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Replaced unchecked send() call with checked transfer() to prevent silent failures and ensure proper error handling",
+            "corrected_code": "function withdrawBalance() external onlyCFO {\n        uint256 balance = this.balance;\n        cfoAddress.transfer(balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

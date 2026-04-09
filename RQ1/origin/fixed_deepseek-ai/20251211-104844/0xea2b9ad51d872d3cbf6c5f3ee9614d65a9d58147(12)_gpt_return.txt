@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "asdfgh",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "fallback",
+        "fix_info": "Replaced unsafe arithmetic with SafeMath library for addition operation to prevent overflow/underflow vulnerabilities",
+        "corrected_code": "function() external payable {\n    require(hodlers[msg.sender] + msg.value >= hodlers[msg.sender], \"Overflow protection\");\n    hodlers[msg.sender] += msg.value;\n    Hodl(msg.sender, msg.value);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

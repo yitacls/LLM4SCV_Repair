@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "mintedAmount = mintedAmount * 10**18;",
+    "description": "In Solidity ^0.4.16, integer arithmetic operations do not automatically check for overflow/underflow. Multiplying mintedAmount by 10**18 could cause an integer overflow if mintedAmount is sufficiently large (e.g., mintedAmount > type(uint256).max / 10**18). This would result in incorrect token minting, potentially allowing an attacker to mint a very small number of tokens instead of the intended large amount, or enabling the owner to unintentionally mint massive amounts due to overflow wrapping. The vulnerability affects subsequent balance and totalSupply updates, compromising token integrity. SafeMath library should be used for arithmetic operations."
+}
+```

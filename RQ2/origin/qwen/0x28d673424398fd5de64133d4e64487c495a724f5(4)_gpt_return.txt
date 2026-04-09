@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(address(this).balance-msg.value);",
+    "description": "The send() function is a low-level call that returns a boolean value indicating success or failure, but this return value is not checked. In Solidity 0.5.0, the send() function will not throw an exception on failure, but will simply return false. This means that if the send() call fails (e.g., due to gas stipend issues or recipient contract rejecting the transfer), the function will continue execution without handling the failure, potentially leading to unexpected behavior. The contract should check the return value of send() and handle failures appropriately, or use transfer() which automatically reverts on failure."
+}
+```

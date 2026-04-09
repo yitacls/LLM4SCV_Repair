@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "uint256 amount = uint256(cnt) * _value;",
+    "description": "The multiplication operation between cnt and _value can cause an integer overflow when the result exceeds the maximum value of uint256. Since the Solidity version is ^0.4.16, there is no automatic overflow protection. An attacker could provide a large _value that when multiplied by cnt results in an overflow, causing the amount to wrap around to a small number, which would bypass the balance check require(_value > 0 && balanceOf[msg.sender] >= amount)."
+}
+```

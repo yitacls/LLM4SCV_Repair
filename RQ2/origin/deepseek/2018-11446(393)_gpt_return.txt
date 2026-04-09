@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Integer Overflow/Underflow",
+        "location": "amount = msg.value * buyPrice;",
+        "description": "In Solidity ^0.4.13, arithmetic operations are vulnerable to integer overflows/underflows as SafeMath library is not used. The multiplication 'msg.value * buyPrice' could overflow if the product exceeds 2^256 - 1, resulting in an incorrect 'amount' value. This vulnerability enables attackers to manipulate token balances, potentially acquiring tokens at incorrect rates or causing denial of service."
+    }
+}
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Ethereum_Cash_Pro_Coin",
+        "contract_version": "^0.4.20",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic vulnerability by using SafeMath library for safe arithmetic operations.",
+                "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner { require(tokensToMint > 0, 'Tokens to mint must be greater than 0'); uint256 totalTokenToMint = SafeMath.mul(tokensToMint, 10 ** 18); balanceOf[owner] = SafeMath.add(balanceOf[owner], totalTokenToMint); totalSupply = SafeMath.add(totalSupply, totalTokenToMint); emit Transfer(0, owner, totalTokenToMint); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

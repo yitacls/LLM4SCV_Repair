@@ -1,0 +1,20 @@
+[{
+    "contract_name": "MultiplyProxyActions",
+    "contract_version": ">=0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "convertTo18",
+            "fix_info": "Prevent integer underflow/overflow by validating token decimals and safely computing scaling factor before multiplication.",
+            "corrected_code": "function convertTo18(address gemJoin, uint256 amt) internal returns (uint256 wad) {\n    // Ensure decimals are valid to avoid underflow in (18 - decimals)\n    uint256 decimals = IJoin(gemJoin).dec();\n    require(decimals <= 18, \"MPA / invalid decimals\");\n\n    // Compute scaling factor safely and multiply using SafeMath\n    uint256 factor = 10**(18 - decimals);\n    wad = amt.mul(factor);\n  }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "increaseMultipleDepositCollateral",
+            "fix_info": "Checked return values of token transfer and transferFrom calls to avoid unchecked call return value vulnerability. Cast token (gem) to IERC20 when verifying ERC20 transfer semantics. Preserved original behavior for WETH deposit and routing depending on skipFL flag.",
+            "corrected_code": "function increaseMultipleDepositCollateral(\n    ExchangeData calldata exchangeData,\n    CdpData memory cdpData,\n    AddressRegistry calldata addressRegistry\n  )\n    public\n    payable\n    logMethodName(\n      \"increaseMultipleDepositCollateral\",\n      cdpData,\n      addressRegistry.multiplyProxyActions\n    )\n  { \n    IGem gem = IJoin(cdpData.gemJoin).gem();\n\n    if (address(gem) == WETH) {\n      // Wrap ETH to WETH\n      gem.deposit{value: msg.value}();\n      if (cdpData.skipFL == false) {\n        // When not skipping flash loan, transfer wrapped WETH to proxy actions address\n        require(\n          IERC20(address(gem)).transfer(addressRegistry.multiplyProxyActions, msg.value),\n          \"MPA / Could not transfer WETH\"\n        );\n      }\n    } else {\n      // ERC20 collateral\n      if (cdpData.skipFL == false) {\n        require(\n          IERC20(address(gem)).transferFrom(\n            msg.sender,\n            addressRegistry.multiplyProxyActions,\n            cdpData.depositCollateral\n          ),\n          \"MPA / Could not transferFrom collateral to proxy\"\n        );\n      } else {\n        require(\n          IERC20(address(gem)).transferFrom(msg.sender, address(this), cdpData.depositCollateral),\n          \"MPA / Could not transferFrom collateral to caller\"\n        );\n      }\n    }\n    increaseMultipleInternal(exchangeData, cdpData, addressRegistry);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]

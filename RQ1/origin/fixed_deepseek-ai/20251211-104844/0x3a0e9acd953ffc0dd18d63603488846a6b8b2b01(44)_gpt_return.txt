@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "WithdrawToken",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding return value check and using safer token transfer pattern",
+            "corrected_code": "function WithdrawToken(address token, uint256 amount, address to) public onlyOwner {\n    require(token != address(0), \"Invalid token address\");\n    require(to != address(0), \"Invalid recipient address\");\n    \n    // Using the standard ERC20 transfer interface\n    bytes4 methodSignature = bytes4(keccak256(\"transfer(address,uint256)\"));\n    \n    // Perform the low-level call and check for success\n    bool success = token.call(methodSignature, to, amount);\n    require(success, \"Token transfer failed\");\n    \n    // Additional safety: check if any data was returned (some tokens return bool)\n    // In Solidity 0.4.x, we can't easily decode return data, so we rely on the call success\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

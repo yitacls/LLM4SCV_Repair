@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(fee);",
+    "description": "The send method used in the contract can fail silently leaving the balance stuck in the contract. The Solidity documentation advises treating any call to send as potentially failing, because the transfer may run out of gas or fail due to the recipient throwing an exception. Hence, a check should be added to make sure that the send function succeeds and if not, action should be taken. In the contract code, owner.send(fee) is not being checked to see if it succeeds or fails, and there are no mechanisms in place to handle a failed send. This is a major security vulnerability."
+}
+```

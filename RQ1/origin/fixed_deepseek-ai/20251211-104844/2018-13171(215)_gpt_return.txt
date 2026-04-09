@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "LadaToken",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "No direct changes to the mapping declaration, but usage requires safe arithmetic",
+                "variable_code": "mapping (address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "No direct changes to the variable declaration, but usage requires safe arithmetic",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No changes to the modifier itself",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+                "change_type": "none"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic vulnerabilities by adding overflow/underflow checks using SafeMath library",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid target address\");\n        require(mintedAmount > 0, \"Mint amount must be positive\");\n        require(balanceOf[target] + mintedAmount > balanceOf[target], \"Addition overflow detected\");\n        require(totalSupply + mintedAmount > totalSupply, \"Total supply overflow detected\");\n        \n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        emit Transfer(address(0), this, mintedAmount);\n        emit Transfer(this, target, mintedAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerTemp);",
+    "description": "The usage of tx.origin for authentication is a vulnerability as it can be exploited in certain scenarios. tx.origin represents the original sender of the transaction, which could be a proxy contract. This can lead to unexpected behavior and potential security risks. It is recommended to use msg.sender for authentication purposes instead."
+}
+```

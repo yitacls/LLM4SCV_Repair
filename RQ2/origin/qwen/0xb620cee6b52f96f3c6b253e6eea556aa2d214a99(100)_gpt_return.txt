@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "firstTarget.call.value(msg.value)();",
+    "description": "The low-level call operation does not check the return value, which means if the call fails (e.g., due to out of gas or the target contract reverting), the failure will not be detected. This can lead to loss of funds as the contract will not know that the call was unsuccessful and may continue execution assuming the call succeeded. In Solidity ^0.4.23, low-level calls return a boolean indicating success/failure which should be checked."
+}
+```

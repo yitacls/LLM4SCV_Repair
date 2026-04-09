@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MyToken",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by adding safety checks for multiplication and subtraction operations, and improved ether transfer handling",
+            "corrected_code": "function sell(uint amount) returns (uint revenue){\n    if (balanceOf[msg.sender] < amount ) throw;        // checks if the sender has enough to sell\n    balanceOf[this] += amount;                         // adds the amount to owner's balance\n    balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance\n    \n    // Fix: Check for multiplication overflow\n    if (amount > 0 && sellPrice > 0 && amount > (uint(-1) / sellPrice)) throw;\n    revenue = amount * sellPrice;                      // calculate the revenue\n    \n    // Fix: Use safer send pattern with return value check\n    if (!msg.sender.send(revenue)) throw;              // sends ether to the seller\n    \n    Transfer(msg.sender, this, amount);                // executes an event reflecting on the change\n    return revenue;                                    // ends function and returns\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

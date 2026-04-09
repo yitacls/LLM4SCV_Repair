@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100)));",
+    "description": "The arithmetic operation 'msg.value * MULTIPLIER / 100' may result in an integer overflow or underflow in Solidity version ^0.4.25, which lacks built-in safety checks for arithmetic operations. This vulnerability can potentially lead to incorrect calculations or unexpected behavior, especially if 'msg.value' or 'MULTIPLIER' are large values."
+}
+```

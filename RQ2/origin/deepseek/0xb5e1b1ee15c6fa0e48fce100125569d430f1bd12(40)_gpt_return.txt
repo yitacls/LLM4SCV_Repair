@@ -1,0 +1,7 @@
+```json
+{
+    "type": "REENTRANCY",
+    "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; ... }",
+    "description": "The contract performs an external call (msg.sender.call.value(_am)()) to transfer Ether before updating the internal state (balances[msg.sender] -= _am). An attacker can create a malicious contract that calls back into CashOut() recursively from its fallback/receive function, allowing multiple withdrawals before the balance is decremented, potentially draining all Ether from the contract."
+}
+```

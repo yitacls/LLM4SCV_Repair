@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The contract is using a low-level call, 'send' function without checking the result. This could make the contract susceptible to reentrancy attacks, where an attacker can intentionally keep the 'send' call in a fallback function to always fail, potentially leading to funds lock in the contract. It is recommended to always check the result of 'send' function to ensure the execution was successful."
+}
+```

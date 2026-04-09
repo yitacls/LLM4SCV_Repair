@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.transfer(amount);",
+    "description": "The contract is vulnerable to reentrancy because it updates the state (pendingWithdrawals[msg.sender] = 0) after performing the external call (transfer). In Solidity 0.7.6, the transfer function forwards a fixed 2300 gas stipend, which makes this specific instance safe against reentrancy in practice, as 2300 gas is insufficient for any meaningful re-entrant call. However, the pattern is still considered dangerous as changing to call.value() or other low-level calls in future upgrades could reintroduce the vulnerability. The secure pattern is to follow the Checks-Effects-Interactions principle: update all state before making external calls."
+}
+```

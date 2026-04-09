@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bancorSendEthValue",
+            "fix_info": "Added check for successful low-level call to prevent unchecked return value",
+            "corrected_code": "function bancorSendEthValue(IBancorNetwork bancor, address[] path, uint256 value) external {\n        require(bancor.convert.value(value)(path, value, 1));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

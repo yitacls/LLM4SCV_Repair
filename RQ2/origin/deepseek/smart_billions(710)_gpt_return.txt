@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "calcHashes function lines using block.blockhash(_lastb + n) for n = 0 to 9",
+    "description": "The function uses multiple historical block hashes (block.blockhash) to generate a pseudo-random number. This is vulnerable because miners can manipulate or withhold block information, and block hashes are predictable for future blocks. Specifically: 1) block.blockhash() returns zero for blocks older than 256 blocks from current, causing predictable outputs if _lastb is too old; 2) Miners can influence the block hash by including/excluding transactions; 3) The randomness source is on-chain and transparent, making it predictable by other participants. This pattern should not be used for gambling or any application requiring true randomness as it can be exploited."
+}
+```

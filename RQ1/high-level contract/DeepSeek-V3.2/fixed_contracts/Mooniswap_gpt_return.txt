@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "Mooniswap",
+    "contract_version": "^0.6.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyEmergencyAdmin",
+            "fix_info": "Added modifier to restrict emergency fund recovery to trusted emergency admin address",
+            "modifier_code": "modifier onlyEmergencyAdmin() {\n        require(msg.sender == emergencyAdmin, \"Mooniswap: not emergency admin\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "rescueFunds",
+            "fix_info": "Fixed unprotected ether withdrawal vulnerability (SWC-105) by restricting access to emergencyAdmin only, not contract owner. This prevents malicious owner from draining funds while still allowing emergency recovery.",
+            "corrected_code": "    function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyEmergencyAdmin {\n        uint256 balance0 = token0.uniBalanceOf(address(this));\n        uint256 balance1 = token1.uniBalanceOf(address(this));\n\n        // Only allow withdrawing tokens that are not part of the pool\n        require(token != token0 && token != token1, \"Mooniswap: cannot withdraw pool tokens\");\n        \n        // Calculate the exact amount to transfer (min(amount, token.balanceOf(address(this))))\n        uint256 balance = token.uniBalanceOf(address(this));\n        uint256 amountToTransfer = amount > balance ? balance : amount;\n        \n        if (amountToTransfer > 0) {\n            token.uniTransfer(msg.sender, amountToTransfer);\n        }\n\n        // Verify that pool token balances remain unchanged\n        require(token0.uniBalanceOf(address(this)) >= balance0, \"Mooniswap: token0 balance changed\");\n        require(token1.uniBalanceOf(address(this)) >= balance1, \"Mooniswap: token1 balance changed\");\n        require(balanceOf(address(this)) >= _BASE_SUPPLY, \"Mooniswap: supply balance changed\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added emergencyAdmin initialization in constructor",
+            "corrected_code": "    constructor(\n        IERC20 _token0,\n        IERC20 _token1,\n        string memory name,\n        string memory symbol,\n        IMooniswapFactoryGovernance _mooniswapFactoryGovernance,\n        address _emergencyAdmin\n    )\n        public\n        ERC20(name, symbol)\n        MooniswapGovernance(_mooniswapFactoryGovernance)\n    {\n        require(bytes(name).length > 0, \"Mooniswap: name is empty\");\n        require(bytes(symbol).length > 0, \"Mooniswap: symbol is empty\");\n        require(_token0 != _token1, \"Mooniswap: duplicate tokens\");\n        token0 = _token0;\n        token1 = _token1;\n        emergencyAdmin = _emergencyAdmin;\n        emit EmergencyAdminSet(_emergencyAdmin);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setEmergencyAdmin",
+            "fix_info": "Added function to update emergency admin (restricted to current emergency admin)",
+            "corrected_code": "    function setEmergencyAdmin(address newEmergencyAdmin) external onlyEmergencyAdmin {\n        require(newEmergencyAdmin != address(0), \"Mooniswap: invalid emergency admin\");\n        emergencyAdmin = newEmergencyAdmin;\n        emit EmergencyAdminSet(newEmergencyAdmin);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

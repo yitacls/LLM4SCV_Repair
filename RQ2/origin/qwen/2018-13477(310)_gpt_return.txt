@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balances[target] += mintedAmount;",
+    "description": "The addition operation on balances[target] and totalSupply can overflow in Solidity version ^0.4.18 which does not have built-in overflow protection. This could allow an attacker to cause integer overflow when minting large amounts of tokens, potentially resetting balances or total supply to zero or unpredictable values."
+}
+```

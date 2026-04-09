@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DrainMe",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "callSecondTarget",
+            "fix_info": "Added check for low-level call success to prevent unchecked call vulnerabilities",
+            "corrected_code": "function callSecondTarget () public payable onlyPlayers {\n    require (msg.value >= 0.005 ether);\n    // <yes> <report> UNCHECKED_LL_CALLS\n    require(secondTarget.call.value(msg.value)());\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

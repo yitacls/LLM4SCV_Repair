@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenSaleChallenge",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "buy",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow when multiplying numTokens by PRICE_PER_TOKEN and when adding numTokens to balance",
+            "corrected_code": "function buy(uint256 numTokens) public payable {\n        require(msg.value == safeMul(numTokens, PRICE_PER_TOKEN));\n        balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender], numTokens);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

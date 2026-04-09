@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "CompHelper",
+        "contract_version": "0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getUnderlyingAddr",
+                "fix_info": "No state change vulnerability found in this function; left unchanged.",
+                "corrected_code": "function getUnderlyingAddr(address _cTokenAddr) internal returns (address tokenAddr) { if (_cTokenAddr == C_ETH_ADDR) return TokenUtils.WETH_ADDR; tokenAddr = ICToken(_cTokenAddr).underlying(); }..}}, was(n Aggregate.
+
+
+
+Corrections}}

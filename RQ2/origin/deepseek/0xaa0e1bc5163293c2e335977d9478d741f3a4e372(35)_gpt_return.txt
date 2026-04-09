@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amount);",
+    "description": "The return value of the low-level 'send()' call is not checked, which could lead to silent failures. In Solidity 0.4.x, 'send()' returns a boolean indicating success, but this code ignores it. If the send fails (e.g., if 'beneficiary' is a contract that runs out of gas or reverts), the transaction will proceed as if the transfer succeeded, causing inconsistencies in contract state. This could result in funds being stuck in the contract while users have already received tokens, leading to loss of funds. It is recommended to use 'transfer()' instead (which automatically reverts on failure in version 0.4.x) or explicitly check the return value with 'require(beneficiary.send(amount))'."
+}
+```

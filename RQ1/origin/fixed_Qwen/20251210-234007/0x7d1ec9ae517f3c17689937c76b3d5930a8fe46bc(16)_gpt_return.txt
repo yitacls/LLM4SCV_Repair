@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "AIRBUS_301201",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath checks to prevent integer overflow when adding value to recipient's balance",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n\t\trequire(balanceOf[msg.sender] >= value);\n\t\tbalanceOf[msg.sender] -= value;\n\t\trequire(balanceOf[to] + value >= balanceOf[to]);\n\t\tbalanceOf[to] += value;\n\t\temit Transfer(msg.sender, to, value);\n\t\treturn true;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

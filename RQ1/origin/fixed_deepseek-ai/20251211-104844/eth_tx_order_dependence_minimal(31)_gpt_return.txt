@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "EthTxOrderDependenceMinimal",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "claimed",
+                "fix_info": "No changes needed - already exists for single-use protection",
+                "variable_code": "bool public claimed;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "reward",
+                "fix_info": "Added explicit visibility and type",
+                "variable_code": "uint256 public reward;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOnce",
+                "fix_info": "Added modifier to prevent front-running by ensuring function can only be called once",
+                "modifier_code": "modifier onlyOnce() {\n        require(!claimed, \"Reward already claimed\");\n        _;\n        claimed = true;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "claimReward",
+                "fix_info": "Fixed front-running vulnerability by using Checks-Effects-Interactions pattern and the onlyOnce modifier",
+                "corrected_code": "function claimReward(uint256 submission) public onlyOnce {\n        require(submission < 10, \"Invalid submission\");\n        \n        uint256 amount = reward;\n        reward = 0; // Clear reward before transfer to prevent reentrancy\n        \n        msg.sender.transfer(amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

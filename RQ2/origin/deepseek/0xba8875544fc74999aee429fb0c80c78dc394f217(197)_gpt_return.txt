@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(_value <= balances[tx.origin]);",
+    "description": "The function uses `tx.origin` for authorization instead of `msg.sender`, making it vulnerable to phishing attacks via intermediate contracts. An attacker can trick a user with sufficient balance into calling a malicious contract, which then calls this function to transfer the user's tokens without their explicit approval for that specific transfer. Additionally, the function name 'transferOrigin' misleadingly suggests it transfers from the transaction originator rather than the caller, exacerbating the risk of confusion and improper use."
+}
+```

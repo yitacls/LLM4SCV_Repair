@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "ItemToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "No state variables were changed",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwnerOf",
+            "fix_info": "Added new modifier to properly validate token ownership access control",
+            "modifier_code": "modifier onlyOwnerOf(uint256 _itemId) {\n    require(msg.sender == ownerOf(_itemId), \"Caller is not the owner of the token\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replaced tx.origin with msg.sender and added proper ownership check using modifier. tx.origin is vulnerable to phishing attacks as it returns the original caller in a call chain, while msg.sender is the immediate caller. Added explicit error messages for better debugging.",
+            "corrected_code": "function transfer(address _to, uint256 _itemId) onlyERC721() onlyOwnerOf(_itemId) public {\n    require(_to != address(0), \"Cannot transfer to zero address\");\n    _transfer(msg.sender, _to, _itemId);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "a.call();",
+    "description": "In the Caller contract, the function callAddress makes a low-level .call invocation on an arbitrary address `a`. If the low-level .call fails (e.g., due to an exception in the called contract, or if the call runs out of gas), the current contract is not notified, because the result of the call is not checked. This unchecked low-level call can lead to unexpected behavior in case of failed calls."
+}
+```

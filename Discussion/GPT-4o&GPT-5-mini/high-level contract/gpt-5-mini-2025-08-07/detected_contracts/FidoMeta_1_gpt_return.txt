@@ -1,0 +1,47 @@
+[
+  {
+    "type": "SWC-103-Floating Pragma",
+    "location": "pragma solidity 0.8.11;",
+    "description": "Tool flagged Floating Pragma at the top of the file. In this contract the pragma is an exact version (0.8.11) rather than a floating (e.g. ^0.8.11) pragma, so this is not a floating-pragma vulnerability. Recommendation: Prefer an exact pinned compiler version for reproducible builds or explicitly document compatibility if a range is intended. If a floating pragma was intended, change to a compatible range (e.g. ^0.8.11) but be aware of the risks of floating pragmas."
+  },
+  {
+    "type": "SWC-119-Shadowing State Variables",
+    "location": "function _approve(\n        address owner,\n        address spender,\n        uint256 amount\n    ) private { ... }",
+    "description": "The parameter name 'owner' in _approve shadows the function owner() defined in Ownable. While Solidity allows this, it can be confusing and error-prone: references to 'owner' inside the function refer to the parameter, while owner() continues to exist as an accessor. This shadowing can lead to developer mistakes and misunderstandings. Recommendation: Rename the parameter (for example to 'ownerAccount' or 'from') to avoid shadowing the owner() accessor."
+  },
+  {
+    "type": "SWC-135-Code With No Effects",
+    "location": "function transferWithLock(\n        address recipient,\n        uint256 tAmount,\n        uint256 initialLock\n    ) external onlyOwner {\n        ...\n        require(\n            initialLock >= 0,\n            \"timeindays should be greater than or equal to 0\"\n        );\n        ...\n    }",
+    "description": "The check 'require(initialLock >= 0)' has no effect because 'initialLock' is an unsigned integer (uint256) and is always >= 0. This is a dead/meaningless check and indicates a logic mistake or misunderstanding about types. Remove the check or replace with the intended validation (e.g. <= maximum or non-zero if that was intended)."
+  },
+  {
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function _getCurrentSupply() private view returns (uint256, uint256) {\n        uint256 rSupply = _rTotal;\n        uint256 tSupply = _tTotal;\n        uint cacheLength = _excluded.length;\n        for (uint256 i = 0; i < cacheLength; i++) {\n            if (\n                _rOwned[_excluded[i]] > rSupply ||\n                _tOwned[_excluded[i]] > tSupply\n            ) return (_rTotal, _tTotal);\n            rSupply = rSupply.sub(_rOwned[_excluded[i]]);\n            tSupply = tSupply.sub(_tOwned[_excluded[i]]);\n        }\n        ...\n    }",
+    "description": "This function iterates over the entire _excluded array. If many addresses are added to _excluded, the loop can grow unbounded and eventually the function's gas cost may exceed the block gas limit. Because _getCurrentSupply() is used in rate calculations that happen during transfers, a large _excluded array could cause transfers to revert or become impossible (DoS). Recommendation: Avoid unbounded loops in code executed during transfers. Consider alternative designs (capped exclusions, batching off-chain, or different data structures) or ensure _excluded remains bounded."
+  },
+  {
+    "type": "SWC-135-Code With No Effects (logic/typo)",
+    "location": "function takeCharges(... ) private {\n        ...\n        if (tSurcharge2 > 0) {\n            uint256 rSurcharge2 = tSurcharge2.mul(currentRate);\n            _rOwned[_surcharge_2_Wallet] = _rOwned[_surcharge_2_Wallet].add(\n                rSurcharge2\n            );\n            if (_isExcludedFromSurcharge1[_surcharge_2_Wallet])\n                _tOwned[_surcharge_2_Wallet] = _tOwned[_surcharge_2_Wallet].add(\n                    tSurcharge2\n                );\n        }\n        ...\n    }",
+    "description": "Likely a copy/paste typo: when crediting _tOwned for surcharge2 the code checks _isExcludedFromSurcharge1 instead of _isExcludedFromSurcharge2. As a result, even if _surcharge_2_Wallet is excluded in the surcharge2 mapping, the condition may be false and the wallet's _tOwned won't be updated for excluded accounting. This is a logic bug and may cause inconsistent balances for excluded surcharge2 wallets. Fix by checking the correct mapping (_isExcludedFromSurcharge2[_surcharge_2_Wallet])."
+  },
+  {
+    "type": "SWC-135-Code With No Effects (unreachable branch)",
+    "location": "function _tokenTransfer(... ) private {\n        ...\n        if (_isExcludedFromReward[sender] && _isExcludedFromReward[recipient]) {\n            _transferBothExcluded(sender, recipient, amount);\n            // SWC-135-Code With No Effects: L978 - L980\n        } else {\n            _transferStandard(sender, recipient, amount);\n        }\n        ...\n    }",
+    "description": "All four combinations of _isExcludedFromReward booleans are explicitly handled above via the 'if / else if / else if / else if' chain. The final 'else' is effectively unreachable because the earlier branches already cover every boolean combination. This results in dead/unnecessary code. While not harmful, it is misleading and should be cleaned up to improve readability and avoid confusion."
+  },
+  {
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "function unlock(address target_) external {\n        ...\n        uint256 timePassed = block.timestamp -\n            (startTime + (initialLock * 1 days));\n\n        uint256 monthNumber = (uint256(timePassed) + (uint256(30 days) - 1)) /\n            uint256(30 days);\n\n        uint256 remainedMonth = monthNumber - monthCount;\n\n        if (remainedMonth > 5) remainedMonth = 5;\n        require(remainedMonth > 0, \"Releasable token till now is released\");\n        ...\n    }",
+    "description": "The subtraction 'uint256 remainedMonth = monthNumber - monthCount;' can underflow if monthNumber < monthCount. Because these are unsigned integers, that underflow will wrap to a very large value before the subsequent check 'remainedMonth > 0' — allowing the function to proceed with an incorrect (huge) remainedMonth and release tokens far beyond intended. The code assumes monthNumber >= monthCount but does not enforce it. Fix by explicitly checking that monthNumber > monthCount before subtracting (or using a conditional) to avoid underflow, e.g. require(monthNumber > monthCount, ...)."
+  },
+  {
+    "type": "SWC-135-Code With No Effects",
+    "location": "function _transferFromExcluded(\n        address sender,\n        address recipient,\n        uint256 tAmount\n    ) private {\n        MValues memory mvalues = _getValues(tAmount);\n        _tOwned[sender] = _tOwned[sender].sub(tAmount);\n        _rOwned[sender] = _rOwned[sender].sub(mvalues.rAmount);\n        _doTransfer(mvalues, sender, recipient);\n    }",
+    "description": "Flagged by static analyzer as 'Code With No Effects' in context of previous fixes/temporary variables: this function looks correct, but if _getValues or _doTransfer had side-effects expected elsewhere (for example expecting _tOwned or _rOwned updates on the recipient side in this function), the current implementation may not fulfill those expectations. The analyzer warning can be a false positive; however, developers should verify that the manipulation of _tOwned and _rOwned here matches the intended accounting model for excluded accounts. If any lines are truly redundant, remove them to reduce confusion."
+  },
+  {
+    "type": "SWC-135-Code With No Effects",
+    "location": "function setCharges(\n        uint256 community_charge,\n        uint256 ecoSysFee,\n        uint256 surcharge1,\n        uint256 surcharge2,\n        uint256 surcharge3\n    ) external onlyOwner {\n        require(\n            community_charge <= (100 * 10**uint256(decimals)),\n            \"Community Charge % should be less than equal to 100%\"\n        );\n        ...\n        _community_charge = community_charge;\n        _ecoSysFee = ecoSysFee;\n        _surcharge1 = surcharge1;\n        _surcharge2 = surcharge2;\n        _surcharge3 = surcharge3;\n    }",
+    "description": "The percentage upper-bound checks use '(100 * 10**uint256(decimals))' while the contract applies fees later by dividing by 10**11 in _getTValues. The unit/scaling for fees is inconsistent and makes the upper-bound checks misleading or ineffective (e.g. decimals == 9 yields 100*10^9 as limit while fee calculation divides by 10^11). This mismatch can cause the validation to not reflect the actual limits used in fee calculations. Ensure a consistent fee scaling scheme and update the checks to match the actual representation of percentage values used by the contract."
+  }
+]

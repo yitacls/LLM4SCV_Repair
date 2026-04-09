@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[msg.sender] += amount;",
+    "description": "This statement performs integer addition without overflow protection. In Solidity versions prior to 0.8.0, integer arithmetic operations wrap around on overflow/underflow. Given that `balanceOf` maps addresses to `uint256` values, repeated deposits could cause `balanceOf[msg.sender]` to overflow back to a small value, resulting in loss of funds record. This violates the contract's accounting integrity. The vulnerability is compounded because `amountRaised` also uses unchecked addition (`amountRaised += amount;`), potentially allowing `amountRaised` to overflow even if the contract checks `amountRaised < (6000 ether)`, as the overflow could make the condition incorrectly pass."
+}
+```

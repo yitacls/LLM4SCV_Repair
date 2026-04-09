@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "Line 5: etherwow.userRollDice.value(msg.value)(31, msg.sender);",
+    "description": "This contract contains a classic reentrancy vulnerability. The fallback function makes an external call to 'etherwow.userRollDice' using '.value()' which forwards the full message value. Crucially, the contract's state variable 'bet' is not updated before this external call. If the recipient contract 'etherwow' is malicious, it can implement a fallback function that calls back into this contract's fallback function before the initial call completes. The check 'if (bet == true)' will still pass, allowing the attacker to bypass the 'require' check for the exact 1 ether value (since the reentering call can be made with any smaller value from the contract's existing balance) and repeatedly drain the contract's funds before the state is eventually updated or the transaction runs out of gas."
+}
+```

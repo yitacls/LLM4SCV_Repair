@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+    "description": "Calling an external contract with low-level .call() without checking the return value. In Solidity 0.4.x, ERC20 tokens' transfer() function returns a boolean indicating success. If the call fails or returns false, execution continues without reverting, causing silent failures where token transfers may fail but the contract won't notice it. Additionally, using deprecated sha3() instead of keccak256() and bytes4(sha3(...)) instead of bytes4(keccak256(...)) is problematic. The vulnerability could allow tokens to become stuck in the contract or cause inconsistent state."
+}
+```

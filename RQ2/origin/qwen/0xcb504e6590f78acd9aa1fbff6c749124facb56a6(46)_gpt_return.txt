@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "armies[_armyId].ownerAddress.call(CommissionOwnerValue);",
+    "description": "The contract makes an external call to the army owner's address before updating the ownership state. This allows a malicious owner contract to re-enter the purchaseArmy function before the _ownershipArmy function is called, potentially allowing them to purchase the same army multiple times or manipulate the ownership transfer process. The state change should occur before the external call to prevent reentrancy attacks."
+}
+```

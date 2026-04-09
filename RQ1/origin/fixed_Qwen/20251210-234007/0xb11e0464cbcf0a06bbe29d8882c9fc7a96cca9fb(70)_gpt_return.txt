@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "NewLottery",
+    "contract_version": "^0.4.20",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "AddTicket",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for addition operation on totalBounty",
+            "corrected_code": "function AddTicket() public payable\n    {\n        require(msg.value == ticketPrice);\n        require(numtickets < maxTickets);\n        lastTicketTime = now;\n        totalBounty = totalBounty.add(ticketPrice);\n        numtickets++;\n        bool success = numtickets == maxTickets;\n        NewTicket(msg.sender, success);\n        if(success)\n        {\n            PayWinner(msg.sender);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

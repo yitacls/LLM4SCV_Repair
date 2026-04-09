@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "beneficiary.send(amountRaised);",
+    "description": "The contract sends Ether to the beneficiary before resetting the amountRaised variable to 0. This creates a reentrancy vulnerability where a malicious beneficiary contract could re-enter the fallback function before amountRaised is reset, potentially allowing repeated withdrawals of the same funds. The external call to beneficiary.send() should be made after all state variables are updated."
+}
+```

@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Line 65: for (uint i = 0; i < delegationIds.length; ++i) { ... }",
+            "description": "The getLockedCount function iterates through all delegationIds for a holder without limiting the loop size. If a holder has many delegations, this loop could exceed the block gas limit, making the function uncallable and potentially locking funds or disrupting contract functionality."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Lines 259-265: if (_isPurchased[delegationId]) { address holder = delegation.holder; _totalDelegated[holder] += delegation.amount; if (_totalDelegated[holder] >= _purchased[holder]) { purchasedToUnlocked(holder); } }",
+            "description": "The endingDelegatedToUnlocked function resets _purchased[holder] to zero when _totalDelegated[holder] >= _purchased[holder], effectively releasing tokens without proper access control validation. This state change should be protected by appropriate authorization checks to prevent unauthorized release of purchased token balances."
+        }
+    ]
+}
+```

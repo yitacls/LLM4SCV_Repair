@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],v);",
+    "description": "The low-level call to an external contract does not check the return value, which could lead to silent failures. If the called contract throws an exception or returns false, the call will fail silently and the transferFrom operation will not be executed, but the loop will continue without reverting. This could result in inconsistent state where some transfers succeed while others fail. In Solidity 0.4.24, use require(caddress.call(id,from,_tos[i],v)) to properly handle failures, or consider using the transferFrom function with proper error handling."
+}
+```

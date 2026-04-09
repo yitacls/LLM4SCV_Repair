@@ -1,0 +1,27 @@
+```json
+{
+    "contracts": [
+        {
+            "contract_name": "GetSomeEther",
+            "contract_version": "^0.8.0",
+            "state_variables": [
+                {
+                    "variable_name": "freeEther",
+                    "fix_info": "Variable type was unspecified in original code, explicitly declared as uint256 to prevent underflow/overflow",
+                    "variable_code": "uint256 public freeEther;",
+                    "change_type": "added"
+                }
+            ],
+            "modifiers": [],
+            "functions": [
+                {
+                    "function_name": "PutEther",
+                    "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath pattern and replaced outdated syntax with modern Solidity practices",
+                    "corrected_code": "function PutEther() external payable {\n    uint256 newVal = freeEther + msg.value;\n    require(newVal > freeEther, \"Arithmetic overflow detected\");\n    freeEther = newVal;\n}",
+                    "change_type": "modified"
+                }
+            ]
+        }
+    ]
+}
+```

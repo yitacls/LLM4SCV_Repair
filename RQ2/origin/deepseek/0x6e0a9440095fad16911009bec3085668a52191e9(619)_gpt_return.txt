@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses `tx.origin` for authorization, which is vulnerable to phishing attacks. `tx.origin` returns the original EOA (Externally Owned Account) that initiated the transaction chain, not the immediate caller. An attacker can trick the owner into calling a malicious contract, which then calls `setEth()` in the vulnerable contract. Since the `tx.origin` would still be the owner, the malicious call would pass the authorization check, allowing the attacker to modify the `ethToJot` state variable. The recommended fix is to use `msg.sender == owner` instead, which correctly validates the immediate caller."
+}
+```

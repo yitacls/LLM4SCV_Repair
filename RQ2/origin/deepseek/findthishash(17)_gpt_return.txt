@@ -1,0 +1,7 @@
+```json
+{
+    "vulnerability": "FRONT_RUNNING",
+    "location": "function solve(string solution) public { require(hash == sha3(solution)); msg.sender.transfer(1000 ether); }",
+    "description": "The smart contract uses a public function 'solve()' that allows any user to submit the preimage of a hash to claim 1000 ether. Since the function is public and the solution is submitted in plaintext via a transaction, malicious actors can monitor the Ethereum mempool for pending 'solve()' transactions. They can copy the solution from the transaction data and front-run the original solver by submitting the same solution with higher gas fees, causing miners to prioritize their transaction and allowing them to steal the reward."
+}
+```

@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "msg.sender.send(amountToWithdraw);",
+        "description": "The send() function returns a boolean value indicating success or failure, but this return value is not checked. If the send() call fails (e.g., recipient is a contract that reverts, out of gas, etc.), the user's balance will still be set to 0, but the ether transfer will not occur, resulting in permanent loss of funds. This is a critical vulnerability in Solidity versions before 0.8.0 where send() doesn't automatically revert on failure."
+    }
+]
+```

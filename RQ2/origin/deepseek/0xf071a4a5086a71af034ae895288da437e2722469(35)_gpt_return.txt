@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] += _value;",
+    "description": "In Solidity version ^0.4.21 (prior to 0.8.0), integer arithmetic operations are unchecked, allowing silent overflow/underflow. The line 'balances[_to] += _value;' does not prevent overflow, meaning that if (balances[_to] + _value) exceeds uint256's maximum value (2^256 - 1), the operation will wrap around to a small number, causing incorrect token balances and potential token loss or unintended supply inflation. This also applies to the subtraction 'balances[msg.sender] -= _value;'. The vulnerability can be exploited to manipulate account balances and violate token economics."
+}
+```

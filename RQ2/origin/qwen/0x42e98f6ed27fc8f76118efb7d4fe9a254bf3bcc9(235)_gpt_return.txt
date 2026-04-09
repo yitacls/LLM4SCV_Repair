@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.send(address(this).balance);",
+    "description": "The withdrawEther function lacks proper access control modifiers, allowing any caller to withdraw all Ether from the contract. The function should be restricted to only the contract owner using 'onlyOwner' modifier or similar access control mechanism. In Solidity 0.4.18, the recommended approach is to use a modifier or explicitly check the caller's address against the owner address."
+}
+```

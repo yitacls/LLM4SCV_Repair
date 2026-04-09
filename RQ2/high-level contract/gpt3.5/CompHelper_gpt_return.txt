@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function enterMarket(address _cTokenAddr) public",
+    "description": "The function enterMarket makes a call to IComptroller(COMPTROLLER_ADDR).enterMarkets(markets) without checking or handling the return value. This can lead to potential issues if the function call fails or returns unexpected results, as the code does not verify the success of the call."
+}
+```

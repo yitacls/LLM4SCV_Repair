@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())\n        {\n            acc.balance-=_am;\n            LogFile.AddMessage(msg.sender,_am,\"Collect\");\n        }",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the account balance. In Solidity ^0.4.25, the call() function can trigger a fallback function in the caller's contract, which could recursively call the Collect function again before the balance is decreased. This allows an attacker to withdraw more funds than they should be able to. The balance update (acc.balance-=_am) should occur before the external call to prevent reentrant calls from exploiting the same balance."
+}
+```

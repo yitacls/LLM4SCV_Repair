@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+    "description": "The low-level call to the token contract's transfer function does not check the return value. In Solidity 0.4.18, the call() function returns a boolean success value, but this is ignored. If the token transfer fails (returns false), the contract will continue execution as if it succeeded, potentially leaving funds stuck or causing inconsistent state. This is especially dangerous for ERC20 tokens that return false on failure rather than revert. The fix is to check the return value and handle failures appropriately."
+}
+```

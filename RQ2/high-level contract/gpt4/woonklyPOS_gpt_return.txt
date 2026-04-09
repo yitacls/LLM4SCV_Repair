@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "The processReward, addStake, and withdrawFunds functions (lines 603, 516, and 575 respectively)",
+        "description": "These functions are marked with the 'nonReentrant' modifier but they are still vulnerable to Reentrancy attacks because these methods call external contracts and can potentially make changes to the state before the function ends. The withdrawal of funds or rewards can be triggered recursively from the external contracts, leading to more tokens/coins being withdrawn than expected."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "The _withdrawAllrewards and _withdrawAllrewardsCOIN functions (lines 868 and 932 respectively)",
+        "description": "In these functions, there are loops over the stakes that involve external calls to transfer assets (e.g., the transfer function of an ERC20 token). If one of these calls fails, it will stop the execution of the function, leaving other stakeholders potentially locked in, unable to withdraw their funds or rewards. This allows for deliberate or accidental denial of service."
+    }
+]
+```

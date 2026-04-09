@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(this.balance);",
+    "description": "The function ownerWithdrawFees() lacks proper access control modifiers such as 'onlyOwner' or 'require(msg.sender == owner)'. This allows any address to call the function and withdraw all contract funds, not just the legitimate owner. In Solidity ^0.4.18, 'this.balance' should also be replaced with 'address(this).balance' for clarity, though the former is still functional in this version."
+}
+```

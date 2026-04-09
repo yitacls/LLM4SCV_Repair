@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "Swap",
+        "contract_version": "^0.4.26",
+        "state_variables": [
+            {
+                "variable_name": "beneficiary",
+                "fix_info": "Changed from address to address payable to properly receive funds",
+                "variable_code": "address payable public beneficiary;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "swapaddress",
+                "fix_info": "Changed from address to address payable to properly transfer funds",
+                "variable_code": "address payable public swapaddress;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed unchecked low-level call by checking return value of send(), added reentrancy guard, fixed price calculation variable usage",
+                "corrected_code": "function() external payable {\n    require(check[msg.sender] == false, \"Caller has already participated\");\n    require(msg.value < 1000000000000000001 wei, \"Value too large\");\n    require(msg.value > 0, \"Value must be greater than 0\");\n    \n    // Set check first to prevent reentrancy\n    check[msg.sender] = true;\n    \n    uint256 amount = msg.value;\n    balanceOf[msg.sender] += amount;\n    amountRaised += amount;\n    \n    uint256 transferAmount;\n    \n    if (amountRaised <= 100 ether) {\n        require(price >= 10, \"Price too low for calculation\");\n        uint256 newvalue = price / 10;\n        require(newvalue > 0, \"Division by zero\");\n        transferAmount = amount / newvalue;\n    } else if (amountRaised <= 2100 ether) {\n        require(price >= 2, \"Price too low for calculation\");\n        uint256 secondvalue = price / 2;\n        require(secondvalue > 0, \"Division by zero\");\n        transferAmount = amount / secondvalue;\n    } else {\n        require(price > 0, \"Price must be greater than 0\");\n        transferAmount = amount / price;\n    }\n    \n    require(transferAmount > 0, \"Transfer amount must be greater than 0\");\n    require(address(swapaddress) != address(0), \"Swap address not set\");\n    \n    // Transfer to swap address\n    swapaddress.transfer(transferAmount);\n    \n    // Send to beneficiary with proper check\n    require(address(beneficiary) != address(0), \"Beneficiary address not set\");\n    bool success = beneficiary.send(amount);\n    require(success, \"Transfer to beneficiary failed\");\n    \n    emit FundTransfer(msg.sender, amount, true);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

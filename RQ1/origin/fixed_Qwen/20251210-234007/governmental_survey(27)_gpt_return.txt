@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Governmental",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "invest",
+            "fix_info": "Replaced block.timestamp with block.number to prevent miner timestamp manipulation attacks. Using block.number is more secure as it cannot be manipulated by miners within a small range.",
+            "corrected_code": "function invest() {\n    if (msg.value<jackpot/2) throw;\n    lastInvestor = msg.sender;\n    jackpot += msg.value/2;\n    // Fixed: Using block.number instead of block.timestamp to prevent time manipulation\n    lastInvestmentTimestamp = block.number;\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

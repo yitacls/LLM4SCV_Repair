@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "players[tot] = Player(msg.sender, number);",
+    "description": "The input 'number' used in this line can be manipulated due to front-running. A malicious actor can observe the first transaction on the mempool and submit a competing transaction for the same contract with a better 'number' to influence the game outcome. This allows the attacker to predict the behavior of the contract and exploit the game's mechanics unfairly."
+}
+```

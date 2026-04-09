@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SkaleBalances",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Applied reentrancy guard by updating state before external call to prevent recursive withdrawals",
+            "corrected_code": "function withdrawBalance(address from, address to, uint amountOfTokens) external allow(\"DelegationService\") {\n    if (_timeLimit[from] != 0) {\n        require(_timeLimit[from] <= now, \"Bounty is locked\");\n        _timeLimit[from] = 0;\n    }\n\n    require(_bountyBalances[from] >= amountOfTokens, \"Now enough tokens on balance for withdrawing\");\n    _bountyBalances[from] -= amountOfTokens;\n\n    SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));\n    require(skaleToken.transfer(to, amountOfTokens), \"Failed to transfer tokens\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

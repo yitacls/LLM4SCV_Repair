@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "uint holderBalance = SkaleToken(contractManager.getContract(\"SkaleToken\")).balanceOf(holder);\nuint lockedToDelegate = tokenState.getLockedCount(holder) - tokenState.getPurchasedAmount(holder);\nrequire(holderBalance >= amount + lockedToDelegate, \"Delegator hasn't enough tokens to delegate\");",
+    "description": "Integer underflow can occur when subtracting one value from another when the result is negative and the variables are of the uint type. There is no check before subtracting 'tokenState.getPurchasedAmount(holder)' from 'tokenState.getLockedCount(holder)', which can lead to underflow if 'tokenState.getPurchasedAmount(holder)' is greater than 'tokenState.getLockedCount(holder)'. Furthermore, integer overflow can occur when the summation of 'amount' and 'lockedToDelegate' exceeds the maximum holding capacity of a uint variable, leading to inaccuracy of the value assigned to 'holderBalance'."
+}
+```

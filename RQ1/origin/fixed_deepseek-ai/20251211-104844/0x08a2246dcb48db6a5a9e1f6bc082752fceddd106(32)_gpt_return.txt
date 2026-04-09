@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "City",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable to store contract owner address",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "frozenAccount",
+            "fix_info": "Added mapping to track frozen accounts",
+            "variable_code": "mapping(address => bool) public frozenAccount;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Created modifier to restrict access to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "freezeAccount",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyOwner modifier for proper access control. tx.origin is vulnerable to phishing attacks and should not be used for authorization.",
+            "corrected_code": "function freezeAccount(address target, bool freeze) public onlyOwner {\n        frozenAccount[target] = freeze;\n        emit FrozenFunds(target, freeze);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize contract owner",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

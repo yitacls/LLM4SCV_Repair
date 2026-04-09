@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-102: Outdated Compiler Version",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "The contract uses version ^0.8.2 which is outdated. Current best practice recommends using at least 0.8.20+ for production contracts to benefit from security patches, gas optimizations, and new features. The '^' operator allows versions from 0.8.2 up to but not including 0.9.0, which could include versions with known vulnerabilities."
+    },
+    {
+        "type": "SWC-103: Floating Pragma",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "Using a floating pragma (^0.8.2) allows the contract to be compiled with different compiler versions, which can lead to inconsistencies in deployed contracts. For production, contracts should use a fixed pragma (e.g., pragma solidity 0.8.21;) to ensure all deployments use the exact same compiler version with known security properties."
+    },
+    {
+        "type": "SWC-105: Unprotected Ether Withdrawal",
+        "location": "function withdraw() public payable onlyOwner { payable (msg.sender).transfer(address(this).balance); }",
+        "description": "The withdraw() function allows the owner to drain all ETH from the contract without any restrictions. This poses a risk if the owner's private key is compromised, or if the owner acts maliciously. There is no timelock, multi-signature requirement, or withdrawal limit implemented. Users may deposit ETH (though not explicitly shown in the contract) expecting it to be safeguarded."
+    }
+]
+```

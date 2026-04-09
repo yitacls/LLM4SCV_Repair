@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MalaysianCoin",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "This variable must exist in the contract to store account balances",
+            "variable_code": "mapping(address => uint256) public balances",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferAny",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for subtraction and addition operations. Also fixed incorrect value calculation by subtracting total value once before loop and using SafeMath for safe arithmetic operations.",
+            "corrected_code": "function transferAny(address[] addresses, uint256 _value) public {\n    require(_value <= balances[msg.sender]);\n    uint256 totalValue = _value * addresses.length;\n    require(totalValue <= balances[msg.sender]);\n    require(totalValue / addresses.length == _value); // Check for integer overflow when multiplying\n    \n    balances[msg.sender] = balances[msg.sender] - totalValue;\n    \n    for (uint i = 0; i < addresses.length; i++) {\n        require(addresses[i] != address(0)); // Validate address is not zero\n        balances[addresses[i]] = balances[addresses[i]] + _value;\n        emit Transfer(msg.sender, addresses[i], _value);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

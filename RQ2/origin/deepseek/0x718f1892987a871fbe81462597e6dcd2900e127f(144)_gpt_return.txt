@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "The entire `withdraw` function, specifically the call `feeCollector.call.value(fee)()` before `msg.sender.transfer(amount)`.",
+    "description": "The contract uses the low-level `call.value()` on line `feeCollector.call.value(fee)()` which forwards all remaining gas to the receiving address. If `feeCollector` is a malicious contract, it can re-enter the `withdraw` function by calling it again before the user's balance is zeroed (`balance[msg.sender] = 0`), allowing an attacker to repeatedly withdraw funds. The function also does not follow the Checks-Effects-Interactions pattern, as state changes (`balance[feeCollector] = 0` and `balance[msg.sender] = 0`) occur after external calls (`call.value()` and `transfer`). The `transfer` method is safer but still vulnerable if the contract is compiled with Solidity ^0.4.24, as `transfer` only forwards a limited 2300 gas which may prevent reentrancy but is not a complete fix. Additionally, `call.value()` with no gas stipend can lead to reentrancy if the `feeCollector` is malicious."
+}
+```

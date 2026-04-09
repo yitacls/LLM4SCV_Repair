@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Airdrop",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "destroyMe",
+            "fix_info": "Replaced tx.origin with msg.sender to prevent unauthorized access and follow best practices for access control",
+            "corrected_code": "function destroyMe() public {\n    require(msg.sender == owner);\n    selfdestruct(owner);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

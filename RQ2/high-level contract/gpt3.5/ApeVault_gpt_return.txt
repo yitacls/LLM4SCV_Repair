@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 64",
+            "description": "Code snippet 'mapping(address => bool) public hasAccess;' has no effect as it is declared but not used anywhere in the contract."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 71",
+            "description": "Code snippet 'ApeAllowanceModule public allowanceModule;' has no effect as it is declared but not used anywhere in the contract."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Line 133-135",
+            "description": "The function 'apeWithdrawSimpleToken' transfers tokens without checking for potential re-entrancy attack. It should implement a withdrawal pattern to address this vulnerability."
+        }
+    ]
+}
+```

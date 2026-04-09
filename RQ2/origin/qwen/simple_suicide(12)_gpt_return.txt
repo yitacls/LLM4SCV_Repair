@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function sudicideAnyone() {\n    selfdestruct(msg.sender);\n  }",
+    "description": "The function sudicideAnyone() has no access control modifiers and can be called by anyone. In Solidity ^0.4.0, the 'public' keyword was not required for functions to be publicly accessible by default. This means that any external caller can invoke this function and cause the contract to self-destruct, sending all remaining funds to their address. The function should have proper access control (e.g., 'onlyOwner' modifier) to prevent unauthorized users from destroying the contract."
+}
+```

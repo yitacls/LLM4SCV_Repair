@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "FairDice",
+    "contract_version": "^0.4.26",
+    "state_variables": [
+        {
+            "variable_name": "lockedInBets",
+            "fix_info": "Variable already exists in contract, no changes needed for kill() function fix",
+            "variable_code": "uint lockedInBets;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Variable already exists in contract, no changes needed for kill() function fix",
+            "variable_code": "address owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Modifier already exists in contract, ensuring only contract owner can execute",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "kill",
+            "fix_info": "Remove selfdestruct functionality and replace with withdrawal pattern for security. Added payable requirement and direct transfer to owner. Removed SUICIDAL_VUL and LEAKING_VUL vulnerabilities.",
+            "corrected_code": "function kill() external onlyOwner payable {\n    require(lockedInBets == 0, \"All bets should be processed (settled or refunded) before withdrawal.\");\n    require(address(this).balance > 0, \"No balance to withdraw.\");\n    owner.transfer(address(this).balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

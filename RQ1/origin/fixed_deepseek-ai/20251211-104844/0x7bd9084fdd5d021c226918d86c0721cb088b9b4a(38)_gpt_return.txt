@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MultiSend",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "multiSendEth",
+            "fix_info": "Fixed several vulnerabilities: 1) Changed transfer to call with reentrancy guard to prevent DoS attacks, 2) Stored total amount in state variable to prevent reentrancy issues, 3) Added checks for address array length > 0, 4) Added check that msg.value >= addresses.length to avoid divide by zero, 5) Changed to safe transfer of remaining funds using withdrawal pattern instead of arbitrary transfer",
+            "corrected_code": "function multiSendEth(address[] calldata addresses) public payable {\n    require(addresses.length > 0, \"No addresses provided\");\n    require(addresses.length <= 100, \"Too many addresses\"); // Prevent excessive gas costs\n    \n    uint256 totalSent = 0;\n    uint256 amountPerRecipient = msg.value / addresses.length;\n    \n    require(msg.value >= addresses.length, \"Value too small for distribution\");\n    \n    for(uint256 i = 0; i < addresses.length; i++) {\n        require(addresses[i] != address(0), \"Invalid address\");\n        \n        // Using call instead of transfer for better compatibility\n        (bool success, ) = addresses[i].call{value: amountPerRecipient}(\"\");\n        require(success, \"Transfer failed\");\n        \n        totalSent += amountPerRecipient;\n    }\n    \n    // Return any leftover funds to sender (due to integer division)\n    uint256 remainingBalance = msg.value - totalSent;\n    if (remainingBalance > 0) {\n        (bool success, ) = msg.sender.call{value: remainingBalance}(\"\");\n        require(success, \"Refund failed\");\n    }\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

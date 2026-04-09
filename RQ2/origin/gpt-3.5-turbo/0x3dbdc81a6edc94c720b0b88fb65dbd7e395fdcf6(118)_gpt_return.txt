@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "_addr.send(this.balance);",
+            "description": "The use of send() in this context does not handle any errors that may occur during the transfer, leaving the contract vulnerable as the call may fail and the remaining computation will not be reverted."
+        }
+    ]
+}
+```

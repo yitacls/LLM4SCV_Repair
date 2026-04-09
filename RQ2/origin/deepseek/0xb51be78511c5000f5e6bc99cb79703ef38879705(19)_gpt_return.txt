@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "_balanceOf[from] -= value; and _balanceOf[to] += value;",
+    "description": "In Solidity version ^0.4.24, arithmetic operations do not automatically check for overflow/underflow. If '_balanceOf[from]' is less than 'value', the subtraction will underflow, resulting in an extremely large value due to unsigned integer wrap-around. Similarly, if '_balanceOf[to] + value' exceeds the maximum value of uint256 (2^256 - 1), it will overflow, causing the balance to wrap around to a small value. This can be exploited to create fake tokens or drain balances. The vulnerability exists because SafeMath or built-in overflow checks (available from Solidity 0.8.0) are not used."
+}
+```

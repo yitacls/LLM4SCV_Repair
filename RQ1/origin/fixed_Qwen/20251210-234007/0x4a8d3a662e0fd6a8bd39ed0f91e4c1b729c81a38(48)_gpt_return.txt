@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HODLWallet",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "doWithdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of the call and reverting on failure",
+            "corrected_code": "function doWithdraw(address from, address to, uint256 amount) internal {\n        require(amount <= MAX_WITHDRAWAL);\n        require(balances[from] >= amount);\n        require(withdrawalCount[from] < 3);\n        balances[from] = balances[from].sub(amount);\n        require(to.call.value(amount)());\n        withdrawalCount[from] = withdrawalCount[from].add(1);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

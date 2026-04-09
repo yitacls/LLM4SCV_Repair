@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MyYLCToken",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Added safe visibility and uint256 type to prevent arithmetic issues",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added safe visibility and mapping type to prevent arithmetic issues",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyValidAmount",
+            "fix_info": "Added modifier to check for overflow/underflow and valid inputs",
+            "modifier_code": "modifier onlyValidAmount(uint256 amount) {\n        require(amount > 0, \"Amount must be positive\");\n        require(amount <= balanceOf[msg.sender], \"Insufficient balance\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath, preventing reentrancy with checks-effects-interactions pattern, and using transfer() instead of send() for better security",
+            "corrected_code": "function sell(uint256 amount) public onlyValidAmount(amount) {\n        // Checks\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        \n        uint256 etherAmount = amount * sellPrice;\n        require(address(this).balance >= etherAmount, \"Contract has insufficient ETH\");\n        \n        // Effects\n        balanceOf[msg.sender] -= amount;\n        balanceOf[this] += amount;\n        \n        // Interactions\n        msg.sender.transfer(etherAmount);\n        \n        // Event\n        Transfer(msg.sender, this, amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

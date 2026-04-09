@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Bitway",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Ensure owner variable is properly declared and initialized",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setPause",
+            "fix_info": "Replaced vulnerable tx.origin check with secure onlyOwner modifier to prevent unauthorized access",
+            "corrected_code": "function setPause(bool _paused) public onlyOwner {\n    paused = _paused;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

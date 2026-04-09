@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow",
+    "location": "L53-54",
+    "description": "The calculation on L53-54 could potentially result in integer overflow if the value of (SwapHelper.getRatioFromRange(tickPool, tickLower, tickUpper) + 1e18) is very large, leading to unexpected behavior or security vulnerabilities."
+}
+```

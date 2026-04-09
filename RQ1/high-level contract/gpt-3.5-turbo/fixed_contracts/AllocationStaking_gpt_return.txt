@@ -1,0 +1,40 @@
+```json
+[
+    {
+        "contract_name": "AllocationStaking",
+        "contract_version": "0.6.12",
+        "functions": [
+            {
+                "function_name": "fund",
+                "fix_info": "Prevent integer overflow in calculating 'endTimestamp'.",
+                "corrected_code": "endTimestamp = endTimestamp.add(_amount.div(rewardPerSecond));",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "totalPending",
+                "fix_info": "Ensure proper calculation for total pending rewards.",
+                "corrected_code": "if (block.timestamp < startTimestamp) { return 0; } uint256 timeElapsed = block.timestamp.sub(startTimestamp); if (timeElapsed >= endTimestamp.sub(startTimestamp)) { return rewardPerSecond.mul(endTimestamp.sub(startTimestamp)).sub(paidOut); } else { return rewardPerSecond.mul(timeElapsed).sub(paidOut); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "updatePool",
+                "fix_info": "Update reward variables with proper checks.",
+                "corrected_code": "if (lastTimestamp <= pool.lastRewardTimestamp) { return; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "updatePoolWithFee",
+                "fix_info": "Ensure correct update of reward variables with fee included.",
+                "corrected_code": "uint256 erc20Reward = reward.mul(pool.allocPoint).div(totalAllocPoint); pool.accERC20PerShare = pool.accERC20PerShare.add(erc20Reward.mul(1e36).div(lpSupply).add(_depositFee));",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fix potential integer underflow and prevent wrong timestamp check.",
+                "corrected_code": "require(user.tokensUnlockTime <= block.timestamp, 'Last sale you registered for is not finished yet.'); require(user.amount >= _amount, 'withdraw: can't withdraw more than deposit'); uint256 withdrawalFeeDepositAmount; uint256 withdrawalFeePending; (withdrawalFeeDepositAmount, withdrawalFeePending) = getWithdrawFeeInternal(_amount, pendingAmount, user.tokensUnlockTime);",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

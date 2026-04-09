@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "CommunityVault",
+        "contract_version": "^0.6.12",
+        "state_variables": [
+            {
+                "variable_name": "_bond",
+                "fix_info": "State variable `_bond` retained with no changes since it's implemented securely.",
+                "variable_code": "IERC20 private _bond;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setAllowance",
+                "fix_info": "Added a `nonReentrant` modifier to prevent reentrancy attacks and updated pragma to fix floating pragma.",
+                "corrected_code": "pragma solidity ^0.6.12;\n\nimport \"@openzeppelin/contracts/access/Ownable.sol\";\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\nimport \"@openzeppelin/contracts/utils/ReentrancyGuard.sol\";\n\ncontract CommunityVault is Ownable, ReentrancyGuard {\n\n    IERC20 private _bond;\n\n    constructor (address bond) public {\n        _bond = IERC20(bond);\n    }\n\n    event SetAllowance(address indexed caller, address indexed spender, uint256 amount);\n\n    function setAllowance(address spender, uint256 amount) public onlyOwner nonReentrant {\n        _bond.approve(spender, amount);\n        emit SetAllowance(msg.sender, spender, amount);\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

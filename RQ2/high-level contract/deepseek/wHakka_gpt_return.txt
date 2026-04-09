@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-116-Block values as a proxy for time",
+            "location": "Line 509 in stakingRateModel contract: `if(timeElapsed > 0) { lastUpdateTimestamp = block.timestamp; ... }`",
+            "description": "The contract uses block.timestamp to update staking rates, which can be manipulated by miners to some extent. Block timestamps are not perfectly reliable for precise time calculations and can be influenced within a small range (typically up to 900 seconds), potentially affecting the stakingRateStored calculation and giving advantages to malicious actors."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 556-573 in wHakka contract stake() function: External call `Hakka.safeTransferFrom(msg.sender, address(this), amount)` occurs after state changes",
+            "description": "Although the SafeERC20 library is used, the transferFrom is called after updating vault state (vault storage, stakedHakka, votingPower, vaultCount, and minting tokens). This creates a reentrancy vulnerability where a malicious Hakka token contract could reenter the stake function during transferFrom, potentially manipulating the vault accounting or minting additional wHAKKA tokens."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 576-592 in wHakka contract unstake() function: External call `Hakka.safeTransfer(to, amount)` occurs after state changes",
+            "description": "The Hakka token transfer is performed after updating vault state (vault storage, stakedHakka, votingPower, and burning wHAKKA tokens). This creates a reentrancy vulnerability where a malicious Hakka token contract could reenter the unstake function during safeTransfer, potentially allowing repeated withdrawals or manipulation of the vault accounting."
+        },
+        {
+            "type": "SWC-116-Block values as a proxy for time",
+            "location": "Line 580 in wHakka contract unstake() function: `require(block.timestamp >= v.unlockTime, \"locked\")`",
+            "description": "The contract relies on block.timestamp to enforce lockup periods. Miners can manipulate timestamps within a limited range (typically ±900 seconds), which could allow early unlocking of staked tokens or affect the intended locking mechanism's security guarantees."
+        }
+    ]
+}
+```

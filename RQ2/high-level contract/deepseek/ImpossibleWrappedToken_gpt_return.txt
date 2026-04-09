@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 53-61: deposit(address dst, uint256 wad) function",
+            "description": "The function performs an external call (transferFrom) before updating the contract's state (underlyingBalance). Although the contract uses Solidity 0.7.6 which has checks-effects-interactions pattern enforcement for native ETH transfers, this is an ERC20 token transfer which could call back into the contract if the underlying token is malicious. This could allow reentrancy attacks where an attacker manipulates the state before underlyingBalance is updated."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 65-73: deposit(address dst) function",
+            "description": "Similar to the first deposit function, this function reads the current balance from an external token contract before updating state. A malicious ERC20 token could reenter the contract during the balanceOf call, potentially manipulating the calculation of transferAmt and wad before underlyingBalance is updated."
+        },
+        {
+            "type": "SWC-114-Transaction Order Dependence",
+            "location": "Lines 65-73: deposit(address dst) function",
+            "description": "The function uses the difference between the current token balance and stored underlyingBalance to determine the deposit amount. This creates a race condition where an attacker could front-run transactions by sending tokens directly to the contract, causing the deposit calculation to include those tokens. Alternatively, if tokens are accidentally sent to the contract, anyone can claim them by calling this deposit function."
+        }
+    ]
+}
+```

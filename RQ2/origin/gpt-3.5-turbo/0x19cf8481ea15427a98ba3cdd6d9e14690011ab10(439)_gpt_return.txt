@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance - SubX);",
+    "description": "The function 'send' is an unchecked low-level call which transfers funds to the 'owner' without checking the return value. This can potentially lead to re-entrancy attacks and other vulnerabilities."
+}
+```

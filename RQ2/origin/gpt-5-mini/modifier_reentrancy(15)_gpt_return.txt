@@ -1,0 +1,5 @@
+{
+  "type": "Reentrancy",
+  "location": "function airDrop() hasNoBalance supportsToken public {\n    tokenBalance[msg.sender] += 20;\n  } (modifiers: hasNoBalance, supportsToken)",
+  "description": "The function relies on modifiers (hasNoBalance, supportsToken) which are executed around the function body. If either modifier performs an external call (for example calling msg.sender or another untrusted contract) a malicious recipient can re-enter the contract before tokenBalance[msg.sender] is updated. Because the balance increment happens only inside the function body after modifier execution, a reentrant call can repeatedly pass the modifiers' checks (e.g., a hasNoBalance check) and invoke airDrop multiple times, allowing an attacker to drain repeated airdrops. Mitigations: follow the checks-effects-interactions pattern (update state before any external calls), avoid making external calls inside modifiers, or use a reentrancy guard (mutex) to prevent reentrant entry to airDrop."
+}

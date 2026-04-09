@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Tubigo",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to ensure proper access control",
+                "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed access control vulnerability by ensuring only owner can withdraw and prevent reentrancy attacks",
+                "corrected_code": "function withdraw() public onlyOwner {\n        uint256 etherBalance = address(this).balance;\n        require(etherBalance > 0, \"No ether to withdraw\");\n        \n        address payable ownerPayable = address(uint160(owner));\n        ownerPayable.transfer(etherBalance);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

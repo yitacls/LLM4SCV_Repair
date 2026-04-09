@@ -1,0 +1,71 @@
+```json
+[{
+    "contract_name": "ReferralFeeReceiver",
+    "contract_version": "^0.6.0",
+    "state_variables": [
+        {
+            "variable_name": "userInfo",
+            "fix_info": "No changes needed - maintained for reentrancy protection",
+            "variable_code": "mapping(address => UserInfo) public userInfo;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "tokenInfo",
+            "fix_info": "No changes needed - maintained for reentrancy protection",
+            "variable_code": "mapping(IERC20 => TokenInfo) public tokenInfo;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "updateReward",
+            "fix_info": "Added reentrancy protection by using Checks-Effects-Interactions pattern and proper state updates before external calls",
+            "corrected_code": "function updateReward(address referral, uint256 amount) external override {\n    Mooniswap mooniswap = Mooniswap(msg.sender);\n    TokenInfo storage token = tokenInfo[mooniswap];\n    UserInfo storage user = userInfo[referral];\n    uint256 currentEpoch = token.currentEpoch;\n\n    // Add new reward to current epoch\n    user.share[mooniswap][currentEpoch] = user.share[mooniswap][currentEpoch].add(amount);\n    token.epochBalance[currentEpoch].totalSupply = token.epochBalance[currentEpoch].totalSupply.add(amount);\n\n    // Collect all processed epochs and advance user token epoch\n    _collectProcessedEpochs(user, token, mooniswap, currentEpoch);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "freezeEpoch",
+            "fix_info": "Added reentrancy protection by updating state before external calls and handling withdrawals safely",
+            "corrected_code": "function freezeEpoch(Mooniswap mooniswap) external validPool(mooniswap) validSpread(mooniswap) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    uint256 currentEpoch = token.currentEpoch;\n    require(token.firstUnprocessedEpoch == currentEpoch, \"Previous epoch is not finalized\");\n\n    IERC20[] memory tokens = mooniswap.getTokens();\n    uint256 token0Balance = tokens[0].uniBalanceOf(address(this));\n    uint256 token1Balance = tokens[1].uniBalanceOf(address(this));\n    \n    // Store balance in memory before withdrawal\n    uint256 poolBalance = mooniswap.balanceOf(address(this));\n    \n    // Perform withdrawal\n    mooniswap.withdraw(poolBalance, new uint256[](0));\n    \n    // Update state after external call\n    token.epochBalance[currentEpoch].token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);\n    token.epochBalance[currentEpoch].token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);\n    token.currentEpoch = currentEpoch.add(1);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "trade",
+            "fix_info": "Added reentrancy protection by updating state before external calls and using SafeERC20 for transfers",
+            "corrected_code": "function trade(Mooniswap mooniswap, IERC20[] memory path) external validPool(mooniswap) validPath(path) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;\n    EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];\n    require(firstUnprocessedEpoch.add(1) == token.currentEpoch, \"Prev epoch already finalized\");\n\n    IERC20[] memory tokens = mooniswap.getTokens();\n    uint256 availableBalance;\n    if (path[0] == tokens[0]) {\n        availableBalance = epochBalance.token0Balance;\n    } else if (path[0] == tokens[1]) {\n        availableBalance = epochBalance.token1Balance;\n    } else {\n        revert(\"Invalid first token\");\n    }\n\n    (uint256 amount, uint256 returnAmount) = _maxAmountForSwap(path, availableBalance);\n    \n    // Update state BEFORE external calls\n    if (path[0] == tokens[0]) {\n        epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);\n    } else {\n        epochBalance.token1Balance = epochBalance.token1Balance.sub(amount);\n    }\n    \n    if (returnAmount == 0) {\n        // get rid of dust\n        if (availableBalance > 0) {\n            require(availableBalance == amount, \"availableBalance is not dust\");\n            for (uint256 i = 0; i + 1 < path.length; i += 1) {\n                Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);\n                require(_validateSpread(_mooniswap), \"Spread is too high\");\n            }\n            if (path[0].isETH()) {\n                (bool success, ) = msg.sender.call{value: availableBalance}(\"\"); // Use msg.sender instead of tx.origin\n                require(success, \"ETH transfer failed\");\n            } else {\n                path[0].safeTransfer(msg.sender, availableBalance); // Send to msg.sender instead of mooniswap\n            }\n        }\n    } else {\n        uint256 receivedAmount = _swap(path, amount, payable(address(this)));\n        epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);\n    }\n\n    if (epochBalance.token0Balance == 0 && epochBalance.token1Balance == 0) {\n        token.firstUnprocessedEpoch = firstUnprocessedEpoch.add(1);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Added reentrancy protection by updating state before transfers and using Checks-Effects-Interactions pattern",
+            "corrected_code": "function claim(Mooniswap[] memory pools) external {\n    UserInfo storage user = userInfo[msg.sender];\n    uint256 totalBalance = user.balance;\n    \n    // Collect all balances first\n    for (uint256 i = 0; i < pools.length; ++i) {\n        Mooniswap mooniswap = pools[i];\n        TokenInfo storage token = tokenInfo[mooniswap];\n        _collectProcessedEpochs(user, token, mooniswap, token.currentEpoch);\n    }\n    \n    // Update user balance in storage\n    uint256 currentBalance = user.balance;\n    \n    if (currentBalance > 1) {\n        // Calculate transfer amount\n        uint256 transferAmount = currentBalance - 1;\n        \n        // Update storage BEFORE external call\n        user.balance = 1;\n        \n        // Safe transfer with reentrancy protection\n        inchToken.safeTransfer(msg.sender, transferAmount);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimCurrentEpoch",
+            "fix_info": "Added reentrancy protection by updating state before external transfers",
+            "corrected_code": "function claimCurrentEpoch(Mooniswap mooniswap) external validPool(mooniswap) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    UserInfo storage user = userInfo[msg.sender];\n    uint256 currentEpoch = token.currentEpoch;\n    uint256 balance = user.share[mooniswap][currentEpoch];\n    \n    if (balance > 0) {\n        // Update state BEFORE external call\n        user.share[mooniswap][currentEpoch] = 0;\n        token.epochBalance[currentEpoch].totalSupply = token.epochBalance[currentEpoch].totalSupply.sub(balance);\n        \n        // Safe transfer\n        mooniswap.safeTransfer(msg.sender, balance);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimFrozenEpoch",
+            "fix_info": "Added reentrancy protection by updating all state before external transfers",
+            "corrected_code": "function claimFrozenEpoch(Mooniswap mooniswap) external validPool(mooniswap) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    UserInfo storage user = userInfo[msg.sender];\n    uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;\n    uint256 currentEpoch = token.currentEpoch;\n\n    require(firstUnprocessedEpoch.add(1) == currentEpoch, \"Epoch already finalized\");\n    require(user.firstUnprocessedEpoch[mooniswap] == firstUnprocessedEpoch, \"Epoch funds already claimed\");\n\n    uint256 share = user.share[mooniswap][firstUnprocessedEpoch];\n    \n    // Update state immediately\n    user.firstUnprocessedEpoch[mooniswap] = currentEpoch;\n    \n    if (share > 0) {\n        EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];\n        uint256 totalSupply = epochBalance.totalSupply;\n        \n        // Clear user share and update total supply\n        user.share[mooniswap][firstUnprocessedEpoch] = 0;\n        epochBalance.totalSupply = totalSupply.sub(share);\n\n        IERC20[] memory tokens = mooniswap.getTokens();\n        \n        // Calculate all amounts first\n        uint256 token0Amount = epochBalance.token0Balance.mul(share).div(totalSupply);\n        uint256 token1Amount = epochBalance.token1Balance.mul(share).div(totalSupply);\n        uint256 inchAmount = epochBalance.inchBalance.mul(share).div(totalSupply);\n        \n        // Update balances in storage\n        epochBalance.token0Balance = epochBalance.token0Balance.sub(token0Amount);\n        epochBalance.token1Balance = epochBalance.token1Balance.sub(token1Amount);\n        epochBalance.inchBalance = epochBalance.inchBalance.sub(inchAmount);\n        \n        // Perform transfers after state updates\n        if (token0Amount > 0) {\n            tokens[0].safeTransfer(msg.sender, token0Amount);\n        }\n        if (token1Amount > 0) {\n            tokens[1].safeTransfer(msg.sender, token1Amount);\n        }\n        if (inchAmount > 0) {\n            inchToken.safeTransfer(msg.sender, inchAmount);\n        }\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_transferTokenShare",
+            "fix_info": "No changes needed - already follows safe transfer pattern",
+            "corrected_code": "function _transferTokenShare(IERC20 token, uint256 balance, uint256 share, uint256 totalSupply) private returns(uint256 newBalance) {\n    uint256 amount = balance.mul(share).div(totalSupply);\n    if (amount > 0) {\n        token.safeTransfer(msg.sender, amount);\n    }\n    return balance.sub(amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_collectProcessedEpochs",
+            "fix_info": "No changes needed - internal function doesn't make external calls",
+            "corrected_code": "function _collectProcessedEpochs(UserInfo storage user, TokenInfo storage token, Mooniswap mooniswap, uint256 currentEpoch) private {\n    // Early return for the new users\n    if (user.share[mooniswap][user.firstUnprocessedEpoch[mooniswap]] == 0) {\n        user.firstUnprocessedEpoch[mooniswap] = currentEpoch;\n        return;\n    }\n\n    uint256 userEpoch = user.firstUnprocessedEpoch[mooniswap];\n    uint256 tokenEpoch = token.firstUnprocessedEpoch;\n    uint256 epochCount = Math.min(2, tokenEpoch.sub(userEpoch)); // 0, 1 or 2 epochs\n    if (epochCount == 0) {\n        return;\n    }\n\n    // Claim 1 or 2 processed epochs for the user\n    uint256 collected = _collectEpoch(user, token, mooniswap, userEpoch);\n    if (epochCount > 1) {\n        collected = collected.add(_collectEpoch(user, token, mooniswap, userEpoch + 1));\n    }\n    user.balance = user.balance.add(collected);\n\n    // Update user token epoch counter\n    bool emptySecondEpoch = user.share[mooniswap][userEpoch + 1] == 0;\n    user.firstUnprocessedEpoch[mooniswap] = (epochCount == 2 || emptySecondEpoch) ? currentEpoch : userEpoch + 1;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

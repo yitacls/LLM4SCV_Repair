@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function withdrawCrypto(address payable beneficiary) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n        require(address(this).balance>0,\"No Crypto inside contract\");\n        (bool success, ) = beneficiary.call{value:address(this).balance}(\"\");\n        require(success, \"Transfer failed.\");\n        emit CryptoWithdrawn(beneficiary, address(this).balance);\n    }",
+        "description": "The contract's fallback function 'receive() payable external' allows it to accept arbitrary Ether transfers. However, the 'withdrawCrypto' function withdraws the entire contract balance to a beneficiary address without verifying that the Ether was intended for the contract's token sale operations. This can lead to loss of funds if Ether is sent directly to the contract by mistake or by malicious actors, as it can be withdrawn by the owner regardless of its source."
+    }
+]
+```

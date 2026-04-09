@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "modifier OnlyOwner() {...",
+    "description": "The use of tx.origin for access control in the OnlyOwner modifier poses a security vulnerability. tx.origin should not be used for authentication as it represents the original sender of the transaction and can be manipulated in delegatecall scenarios. Instead, msg.sender should be used for proper access control checks."
+}
+```  

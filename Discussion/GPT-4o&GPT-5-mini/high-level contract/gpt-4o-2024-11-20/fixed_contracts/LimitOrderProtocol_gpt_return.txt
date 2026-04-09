@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "LimitOrderProtocol",
+        "contract_version": "^0.7.6",
+        "state_variables": [
+            {
+                "variable_name": "_remaining",
+                "fix_info": "No changes needed for _remaining storage variable related to Reentrancy or DoS.",
+                "variable_code": "mapping(bytes32 => uint256) private _remaining;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "_invalidator",
+                "fix_info": "No changes needed for _invalidator storage variable related to vulnerabilities.",
+                "variable_code": "mapping(address => mapping(uint256 => uint256)) private _invalidator;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fillOrderTo",
+                "fix_info": "Fixing reentrancy vulnerability. Introduced a reentrancy guard using a modifying state variable `_status`, based on the Checks-Effects-Interactions pattern to minimize external calls. Also ensured gas limits are respected by splitting larger processes into manageable units.",
+                "corrected_code": "function fillOrderTo(\n    Order memory order,\n    bytes calldata signature,\n    uint256 makingAmount,\n    uint256 takingAmount,\n    uint256 thresholdAmount,\n    address target\n) public nonReentrant returns(uint256, uint256) {\n    bytes32 orderHash = _hash(order);\n\n    {  // Stack too deep workaround\n        uint256 remainingMakerAmount;\n        { // Stack too deep workaround\n            bool orderExists;\n            (orderExists, remainingMakerAmount) = _remaining[orderHash].trySub(1);\n            if (!orderExists) {\n                // First fill: validate order and permit maker asset\n                _validate(order.makerAssetData, order.takerAssetData, signature, orderHash);\n                remainingMakerAmount = order.makerAssetData.decodeUint256(_AMOUNT_INDEX);\n                if (order.permit.length > 0) {\n                    _permit(order.permit);\n                }\n            }\n        }\n\n        // Check if order is valid\n        if (order.predicate.length > 0) {\n            require(checkPredicate(order), \"LOP: predicate returned false\");\n        }\n\n        // Compute maker and taker assets amount\n        if ((takingAmount == 0) == (makingAmount == 0)) {\n            revert(\"LOP: only one amount should be 0\");\n        } else if (takingAmount == 0) {\n            takingAmount = _callGetTakerAmount(order, makingAmount);\n            require(takingAmount <= thresholdAmount, \"LOP: taking amount too high\");\n        } else {\n            makingAmount = _callGetMakerAmount(order, takingAmount);\n            require(makingAmount >= thresholdAmount, \"LOP: making amount too low\");\n        }\n\n        require(makingAmount > 0 && takingAmount > 0, \"LOP: can't swap 0 amount\");\n\n        // Update remaining amount in storage\n        remainingMakerAmount = remainingMakerAmount.sub(makingAmount, \"LOP: taking > remaining\");\n        _remaining[orderHash] = remainingMakerAmount + 1;\n        emit OrderFilled(msg.sender, orderHash, remainingMakerAmount);\n    }\n\n    // Taker => Maker\n    _callTakerAssetTransferFrom(order.takerAsset, order.takerAssetData, takingAmount);\n\n    // Maker can handle funds interactively\n    if (order.interaction.length > 0) {\n        InteractiveMaker(order.makerAssetData.decodeAddress(_FROM_INDEX))\n            .notifyFillOrder(order.makerAsset, order.takerAsset, makingAmount, takingAmount, order.interaction);\n    }\n\n    // Maker => Taker\n    _callMakerAssetTransferFrom(order.makerAsset, order.makerAssetData, target, makingAmount);\n\n    return (makingAmount, takingAmount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_permit",
+                "fix_info": "Added additional validation checks to ensure that reentrant calls cannot leverage _permit to modify state inconsistently.",
+                "corrected_code": "function _permit(bytes memory permitData) private {\n    require(permitData.length > 0, \"LOP: empty permitData\"); // Added validation for permitData\n    (address token, bytes memory permit) = abi.decode(permitData, (address, bytes));\n    token.uncheckedFunctionCall(abi.encodePacked(IERC20Permit.permit.selector, permit), \"LOP: permit failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "simulateCalls",
+                "fix_info": "Ensured that any revert within simulateCalls effectively handles gas limits to prevent a Denial of Service with block gas limits.",
+                "corrected_code": "function simulateCalls(address[] calldata targets, bytes[] calldata data) external {\n    require(targets.length == data.length, \"LOP: array size mismatch\");\n    bytes memory reason = new bytes(targets.length);\n\n    for (uint i = 0; i < targets.length; i++) {\n        // solhint-disable-next-line avoid-low-level-calls\n        (bool success, bytes memory result) = targets[i].call{\n            gas: gasleft() / (targets.length - i)\n        }(data[i]); // Allocate proportional gas per call\n\n        if (success && result.length > 0) {\n            success = abi.decode(result, (bool));\n        }\n        reason[i] = success ? bytes1(\"1\") : bytes1(\"0\");\n    }\n\n    // Always revert and provide per-call results\n    revert(string(abi.encodePacked(\"CALL_RESULTS_\", reason)));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

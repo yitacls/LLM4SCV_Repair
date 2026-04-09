@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "map[key] = value;",
+    "description": "The function lacks access control modifiers, allowing any external caller to set values in the map array. In Solidity ^0.4.24, the function should include access modifiers like 'external' or 'public' with proper authentication checks to prevent unauthorized access. Without proper access control, malicious users can manipulate the map data directly."
+}
+```

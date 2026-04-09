@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Proxy",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "proxy",
+                "fix_info": "Added explicit return value checks for low-level call to prevent silent failures and added reentrancy guard",
+                "corrected_code": "function proxy(address target, bytes data) public payable returns (bool) {\n    require(target != address(0), \"Invalid target address\");\n    bool success;\n    (success,) = target.call.value(msg.value)(data);\n    require(success, \"Low-level call failed\");\n    return success;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

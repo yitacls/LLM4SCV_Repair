@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "(bool success,) = to.call{value:value}(new bytes(0)); /* <RE_ENT>, <RE_VUL> */",
+    "description": "The use of the to.call function without explicitly checking the return value can lead to the recursive call vulnerability or re-entrancy vulnerability where the recipient contract can take control of the flow and manipulate the contract state before the current function completes its execution."
+}
+```

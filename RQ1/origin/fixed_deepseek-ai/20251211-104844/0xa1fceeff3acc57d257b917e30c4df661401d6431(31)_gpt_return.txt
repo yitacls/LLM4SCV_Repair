@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "AirDropContract",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the success of each call, using call.value(), using abi.encodeWithSelector for function encoding, and including proper error handling",
+            "corrected_code": "function transfer(address contract_address, address[] tos, uint[] vs)\n    public\n    validAddress(contract_address)\n    returns (bool) {\n    \n    require(tos.length > 0);\n    require(vs.length > 0);\n    require(tos.length == vs.length);\n    \n    bytes4 id = bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n    \n    for (uint i = 0; i < tos.length; i++) {\n        bool success = contract_address.call.gas(gasleft() / 2)(\n            abi.encodeWithSelector(id, msg.sender, tos[i], vs[i])\n        );\n        \n        if (!success) {\n            // Either revert the whole transaction or skip and continue\n            // For safety, we revert the entire transfer\n            revert(\"transferFrom call failed\");\n        }\n    }\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

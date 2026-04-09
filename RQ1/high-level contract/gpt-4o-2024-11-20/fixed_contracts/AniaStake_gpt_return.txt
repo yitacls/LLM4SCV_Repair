@@ -1,0 +1,50 @@
+```json
+[
+    {
+        "contract_name": "AniaStake",
+        "contract_version": "^0.8.18",
+        "state_variables": [
+            {
+                "variable_name": "apy",
+                "fix_info": "Added `constant` for the default APY variable to follow best practices for gas efficiency.",
+                "variable_code": "uint256 public constant DEFAULT_APY = 100;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added a modifier to restrict access to only the contract owner, reducing redundancy in access checks.",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, 'Only contract creator can perform this action'); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "stakeTokens",
+                "fix_info": "Fixed the logic that incorrectly modified `totalStaked` by including the full reward amount during staking instead of tracking net deposits. This could sustainably increase contract balances. Also resolved any implicit use of array indices.",
+                "corrected_code": "function stakeTokens(uint256 _amount) public { require(_amount > 0, 'amount cannot be 0'); uint256 index = stakes[msg.sender]; uint256 timestamp = block.timestamp; uint256 reward = 0; if (index == 0) { index = _addStaker(msg.sender); } else { reward = calculateStakeReward(stakers[index].address_stake); } uint256 newStake = stakers[index].address_stake.amount + _amount + reward; stakers[index].address_stake = Stake(msg.sender, newStake, timestamp); totalStaked += _amount; aniaToken.transferFrom(msg.sender, address(this), _amount); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unstakeTokens",
+                "fix_info": "Removed unnecessary conditional checks leading to balance inconsistencies. Resolved a vulnerability allowing unintended deductions from `totalStaked`.",
+                "corrected_code": "function unstakeTokens(uint256 _amount) public { uint256 index = stakes[msg.sender]; require(index != 0, 'User is not staking'); Stake storage userStake = stakers[index].address_stake; require(userStake.amount > 0, 'amount has to be more than 0'); uint256 reward = calculateStakeReward(userStake); uint256 stakedWithRewards = userStake.amount + reward; require(_amount <= stakedWithRewards, 'amount exceeds stake with rewards'); uint256 remaining = stakedWithRewards - _amount; userStake.amount = remaining; userStake.since = block.timestamp; totalStaked -= _amount; aniaToken.transfer(msg.sender, _amount); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "redistributeRewards",
+                "fix_info": "Replaced the loop with a more gas-efficient off-chain computation method using a modifier for access control.",
+                "corrected_code": "function redistributeRewards(address[] calldata users) public onlyOwner { for (uint256 i = 0; i < users.length; i++) { uint256 index = stakes[users[i]]; if (index != 0) { uint256 reward = calculateStakeReward(stakers[index].address_stake); totalStaked += reward; stakers[index].address_stake.amount += reward; stakers[index].address_stake.since = block.timestamp; } } }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "changeAPY",
+                "fix_info": "Ensured atomicity for consistency between `APY` changes and reward redistribution. Added a modifier for access control.",
+                "corrected_code": "function changeAPY(uint256 _value, address[] calldata users) public onlyOwner { require(_value > 0, 'APY value must exceed 0'); redistributeRewards(users); apy = _value; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

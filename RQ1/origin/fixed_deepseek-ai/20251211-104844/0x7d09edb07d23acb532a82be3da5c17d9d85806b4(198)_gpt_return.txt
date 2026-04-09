@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "PoCGame",
+        "contract_version": "^0.4.21",
+        "state_variables": [
+            {
+                "variable_name": "whale",
+                "fix_info": "No changes needed",
+                "variable_code": "address private whale;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "donateToWhale",
+                "fix_info": "Added proper low-level call error handling using require() to check if the call succeeded, added gas limit for security, and used explicit gas forwarding with .value() syntax for Solidity 0.4.x",
+                "corrected_code": "function donateToWhale(uint256 amount) internal {\n    require(amount > 0, \"Amount must be greater than 0\");\n    bool success = whale.call.gas(2300).value(amount)(bytes4(keccak256(\"donate()\")));\n    require(success, \"Donation to whale failed\");\n    totalDonated += amount;\n    emit Donate(amount, whale, msg.sender);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

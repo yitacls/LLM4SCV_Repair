@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Register",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No change needed - assuming owner is declared elsewhere",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly check ownership using msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "convert",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier to prevent phishing attacks and improved security with explicit error messages and SafeMath",
+            "corrected_code": "function convert(string _zilaccount, uint256 _value) public onlyOwner {\n        require(_value > 0, \"Value must be greater than zero\");\n        convertedRecords[_zilaccount] = convertedRecords[_zilaccount].add(_value);\n        totalConverted = totalConverted.add(_value);\n        \n        if (claimRecords[_zilaccount] >= _value) {\n            claimRecords[_zilaccount] = claimRecords[_zilaccount].sub(_value);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

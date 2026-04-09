@@ -1,0 +1,47 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 105-127 in the add() function",
+            "description": "The add() function modifies state (totalAllocPoint and poolInfo) after making external calls (massUpdatePools()), violating the checks-effects-interactions pattern. Although massUpdatePools() is an internal function in this contract, it contains loops that could potentially call other contracts via updatePool() which calls strategies."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 131-143 in the set() function",
+            "description": "The set() function modifies state (totalAllocPoint and poolInfo[_pid].allocPoint) after making external calls (massUpdatePools()), creating a reentrancy risk similar to the add() function."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 227-266 in the deposit() function",
+            "location": "Lines 247-251 where pool.lpToken.safeTransferFrom is called",
+            "description": "The deposit function transfers tokens to pool.strategy before updating user.shares and pool.totalShares state variables. This violates the checks-effects-interactions pattern as the strategy contract could re-enter the deposit function through a callback mechanism. The safeTransferFrom call could trigger a reentrancy attack if the lpToken is an ERC777 token or has callbacks."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 272-306 in the withdraw() function",
+            "description": "The withdraw() function calls IStrategy(pool.strategy).withdraw(r) before updating user.shares and pool.totalShares. This external call to the strategy contract could potentially re-enter the withdraw function, allowing an attacker to manipulate reward calculations and pool balances."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 310-329 in the emergencyWithdraw() function",
+            "description": "Similar to withdraw(), emergencyWithdraw() calls IStrategy(pool.strategy).withdraw(r) before resetting user.shares to zero, creating a reentrancy vulnerability that could be exploited to withdraw more funds than intended."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Lines 333-340 in the safePudTransfer() function",
+            "description": "The pud.transfer() and pud.transfer() calls do not check return values. While ERC20's transfer() returns a boolean in Solidity 0.6.7, the return value is not verified, which could lead to failed transfers going unnoticed. Some tokens may not revert on failure and instead return false."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 378-381 in the balance() function",
+            "description": "The balance() view function makes an external call to IStrategy(pool.strategy).balanceOf() which could potentially call back into the MasterChef contract and modify state, violating the view function's read-only guarantee and potentially causing unexpected behavior."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Lines 384-389 in the setPoolStrategy() function",
+            "description": "The function calls IStrategy(pool.strategy).harvest() and IStrategy(pool.strategy).withdrawAll(_strategy) but doesn't check their return values. If these operations fail silently (return false instead of reverting), the strategy change could complete partially, potentially locking funds or leaving them in an inconsistent state."
+        }
+    ]
+}
+```

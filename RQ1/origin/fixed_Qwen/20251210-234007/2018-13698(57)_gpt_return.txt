@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "Play2LivePromo",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Ensure balances mapping uses safe math operations",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Ensure totalSupply uses safe math operations",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "promoValue",
+            "fix_info": "Ensure promoValue uses safe math operations",
+            "variable_code": "uint256 public promoValue;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintTokens",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow vulnerabilities",
+            "corrected_code": "function mintTokens(address _investor) external onlyOwner {\n        require(_investor != address(0));\n        balances[_investor] = balances[_investor].add(promoValue);\n        totalSupply = totalSupply.add(promoValue);\n        Transfer(0x0, _investor, promoValue);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

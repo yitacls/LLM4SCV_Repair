@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.send(msg.value);",
+    "description": "The `send()` function returns a boolean value indicating success or failure of the Ether transfer. In Solidity version ^0.4.25, this return value is not checked, which means failed transfers will not cause the transaction to revert. If the transfer fails (e.g., due to insufficient gas, a revert in the recipient's fallback function, or the recipient being a contract without a payable fallback), the contract will continue execution as if the transfer succeeded, leaving the Ether trapped in the contract while the caller's state may have already been updated. This can lead to inconsistencies and loss of funds. The vulnerable code is within the `transfer` function of the 'wallet' contract."
+}
+```

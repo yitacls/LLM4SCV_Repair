@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "function init(IWeightedPool _pool) external { ... }",
+        "description": "The `init` function depends on the transaction order since the owner of the pool is validated within the function. If an attacker can deploy a similar pool or manipulate the transaction order, they may potentially interfere with the initialization logic. This makes the deployment sequence critical to securing the contract state."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function swap() external override afterTime whenNotPaused { ... }",
+        "description": "The `swap` function involves complex fund management, including withdrawing pool tokens and transferring remaining `tokenReceived` to `tokenReceivingAddress`. Without proper access control or verification checks, attackers could exploit this function to withdraw or misroute funds. Specific risk exists in the code block managing `vault.exitPool` and transferring tokens via `IERC20(tokenReceived).transfer`."
+    }
+]
+```

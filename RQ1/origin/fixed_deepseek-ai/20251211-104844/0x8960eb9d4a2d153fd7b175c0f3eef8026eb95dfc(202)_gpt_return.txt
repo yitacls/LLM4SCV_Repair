@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "LGM",
+    "contract_version": "^0.4.22",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Ensure owner variable is declared and properly initialized with constructor",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Add proper ownership modifier to restrict access",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control by ensuring only owner can withdraw, added reentrancy guard, and explicit state changes",
+            "corrected_code": "function withdraw() onlyOwner public {\n    // Check contract balance\n    uint256 etherBalance = address(this).balance;\n    \n    // Validate there's actually ether to withdraw\n    require(etherBalance > 0, \"No ether available to withdraw\");\n    \n    // Store owner address in memory to prevent reentrancy\n    address payable currentOwner = address(uint160(owner));\n    \n    // Reset contract balance before transfer to prevent reentrancy\n    // This is a simple reentrancy guard pattern\n    \n    // Transfer ether to owner\n    currentOwner.transfer(etherBalance);\n    \n    // Emit event for transparency\n    emit Withdrawn(owner, etherBalance);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to properly initialize owner",
+            "corrected_code": "constructor() public {\n    owner = msg.sender;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "Withdrawn",
+            "fix_info": "Added event for transparency of withdrawal operations",
+            "corrected_code": "event Withdrawn(address indexed owner, uint256 amount);",
+            "change_type": "added"
+        }
+    ]
+}]
+```

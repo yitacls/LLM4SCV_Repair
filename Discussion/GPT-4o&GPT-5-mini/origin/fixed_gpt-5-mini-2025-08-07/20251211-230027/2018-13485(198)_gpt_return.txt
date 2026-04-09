@@ -1,0 +1,27 @@
+[{
+    "contract_name": "BitcoinAgileToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change to declaration. Added overflow guards in mintToken to ensure balances cannot overflow when increased.",
+            "variable_code": "mapping (address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No change to declaration. Added overflow guards in mintToken to ensure totalSupply cannot overflow when increased.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added input validation and explicit arithmetic overflow checks to prevent integer overflow/underflow when increasing balanceOf[target] and totalSupply. Also disallow minting to the zero address and minting zero amount.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0));\n        require(mintedAmount > 0);\n        // Prevent overflow on balance update\n        require(balanceOf[target] + mintedAmount >= balanceOf[target]);\n        // Prevent overflow on totalSupply update\n        require(totalSupply + mintedAmount >= totalSupply);\n\n        balanceOf[target] += mintedAmount; // safe after checks\n        totalSupply += mintedAmount;\n\n        // Preserve original Transfer semantics\n        Transfer(address(0), this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

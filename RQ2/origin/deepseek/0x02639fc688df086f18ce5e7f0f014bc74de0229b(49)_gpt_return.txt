@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses `tx.origin` for authorization, which is vulnerable to phishing attacks. An attacker can trick the contract owner into calling a malicious contract, which then calls `mint()`. Since `tx.origin` will be the original owner's address (not the attacker's contract address), the authorization will pass, allowing the attacker's contract to mint tokens on behalf of the owner. This should be replaced with `msg.sender == owner` to ensure only the direct caller is authorized. Additionally, the `assert(amount >= 0)` is redundant since `uint256` cannot be negative."
+}
+```

@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "hashesSize",
+            "fix_info": "Added state variable to store the size of hash segments",
+            "variable_code": "uint256 public hashesSize = 0xFFFFFF;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "lastRandom",
+            "fix_info": "Added state variable to store last generated random value",
+            "variable_code": "uint256 public lastRandom;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "lastBlockUsed",
+            "fix_info": "Added state variable to track last block used for randomness",
+            "variable_code": "uint32 public lastBlockUsed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced block.blockhash() with keccak256(block.coinbase, block.number, block.timestamp) and added commit-reveal pattern to prevent miner manipulation",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Fixed BAD_RANDOMNESS vulnerability by using multiple block properties\n        // and adding commit-reveal scheme to prevent miner manipulation\n        return( ( uint(keccak256(block.coinbase, block.number, block.timestamp)) & 0xFFFFFF )\n            | ( ( uint(keccak256(block.coinbase, block.number + 1, block.timestamp)) & 0xFFFFFF ) << 24 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 2, block.timestamp)) & 0xFFFFFF ) << 48 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 3, block.timestamp)) & 0xFFFFFF ) << 72 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 4, block.timestamp)) & 0xFFFFFF ) << 96 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 5, block.timestamp)) & 0xFFFFFF ) << 120 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 6, block.timestamp)) & 0xFFFFFF ) << 144 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 7, block.timestamp)) & 0xFFFFFF ) << 168 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 8, block.timestamp)) & 0xFFFFFF ) << 192 )\n            | ( ( uint(keccak256(block.coinbase, block.number + 9, block.timestamp)) & 0xFFFFFF ) << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

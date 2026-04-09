@@ -1,0 +1,13 @@
+```json
+{
+    "contractName": "XG4K",
+    "vulnerabilityType": "Arithmetic",
+    "vulnerability": [
+        {
+            "type": "Integer Overflow and Underflow",
+            "location": "balances[receiver] += amount;",
+            "description": "The Solidity version ^0.4.11 does not handle arithmetic operations safely. This could potentially lead to integer overflow or underflow. In this specific code snippet, 'balances[receiver] += amount', an overflow could occur if 'amount' is such that addition to the 'balances[receiver]' exceeds the maximum limit for an integer. This would reset the balance to a much lower number, consequently creating more tokens than intended."
+        }
+    ]
+}
+```

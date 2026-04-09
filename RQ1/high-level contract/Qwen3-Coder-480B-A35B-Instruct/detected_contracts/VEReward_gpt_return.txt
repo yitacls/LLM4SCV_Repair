@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "function getBlockByTime(uint _time) public view returns (uint)",
+        "description": "The function getBlockByTime performs a binary search on the point_history array. If the array grows excessively large, the function may consume too much gas and cause a transaction to fail, leading to a denial of service. This can block other critical functions that depend on it, such as claimReward or addEpoch."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function claimRewardMany(uint[] calldata tokenIds, Interval[][] calldata intervals) public returns (uint[] memory rewards)",
+        "description": "The function claimRewardMany iterates over multiple token IDs and their corresponding intervals to claim rewards. If the input arrays (tokenIds and intervals) are too large, the function may exceed the block gas limit, causing the transaction to fail and making it impossible for users to claim their rewards."
+    }
+]
+```

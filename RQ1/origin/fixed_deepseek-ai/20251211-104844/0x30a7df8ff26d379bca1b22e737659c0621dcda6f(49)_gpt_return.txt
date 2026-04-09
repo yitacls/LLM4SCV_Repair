@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed visibility to private and added address type for better security practices",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with msg.sender check to prevent access control vulnerability",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "1. Removed unnecessary assert(amount >= 0) since uint256 can't be negative\n2. Replaced tx.origin == owner with onlyOwner modifier to prevent phishing attacks\n3. Added input validation for amount > 0\n4. Added transfer ownership capability",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner {\n        require(amount > 0, \"Amount must be greater than 0\");\n        balances[msg.sender] += amount;\n        totalSupply += amount;\n        emit Transfer(address(0), msg.sender, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Added function to allow ownership transfer, which was missing from original contract",
+            "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n        require(newOwner != address(0), \"New owner is the zero address\");\n        owner = newOwner;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

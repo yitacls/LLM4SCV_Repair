@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "SmartPayment",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed mapping to use SafeMath or checked arithmetic to prevent overflow/underflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added SafeMath protection for arithmetic operations",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Modified to use Solidity 0.8.0 access control patterns",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Not owner\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by upgrading to Solidity 0.8.0 which has built-in overflow checks, added input validation, and updated event emissions to modern syntax",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n        require(target != address(0), \"Invalid target address\");\n        require(mintedAmount > 0, \"Mint amount must be positive\");\n        \n        // Solidity 0.8.0+ has built-in overflow checking\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        // Updated event emissions to modern syntax\n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

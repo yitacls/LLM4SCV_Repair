@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "RfsCoin",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Add access control to only allow the owner to withdraw funds.",
+                "corrected_code": "function withdraw(uint tokenCount) public returns (bool) {
+        require(msg.sender == owner);
+        var balance = dividends(msg.sender);
+        payouts[msg.sender] += (int256) (balance * PRECISION);
+        totalPayouts += (int256) (balance * PRECISION);
+        msg.sender.transfer(balance);
+        return true;
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

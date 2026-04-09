@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "creator.send(amountRaised);",
+    "description": "The low-level send() call is not checked for success. In Solidity ^0.4.16, send() returns false if the transfer fails, but the return value is not being verified. This could lead to situations where the transaction continues execution even though the Ether transfer to the creator failed, potentially causing loss of funds or inconsistent contract state."
+}
+```

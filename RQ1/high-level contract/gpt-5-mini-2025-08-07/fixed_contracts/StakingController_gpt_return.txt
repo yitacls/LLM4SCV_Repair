@@ -1,0 +1,27 @@
+[{
+    "contract_name": "StakingController",
+    "contract_version": "^0.7.3",
+    "state_variables": [
+        {
+            "variable_name": "approvedBids",
+            "fix_info": "Store the approved bidder address keyed by the signature hash instead of a boolean. This prevents approvals being used by others and allows on-chain verification that the approver intended to approve the specific bidder. Uses abi.encodePacked for consistent signature hashing.",
+            "variable_code": "mapping(bytes32 => address) private approvedBids;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "approveDomainBid",
+            "fix_info": "Require the unsigned request hash to be provided and validate the signature length and recovery. Store the recovered bidder address under the signature hash. This prevents approval of arbitrary signatures and improves on-chain verification.",
+            "corrected_code": "function approveDomainBid(\n    uint256 parentId,\n    bytes32 unsignedRequestHash,\n    string memory bidIPFSHash,\n    bytes memory signature\n  ) external authorizedOwner(parentId) {\n    require(signature.length == 65, \"ZNS: invalid signature length\");\n    address recoveredBidder = recover(unsignedRequestHash, signature);\n    require(recoveredBidder != address(0), \"ZNS: invalid signature\");\n    bytes32 hashOfSig = keccak256(abi.encodePacked(signature));\n    approvedBids[hashOfSig] = recoveredBidder;\n    emit DomainBidApproved(bidIPFSHash);\n  }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "fulfillDomainBid",
+            "fix_info": "Validate signature length, ensure the bid hash matches the signed data, ensure the stored approved bidder matches the recovered bidder, and apply checks-effects-interactions by consuming the approval before external calls. Uses abi.encodePacked for signature hashing consistency.",
+            "corrected_code": "function fulfillDomainBid(\n    uint256 parentId,\n    uint256 bidAmount,\n    uint256 royaltyAmount,\n    string memory bidIPFSHash,\n    string memory name,\n    string memory metadata,\n    bytes memory signature,\n    bool lockOnCreation,\n    address recipient\n  ) external {\n    require(signature.length == 65, \"ZNS: invalid signature length\");\n\n    bytes32 recoveredBidHash = createBid(\n      parentId,\n      bidAmount,\n      bidIPFSHash,\n      name\n    );\n\n    address recoveredBidder = recover(recoveredBidHash, signature);\n    require(recoveredBidder != address(0), \"ZNS: invalid signature\");\n    require(recipient == recoveredBidder, \"ZNS: bid info doesnt match/exist\");\n\n    bytes32 hashOfSig = keccak256(abi.encodePacked(signature));\n    require(approvedBids[hashOfSig] == recoveredBidder, \"ZNS: not approved or already fulfilled\");\n\n    // consume approval before external interactions (checks-effects-interactions)\n    approvedBids[hashOfSig] = address(0);\n\n    // transfer tokens from bidder to controller\n    infinity.safeTransferFrom(recoveredBidder, controller, bidAmount);\n\n    uint256 id = registrar.registerDomain(\n      parentId,\n      name,\n      controller,\n      recoveredBidder\n    );\n\n    registrar.setDomainMetadataUri(id, metadata);\n    registrar.setDomainRoyaltyAmount(id, royaltyAmount);\n    registrar.transferFrom(controller, recoveredBidder, id);\n\n    if (lockOnCreation) {\n      registrar.lockDomainMetadataForOwner(id);\n    }\n\n    emit DomainBidFulfilled(metadata, name, recoveredBidder, id, parentId);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]

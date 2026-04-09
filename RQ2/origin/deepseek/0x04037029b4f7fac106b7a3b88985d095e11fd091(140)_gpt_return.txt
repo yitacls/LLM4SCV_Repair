@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "modifier onlyOwner() { require(owner == tx.origin, \"!owner\"); _; }",
+    "description": "This modifier uses tx.origin for authorization instead of msg.sender. This introduces a vulnerability where a malicious contract could trick the owner into calling a function that requires the onlyOwner modifier, as tx.origin returns the original externally owned account (EOA) that initiated the transaction chain. An attacker could create a contract that calls the vulnerable function, and if the owner interacts with the attacker's contract, the tx.origin will be the owner's address, bypassing proper access control. This violates the principle that authorization should be performed using msg.sender, which identifies the immediate caller."
+}
+```

@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "TokenLocker",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Replace tx.origin with msg.sender for improved security.",
+                "corrected_code": "function transfer(address dest, uint amount) public returns (bool) {
+    require(msg.sender == owner);
+    return token.transfer(dest, amount);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,33 @@
+[{
+    "contract_name": "firstTest",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "adr",
+            "fix_info": "Ensure adr is explicitly typed and accessible; kept as address to allow transfer().",
+            "variable_code": "address public adr;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "Limit",
+            "fix_info": "Ensure Limit has an explicit uint256 type for safe comparison with msg.value.",
+            "variable_code": "uint256 public Limit;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "emails",
+            "fix_info": "Ensure emails is explicitly typed as an address used for delegatecall. Validate delegatecall return value in the function.",
+            "variable_code": "address public emails;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawal",
+            "fix_info": "Checked return value of delegatecall and used transfer() (which reverts on failure) instead of unchecked send(); preserved original logic while preventing unchecked low-level-call vulnerabilities.",
+            "corrected_code": "function withdrawal() public payable {\n    adr = msg.sender;\n    if (msg.value > Limit) {\n        // build selector and perform delegatecall, require success to avoid silent failures\n        bytes4 selector = bytes4(keccak256(\"logEvent()\"));\n        bool ok = emails.delegatecall(selector);\n        require(ok);\n\n        // transfer entire contract balance to adr; transfer throws on failure\n        adr.transfer(address(this).balance);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

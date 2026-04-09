@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "owned",
+    "contract_version": "1.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No change needed - owner variable is already properly declared",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Fixed potential phishing attack vulnerability by replacing tx.origin with msg.sender. tx.origin is the original sender of the transaction chain (potentially a contract), while msg.sender is the immediate caller. Using tx.origin can make the contract vulnerable to phishing attacks where malicious contracts call into it.",
+            "modifier_code": "modifier onlyOwner {\n    require(msg.sender == owner, \"Caller is not the owner\");\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Not provided in context",
+            "fix_info": "No specific function was provided to fix in the vulnerable code snippet",
+            "corrected_code": "",
+            "change_type": "deleted"
+        }
+    ]
+}]
+```

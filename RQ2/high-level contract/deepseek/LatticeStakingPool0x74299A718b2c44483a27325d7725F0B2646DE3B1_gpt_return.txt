@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Line 1795: for (uint i=0; i < _newAddressesToWhitelist.length; i++) { ... }",
+    "description": "The whitelistAddresses function loops through an unbounded array of addresses that can be controlled by the caller. If the array is too large, the transaction may exceed the block gas limit, causing it to fail and preventing any addresses from being whitelisted. Additionally, once the function fails due to gas limits, it cannot be retried with smaller batches since there's no mechanism to track which addresses were already processed. This creates a denial-of-service condition where large whitelist operations become impossible."
+}
+```

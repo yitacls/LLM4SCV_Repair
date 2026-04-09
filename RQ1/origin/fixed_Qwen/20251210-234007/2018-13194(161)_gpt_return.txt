@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TTCoin",
+    "contract_version": "^0.4.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow when adding minted amounts to balances and total supply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(balanceOf[target] + mintedAmount >= balanceOf[target]); // SafeMath check\n        require(totalSupply + mintedAmount >= totalSupply); // SafeMath check\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[to] += tokens;  // fault line\n         balances[msg.sender] -= tokens;",
+    "description": "The contract is vulnerable to integer overflow and underflow attacks. In Solidity version ^0.4.24, arithmetic operations are not protected by default. The addition operation 'balances[to] += tokens' could cause an integer overflow if the resulting balance exceeds the maximum value of uint256, and the subtraction operation 'balances[msg.sender] -= tokens' could cause an integer underflow if the sender's balance is less than the tokens being transferred. This could allow malicious users to manipulate balances and potentially create tokens out of thin air or cause unexpected behavior."
+}
+```

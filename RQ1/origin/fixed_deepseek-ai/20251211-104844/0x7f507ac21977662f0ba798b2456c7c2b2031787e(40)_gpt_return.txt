@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenDestructible",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "destroy",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing 'call' with 'transfer' and adding proper error handling",
+            "corrected_code": "function destroy(address[] tokens) onlyOwner public {\n    for(uint256 i = 0; i < tokens.length; i++) {\n        ERC20Basic token = ERC20Basic(tokens[i]);\n        uint256 balance = token.balanceOf(this);\n        if (balance > 0) {\n            require(token.transfer(owner, balance), \"Token transfer failed\");\n        }\n    }\n    selfdestruct(owner);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

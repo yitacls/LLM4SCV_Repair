@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "amount * sellPrice",
+    "description": "In Solidity 0.4.16, arithmetic operations do not automatically check for overflow/underflow. The multiplication 'amount * sellPrice' could overflow if either operand is sufficiently large, causing the result to wrap around modulo 2^256. This could lead to unexpected behavior where 'this.balance >= amount * sellPrice' passes incorrectly, allowing users to receive far less ether than intended (if overflow results in a small value) or potentially allowing attackers to drain contract funds (if overflow causes the check to pass while msg.sender.transfer() sends a different wrapped value). Additionally, the same unchecked multiplication is used in msg.sender.transfer(amount * sellPrice), making the actual transferred amount inconsistent with the balance check."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Gimli",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferGIM",
+            "fix_info": "Removed tx.origin check which is vulnerable to phishing attacks and replaced with proper allowance mechanism. The tx.origin constraint was preventing legitimate contract interactions.",
+            "corrected_code": "function transferGIM(address _from, address _to, uint256 _amount) returns (bool success) {\n        require(msg.sender == streamerContract);\n        require(_amount <= streamerContractMaxAmount);\n        if (balances[_from] < _amount || _amount <= 0)\n            return false;\n        balances[_from] = safeSub(balances[_from], _amount);\n        balances[_to] = safeAdd(balances[_to], _amount);\n        Transfer(_from, _to, _amount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

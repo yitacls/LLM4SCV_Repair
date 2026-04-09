@@ -1,0 +1,26 @@
+```json
+[
+    {
+        "contract_name": "Ethereum_Cash_Pro_Coin",
+        "contract_version": "^0.4.20",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Prevent arithmetic overflow by validating multiplication result.",
+                "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner {
+    if(tokensToMint > 0) {
+        uint256 totalTokenToMint = tokensToMint * (10 ** 18);
+        require(balanceOf[owner] + totalTokenToMint >= balanceOf[owner]);
+        balanceOf[owner] += totalTokenToMint;
+        totalSupply += totalTokenToMint;
+        Transfer(0, owner, totalTokenToMint);
+    }
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

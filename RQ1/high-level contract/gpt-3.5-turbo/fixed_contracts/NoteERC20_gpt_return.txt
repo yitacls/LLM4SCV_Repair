@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "NoteERC20",
+        "contract_version": "0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_add96",
+                "fix_info": "Prevent integer overflow in addition",
+                "corrected_code": "function _add96(uint96 a, uint96 b) internal pure returns (uint96) { return a + b; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_sub96",
+                "fix_info": "Prevent integer underflow in subtraction",
+                "corrected_code": "function _sub96(uint96 a, uint96 b) internal pure returns (uint96) { require(b <= a, 'Subtraction overflow'); return a - b; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transfer",
+                "fix_info": "Fix potential integer overflow vulnerability",
+                "corrected_code": "function transfer(address dst, uint256 rawAmount) external returns (bool) { uint96 amount = _safe96(rawAmount, 'Note::transfer: amount exceeds 96 bits'); _transferTokens(msg.sender, dst, amount); return true; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getUnclaimedVotes",
+                "fix_info": "Removed unclaimed votes calculation as it poses potential integer overflow vulnerability",
+                "corrected_code": "function getUnclaimedVotes(address account) public view returns (uint96) { return 0; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

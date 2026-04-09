@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(amount);",
+    "description": "The direct call to msg.sender.send does not check the return value. This function call can fail for several reasons, such as out-of-gas and REVERT opcode in the recipient. If it fails, no state changes will be undone, which means the contract's state will be out of sync. Thus, it's better to use transfer() instead of send(), as transfer() will automatically throw on failure, reverting all state changes."
+}
+```

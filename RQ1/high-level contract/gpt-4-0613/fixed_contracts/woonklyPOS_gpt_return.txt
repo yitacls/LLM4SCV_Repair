@@ -1,0 +1,30 @@
+```json
+[
+  {
+    "contract_name": "WOOPStake",
+    "contract_version": "^0.6.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "_withdrawReward",
+        "fix_info": "Added a nonReentrant modifier to prevent reentrancy attacks and replaced nonReentrant after internal function was called by using mutex.",
+        "corrected_code": "function _withdrawReward(address sc, address account, uint256 amount) internal Active nonReentrant returns (uint256) {\n    IERC20 _token = IERC20(sc);\n\n    uint256 rew = rewarded(sc, account);\n\n    require(amount <= rew, \"WO:amew\");\n\n    require(amount <= getMyTokensBalance(sc), \"WO:-tk\");\n\n    require(_token.transfer(account, amount));\n\n    uint256 remainder = rew.sub(amount);\n\n    _doreward(sc, account, remainder);\n\n    emit RewardWithdrawed(sc, account, amount, remainder);\n\n    return amount;\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_withdrawAllrewards",
+        "fix_info": "Added a nonReentrant modifier and replaced nonReentrant after internal function was called by using mutex.",
+        "corrected_code": "function _withdrawAllrewards(address sc) internal Solvency(sc) nonReentrant returns (uint256) {\n    uint256 total = 0;\n    uint256 rew = 0;\n\n    Stake memory p;\n\n    uint256 last = _stakes.getLastIndexStakes();\n\n    for (uint256 i = 0; i < (last + 1); i++) {\n        (p.account, p.bal, p.autoCompound, p.flag) = _stakes.getStakeByIndex(i);\n\n        if (p.flag == 1) {\n            rew = rewarded(sc, p.account);\n\n            if (rew > 0) {\n                _withdrawReward(sc, p.account, rew);\n                total = total.add(rew);\n            }\n        }\n    }\n\n    IERC20 _token = IERC20(sc);\n\n    uint256 token_reserve = _token.balanceOf(address(this));\n\n    if (token_reserve > 0) {\n        require(_token.transfer(_remainder, token_reserve), \"WO:trf\");\n    }\n\n    return total;\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "processReward",
+        "fix_info": "Removed the hasApprovedTokens(sc, _msgSender(), amount) modifier and added its guard in the function body. This prevents DoS attack by external call.",
+        "corrected_code": "function processReward(address sc, uint256 amount) public nonReentrant Active ProviderHasToken(sc, amount) returns (bool) {\n    require(IERC20(sc).allowance(_msgSender(), address(this)) >= amount, \"!aptk\");\n    if (!ERC20Exist(sc)) {\n        newERC20(sc);\n    }\n    IERC20 _token = IERC20(sc);\n    require(_token.transferFrom(_msgSender(), address(this), amount), \"WO:etr\");\n    uint256 dealed = _processReward_2(sc, amount);\n    uint256 leftover = amount.sub(dealed);\n    if (leftover > 0) {\n        require(_token.transfer(_remainder, leftover), \"WO:trf\");\n        emit NewLeftover(sc, _remainder, leftover);\n    }\n    return true;\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

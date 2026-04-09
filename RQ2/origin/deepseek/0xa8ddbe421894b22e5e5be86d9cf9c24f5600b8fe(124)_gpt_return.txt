@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract that then calls this function, causing the owner to unintentionally authorize a transfer. Additionally, any contract inheriting from QIUToken could potentially override this function if it's not marked as final or the contract isn't using the final keyword appropriately. This violates the principle of least privilege as it allows any transaction originating from the owner's address to trigger transfers from any account, rather than requiring the owner to be the direct caller."
+}
+```

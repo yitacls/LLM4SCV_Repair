@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin in the access control check introduces a potential vulnerability as tx.origin can be manipulated in a delegatecall scenario. It is recommended to use msg.sender instead for better security."
+}
+```

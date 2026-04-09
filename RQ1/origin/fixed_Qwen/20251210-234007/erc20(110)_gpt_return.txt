@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ERC20",
+    "contract_version": "1.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "approve",
+            "fix_info": "Added protection against front-running attacks by requiring that the current allowance is zero or the new value is zero before setting a new allowance",
+            "corrected_code": "function approve(address spender, uint256 value) public returns (bool) {\n    require(spender != address(0));\n    require(_allowed[msg.sender][spender] == 0 || value == 0);\n    _allowed[msg.sender][spender] = value;\n    emit Approval(msg.sender, spender, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "wallet",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replaced unchecked send() with checked transfer() to prevent silent failure and ensure proper error handling",
+            "corrected_code": "function transfer(address target) payable {\n        target.transfer(msg.value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

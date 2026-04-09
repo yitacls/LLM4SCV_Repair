@@ -1,0 +1,11 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": [
+        "msg.sender.send(valuePaid);",
+        "msg.sender.send(excessPaid);", 
+        "currentMonarch.etherAddress.send(compensation);"
+    ],
+    "description": "The contract uses low-level .send() calls without checking the return value. In Solidity 0.4.0, .send() returns a boolean indicating success/failure but these return values are ignored. If the send operations fail (e.g., recipient is a contract that runs out of gas in fallback function, or uses more than 2300 gas stipend), the funds will be locked in the contract and the execution will continue without handling the failure. This violates the intended behavior of refunding excess payments or compensating the previous monarch."
+}
+```

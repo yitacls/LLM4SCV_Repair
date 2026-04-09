@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint public blockNumber = block.number;",
+    "description": "Using block.number as a source of randomness is insecure because it can be predicted and manipulated by miners. In Solidity ^0.4.16, block.number is not a reliable source of entropy for generating random numbers, making contracts vulnerable to exploitation where randomness is required for fair outcomes."
+}
+```

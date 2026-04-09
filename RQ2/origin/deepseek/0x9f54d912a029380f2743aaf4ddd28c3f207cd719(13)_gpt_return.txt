@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner)",
+        "description": "This contract uses tx.origin for authorization in the kill() function, which is vulnerable to phishing attacks. Unlike msg.sender, tx.origin returns the original sender of the transaction chain. If the owner interacts with a malicious contract, that contract could call Giveaway.kill() and pass the authorization check (since tx.origin would still be the owner), resulting in unauthorized self-destruction of the contract."
+    }
+}
+```

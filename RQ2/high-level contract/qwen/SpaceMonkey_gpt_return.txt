@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "SpaceMonkey",
+        "contract_version": "^0.8.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed reentrancy vulnerability by moving external contract call to the end and adding reentrancy guard. Also fixed function shadowing by renaming the function to transferWithData.",
+                "corrected_code": "function transferWithData(address recipient, uint256 amount, bytes calldata data) external returns (bool) {\n    _transfer(_msgSender(), recipient, amount);\n    if(recipient.isContract()) {\n        require(_msgSender() != address(0), \"ERC20: transfer from the zero address\");\n        require(recipient != address(0), \"ERC20: transfer to the zero address\");\n        IERC223Recipient(recipient).tokenFallback(_msgSender(), amount, data);\n    }\n    return true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_approve",
+                "fix_info": "Fixed state variable shadowing by changing parameter name from 'owner' to 'ownerAddress' to avoid conflict with the owner() function.",
+                "corrected_code": "function _approve(\n  address ownerAddress,\n  address spender,\n  uint256 amount\n) private {\n  require(ownerAddress != address(0), 'ERC20: approve from the zero address');\n  require(spender != address(0), 'ERC20: approve to the zero address');\n  require(!_isBlacklisted[_msgSender()], 'You have no power here!');\n\n  _allowances[ownerAddress][spender] = amount;\n  emit Approval(ownerAddress, spender, amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Fixed potential arithmetic underflow by using SafeMath pattern with explicit checks for allowance subtraction.",
+                "corrected_code": "function transferFrom(\n  address sender,\n  address recipient,\n  uint256 amount\n) public override returns (bool) {\n  _transfer(sender, recipient, amount);\n  require(_allowances[sender][_msgSender()] >= amount, \"ERC20: transfer amount exceeds allowance\");\n  _approve(\n    sender,\n    _msgSender(),\n    _allowances[sender][_msgSender()]-amount\n  );\n  return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "CardSale",
+        "contract_version": "^0.4.19",
+        "state_variables": [
+            {
+                "variable_name": "rc",
+                "fix_info": "No change needed to the mapping itself, but access control will be modified",
+                "variable_code": "mapping(address => bool) public rc;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added onlyOwner modifier to replace dangerous tx.origin check",
+                "modifier_code": "\n    modifier onlyOwner() {\n        require(msg.sender == owner());\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "addMeByRC",
+                "fix_info": "Replaced tx.origin check with onlyOwner modifier to prevent phishing attacks and use msg.sender for proper access control",
+                "corrected_code": "\n    function addMeByRC() public onlyOwner {\n        rc[msg.sender] = true;\n        NewRC(msg.sender);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

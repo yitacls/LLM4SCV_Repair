@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "modifier refundsAttachedEth()",
+        "description": "The refundsAttachedEth modifier performs an external call (msg.sender.transfer) after the _; placeholder, which can potentially allow reentrancy if the msg.sender is a contract that implements a fallback function to re-enter the contract before the state is fully updated."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _executeMetaTransactionPrivate(ExecuteState memory state)",
+        "description": "The _executeMetaTransactionPrivate function performs multiple state changes and external calls. Although the nonReentrant modifier is used in public functions, internal operations like _transferERC20Tokens and _callSelf might introduce reentrancy risks if not properly guarded."
+    }
+]
+```

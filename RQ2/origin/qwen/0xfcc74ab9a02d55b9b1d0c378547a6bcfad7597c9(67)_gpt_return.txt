@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[msg.sender] = balanceOf[msg.sender].add(ethamount);",
+    "description": "The contract uses .add() function which suggests SafeMath library usage, but there's inconsistent use of SafeMath operations. The ethamount is added to balanceOf mapping without proper overflow protection. In Solidity 0.4.19, arithmetic operations are vulnerable to overflow/underflow attacks. The balanceOf[msg.sender] tracks ETH amount (not token amount), and adding msg.value directly without SafeMath protection could lead to overflow vulnerabilities, especially since there's no upper bound check on the balance."
+}
+```

@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic Vulnerability",
+        "location": "The `balances[_investor] += promoValue;` and `totalSupply += promoValue;` statements in the `mintTokens` function",
+        "description": "This code is vulnerable to integer overflow in Solidity <0.8.0. In Solidity ^0.4.18, arithmetic operations do not automatically check for overflow/underflow. If `balances[_investor] + promoValue` exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to a small number. Similarly, `totalSupply + promoValue` could overflow. This could allow malicious behavior where large token minting creates incorrect balance/totalSupply values. The vulnerability is compounded by the use of `Transfer(0x0, _investor, promoValue);` with the old event syntax (missing 'emit' keyword in 0.4.x) rather than SafeMath library protections."
+    }
+}
+```

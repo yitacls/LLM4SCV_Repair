@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "SECoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow/underflow. The original code lacked overflow protection.",
+            "variable_code": "using SafeMath for uint256;\nmapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "The original code lacked overflow protection.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "The original modifier wasn't included in the vulnerable code snippet, but it should remain unchanged.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow vulnerability by using SafeMath functions for addition operations.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    emit Transfer(address(0), this, mintedAmount);\n    emit Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

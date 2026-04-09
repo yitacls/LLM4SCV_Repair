@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "WashCrowdsale",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "price",
+            "fix_info": "Added price variable declaration with safe initialization",
+            "variable_code": "uint256 public price = 1 ether; // Example price, should be set appropriately",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added balanceOf mapping declaration",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "amountRaised",
+            "fix_info": "Added amountRaised variable declaration",
+            "variable_code": "uint256 public amountRaised;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "fundTransferred",
+            "fix_info": "Added fundTransferred variable declaration",
+            "variable_code": "uint256 public fundTransferred;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "crowdsaleOpen",
+            "fix_info": "Added modifier to ensure crowdsale is open and prevent reentrancy",
+            "modifier_code": "modifier crowdsaleOpen() {\n    require(!crowdsaleClosed);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow issues using SafeMath, added reentrancy protection, and fixed ether transfer vulnerability",
+            "corrected_code": "function () external payable crowdsaleOpen {\n    require(msg.value > 0);\n    \n    uint256 bonus = 0;\n    uint256 amount;\n    uint256 ethamount = msg.value;\n    \n    // Use SafeMath for all arithmetic operations\n    balanceOf[msg.sender] = balanceOf[msg.sender].add(ethamount);\n    amountRaised = amountRaised.add(ethamount);\n    \n    // Check time periods with inclusive boundaries\n    if (now >= preSaleStartdate && now <= preSaleDeadline) {\n        amount = ethamount.div(price);\n        bonus = amount.div(8);\n        amount = amount.add(bonus);\n    } else if (now >= mainSaleStartdate && now <= mainSaleDeadline) {\n        amount = ethamount.div(price);\n    } else {\n        revert(\"Crowdsale not active\");\n    }\n    \n    // Calculate token amount with proper scaling\n    amount = amount.mul(1 ether);\n    \n    // Transfer tokens first (Checks-Effects-Interactions pattern)\n    require(tokenReward.transfer(msg.sender, amount));\n    \n    // Update state before external call\n    fundTransferred = fundTransferred.add(ethamount);\n    \n    // Use transfer instead of send for safer ether transfer\n    beneficiary.transfer(ethamount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

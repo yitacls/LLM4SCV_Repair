@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RealOldFuckMaker",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "makeOldFucks",
+            "fix_info": "Added check for return value of low-level call to prevent unchecked call vulnerabilities",
+            "corrected_code": "function makeOldFucks(uint32 number) {\n        uint32 i;\n        for (i = 0; i < number; i++) {\n            // Check return value of low-level call\n            require(fuck.call(bytes4(sha3(\"giveBlockReward()\"))));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

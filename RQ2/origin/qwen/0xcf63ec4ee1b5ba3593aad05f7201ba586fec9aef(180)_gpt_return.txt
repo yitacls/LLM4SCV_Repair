@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = selectedCommission.recipient.call{ value: selectedCommission.bid }(\"\");",
+    "description": "The contract makes an external call to the recipient's address before updating the commission status. Since the call is made before setting selectedCommission.status = CommissionStatus.removed, the recipient could potentially re-enter the rescindCommission function with the same commissionId and withdraw the bid amount multiple times. The external call transfers ETH to the recipient, and if the recipient is a malicious contract, it could call back into the rescindCommission function before the status is updated, leading to multiple withdrawals of the same bid amount."
+}
+```

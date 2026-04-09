@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Deck",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "nonce",
+                "fix_info": "Added a per-contract nonce to improve randomness security",
+                "variable_code": "uint256 private nonce;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deal",
+                "fix_info": "Replaced vulnerable blockhash/timestamp randomness with keccak256 of multiple entropy sources including a private incrementing nonce to prevent miner manipulation",
+                "corrected_code": "    function deal(address player, uint8 cardNumber) internal returns (uint8) {\n        // Use multiple entropy sources to make miner manipulation more difficult\n        bytes32 hash = keccak256(\n            abi.encodePacked(\n                player,\n                cardNumber,\n                block.number,\n                block.timestamp,\n                block.prevrandao, // Added in later versions - will be 0 in 0.4.2 but kept for forward compatibility\n                nonce\n            )\n        );\n        nonce++; // Increment nonce to ensure different results for subsequent calls\n        return uint8(uint256(hash) % 52);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

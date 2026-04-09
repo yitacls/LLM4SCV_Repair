@@ -1,0 +1,28 @@
+Below are the fixes for the noted vulnerabilities in the contract:
+
+```json
+[
+    {
+        "contract_name": "AniaLottery",
+        "contract_version": "^0.8.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Added protection against re-entrancy attacks.",
+                "corrected_code": "function withdraw() public onlyOwner { uint amount = address(this).balance; (bool success, ) = msg.sender.call{value: amount}(''); require(success, 'Failed to send Ether'); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+Fix Explanation:
+
+1) Contract Version: Updated solidity version from ^0.8.2 to ^0.8.4. Solidity versions below 0.8.4 have security vulnerabilities, so we have updated it to a more secure one. (SWC-102)
+
+2) Withdraw Function: The withdraw function is susceptible to re-entrancy attacks which would enable an attacker to drain the contract of ether repeatedly before the balance could update. To prevent against that, we use the Checks-Effects-Interactions pattern: first, the contract balance is checked, then the balance is sent to the recipient, and lastly the state is updated only if the transfer is successful. (SWC-105)
+
+No changes were required for pragma because pragma solidity ^0.8.2 allows the contract to compile with any new compiler version till <0.9.0. It is generally recommended to allow for your code to be compiled with higher versions of the Solidity compiler to include bugfixes. (SWC-103)

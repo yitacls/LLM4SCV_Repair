@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The vulnerability is caused by the use of 'msg.sender.call.value(_am)()', which allows the caller to re-enter the contract by invoking another function or the same function recursively before the state variable 'acc.balance' is updated. This can lead to exploitative behavior where an attacker can drain the contract's funds by repeatedly calling the function."
+}
+```

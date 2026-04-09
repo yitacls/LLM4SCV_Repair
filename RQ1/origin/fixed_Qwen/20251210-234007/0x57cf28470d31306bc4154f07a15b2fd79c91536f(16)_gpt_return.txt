@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "OwnableImpl",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Created a modifier to replace direct tx.origin check with msg.sender for proper access control",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "checkOwner",
+            "fix_info": "Replaced vulnerable tx.origin check with msg.sender check and converted to use onlyOwner modifier for better access control pattern",
+            "corrected_code": "function checkOwner() internal onlyOwner {\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

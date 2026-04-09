@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "arcadeumCoin.safeTransferFrom(address(this), _recipient, arcadeumCoinID, refundAmount, \"\"); in _buy function",
+    "description": "The function `_buy` calls `safeTransferFrom` to refund excess tokens to the recipient. However, this introduces a risk of reentrancy because the recipient's `onERC1155Received` implementation might include malicious code that calls back into the contract, potentially disrupting the contract's internal state. To mitigate this issue, the contract should follow the checks-effects-interactions pattern: perform all state changes before making external calls, and ensure proper reentrancy guards are implemented."
+}
+```

@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "ModifierEntrancy",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "locked",
+                "fix_info": "Added a state variable to implement a reentrancy guard that prevents reentrant calls.",
+                "variable_code": "bool private locked;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "reentrancyGuard",
+                "fix_info": "Added a modifier to lock the function during execution and prevent reentrant calls.",
+                "modifier_code": "modifier reentrancyGuard() { require(!locked, \"Reentrancy detected\"); locked = true; _; locked = false; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "airDrop",
+                "fix_info": "Added the reentrancyGuard modifier to prevent reentrancy attacks and preserved the original functionality.",
+                "corrected_code": "function airDrop() hasNoBalance supportsToken public reentrancyGuard { tokenBalance[msg.sender] += 20; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

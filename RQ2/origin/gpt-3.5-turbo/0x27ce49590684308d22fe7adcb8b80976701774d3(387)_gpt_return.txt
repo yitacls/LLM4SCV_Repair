@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This line of code uses 'tx.origin' for access control, which is generally considered insecure. 'tx.origin' can be manipulated by external contracts calling this function and may result in unexpected behavior. It is recommended to use 'msg.sender' for access control instead."
+}
+```

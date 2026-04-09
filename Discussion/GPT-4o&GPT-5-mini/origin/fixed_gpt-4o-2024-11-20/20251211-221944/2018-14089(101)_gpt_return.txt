@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Virgo_ZodiacToken",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Corrected arithmetic vulnerabilities by ensuring checks are performed properly using safe math principles to prevent overflow, underflow, and logical errors. Updated variable logic to avoid insufficient fund issues.",
+                "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {\n    // Ensure the function is protected against short address attack\n    require(msg.data.length >= (3 * 32) + 4, \"Invalid data length\");\n\n    // Validate input parameters\n    require(_to != address(0), \"Invalid recipient address\");\n    require(_value > 0, \"Transfer value must be greater than zero\");\n\n    // Check balances and allowance securely\n    uint256 fromBalance = balances[_from];\n    uint256 allowance = allowed[_from][msg.sender];\n\n    require(fromBalance >= _value, \"Insufficient balance\"); // Prevent underflow\n    require(allowance >= _value, \"Allowance exceeded\");    // Prevent underflow\n\n    // Update balances and allowances safely\n    balances[_from] = fromBalance - _value;\n    balances[_to] += _value;\n    allowed[_from][msg.sender] = allowance - _value;\n\n    // Emit transfer event\n    emit Transfer(_from, _to, _value);\n\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

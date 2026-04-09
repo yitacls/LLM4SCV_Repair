@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "L119-134",
+    "description": "The function getBlockByTime in the Reward contract can be vulnerable to DoS attacks due to failed calls when calculating the block number based on the provided time. The loop that is used for binary search to find the block based on the time can lead to excessive gas consumption if the loop iterations exceed the block gas limit."
+},
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "L269-275",
+    "description": "The claimRewardMany function in the Reward contract can be vulnerable to DoS attacks with block gas limit due to potential gas exhaustion when multiple rewards are claimed for different token IDs in a single transaction. Processing a large number of token IDs and intervals in a single call could result in hitting the block gas limit and causing the transaction to fail."
+}
+```
+```

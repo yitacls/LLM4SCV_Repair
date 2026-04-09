@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization, making it vulnerable to phishing attacks or man-in-the-middle attacks. An attacker can craft a malicious contract that calls VisatestCoin.withdrawEther(), as long as the owner interacts with the malicious contract, tx.origin will remain the owner's address, allowing the attacker to bypass the owner check. This vulnerability is compounded in Solidity ^0.4.25 where address.transfer() only has a 2300 gas stipend, which may cause issues but doesn't prevent the attack. The proper fix is to use msg.sender for authentication instead of tx.origin."
+}
+```

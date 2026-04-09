@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "DIACompanyLockup",
+        "contract_version": "^0.5.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed the vulnerability by checking for valid duration and transferring correct yield, kicker, and deposit amounts.",
+                "corrected_code": "function deposit(address beneficiary, uint256 amount, uint256 duration) internal {\n        require(now < endDepositTime, 'Deposit time has ended.');\n        uint256 yieldAmount;\n        if (duration == 12 weeks) {\n            yieldAmount = (threeMonthPromille * amount) / 1000;\n        } else if (duration == 24 weeks) {\n            yieldAmount = (sixMonthPromille * amount) / 1000;\n        } else if (duration == 36 weeks) {\n            yieldAmount = (nineMonthPromille * amount) / 1000;\n        } else {\n            revert('Error: duration not allowed!');\n        }\n        require(token.transferFrom(yieldWallet, address(this), yieldAmount));\n\n        uint256 kickerAmount = (kickerPromille * amount) / 1000;\n        if (now <= kickerDeadline) {\n            require(token.transferFrom(kickerWallet, address(this), kickerAmount));\n        }\n\n        require(token.transferFrom(msg.sender, address(this), amount));\n\n        LockBoxStruct memory l;\n        l.beneficiary = beneficiary;\n        l.balance = amount + kickerAmount + yieldAmount;\n        l.releaseTime = beginDepositTime + duration;\n        lockBoxStructs.push(l);\n        emit LogLockupDeposit(msg.sender, l.beneficiary, l.balance, l.releaseTime);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

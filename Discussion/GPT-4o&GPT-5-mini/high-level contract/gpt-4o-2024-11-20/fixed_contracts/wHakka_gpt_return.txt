@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "wHakka",
+        "contract_version": "0.5.17",
+        "state_variables": [
+            {
+                "variable_name": "lastUpdateTimestamp",
+                "fix_info": "Changed usage of block.timestamp to an external timestamp and added functionality for an oracle or external updater to set this variable securely.",
+                "variable_code": "uint256 public lastUpdateTimestamp;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "stakingRateStored",
+                "fix_info": "Ensured it is securely updated through external-approved timestamps to avoid dependency on block.timestamp.",
+                "variable_code": "uint256 stakingRateStored;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getStakingRate",
+                "fix_info": "Updated to accept an external timestamp and removed reliance on block.timestamp.",
+                "corrected_code": "function getStakingRate(uint256 time, uint256 externalTimestamp) public returns (uint256 rate) {\n    require(externalTimestamp > lastUpdateTimestamp, \"Invalid timestamp\");\n    uint256 timeElapsed = externalTimestamp.sub(lastUpdateTimestamp);\n    if (timeElapsed > 0) {\n        lastUpdateTimestamp = externalTimestamp;\n        uint256 newRate = timeElapsed.mul(ratePerSecond).add(1e18).mul(stakingRateStored).div(1e18);\n        stakingRateStored = newRate;\n    }\n    if (time == 30 days) return stakingRateStored.div(12);\n    if (time == 90 days) return stakingRateStored.div(4);\n    if (time == 180 days) return stakingRateStored.div(2);\n    if (time == 360 days) return stakingRateStored;\n    revert(\"Invalid staking time\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "stake",
+                "fix_info": "Added reentrancy guard and replaced block.timestamp with an external timestamp to prevent vulnerability.",
+                "corrected_code": "function stake(address to, uint256 amount, uint256 time, uint256 externalTimestamp) public nonReentrant returns (uint256 wAmount) {\n    require(externalTimestamp > lastUpdateTimestamp, \"Invalid timestamp\");\n    uint256 rate = getStakingRate(time, externalTimestamp);\n    wAmount = rate.mul(amount).div(1e18);\n    require(wAmount > 0, \"Invalid lockup\");\n\n    vault storage v = vaults[to][vaultCount[to]];\n    v.hakkaAmount = amount;\n    v.wAmount = wAmount;\n    v.unlockTime = externalTimestamp.add(time);\n    \n    stakedHakka[to] = stakedHakka[to].add(amount);\n    votingPower[to] = votingPower[to].add(wAmount);\n    vaultCount[to]++;\n\n    _mint(to, wAmount);\n    Hakka.safeTransferFrom(msg.sender, address(this), amount);\n\n    emit Stake(to, msg.sender, amount, wAmount, time);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unstake",
+                "fix_info": "Added reentrancy guard and replaced block.timestamp with an external timestamp to prevent vulnerability.",
+                "corrected_code": "function unstake(address to, uint256 index, uint256 wAmount, uint256 externalTimestamp) public nonReentrant returns (uint256 amount) {\n    require(externalTimestamp > lastUpdateTimestamp, \"Invalid timestamp\");\n    vault storage v = vaults[msg.sender][index];\n    require(externalTimestamp >= v.unlockTime, \"locked\");\n    require(wAmount <= v.wAmount, \"Exceeds locked amount\");\n\n    amount = wAmount.mul(v.hakkaAmount).div(v.wAmount);\n\n    v.hakkaAmount = v.hakkaAmount.sub(amount);\n    v.wAmount = v.wAmount.sub(wAmount);\n\n    stakedHakka[msg.sender] = stakedHakka[msg.sender].sub(amount);\n    votingPower[msg.sender] = votingPower[msg.sender].sub(wAmount);\n\n    _burn(msg.sender, wAmount);\n    Hakka.safeTransfer(to, amount);\n\n    emit Unstake(msg.sender, to, amount, wAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

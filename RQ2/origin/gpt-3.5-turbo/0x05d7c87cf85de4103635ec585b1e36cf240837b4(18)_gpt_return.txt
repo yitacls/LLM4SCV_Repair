@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100)));  // fault line",
+    "description": "The vulnerability arises from the multiplication operation (msg.value*MULTIPLIER/100) where the result might exceed the maximum value that can be stored in uint128, leading to an arithmetic overflow. This can result in unexpected behavior or loss of funds."
+}
+```

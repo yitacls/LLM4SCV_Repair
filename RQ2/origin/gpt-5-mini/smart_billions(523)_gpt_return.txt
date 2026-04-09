@@ -1,0 +1,5 @@
+{
+  "type": "BAD_RANDOMNESS",
+  "location": "return(betPrize(player,uint24(block.blockhash(player.blockNum))));",
+  "description": "The contract uses block.blockhash(player.blockNum) (and then truncates it to 24 bits) as the source of randomness for computing bet outcomes. Using blockhash for randomness is insecure because miners can influence or bias block hashes: the miner who mines player.blockNum can try many nonces/timestamps or selectively withhold/publish blocks to produce a favorable blockhash, and a miner who later includes the resolve transaction can also attempt reorgs or withholding to alter outcomes. Truncating the hash to uint24 further reduces entropy (only 24 bits ~16M possibilities), making brute-force or targeted mining attempts more practical. As a result, miners (or colluding bettors/miners) can manipulate outcomes to steal funds or selectively win, breaking fairness and risking loss of player funds. Recommended fixes: use a secure external randomness source (e.g., Chainlink VRF) or a commit-reveal scheme / RANDAO with proper anti-manipulation measures instead of relying on blockhash."
+}

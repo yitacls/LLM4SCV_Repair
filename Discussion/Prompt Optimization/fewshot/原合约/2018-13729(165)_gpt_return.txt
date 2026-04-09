@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "JPMD100B",
+        "contract_version": "^0.4.17",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Prevent arithmetic overflow by validating multiplication result.",
+                "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner {
+    uint256 totalTokenToMint = tokensToMint.mul(10 ** 18);
+    require(balanceOf[owner] + totalTokenToMint >= balanceOf[owner]);
+    balanceOf[owner] += totalTokenToMint;
+    totalSupply += totalTokenToMint;
+    Transfer(0, owner, totalTokenToMint);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

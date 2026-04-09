@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "AMM",
+    "contract_version": "^0.5.2",
+    "state_variables": [
+        {
+            "variable_name": "ONE_WAD_U",
+            "fix_info": "Removed unused constant variable to fix SWC-131",
+            "variable_code": "",
+            "change_type": "deleted"
+        },
+        {
+            "variable_name": "ONE_WAD_S",
+            "fix_info": "Removed unused constant variable to fix SWC-131",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintShareTokenTo",
+            "fix_info": "Added return value check for shareToken.mint() call to fix SWC-104",
+            "corrected_code": "    function mintShareTokenTo(address guy, uint256 amount) internal {\n        bool success = shareToken.mint(guy, amount);\n        require(success, \"ShareToken mint failed\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "burnShareTokenFrom",
+            "fix_info": "Added return value check for shareToken.burn() call to fix SWC-104",
+            "corrected_code": "    function burnShareTokenFrom(address guy, uint256 amount) internal {\n        bool success = shareToken.burn(guy, amount);\n        require(success, \"ShareToken burn failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

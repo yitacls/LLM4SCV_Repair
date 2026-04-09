@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Lines 90-100 in the emitVotingBalances function",
+    "description": "The emitVotingBalances function has no access control modifiers, allowing any external account to call it and trigger the DelegateVotesChanged events for arbitrary addresses. While this doesn't directly withdraw Ether, it can: 1) Waste gas by allowing anyone to trigger state-changing events; 2) Potentially be used to spam the blockchain with unnecessary events; 3) Represent a design flaw where a critical function that emits voting events lacks proper authentication. The function should be restricted to authorized callers only."
+}
+```

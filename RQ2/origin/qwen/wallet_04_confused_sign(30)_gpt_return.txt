@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(amount >= balances[msg.sender]);",
+    "description": "The access control check is incorrect - it should be 'require(balances[msg.sender] >= amount)' to ensure the user has sufficient balance. The current logic allows withdrawal of any amount when the user's balance is less than or equal to the withdrawal amount, which is the opposite of the intended behavior."
+}
+```

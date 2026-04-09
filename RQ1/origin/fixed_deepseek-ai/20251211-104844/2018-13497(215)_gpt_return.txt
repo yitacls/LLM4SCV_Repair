@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "COBToken",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed to state variable declaration itself",
+            "variable_code": "",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed to state variable declaration itself",
+            "variable_code": "",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Assuming onlyOwner modifier already exists correctly",
+            "modifier_code": "",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or explicit checks; Updated event emission syntax to avoid deprecated 'this' keyword",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    // Check for overflow in balance addition\n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Balance overflow detected\");\n    \n    // Check for overflow in totalSupply addition\n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Total supply overflow detected\");\n    \n    // Apply changes after overflow checks\n    balanceOf[target] = newBalance;\n    totalSupply = newTotalSupply;\n    \n    // Emit events with proper syntax (avoiding deprecated 'this')\n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

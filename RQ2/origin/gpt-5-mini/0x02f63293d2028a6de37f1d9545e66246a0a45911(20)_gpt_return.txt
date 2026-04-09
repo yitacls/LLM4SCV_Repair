@@ -1,0 +1,5 @@
+{
+    "type": "Arithmetic",
+    "location": "function dragonHandler( uint256 _amount ) onlyDragon {\n        Dragon drag = Dragon ( dragon );\n        drag.burnDragons ( _amount );\n        DragonsBurned += _amount;  // fault line\n    }",
+    "description": "The increment operation 'DragonsBurned += _amount' can overflow because the contract uses Solidity ^0.4.11 which does not perform automatic overflow/underflow checks. If _amount is large enough (or manipulated by a caller allowed by the onlyDragon modifier), adding it to DragonsBurned can wrap the uint256 value back to a small number, corrupting burned-tokens accounting and potentially breaking invariants or enabling further exploits. Mitigations: validate inputs and check arithmetic results (e.g., require(DragonsBurned + _amount >= DragonsBurned)), use a SafeMath library for safe addition, or upgrade to a Solidity version with built-in overflow checks (>=0.8.0). Also ensure burnDragons succeeded before updating state (check return value or rely on events) to avoid inconsistent state updates."
+}

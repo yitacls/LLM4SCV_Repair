@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.send(_value);",
+    "description": "The contract uses the low-level `send()` method without checking its return value. `send()` returns a boolean indicating success/failure, but this contract ignores it. This is dangerous because if the transfer fails (e.g., if the recipient is a contract that runs out of gas in its fallback function), the transaction will proceed as if successful, potentially leaving funds locked in the contract. For direct ETH transfers, consider using `transfer()` (which automatically reverts on failure in versions >=0.4.13) or explicitly checking the return value of `send()`."
+}
+```

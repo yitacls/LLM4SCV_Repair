@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "0.6.0",
+        "state_variables": [
+            {
+                "variable_name": "pragma",
+                "fix_info": "Fixed floating pragma to use locked version for security",
+                "variable_code": "pragma solidity 0.6.12;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Fixed DoS vulnerability by limiting maximum number of epochs processed in single transaction and added gas optimization",
+                "corrected_code": "function massHarvest() external returns (uint){\n    uint totalDistributedValue;\n    uint epochId = _getEpochId().sub(1); // fails in epoch 0\n    // force max number of epochs\n    if (epochId > NR_OF_EPOCHS) {\n        epochId = NR_OF_EPOCHS;\n    }\n\n    uint128 startEpoch = lastEpochIdHarvested[msg.sender] + 1;\n    require(startEpoch <= epochId, \"All epochs already harvested\");\n    \n    // Limit the number of epochs processed to prevent DoS with block gas limit\n    uint128 maxEpochsPerCall = 10;\n    uint128 endEpoch = startEpoch + maxEpochsPerCall - 1;\n    if (endEpoch > epochId) {\n        endEpoch = uint128(epochId);\n    }\n\n    for (uint128 i = startEpoch; i <= endEpoch; i++) {\n        // i = epochId\n        // compute distributed Value and do one single transfer at the end\n        totalDistributedValue += _harvest(i);\n    }\n\n    emit MassHarvest(msg.sender, endEpoch.sub(startEpoch).add(1), totalDistributedValue);\n\n    if (totalDistributedValue > 0) {\n        _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n    }\n\n    return totalDistributedValue;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

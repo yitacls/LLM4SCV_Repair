@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "_add function (lines 361-378)",
+    "description": "In the _add function, an integer overflow can occur when the output of the addition operation exceeds the maximum size for int256 variables. Similarly, an integer underflow can occur if subtraction operation result ends up being less than the minimum size for int256 variables."
+}
+```

@@ -1,0 +1,8 @@
+```json
+{
+    "type": "Arithmetic",
+    "contract": "EGFToken",
+    "location": "totalSupply += amount; // fault line",
+    "description": "This vulnerability allows for an overflow error in the totalSupply counter. If the 'amount' is large enough, it may cause the counter to exceed its maximum capacity and reset to zero. This could potentially destabilize the EGFToken's total supply, impacting the currency's value and integrity."
+}
+```

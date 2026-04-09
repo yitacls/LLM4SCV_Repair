@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "safeWithdrawal",
+            "fix_info": "Fixed arithmetic vulnerability by using transfer() instead of send() and adding overflow protection",
+            "corrected_code": "function safeWithdrawal() public onlyCreator {\n    uint amount = address(this).balance;\n    require(amount > 0, \"No balance to withdraw\");\n    owner.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

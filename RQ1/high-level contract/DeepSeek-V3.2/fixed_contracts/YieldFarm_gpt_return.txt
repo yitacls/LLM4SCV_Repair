@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "pragma solidity",
+                "fix_info": "Fixed floating pragma by using specific version 0.8.0 instead of ^0.6.0",
+                "variable_code": "pragma solidity 0.8.0;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Fixed DoS vulnerability by limiting loop iterations and using batch processing approach",
+                "corrected_code": "function massHarvest() external returns (uint) {\n        uint totalDistributedValue;\n        uint epochId = _getCurrentEpochToHarvest();\n        \n        // Limit the number of epochs that can be harvested in one transaction\n        uint128 maxEpochsPerCall = 10;\n        uint128 harvestStart = lastEpochIdHarvested[msg.sender] + 1;\n        uint128 harvestEnd = harvestStart + maxEpochsPerCall - 1;\n        if (harvestEnd > epochId) {\n            harvestEnd = uint128(epochId);\n        }\n        \n        for (uint128 i = harvestStart; i <= harvestEnd; i++) {\n            totalDistributedValue += _harvest(i);\n        }\n        \n        emit MassHarvest(msg.sender, harvestEnd - harvestStart + 1, totalDistributedValue);\n        \n        if (totalDistributedValue > 0) {\n            bool success = _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n            require(success, \"Token transfer failed\");\n        }\n        \n        return totalDistributedValue;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_getCurrentEpochToHarvest",
+                "fix_info": "Added helper function to safely calculate current epoch for harvesting",
+                "corrected_code": "function _getCurrentEpochToHarvest() private view returns (uint) {\n        uint epochId = _getEpochId();\n        \n        // Ensure we don't go below 1\n        if (epochId < 1) {\n            return 0;\n        }\n        \n        // Subtract 1 to get last completed epoch\n        epochId = epochId - 1;\n        \n        // Force max number of epochs\n        if (epochId > NR_OF_EPOCHS) {\n            epochId = NR_OF_EPOCHS;\n        }\n        \n        return epochId;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "_harvest",
+                "fix_info": "Added overflow protection and explicit return types",
+                "corrected_code": "function _harvest(uint128 epochId) internal returns (uint) {\n        // try to initialize an epoch. if it can't it fails\n        // if it fails either user either a BarnBridge account will init not init epochs\n        if (lastInitializedEpoch < epochId) {\n            _initEpoch(epochId);\n        }\n        \n        // Set user last harvested epoch\n        lastEpochIdHarvested[msg.sender] = epochId;\n        \n        // exit if there is no stake on the epoch\n        if (epochs[epochId] == 0) {\n            return 0;\n        }\n        \n        uint userBalance = _getUserBalancePerEpoch(msg.sender, epochId);\n        if (userBalance == 0) {\n            return 0;\n        }\n        \n        // Safe multiplication and division with overflow checks\n        uint reward = _totalAmountPerEpoch * userBalance;\n        return reward / epochs[epochId];\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "harvest",
+                "fix_info": "Added overflow protection and safe transfer checks",
+                "corrected_code": "function harvest(uint128 epochId) external returns (uint) {\n        require(_getEpochId() > epochId, \"This epoch is in the future\");\n        require(epochId <= NR_OF_EPOCHS, \"Maximum number of epochs is 25\");\n        require(lastEpochIdHarvested[msg.sender] + 1 == epochId, \"Harvest in order\");\n        \n        uint userReward = _harvest(epochId);\n        \n        if (userReward > 0) {\n            bool success = _bond.transferFrom(_communityVault, msg.sender, userReward);\n            require(success, \"Token transfer failed\");\n        }\n        \n        emit Harvest(msg.sender, epochId, userReward);\n        return userReward;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "totalSupply += _amount;\n            balances[owner] += _amount;",
+    "description": "The mintToken function is vulnerable to arithmetic overflow. In Solidity version ^0.4.11, arithmetic operations are not protected against overflow by default. When _amount is added to totalSupply or balances[owner], if the result exceeds the maximum value that can be stored in a uint256, it will wrap around to zero, potentially causing unexpected behavior and incorrect token accounting. This could allow an attacker (if they are the owner) to manipulate the total supply or their balance in unintended ways."
+}
+```

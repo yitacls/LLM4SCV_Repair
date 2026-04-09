@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "FUTM",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No changes needed to the owner variable; it remains the owner of the contract.",
+            "variable_code": "address public owner;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control to ensure only the contract owner can execute specific functions.",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "changeOwner",
+            "fix_info": "Replaced `tx.origin` with `msg.sender` for access control and added the `onlyOwner` modifier for enhanced security.",
+            "corrected_code": "function changeOwner(address _receiver) public onlyOwner { require(_receiver != address(0)); owner = _receiver; }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

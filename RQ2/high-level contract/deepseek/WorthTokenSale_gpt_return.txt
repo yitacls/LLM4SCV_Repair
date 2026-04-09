@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Line 279-282 in withdrawCrypto() function",
+    "description": "The withdrawCrypto() function allows the contract owner to withdraw all ether from the contract without any validation beyond saleEnded flag. While it checks saleEnded and contractUp states, it lacks: 1) Time-based restrictions to prevent premature withdrawal, 2) Percentage-based withdrawal limits, 3) Multi-signature requirements, 4) Rate limiting. This creates a central point of failure where a compromised owner account or malicious owner could drain all funds immediately after sale ends, potentially before users can claim their tokens (though claimDate provides some protection). The withdrawal transfers the entire contract balance without proportional allocation considerations."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PearlBonus",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic vulnerability by using safe math operations and preventing division before multiplication. Also ensured director.transfer is called before partner.transfer to maintain consistent balance calculations.",
+            "corrected_code": "function () public payable {\n        require(!saleClosed);\n        require(msg.value >= 1 finney);\n        uint256 amount = msg.value * 50000;\n        require(amount <= pearl.balanceOf(this));\n        pearl.transfer(msg.sender, amount);\n        funds += msg.value;\n        uint256 partnerShare = (msg.value * share) / 100;\n        director.transfer(msg.value - partnerShare);\n        partner.transfer(partnerShare);    \n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

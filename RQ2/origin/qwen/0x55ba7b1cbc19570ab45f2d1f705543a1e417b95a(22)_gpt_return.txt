@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(value);",
+    "description": "The send() function returns a boolean indicating success or failure, but the return value is not checked. In Solidity ^0.4.19, send() can fail silently without reverting the transaction, which could lead to loss of funds if the receiving address is a contract with a payable fallback function that consumes more than 2300 gas or reverts."
+}
+```

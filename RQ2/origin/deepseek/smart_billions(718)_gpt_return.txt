@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) { ... }",
+    "description": "The function uses multiple block.blockhash() calls to generate a pseudo-random number by combining hashes from recent blocks. This is predictable and manipulable by miners since they can influence block hash values. Miners can skip publishing blocks if the resulting hash doesn't favor them, or choose specific timestamps to affect outcomes. The use of block.blockhash() for randomness creates a vulnerable system where the randomness source can be biased or predicted by malicious actors."
+}
+```

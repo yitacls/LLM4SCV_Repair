@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "for(uint i=0;i<numbers;i++) {\n            if(numElements == array.length) {\n                array.length += 1;\n            }\n            array[numElements++] = value;\n        }",
+    "description": "The function is vulnerable to Gas Denial of Service (DoS) attack. The loop iterates 'numbers' times and each iteration consumes gas. If 'numbers' is set to a large value (approximately > 382 based on typical gas limits), it will exceed the block gas limit, causing the transaction to fail and making the function unusable. This prevents legitimate users from interacting with the contract."
+}
+```

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "Arithmetic",
+            "location": "balanceOf[this] += amount; balanceOf[msg.sender] -= amount; if (!msg.sender.send(amount * sellPrice)) { throw; }",
+            "description": "The contract contains an integer overflow vulnerability in the multiplication 'amount * sellPrice'. Since Solidity 0.4.2 uses unchecked arithmetic by default, if 'amount' and 'sellPrice' are sufficiently large, their multiplication could overflow, causing the contract to send far less Ether than intended. Additionally, the order of operations creates a reentrancy vulnerability if 'sellPrice' is adjusted to exploit the overflow before the state changes are finalized."
+        }
+    ]
+}
+```

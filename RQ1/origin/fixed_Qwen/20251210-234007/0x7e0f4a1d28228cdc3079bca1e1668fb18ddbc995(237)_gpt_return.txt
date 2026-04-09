@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ItemToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender to prevent unauthorized transfers through malicious contracts",
+            "corrected_code": "function transfer(address _to, uint256 _itemId) onlyERC721() public {\n    require(msg.sender == ownerOf(_itemId));\n    _transfer(msg.sender, _to, _itemId);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

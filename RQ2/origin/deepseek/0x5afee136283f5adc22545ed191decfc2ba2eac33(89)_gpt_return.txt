@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "Using tx.origin for authorization is a critical access control vulnerability. In the contract Bitway (Solidity ^0.4.21), the setPause(bool) function validates the caller by checking if tx.origin equals the contract owner. This check is insecure because tx.origin returns the original external account that initiated the entire transaction chain. An attacker can create a malicious contract that, when called by the owner (e.g., to perform a legitimate action), will invoke setPause(bool) in Bitway. Since the transaction's ultimate origin is the owner, the check passes, allowing the attacker to pause or unpause the contract via the owner's unintended interaction. This bypasses the intended authorization, which should rely on msg.sender to ensure only the direct caller is authorized. Additionally, the use of ^0.4.21 (pre-0.5.0) increases risk due to older compiler quirks. The fix is to replace tx.origin == owner with msg.sender == owner."
+        }
+    ]
+}
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ExacoreContract",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for addition",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        emit Transfer(0, address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

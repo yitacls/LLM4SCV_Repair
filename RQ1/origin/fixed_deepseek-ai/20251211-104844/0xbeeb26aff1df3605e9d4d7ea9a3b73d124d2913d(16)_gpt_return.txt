@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "VOCC_I050_20181211",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "No state variables added",
+            "fix_info": "No state variable changes required for this fix",
+            "variable_code": "",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "No modifiers added",
+            "fix_info": "No modifiers added for this fix",
+            "modifier_code": "",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability by using SafeMath checks to prevent integer overflows when adding to recipient balance",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n    require(balanceOf[msg.sender] >= value);\n    require(balanceOf[to] + value >= balanceOf[to]); // SafeMath overflow check\n    \n    balanceOf[msg.sender] -= value;\n    balanceOf[to] += value;\n    \n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

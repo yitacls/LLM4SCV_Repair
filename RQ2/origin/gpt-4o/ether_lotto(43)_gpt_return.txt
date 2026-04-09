@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "var random = uint(sha3(block.timestamp)) % 2;",
+    "description": "The contract relies on block.timestamp for generating randomness. This dependency introduces a time manipulation vulnerability, as miners can influence the block's timestamp to produce specific outcomes. The use of block.timestamp in this context compromises the fairness and unpredictability of the lottery, allowing potential exploitation by malicious miners who might manipulate the timestamp to favor or disfavor specific transactions."
+}
+```

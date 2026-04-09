@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "keepMyEther",
+        "contract_version": "^0.4.23",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+                "modifier_code": "modifier nonReentrant() {\n        require(!locked, \"Reentrant call detected\");\n        locked = true;\n        _;\n        locked = false;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of call.value(), added reentrancy guard, and implemented checks-effects-interactions pattern",
+                "corrected_code": "function withdraw() public nonReentrant {\n        uint256 amount = balances[msg.sender];\n        require(amount > 0, \"No balance to withdraw\");\n        \n        // Reset balance before sending to prevent reentrancy\n        balances[msg.sender] = 0;\n        \n        // Use transfer instead of call.value() for safety\n        msg.sender.transfer(amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

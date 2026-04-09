@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-103-Floating Pragma",
+    "location": "pragma solidity ^0.6.0;",
+    "description": "The pragma statement specifies a floating version of the Solidity compiler (0.6.0), which can lead to unexpected behavior due to using potentially incompatible compiler versions. It is recommended to pin the compiler version to a fixed one."
+},
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++)",
+    "description": "This loop that is intended to iterate over a range of values could potentially cause a Denial of Service (DoS) in certain scenarios where the loop may consume a significant amount of gas, potentially exceeding the block gas limit. It is important to consider gas usage and potentially limit the size of the range to prevent DoS attacks."
+}
+```
+```

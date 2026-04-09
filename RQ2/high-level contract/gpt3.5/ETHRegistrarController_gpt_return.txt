@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-114-Transaction Order Dependence",
+            "location": "Function makeCommitment(string memory name, bytes32 secret) pure public returns(bytes32)",
+            "description": "The function makeCommitment does not specify any restrictions on potential future transaction ordering, making it vulnerable to transaction order dependence issues."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Function register(string calldata name, address owner, uint duration, bytes32 secret) external payable",
+            "description": "The function register does not check the return value of the base.available(uint256(label)) function, which can lead to unexpected behavior or vulnerabilities."
+        }
+    ]
+}
+```

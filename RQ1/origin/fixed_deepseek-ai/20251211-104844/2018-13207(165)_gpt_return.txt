@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "PornCoin",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "sellPrice",
+                "fix_info": "Added SafeMath protection for multiplication",
+                "variable_code": "",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "",
+                "fix_info": "",
+                "modifier_code": "",
+                "change_type": "deleted"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow vulnerability, updated to SafeMath operations, and refactored for Solidity 0.8.0+",
+                "corrected_code": "function sell(uint256 amount) external {\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    \n    uint256 etherAmount = amount * sellPrice;\n    require(address(this).balance >= etherAmount, \"Contract has insufficient ETH\");\n    \n    balanceOf[address(this)] += amount;\n    balanceOf[msg.sender] -= amount;\n    \n    (bool success, ) = payable(msg.sender).call{value: etherAmount}(\"\");\n    require(success, \"ETH transfer failed\");\n    \n    emit Transfer(msg.sender, address(this), amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

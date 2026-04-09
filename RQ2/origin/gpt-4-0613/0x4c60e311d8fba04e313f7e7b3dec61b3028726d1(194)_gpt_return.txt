@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == _customerAddress)",
+    "description": "Using 'tx.origin' for authentication introduces a vulnerability where a contract can be tricked into authenticating the wrong entity. 'tx.origin' checks the original entity that started the transaction, not who is currently interacting with the contract. Therefore, a malicious contract can initiate a transaction making 'tx.origin' to be the address of the attacker and not the original contract address."
+}
+```

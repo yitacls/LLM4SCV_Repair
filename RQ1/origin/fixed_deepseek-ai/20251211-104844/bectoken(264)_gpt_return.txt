@@ -1,0 +1,30 @@
+【```json
+[{
+    "contract_name": "PausableToken",
+    "contract_version": "1.0.0",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes needed - assumes existence of balances mapping for token storage",
+            "variable_code": "mapping(address => uint256) balances;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "whenNotPaused",
+            "fix_info": "No changes needed - assumes modifier prevents execution when paused",
+            "modifier_code": "modifier whenNotPaused() { require(!paused, \"Contract is paused\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "batchTransfer",
+            "fix_info": "Fixed integer overflow vulnerability by placing multiplication after validation, added SafeMath usage, and reordered checks for better gas efficiency and security",
+            "corrected_code": "function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {\n    require(_receivers.length > 0 && _receivers.length <= 20, \"Invalid receiver count\");\n    require(_value > 0, \"Value must be positive\");\n    \n    uint256 amount = _receivers.length.mul(_value);\n    require(balances[msg.sender] >= amount, \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(amount);\n    for (uint i = 0; i < _receivers.length; i++) {\n        balances[_receivers[i]] = balances[_receivers[i]].add(_value);\n        emit Transfer(msg.sender, _receivers[i], _value);\n    }\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

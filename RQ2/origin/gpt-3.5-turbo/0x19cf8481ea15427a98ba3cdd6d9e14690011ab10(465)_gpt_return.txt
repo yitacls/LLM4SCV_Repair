@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance);",
+    "description": "The contract directly sends ETH to the 'owner' address using a low-level call without checking the return value. This can lead to various issues, including reentrancy attacks or unexpected behavior if the 'owner' address is a contract that executes malicious code upon receiving Ether."
+}
+```

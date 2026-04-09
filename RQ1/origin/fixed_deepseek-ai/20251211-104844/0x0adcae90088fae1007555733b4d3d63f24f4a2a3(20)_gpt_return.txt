@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyPayloadSize",
+            "fix_info": "Removed modifier due to potential incompatibility with different compilers and fixed vulnerability in transfer function itself",
+            "modifier_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath to prevent integer overflow/underflow, removed modifier, and improved security checks",
+            "corrected_code": "function transfer(address _recipient, uint256 _value) public returns (bool) {\n    require(_recipient != address(0), \"ERC20: transfer to the zero address\");\n    require(balances[msg.sender] >= _value && _value > 0, \"ERC20: insufficient balance or zero value\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_recipient] = balances[_recipient].add(_value);\n    \n    emit Transfer(msg.sender, _recipient, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "Using tx.origin for authorization is dangerous as it can be manipulated through a phishing attack. An attacker could trick the owner into calling a malicious contract, which then calls clear() - tx.origin would be the owner's address, allowing the attack to succeed. Additionally, the function lacks proper access control modifiers and is publicly accessible."
+    },
+    {
+        "type": "access_control",
+        "location": "function clear() public",
+        "description": "The function allows any caller to trigger contract self-destruction if they can satisfy the tx.origin check. This creates a single point of failure where social engineering could lead to complete loss of contract funds. The function should use msg.sender for authentication and implement a multi-signature or timelock mechanism for critical operations."
+    }
+]
+```

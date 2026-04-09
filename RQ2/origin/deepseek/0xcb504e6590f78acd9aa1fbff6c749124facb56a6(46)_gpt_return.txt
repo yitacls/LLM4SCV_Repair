@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "armies[_armyId].ownerAddress.call(CommissionOwnerValue);",
+    "description": "This call to an external address transfers value before the contract's state is updated in _ownershipArmy(_armyId). If armies[_armyId].ownerAddress is a malicious contract, it can re-enter the purchaseArmy function by implementing a fallback function that calls purchaseArmy again before ownership is transferred. This could allow the attacker to repeatedly drain funds, bypass ownership checks, or manipulate the contract state because armies[_armyId].ownerAddress still points to the attacker's address during the recursive call."
+}
+```

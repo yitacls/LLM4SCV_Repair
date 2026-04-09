@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ReferralFeeReceiver",
+        "contract_version": "^0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "updateReward",
+                "fix_info": "Fixed reentrancy vulnerability by updating state before making external calls.",
+                "corrected_code": "function updateReward(address referral, uint256 amount) external override {\n        Mooniswap mooniswap = Mooniswap(msg.sender);\n        TokenInfo storage token = tokenInfo[mooniswap];\n        UserInfo storage user = userInfo[referral];\n        uint256 currentEpoch = token.currentEpoch;\n\n        // Add new reward to current epoch\n        user.share[mooniswap][currentEpoch] = user.share[mooniswap][currentEpoch].add(amount);\n        token.epochBalance[currentEpoch].totalSupply = token.epochBalance[currentEpoch].totalSupply.add(amount);\n\n        // Collect all processed epochs and advance user token epoch\n        _collectProcessedEpochs(user, token, mooniswap, currentEpoch);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

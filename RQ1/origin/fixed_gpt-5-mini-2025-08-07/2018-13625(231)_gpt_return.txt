@@ -1,0 +1,34 @@
+[{
+    "contract_name": "Krown",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Provided for context. No direct change to the variable, arithmetic checks are applied in the mint function to prevent overflow.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Provided for context. No direct change to the variable, arithmetic checks are applied in the mint function to prevent overflow.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Provided for context. Assumes an owner variable exists. No change to modifier logic here; shown as typical implementation for clarity.",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintlvlToken",
+            "fix_info": "Added input validation and explicit overflow checks to prevent arithmetic overflow when increasing balanceOf and totalSupply. Preserved original functionality and events.",
+            "corrected_code": "function mintlvlToken(address target, uint256 mintedAmount) public onlyOwner {\n        require(target != address(0));\n        // allow/deny zero minting as desired; disallowing zero here to avoid pointless events\n        require(mintedAmount > 0);\n        // overflow checks\n        require(balanceOf[target] + mintedAmount >= balanceOf[target]);\n        require(totalSupply + mintedAmount >= totalSupply);\n\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n\n        // Use address(0) for mint origin for clarity\n        Transfer(address(0), this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

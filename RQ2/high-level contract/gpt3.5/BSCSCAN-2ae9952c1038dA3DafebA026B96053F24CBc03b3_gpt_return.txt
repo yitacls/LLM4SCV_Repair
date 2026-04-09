@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Line 454-457 in transfer function of ERC20Upgradeable contract",
+    "description": "The transfer function in the ERC20Upgradeable contract allows a user to transfer tokens to the zero address without reverting. This could result in a scenario where tokens are sent to an address where they may become irretrievable, causing unexpected behavior or loss of tokens."
+}
+```

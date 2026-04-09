@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerTemp);",
+    "description": "This function uses tx.origin for authentication instead of msg.sender, making it vulnerable to phishing attacks. A malicious contract could trick the owner into calling a function that subsequently calls acceptOwnership(), causing the malicious contract to become the new owner. This violates the principle that authorization should be performed using msg.sender to directly identify the caller."
+}
+```

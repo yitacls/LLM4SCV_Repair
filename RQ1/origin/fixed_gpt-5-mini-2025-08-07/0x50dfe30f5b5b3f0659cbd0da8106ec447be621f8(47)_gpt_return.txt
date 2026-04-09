@@ -1,0 +1,28 @@
+[{
+    "contract_name": "HXL",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Ensure owner is declared with explicit visibility so it can be referenced; prefer msg.sender for access control checks rather than tx.origin.",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Adds an onlyOwner modifier that checks msg.sender against owner to enforce proper access control (avoids use of tx.origin).",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced insecure tx.origin check with onlyOwner modifier. Removed redundant assert(amount >= 0) (uint is always >= 0). Added explicit overflow checks to balances and totalSupply while preserving the ability to mint 0.",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner {\n    // allow amount == 0 to preserve original behavior\n    // Prevent overflows on balances and totalSupply\n    require(balances[msg.sender] + amount >= balances[msg.sender]);\n    require(totalSupply + amount >= totalSupply);\n\n    balances[msg.sender] += amount;\n    totalSupply += amount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "withdraw(uint tokenCount) function",
+            "description": "This function allows any caller to withdraw the full dividend balance calculated by dividends(msg.sender) without proper validation. The parameter tokenCount is ignored, meaning any user can withdraw their entire dividend amount regardless of input. While this is not a traditional unauthorized access vulnerability (since it only allows users to withdraw their own dividends), it represents improper access control through missing parameter validation and business logic enforcement. In a Ponzi scheme context, this could allow users to bypass intended withdrawal limits or conditions that the tokenCount parameter should enforce."
+        }
+    ]
+}
+```

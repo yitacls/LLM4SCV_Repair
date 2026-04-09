@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(amount)",
+    "description": "The send function is used to send ether from the smart contract to an address. However, it is unchecked, which means there is no control flow to manage if the send operation fails. Due to this, the contract does not handle the case when the operation fails, leading to a possible loss of funds or unbalanced token distribution. To fix this, the return value of send should be checked or consider using the transfer function which throws on failure, ensuring atomicity. It's better to replace '.send' with '.transfer' to avoid unchecked send failures."
+}
+```

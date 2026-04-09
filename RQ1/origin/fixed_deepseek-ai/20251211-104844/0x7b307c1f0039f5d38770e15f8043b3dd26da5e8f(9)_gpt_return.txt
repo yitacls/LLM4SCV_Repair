@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "EasyInvest",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "atBlock",
+            "fix_info": "Changed from public to internal for better security",
+            "variable_code": "mapping(address => uint256) internal atBlock;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "invested",
+            "fix_info": "Changed from public to internal for better security",
+            "variable_code": "mapping(address => uint256) internal invested;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyWithFunds",
+            "fix_info": "Added modifier to check if investor has funds before processing withdrawal",
+            "modifier_code": "modifier onlyWithFunds(address investor) {\n    require(invested[investor] > 0, \"No funds invested\");\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "onlyNonZeroValue",
+            "fix_info": "Added modifier to ensure non-zero investment amounts",
+            "modifier_code": "modifier onlyNonZeroValue() {\n    require(msg.value > 0, \"Investment must be greater than zero\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed the unchecked low-level call vulnerability by replacing .send() with proper transfer pattern, added overflow protection, and implemented proper error handling",
+            "corrected_code": "function () external payable onlyNonZeroValue {\n    if (invested[msg.sender] != 0) {\n        // Prevent overflow in multiplication\n        require(block.number >= atBlock[msg.sender], \"Invalid block number\");\n        \n        // Calculate reward with safe math checks\n        uint256 blocksPassed = block.number - atBlock[msg.sender];\n        uint256 numerator = invested[msg.sender] * 4 * blocksPassed;\n        uint256 denominator = 100 * 5900;\n        \n        require(denominator > 0, \"Division by zero\");\n        uint256 amount = numerator / denominator;\n        \n        // Ensure contract has enough balance to pay\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        \n        // Safe transfer pattern using transfer() instead of send()\n        msg.sender.transfer(amount);\n    }\n    \n    // Update investor records\n    atBlock[msg.sender] = block.number;\n    invested[msg.sender] += msg.value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if( _burner != tx.origin ){ deleteCoin(_burner,_value); }",
+    "description": "The condition `_burner != tx.origin` creates an inconsistent access control policy. The `burnFunction` allows any caller to burn tokens on behalf of another address (`_burner`), but then conditionally calls `deleteCoin` (likely an administrative function) only when the target address is not the transaction originator. This could allow: 1) Unauthorized burning of any user's tokens without proper approval mechanism, violating ERC-20 semantics. 2) Potential bypass of the `deleteCoin` function's intended restrictions if attackers can make `_burner == tx.origin`. 3) Inconsistent state management where burning behavior differs based on who initiates the transaction versus whose tokens are being burned. The function should implement proper authorization checks (e.g., `msg.sender == _burner` or allowance-based approval) rather than relying on `tx.origin`."
+}
+```

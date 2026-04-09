@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PornTokenV2Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bank",
+            "fix_info": "Fixed reentrancy vulnerability by updating balance before external call and using transfer instead of send for proper gas handling",
+            "corrected_code": "function bank() public {\n        if (beneficiary == msg.sender && currentBalance > 0) {\n            uint amountToSend = currentBalance;\n            currentBalance = 0;\n            beneficiary.transfer(amountToSend);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

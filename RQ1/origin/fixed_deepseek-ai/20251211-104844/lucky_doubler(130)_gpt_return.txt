@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "LuckyDoubler",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "nonce",
+            "fix_info": "Added to improve randomness by tracking transaction nonce",
+            "variable_code": "uint256 private nonce = 0;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "rand",
+            "fix_info": "Fixed vulnerability by combining multiple sources of entropy (blockhash, timestamp, nonce) and using keccak256 for hashing. Added input validation and constant visibility keyword.",
+            "corrected_code": "function rand(uint256 max) private constant returns (uint256 result) {\n    require(max > 0, \"Max value must be greater than 0\");\n    \n    // Combine multiple sources of entropy for better randomness\n    uint256 lastBlockNumber = block.number - 1;\n    bytes32 blockHash = block.blockhash(lastBlockNumber);\n    \n    // If blockhash is not available (more than 256 blocks old), use current block timestamp\n    if (uint256(blockHash) == 0) {\n        blockHash = keccak256(abi.encodePacked(block.timestamp));\n    }\n    \n    // Increment nonce for additional entropy\n    nonce++;\n    \n    // Generate random number using keccak256 hash\n    uint256 random = uint256(keccak256(abi.encodePacked(\n        blockHash,\n        block.timestamp,\n        nonce,\n        msg.sender\n    )));\n    \n    // Return result modulo max\n    return random % max;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

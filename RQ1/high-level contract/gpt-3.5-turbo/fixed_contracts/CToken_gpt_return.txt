@@ -1,0 +1,40 @@
+```json
+[
+    {
+        "contract_name": "CToken",
+        "contract_version": "^0.8.6",
+        "functions": [
+            {
+                "function_name": "_setPendingAdmin",
+                "fix_info": "Added a reentrancy guard to prevent reentrancy vulnerability.",
+                "corrected_code": "function _setPendingAdmin(address payable newPendingAdmin) external nonReentrant returns (uint) {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_acceptAdmin",
+                "fix_info": "Added a condition to verify pendingAdmin is not address(0) to prevent potential issues.",
+                "corrected_code": "function _acceptAdmin() external nonReentrant returns (uint) {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_setComptroller",
+                "fix_info": "Added a condition to ensure the new comptroller is not a contract without 'isComptroller' method.",
+                "corrected_code": "function _setComptroller(ComptrollerInterface newComptroller) external nonReentrant returns (uint) {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_setReserveFactor",
+                "fix_info": "Added a condition to check if new reserve factor is less than or equal to maxReserveFactor.",
+                "corrected_code": "function _setReserveFactor(uint newReserveFactorMantissa) external nonReentrant returns (uint) {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_setInterestRateModel",
+                "fix_info": "Added a condition to check if the new interest rate model is a valid interest rate model.",
+                "corrected_code": "function _setInterestRateModel(InterestRateModel newInterestRateModel) external nonReentrant returns (uint) {...}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

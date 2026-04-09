@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses tx.origin for authorization, which is a dangerous access control pattern. The tx.origin variable returns the EOA (Externally Owned Account) that initiated the original transaction, not the immediate caller. This makes the contract vulnerable to phishing attacks where a malicious contract can trick the owner into calling a function that then calls withdrawEther(), passing the authorization check since tx.origin would still be the owner. The contract should use msg.sender for authorization instead. Additionally, this version of Solidity (^0.4.25) is outdated and contains known security issues."
+}
+```

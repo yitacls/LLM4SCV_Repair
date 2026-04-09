@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LetsBreakThings",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "checkBalanceSendEth",
+            "fix_info": "Fixed unchecked low level call vulnerability by checking the return value of send() function and reverting on failure",
+            "corrected_code": "function checkBalanceSendEth(address _recipient) public {\n        require(creator == msg.sender, \"unauthorized\");\n        checkBalance(_recipient);\n        _recipient.transfer(1);\n        checkBalance(_recipient);\n        require(_recipient.send(1), \"Send failed\");\n        checkBalance(_recipient);\n        logBlockDetails();\n        logGasDetails();\n        logGasDetails();\n        logSenderDetails();     \n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

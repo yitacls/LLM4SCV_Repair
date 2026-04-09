@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (msg.sender == owner) {",
+    "description": "The onlyOwner modifier is incorrectly implemented, allowing any address other than the owner to access the restricted functionality. The condition should be if (msg.sender != owner) to properly restrict access to only the owner."
+}
+```

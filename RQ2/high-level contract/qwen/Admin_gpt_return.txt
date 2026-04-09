@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Admin",
+    "contract_version": "0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "removeAdmin",
+            "fix_info": "Fixed DoS vulnerability by replacing manual array traversal with a safer index lookup. Also fixed potential out-of-bounds access in the original loop and improved error handling.",
+            "corrected_code": "    function removeAdmin(\n        address _adminAddress\n    )\n    external\n    onlyAdmin\n    {\n        // Admin has to exist\n        require(isAdmin[_adminAddress] == true, \"Admin does not exist\");\n\n        // Find the admin to remove\n        uint index = admins.length;\n        for (uint i = 0; i < admins.length; i++) {\n            if (admins[i] == _adminAddress) {\n                index = i;\n                break;\n            }\n        }\n        \n        // Revert if admin was not found (should not happen due to require check)\n        require(index < admins.length, \"Admin not found in array\");\n\n        // Move the last element to the position of the element to delete\n        admins[index] = admins[admins.length - 1];\n        \n        // Remove the last element\n        admins.pop();\n\n        // Update mapping\n        isAdmin[_adminAddress] = false;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

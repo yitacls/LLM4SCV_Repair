@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WithdrawDAO",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "trusteeWithdraw",
+            "fix_info": "Added check for successful low-level call to prevent unchecked return value",
+            "corrected_code": "function trusteeWithdraw() {\n        require(trustee.send((this.balance + mainDAO.balanceOf(this)) - mainDAO.totalSupply()));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

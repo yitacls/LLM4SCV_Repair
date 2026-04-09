@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract uses `tx.origin` for authorization in the `ChangeOwner` function, which is vulnerable to phishing attacks. An attacker can trick the owner into interacting with a malicious contract that calls `ChangeOwner`, making `tx.origin` the owner's address and allowing unauthorized ownership transfer. The function also lacks a mechanism to finalize the ownership transfer (two-step process), increasing the risk of accidental or malicious owner changes. It should use `msg.sender` for authentication and implement a two-step ownership transfer pattern."
+}
+```

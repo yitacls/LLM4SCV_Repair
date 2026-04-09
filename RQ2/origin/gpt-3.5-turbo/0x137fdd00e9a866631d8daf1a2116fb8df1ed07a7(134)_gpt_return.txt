@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "bool ret = med_.call(bytes4(keccak256(\"poke()\")));  // fault line",
+            "description": "The contract directly calls an external contract method using low-level call without checking the return value, which can lead to unexpected behavior and vulnerabilities such as reentrancy attacks or loss of funds."
+        }
+    ]
+}
+```

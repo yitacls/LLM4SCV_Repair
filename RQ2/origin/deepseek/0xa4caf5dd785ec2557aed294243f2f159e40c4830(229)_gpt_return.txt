@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "modifier onlyOwner() {\n        require(owner() == tx.origin, \"Ownable: caller is not the owner\");\n        _;\n    }",
+    "description": "The modifier uses tx.origin for authorization instead of msg.sender, which creates a phishing vulnerability. Attackers can trick the contract owner into initiating a transaction that calls a malicious contract, which then calls the vulnerable contract. In this case, tx.origin would be the original owner's address (the victim), allowing the attacker to bypass the onlyOwner restriction and perform privileged actions."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "uint256 amount = uint256(cnt) * _value;",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. The multiplication `uint256(cnt) * _value` can overflow if the result exceeds 2^256 - 1, even if `balanceOf[msg.sender] >= amount` passes (since the overflowed `amount` could be smaller than the actual intended amount). This could allow an attacker to transfer more tokens than intended or cause unexpected behavior. For example, if `_value` is very large such that `cnt * _value > 2^256 - 1`, the multiplication will wrap around, making `amount` much smaller than the true product. The subsequent balance check might then pass incorrectly, allowing the transfer to proceed with an insufficient deduction from the sender's balance."
+}
+```

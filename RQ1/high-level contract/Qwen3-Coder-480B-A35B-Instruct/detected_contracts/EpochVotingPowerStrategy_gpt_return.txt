@@ -1,0 +1,14 @@
+```json
+[
+  {
+    "type": "SWC-126-Insufficient Gas Griefing",
+    "location": "function handleProposalCancellation(uint256 proposalId) external override onlyGovernance",
+    "description": "The function may consume excessive gas due to looping through all proposal IDs in an epoch to find and remove a specific proposal. An attacker could submit many proposals in the same epoch to increase the gas cost for cancellation, potentially causing out-of-gas errors and preventing legitimate cancellations."
+  },
+  {
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function handleWithdrawal(address user, uint256 /*reduceAmount*/) external override onlyStaking",
+    "description": "When a user withdraws, the function calls governance.handleVotingPowerChanged with epochProposals[currentEpoch], which may contain a large number of proposals. If the array is too large, it could exceed the block gas limit, leading to a denial of service where the withdrawal cannot be processed."
+  }
+]
+```

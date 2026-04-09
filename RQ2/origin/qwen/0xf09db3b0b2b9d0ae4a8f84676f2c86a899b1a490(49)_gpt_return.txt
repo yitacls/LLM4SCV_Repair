@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "pendingWithdraws[richest] += msg.value;",
+    "description": "The addition operation may cause an arithmetic overflow when adding msg.value to pendingWithdraws[richest]. In Solidity version ^0.4.24, arithmetic operations are not protected against overflow by default. If the sum exceeds the maximum value that can be stored in the variable, it will wrap around to zero, leading to incorrect accounting of funds and potential loss of money."
+}
+```

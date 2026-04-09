@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(balance);",
+    "description": "In the Ethereum Solidity language, low-level calls such as send(), call(), callcode(), and delegatecall() return false on failure rather than throwing an exception. In the provided contract, the call to send() is not checked for success or failure. This could allow an attacker to cause the function to fail, but allow execution to continue, possibly leading to unexpected behaviour."
+}
+```

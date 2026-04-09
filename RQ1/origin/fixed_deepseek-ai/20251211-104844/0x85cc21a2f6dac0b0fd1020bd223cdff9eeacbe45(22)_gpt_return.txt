@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "HANX",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes needed to state variable declaration",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding SafeMath checks to prevent underflow on sender balance and overflow on receiver balance",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Invalid recipient address\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    require(balances[_to] + _value >= balances[_to], \"Overflow detected on recipient balance\");\n    \n    balances[msg.sender] -= _value;\n    balances[_to] += _value;\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

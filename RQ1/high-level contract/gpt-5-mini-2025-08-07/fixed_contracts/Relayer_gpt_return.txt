@@ -1,0 +1,40 @@
+[{
+    "contract_name": "Relayer",
+    "contract_version": "0.8.20",
+    "state_variables": [
+        {
+            "variable_name": "using SafeMath for uint; using SafeMath for uint128; using SafeMath for uint64;",
+            "fix_info": "Removed explicit SafeMath usages because Solidity >=0.8 has built-in overflow/underflow checks. Arithmetic now uses native operators.",
+            "variable_code": "// Removed SafeMath usage: Solidity 0.8+ provides checked arithmetic by default; no explicit using SafeMath needed.",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyApproved",
+            "fix_info": "Simplified and hardened approval check to use a single require expression (gas-efficient and clearer).",
+            "modifier_code": "modifier onlyApproved() {\n        require(owner() == msg.sender || isApproved(msg.sender), \"Relayer: not approved\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "validateTransactionProofV2",
+            "fix_info": "Reordered external interactions to call the ULN validation before forwarding ETH to the destination. This reduces risk of unexpected reentrancy side-effects and ensures validation happens prior to fund transfer. Kept nonReentrant guard. Also guards zero-value transfers to avoid an unnecessary external call.",
+            "corrected_code": "function validateTransactionProofV2(\n        uint16 _srcChainId,\n        address _dstAddress,\n        uint _gasLimit,\n        bytes32 _blockHash,\n        bytes calldata _transactionProof,\n        address payable _to\n    ) external payable onlyApproved nonReentrant {\n        // Validate the transaction proof first to ensure the operation is valid\n        uln.validateTransactionProof(_srcChainId, _dstAddress, _gasLimit, _blockHash, _transactionProof);\n\n        // Forward any Ether after successful validation. Avoid making the external call if msg.value == 0\n        if (msg.value > 0) {\n            (bool sent, ) = _to.call{value: msg.value}(\"\");\n            require(sent, \"Relayer: failed to send ether\");\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getPrices",
+            "fix_info": "Rewrote parsing of adapter parameters without relying on assembly pointer arithmetic and removed SafeMath usage. Added bounds-checked helper to read 32-byte words from the adapter parameters. Uses Solidity 0.8 native checked arithmetic and explicit casts to avoid over/underflow and type-mismatch issues.",
+            "corrected_code": "function _getPrices(\n        uint16 _dstChainId,\n        uint16 _outboundProofType,\n        address,\n        bytes memory _adapterParameters\n    ) internal view returns (uint basePrice, uint pricePerByte) {\n        // Adapter params layout expected:\n        // txType (2 bytes) | extraGas (32 bytes)           => total len == 34 for txType == 1\n        // txType (2 bytes) | extraGas (32 bytes) | dstNativeAmt (32 bytes) | dstNativeAddress (bytes) => len > 66 for txType == 2\n        require(_adapterParameters.length == 34 || _adapterParameters.length > 66, \"Relayer: wrong _adapterParameters size\");\n\n        // txType is stored in the first two bytes (big-endian)\n        uint16 txType = (uint16(uint8(_adapterParameters[0])) << 8) | uint16(uint8(_adapterParameters[1]));\n\n        uint extraGas = _readUint256(_adapterParameters, 2);\n        require(extraGas > 0, \"Relayer: gas too low\");\n        require(txType == 1 || txType == 2, \"Relayer: unsupported txType\");\n\n        DstPrice storage dstPrice = dstPriceLookup[_dstChainId];\n        DstConfig storage dstConfig = dstConfigLookup[_dstChainId][_outboundProofType];\n\n        uint totalRemoteToken = 0;\n        if (txType == 2) {\n            uint dstNativeAmt = _readUint256(_adapterParameters, 34);\n            require(dstConfig.dstNativeAmtCap >= dstNativeAmt, \"Relayer: dstNativeAmt too large\");\n            totalRemoteToken += dstNativeAmt;\n        }\n\n        // remoteGasTotal = dstGasPriceInWei * (baseGas + extraGas)\n        uint remoteGasTotal = dstPrice.dstGasPriceInWei * (uint(dstConfig.baseGas) + extraGas);\n        totalRemoteToken += remoteGasTotal;\n\n        // basePrice = totalRemoteToken * tokenConversionRate (dstPriceRatio / 10^10)\n        basePrice = (totalRemoteToken * uint(dstPrice.dstPriceRatio)) / 10**10;\n\n        // pricePerByte = (dstGasPriceInWei * gasPerByte) * tokenConversionRate\n        pricePerByte = (dstPrice.dstGasPriceInWei * uint(dstConfig.gasPerByte) * uint(dstPrice.dstPriceRatio)) / 10**10;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_readUint256",
+            "fix_info": "Small internal helper to safely read a 32-byte word from a bytes memory buffer at a given offset with bounds checking. Uses assembly mload from memory and ensures no out-of-bounds read occurs.",
+            "corrected_code": "function _readUint256(bytes memory _data, uint _offset) internal pure returns (uint256 value) {\n        require(_data.length >= _offset + 32, \"Relayer: out of bounds\");\n        assembly {\n            value := mload(add(add(_data, 0x20), _offset))\n        }\n    }",
+            "change_type": "added"
+        }
+    ]
+}]

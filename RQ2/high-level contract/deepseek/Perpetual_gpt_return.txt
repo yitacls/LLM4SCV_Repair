@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 4-5: pragma experimental ABIEncoderV2; // to enable structure-type parameter",
+        "description": "The pragma directive 'pragma experimental ABIEncoderV2;' has no effect on the contract's compilation or functionality. While it was intended to enable structure-type parameters, it is redundant as Solidity 0.5.2 does not require this experimental pragma for basic ABIEncoderV2 features. This line should be removed to avoid confusion and potential compilation issues in future Solidity versions."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "Lines 34-41: Constructor parameters (address globalConfig, address devAddress, address collateral, uint256 collateralDecimals)",
+        "description": "The constructor parameters 'globalConfig', 'devAddress', 'collateral', and 'collateralDecimals' shadow inherited state variables or similarly named variables from parent contracts (Brokerage and Position). This can lead to confusion and unintended behavior, as the local parameters may be used instead of the intended state variables. The parameter names should be renamed to avoid shadowing (e.g., _globalConfig, _devAddress)."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "Lines 270-289: function liquidateFrom(address from, address guy, uint256 maxAmount) public returns (uint256, uint256)",
+        "description": "The 'liquidateFrom' function allows any caller to trigger liquidation on behalf of another address ('from'), without proper authorization checks. This could enable malicious actors to arbitrarily liquidate positions by specifying any 'from' address, potentially leading to unauthorized loss of funds or manipulation. The function should include access control (e.g., onlyWhitelisted modifier) or ensure 'from' is validated to prevent unauthorized operations."
+    }
+]
+```

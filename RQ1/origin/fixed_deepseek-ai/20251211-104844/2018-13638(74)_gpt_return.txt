@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Bitpark",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed for balanceOf mapping",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed for totalSupply",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed for onlyOwner modifier (assumed to exist)",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for addition operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n        require(balanceOf[target] + mintedAmount >= balanceOf[target]);\n        require(totalSupply + mintedAmount >= totalSupply);\n        \n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        Transfer(0, owner, mintedAmount);\n        Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

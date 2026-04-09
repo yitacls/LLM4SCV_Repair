@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "FountainBase",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Apply reentrancy guard modifier to prevent reentrancy attacks.",
+                "modifier_code": "modifier nonReentrant() {\n        require(!_status, 'ReentrancyGuard: reentrant call');\n        _status = true;\n        _;\n        _status = false;\n    }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "_depositAngel",
+                "fix_info": "Apply reentrancy guard modifier to prevent reentrancy attacks.",
+                "corrected_code": "function _depositAngel(address user, IAngel angel, uint256 amount) internal nonReentrant {\n        AngelInfo storage info = _angelInfos[angel];\n        _requireMsg(info.isSet, '_depositAngel', 'Fountain: not added by angel');\n        angel.deposit(info.pid, amount, user);\n        info.totalBalance = info.totalBalance.add(amount);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdrawAngel",
+                "fix_info": "Apply reentrancy guard modifier to prevent reentrancy attacks.",
+                "corrected_code": "function _withdrawAngel(address user, IAngel angel, uint256 amount) internal nonReentrant {\n        AngelInfo storage info = _angelInfos[angel];\n        _requireMsg(info.isSet, '_withdrawAngel', 'Fountain: not added by angel');\n        angel.withdraw(info.pid, amount, user);\n        info.totalBalance = info.totalBalance.sub(amount);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_harvestAngel",
+                "fix_info": "Apply reentrancy guard modifier to prevent reentrancy attacks.",
+                "corrected_code": "function _harvestAngel(IAngel angel, address from, address to) internal nonReentrant {\n        AngelInfo storage info = _angelInfos[angel];\n        _requireMsg(info.isSet, '_harvestAngel', 'Fountain: not added by angel');\n        angel.harvest(info.pid, from, to);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_emergencyWithdrawAngel",
+                "fix_info": "Apply reentrancy guard modifier to prevent reentrancy attacks.",
+                "corrected_code": "function _emergencyWithdrawAngel(address user, IAngel angel) internal nonReentrant {\n        AngelInfo storage info = _angelInfos[angel];\n        _requireMsg(info.isSet, '_emergencyAngel', 'Fountain: not added by angel');\n        uint256 amount = balanceOf(user);\n        angel.emergencyWithdraw(info.pid, user);\n        info.totalBalance = info.totalBalance.sub(amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

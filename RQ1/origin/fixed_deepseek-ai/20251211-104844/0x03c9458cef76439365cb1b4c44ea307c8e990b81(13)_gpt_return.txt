@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Wallet",
+        "contract_version": ">=0.8.0 <0.9.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added owner state variable with proper visibility and security considerations",
+                "variable_code": "address private owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to restrict function access to contract owner",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed access control vulnerability by replacing tx.origin check with msg.sender check and using onlyOwner modifier",
+                "corrected_code": "function transfer(address to, uint value) public onlyOwner {\n        require(to != address(0), \"Cannot transfer to zero address\");\n        require(address(this).balance >= value, \"Insufficient contract balance\");\n        \n        (bool success, ) = to.call{value: value}(\"\");\n        require(success, \"Transfer failed\");\n        \n        emit Send(to, value);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

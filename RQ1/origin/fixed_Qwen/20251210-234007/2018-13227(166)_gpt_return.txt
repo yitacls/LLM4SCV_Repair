@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MoneyChainNetToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by adding SafeMath-style checks for addition and subtraction operations",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balanceOf[msg.sender] < amount ) throw;\n        balanceOf[this] = balanceOf[this] + amount;\n        balanceOf[msg.sender] = balanceOf[msg.sender] - amount;\n        if (!msg.sender.send(amount * sellPrice)) {\n            throw;\n        } else {\n            Transfer(msg.sender, this, amount);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

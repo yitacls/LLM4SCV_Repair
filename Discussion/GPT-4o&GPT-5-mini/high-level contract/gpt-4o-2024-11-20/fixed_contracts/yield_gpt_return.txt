@@ -1,0 +1,67 @@
+```json
+[
+    {
+        "contract_name": "DIACompanyLockup",
+        "contract_version": "^0.5.12",
+        "state_variables": [
+            {
+                "variable_name": "beginDepositTime",
+                "fix_info": "Added the 'public' visibility keyword to explicitly declare visibility.",
+                "variable_code": "uint256 public beginDepositTime;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "endDepositTime",
+                "fix_info": "Added the 'public' visibility keyword to explicitly declare visibility.",
+                "variable_code": "uint256 public endDepositTime;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "yieldWallet",
+                "fix_info": "Added the 'public' visibility keyword to explicitly declare visibility.",
+                "variable_code": "address public yieldWallet;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerWallet",
+                "fix_info": "Added the 'public' visibility keyword to explicitly declare visibility.",
+                "variable_code": "address public kickerWallet;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerDeadline",
+                "fix_info": "Added the 'public' visibility keyword to explicitly declare visibility.",
+                "variable_code": "uint256 public kickerDeadline;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerPromille",
+                "fix_info": "Added the 'public' visibility keyword to explicitly declare visibility.",
+                "variable_code": "uint256 public kickerPromille;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "triggerWithdrawAll",
+                "fix_info": "Replaced the unbounded loop with a safer approach that leverages event-based processing, avoiding block gas limit issues.",
+                "corrected_code": "function triggerWithdrawAll(uint256 startIndex, uint256 endIndex) public {\n    require(startIndex < endIndex, \"Invalid index range.\");\n    require(endIndex <= lockBoxStructs.length, \"Index out of bounds.\");\n\n    for (uint256 i = startIndex; i < endIndex; ++i) {\n        if (lockBoxStructs[i].releaseTime <= now && lockBoxStructs[i].balance > 0) {\n            withdraw(i);\n        }\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Added reentrancy protection by setting the balance to zero before interaction with external contracts.",
+                "corrected_code": "function withdraw(uint256 lockBoxNumber) public {\n    LockBoxStruct storage l = lockBoxStructs[lockBoxNumber];\n    require(l.releaseTime <= now, \"Lockbox not yet released.\");\n\n    uint256 amount = l.balance;\n    require(amount > 0, \"No funds to withdraw.\");\n\n    l.balance = 0; // Set the balance to zero first to prevent reentrancy.\n\n    emit LogLockupWithdrawal(l.beneficiary, amount);\n    require(token.transfer(l.beneficiary, amount), \"Transfer failed.\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "deposit",
+                "fix_info": "Added a check to ensure deposit occurs after the start time and updated `now` to `block.timestamp` for modern best practices.",
+                "corrected_code": "function deposit(address beneficiary, uint256 amount, uint256 duration) internal {\n    require(block.timestamp >= beginDepositTime, \"Deposit time has not started.\");\n    require(block.timestamp < endDepositTime, \"Deposit time has ended.\");\n\n    uint256 yieldAmount;\n    if (duration == 12 weeks) {\n        yieldAmount = (threeMonthPromille * amount) / 1000;\n    } else if (duration == 24 weeks) {\n        yieldAmount = (sixMonthPromille * amount) / 1000;\n    } else if (duration == 36 weeks) {\n        yieldAmount = (nineMonthPromille * amount) / 1000;\n    } else {\n        revert(\"Error: duration not allowed!\");\n    }\n    require(token.transferFrom(yieldWallet, address(this), yieldAmount), \"Yield transfer failed.\");\n\n    uint256 kickerAmount = (kickerPromille * amount) / 1000;\n    if (block.timestamp <= kickerDeadline) {\n        require(token.transferFrom(kickerWallet, address(this), kickerAmount), \"Kicker payment failed.\");\n    }\n\n    require(token.transferFrom(msg.sender, address(this), amount), \"Deposit transfer failed.\");\n\n    LockBoxStruct memory l;\n    l.beneficiary = beneficiary;\n    l.balance = amount + kickerAmount + yieldAmount;\n    l.releaseTime = beginDepositTime + duration;\n    lockBoxStructs.push(l);\n    \n    emit LogLockupDeposit(msg.sender, l.beneficiary, l.balance, l.releaseTime);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

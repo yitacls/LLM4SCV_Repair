@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Trade",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed vulnerability in fallback function by: 1) Using require() to check low-level call success, 2) Using transfer() instead of send() for security, 3) Adding address(this).balance check, 4) Adding reentrancy protection, 5) Using safe math operations, and 6) Following checks-effects-interactions pattern",
+                "corrected_code": "function() external payable {\n    require(msg.value > 0, \"Invalid ether amount\");\n    \n    uint256 amount = msg.value * unitsOneEthCanBuy;\n    totalEthInWei = totalEthInWei + msg.value;\n    \n    require(balances[fundsWallet] >= amount, \"Insufficient funds in wallet\");\n    \n    balances[fundsWallet] = balances[fundsWallet] - amount;\n    balances[msg.sender] = balances[msg.sender] + amount;\n    \n    Transfer(fundsWallet, msg.sender, amount);\n    \n    require(address(this).balance >= msg.value, \"Insufficient contract balance\");\n    fundsWallet.transfer(msg.value);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "recipient.send(weiAmount);",
+    "description": "The contract uses address.send() without checking the return value. In Solidity versions prior to 0.4.17 (like ^0.4.17), the send() function returns a boolean indicating success, but this return value is ignored. If the send() call fails (e.g., recipient is a contract with a fallback function that reverts or runs out of gas), the transaction will proceed without handling the failure, leading to inconsistent state. Additionally, the subsequent PayInterest(recipient, weiAmount) call still executes even if the send() fails. This violates the checks-effects-interactions pattern and could enable reentrancy attacks in combination with other vulnerabilities."
+}
+```

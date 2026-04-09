@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CoxxxCoinCrowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bank",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and implementing proper error handling",
+            "corrected_code": "function bank() public {\n        if (beneficiary == msg.sender && currentBalance > 0) {\n            uint amountToSend = currentBalance;\n            currentBalance = 0;\n            require(beneficiary.send(amountToSend));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

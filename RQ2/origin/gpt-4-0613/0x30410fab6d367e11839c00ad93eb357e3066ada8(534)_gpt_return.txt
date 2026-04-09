@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == state.owner, 'Owner');",
+    "description": "In the BetHorde contract, the onlyOwner modifier is checking whether the origin of the transaction is the state owner. However, this can be harmful as it allows any contract called by the owner to have full permissions. This is an access_control vulnerability as the contract uses tx.origin for authorization which is a security risk. Instead, it should be changed to use msg.sender for proper access control."
+}
+```

@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "Ownable",
+    "contract_version": "1.0.0",
+    "state_variables": [],
+    "modifiers": [{
+        "modifier_name": "onlyOwner",
+        "fix_info": "Replaced tx.origin with msg.sender to prevent phishing attacks and improve security. Using tx.origin allows malicious contracts in the call chain to bypass ownership checks.",
+        "modifier_code": "modifier onlyOwner() {\n        require(owner() == msg.sender, \"Ownable: caller is not the owner\");\n        _;\n    }",
+        "change_type": "modified"
+    }],
+    "functions": []
+}]
+```

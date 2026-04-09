@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balance[_from] >= _value && balance[_to] + _value >= balance[_to]",
+    "description": "The condition `balance[_to] + _value >= balance[_to]` attempts to prevent integer overflow by checking if the addition would wrap around. However, in Solidity versions prior to 0.8.0 (like ^0.4.25), this check is insufficient because arithmetic operations can overflow/underflow silently. This condition would incorrectly return true for overflows due to how EVM handles overflow (e.g., if balance[_to] + _value overflows to a smaller value, the condition would fail, but the overflow still occurs before the check). Additionally, the contract lacks SafeMath or compiler overflow protection, making the contract vulnerable to overflow attacks where an attacker could manipulate balances."
+}
+```

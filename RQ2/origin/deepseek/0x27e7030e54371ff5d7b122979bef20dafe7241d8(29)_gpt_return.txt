@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[to] += tokens; // fault line",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. When 'balances[to] + tokens' exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to a very small number (overflow). Similarly, 'balances[msg.sender] -= tokens' could underflow if the subtraction result goes below 0. This vulnerability allows attackers to manipulate token balances. The contract uses ^0.4.24 which lacks built-in overflow protection. Consider using SafeMath library or upgrading to Solidity 0.8.x or later."
+}
+```

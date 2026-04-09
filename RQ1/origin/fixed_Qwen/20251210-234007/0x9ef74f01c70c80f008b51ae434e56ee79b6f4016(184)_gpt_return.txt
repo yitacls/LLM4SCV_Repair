@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAuthorized",
+            "fix_info": "Added access control modifier to restrict function access to authorized addresses",
+            "modifier_code": "modifier onlyAuthorized() {\n    require(msg.sender == owner, \"Access denied\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "depositEtherTokenAmount",
+            "fix_info": "Added access control modifier to prevent unauthorized access to the deposit function",
+            "corrected_code": "function depositEtherTokenAmount(IEtherToken etherToken, uint256 amount) external onlyAuthorized {\n    etherToken.deposit.value(amount)();\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

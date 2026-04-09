@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "var totalTokenToMint = tokensToMint * (10 ** 18);",
+    "description": "The multiplication operation tokensToMint * (10 ** 18) can cause an arithmetic overflow in Solidity 0.4.20, as there is no built-in overflow protection. When tokensToMint is large enough, the result may exceed the maximum value that can be stored in a uint256 variable, causing the value to wrap around to zero or a smaller number. This could result in minting far fewer tokens than intended or potentially zero tokens, breaking the token minting functionality."
+}
+```

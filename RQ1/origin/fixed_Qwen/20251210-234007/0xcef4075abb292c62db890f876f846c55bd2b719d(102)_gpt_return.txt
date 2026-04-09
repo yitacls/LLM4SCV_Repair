@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BasicToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferOrigin",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender to prevent unauthorized access and ensure proper authentication",
+            "corrected_code": "function transferOrigin(address _to, uint256 _value) public returns (bool) {\n    require(!locked);\n    require(_to != address(0));\n    require(msg.sender == impl);\n    require(_value <= balances[msg.sender]);\n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    emit Transfer(msg.sender, _to, _value);\n    return true;\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

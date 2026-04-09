@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "hodl.call(bytes4(keccak256(\"withdrawFor(address,uint256)\")),from,2000000000000000);",
+    "description": "The low-level call to the 'hodl' contract does not check the return value, which means the function will continue execution even if the external call fails. In Solidity 0.4.25, low-level calls like 'call' return a boolean indicating success or failure, but this return value is ignored here. This can lead to unexpected behavior where the contract assumes the external call succeeded when it actually failed, potentially causing loss of funds or incorrect state management."
+}
+```

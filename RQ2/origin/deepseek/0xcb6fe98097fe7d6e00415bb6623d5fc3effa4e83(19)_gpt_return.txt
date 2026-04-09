@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "The contract uses the low-level call.value() method to transfer Ether before updating the user's balance in `acc.balance-=_am`. An attacker can create a malicious fallback function in their contract that calls back into the Collect() function before the balance is reduced. Since the check `acc.balance>=_am` uses the unchanged balance, the attacker can repeatedly drain funds from the contract until it runs out of Ether or reaches the gas limit. This violates the Checks-Effects-Interactions pattern, which requires state changes to be made before external calls. The vulnerability is exacerbated by using Solidity 0.4.25, which lacks native reentrancy guards."
+}
+```

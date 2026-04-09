@@ -1,0 +1,31 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-102-Outdated Compiler Version",
+            "location": "pragma solidity 0.6.9;",
+            "description": "The contract uses an outdated Solidity compiler version 0.6.9 which contains known security vulnerabilities that have been fixed in later versions. Older compiler versions may have bugs related to function visibility, initialization, and other security issues that could be exploited."
+        },
+        {
+            "type": "SWC-113-DoS with Failed Call",
+            "location": "_transfer(_quoteToken, _msgSender(), _amount); (line 55, within withdrawForLoss function)",
+            "description": "The contract transfers tokens to _msgSender() (insuranceFund) without checking if the transfer succeeds. If the token transfer fails (e.g., due to a non-standard ERC20 implementation, insufficient gas, or contract interaction failures), the entire transaction will revert, but the withdrawnTokenHistory will still have been updated. While this specific case might not cause permanent DoS since the transaction reverts, the pattern of not verifying transfer success is dangerous. More importantly, there's a related issue: the function adds 1 smallest unit to _amount when token decimals < 18, which could cause rounding issues and potential transfer failures."
+        },
+        {
+            "type": "Potential Integer Overflow",
+            "location": "cumulativeAmount = withdrawnTokenHistory[_quoteToken][len - 1].cumulativeAmount.addD(_amount); (line 49, within withdrawForLoss function)",
+            "description": "While SafeMath is used, the contract uses Decimal.decimal operations through addD() method. If the decimal library doesn't properly handle overflow checks or if cumulative amounts grow too large, there could be overflow vulnerabilities, though this is mitigated by using the Decimal library which should implement proper checks."
+        },
+        {
+            "type": "Access Control Issue",
+            "location": "function withdrawForLoss(Decimal.decimal memory _amount, IERC20 _quoteToken) public override",
+            "description": "The function only checks that the caller is the insuranceFund address, but doesn't implement any rate limiting or maximum withdrawal amounts. A malicious or compromised insuranceFund could drain all funds from the contract in a single transaction."
+        },
+        {
+            "type": "Insufficient Input Validation",
+            "location": "if (_getTokenDecimals(address(_quoteToken)) < 18) { _amount = _amount.addD(_toDecimal(_quoteToken, 1)); } (lines 42-45)",
+            "description": "Adding 1 smallest unit to _amount when token decimals < 18 is a workaround for rounding issues but could lead to transferring more than intended if not carefully validated. This could be exploited in combination with other vulnerabilities to drain funds."
+        }
+    ]
+}
+```

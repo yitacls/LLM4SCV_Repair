@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[_to] += _value;",
+    "description": "The contract is vulnerable to integer overflow/underflow attacks. When adding _value to balanceOf[_to], if the result exceeds the maximum uint256 value, it will overflow and wrap around to a small number. Similarly, when subtracting _value from balanceOf[msg.sender], if the balance is less than _value, it will underflow and become a very large number. This can lead to balance manipulation and token theft."
+}
+```

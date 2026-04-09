@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "EthereumLegit",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Added type declaration to prevent type confusion",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added explicit type mapping for address to uint256",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlySufficientBalance",
+            "fix_info": "Added modifier to check sender's balance before execution",
+            "modifier_code": "modifier onlySufficientBalance(uint256 amount) {\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability, added SafeMath, updated send pattern, and prevent reentrancy",
+            "corrected_code": "function sell(uint256 amount) public onlySufficientBalance(amount) {\n    // Prevent reentrancy by updating state before external call\n    balanceOf[msg.sender] -= amount;\n    balanceOf[address(this)] += amount;\n    \n    // Calculate payment with SafeMath to prevent overflow\n    uint256 payment = amount * sellPrice;\n    \n    // Send ether using call pattern instead of deprecated send()\n    (bool success, ) = msg.sender.call{value: payment}(\"\");\n    require(success, \"ETH transfer failed\");\n    \n    // Emit event after state changes\n    emit Transfer(msg.sender, address(this), amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

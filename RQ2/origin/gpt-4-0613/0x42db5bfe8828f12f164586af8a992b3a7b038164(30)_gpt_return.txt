@@ -1,0 +1,5 @@
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.send(this.balance);",
+    "description": "In this contract 'firstTest', the function 'withdrawal' has a low level call 'adr.send(this.balance);' without checking its return value or providing error handling mechanism. This may allow for fail silently, making it difficult to detect and rectify the issue. In Solidity, if the called contract runs out of gas or encounters an exception, the low level '.send' function will return false instead of throwing an exception. If this is not handled carefully, such issues can lead to serious vulnerabilities."
+}

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256(\"donate()\")))",
+    "description": "The low-level call to 'whale' does not check the return value, which can lead to silent failures. If the call fails (e.g., due to out-of-gas, reversion, or missing function), the transaction will continue execution without reverting, causing inconsistent state updates (totalDonated is incremented and Lose event is emitted) even when the external call fails. This violates the intended behavior where state changes should only occur if the external call succeeds. In Solidity 0.4.21, use require(whale.call.value(amount)(bytes4(keccak256(\"donate()\")))) or check the boolean return value to handle failures appropriately."
+}
+```

@@ -1,0 +1,5 @@
+{
+  "type": "SWC-101-Integer Overflow and Underflow",
+  "location": "function _writeCheckpoint\n    numCheckpoints[delegatee] = nCheckpoints + 1;",
+  "description": "The contract uses a uint32 counter numCheckpoints[delegatee] and increments it with an unchecked addition: numCheckpoints[delegatee] = nCheckpoints + 1. Under Solidity ^0.7.0 arithmetic is not checked for overflow/underflow, so if a delegate accumulates 2^32-1 checkpoints an additional checkpoint will wrap the counter to 0. An attacker (or simply long-lived usage) could force the counter to overflow, causing new checkpoints to overwrite earlier ones, breaking the correctness of getPriorVotes/getCurrentVotes and enabling manipulation of reported voting power. Mitigation: add an explicit bounds check before incrementing (e.g. require(nCheckpoints < type(uint32).max, \"overflow\")), use safe math for the uint32 increment, or use a larger integer type (uint256) or upgrade to Solidity >=0.8 where arithmetic is checked by default."
+}

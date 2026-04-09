@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "VetCoin",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "State variable already exists - no change needed",
+            "variable_code": "address owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with msg.sender for secure access control",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "WithdrawDevFunds",
+            "fix_info": "Replaced tx.origin with onlyOwner modifier and updated send() to transfer() for better security and gas handling",
+            "corrected_code": "function WithdrawDevFunds() public onlyOwner {\n        if (owner.transfer(devFund)) {\n            devFund = 0;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

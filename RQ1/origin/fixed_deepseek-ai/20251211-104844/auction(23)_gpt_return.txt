@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "DosAuction",
+        "contract_version": "^0.4.15",
+        "state_variables": [
+            {
+                "variable_name": "pendingWithdrawals",
+                "fix_info": "Added mapping to track refunds that need to be withdrawn separately to prevent DoS",
+                "variable_code": "mapping(address => uint256) public pendingWithdrawals;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "bid",
+                "fix_info": "Changed from using send() with require() to pull payment pattern. Refunds are tracked in mapping instead of being forced during bid transaction to prevent DoS from malicious frontrunner.",
+                "corrected_code": "function bid() payable {\n    require(msg.value > currentBid);\n\n    // Track refund for previous frontrunner instead of forcing send\n    if (currentFrontrunner != address(0)) {\n        pendingWithdrawals[currentFrontrunner] += currentBid;\n    }\n\n    currentFrontrunner = msg.sender;\n    currentBid = msg.value;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawRefund",
+                "fix_info": "Added separate withdrawal function for pull payment pattern. Users must call this to claim their refunds.",
+                "corrected_code": "function withdrawRefund() public {\n    uint256 amount = pendingWithdrawals[msg.sender];\n    require(amount > 0);\n    \n    // Reset before transfer to prevent reentrancy\n    pendingWithdrawals[msg.sender] = 0;\n    \n    // Use transfer for Solidity 0.4.15 (limited to 2300 gas)\n    msg.sender.transfer(amount);\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "_repayDebt(vaultIDs[i], (amounts[i] * liquidationSurcharge) / BASE_PARAMS, liqData.newInterestAccumulator);",
+        "description": "The return value of the _repayDebt function call is not checked. This could lead to unexpected behavior if the function fails silently, potentially causing incorrect debt calculations or liquidation issues."
+    }
+]
+```

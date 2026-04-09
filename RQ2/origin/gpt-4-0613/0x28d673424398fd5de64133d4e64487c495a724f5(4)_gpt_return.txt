@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(address(this).balance-msg.value)",
+    "description": "The low-level .send() method is being used here without checking the success of the call. If the call fails for whatever reason (e.g., the recipient runs out of gas), no exception is thrown and execution continues. It is recommended to either check the return value of .send() or use .transfer() instead, which throws an exception when the call fails."
+}
+```

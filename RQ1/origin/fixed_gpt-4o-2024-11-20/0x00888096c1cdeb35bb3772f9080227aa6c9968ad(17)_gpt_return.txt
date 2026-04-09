@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "ICOBuyer",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added a state variable to track the contract's owner and establish a valid access control mechanism.",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a modifier to restrict access to owner-only functions and prevent unauthorized access.",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Added a constructor to initialize the owner state variable.",
+            "corrected_code": "function ICOBuyer() public { owner = msg.sender; }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Added the `onlyOwner` modifier to restrict access to the withdraw function. Additional checks added to ensure safer operations and prevent reentrancy attacks. Removed use of `this.balance` and replaced token transfer call style.",
+            "corrected_code": "function withdraw() public onlyOwner { \n    uint256 contractBalance = address(this).balance; \n    uint256 tokenBalance = token.balanceOf(address(this)); \n    require(contractBalance > 0 || tokenBalance > 0, \"Nothing to withdraw.\"); \n    developer.transfer(contractBalance); \n    require(token.transfer(developer, tokenBalance), \"Token transfer failed.\"); \n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

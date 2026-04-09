@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(callee.delegatecall(_data));",
+    "description": "The forward function allows any caller (public) to execute arbitrary delegatecall operations to any address (callee) with arbitrary data (_data). This gives full control of the contract's storage, balance, and logic to any external account, enabling malicious actors to upgrade or modify the contract arbitrarily, steal funds, or corrupt state. The function lacks any access control modifiers (e.g., onlyOwner) to restrict who can invoke it."
+}
+```

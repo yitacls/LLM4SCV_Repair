@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "WithdrawToken",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and using safeTransfer approach",
+            "corrected_code": "function WithdrawToken(address token, uint256 amount, address to)\n    public \n    onlyOwner\n    {\n        require(token != address(0), \"Invalid token address\");\n        require(to != address(0), \"Invalid recipient address\");\n        require(amount > 0, \"Amount must be greater than 0\");\n        \n        bytes4 sig = bytes4(sha3(\"transfer(address,uint256)\"));\n        bytes memory callData = abi.encodeWithSelector(sig, to, amount);\n        \n        bool success;\n        assembly {\n            success := call(\n                gas(),\n                token,\n                0,\n                add(callData, 0x20),\n                mload(callData),\n                0,\n                0\n            )\n        }\n        \n        require(success, \"Token transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

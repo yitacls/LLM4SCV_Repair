@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "GetSomeEther",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "PutEther",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding overflow check before addition",
+            "corrected_code": "function PutEther()\n    public\n    payable\n    {\n        require(freeEther + msg.value >= freeEther, \"Overflow detected\");\n        uint256 newVal = freeEther + msg.value;\n        if(newVal > freeEther) freeEther = newVal;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

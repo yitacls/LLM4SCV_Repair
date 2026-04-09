@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RandomNumberGenerator",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "random",
+            "fix_info": "Removed predictable randomness sources (block.number, blockhash) and replaced with a placeholder indicating need for external randomness source. Function now requires external random seed parameter.",
+            "corrected_code": "function random(uint256 max, uint256 randomSeed) view private returns (uint256 result) {\n    // Use externally provided randomness instead of blockchain predictables\n    require(randomSeed > 0, \"Random seed must be greater than 0\");\n    // Random number between 1 and max\n    return (randomSeed % max) + 1;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

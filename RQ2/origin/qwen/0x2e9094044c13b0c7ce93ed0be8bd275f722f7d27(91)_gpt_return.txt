@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint lotterynumber = (uint(curhash)+block.timestamp)%(maxguess+1);",
+    "description": "The contract uses block.timestamp as a source of randomness for generating the lottery number. This is vulnerable because miners can manipulate block.timestamp within a small range (roughly 15 seconds) when mining a block. Since the randomness depends on predictable and manipulable blockchain variables (curhash and block.timestamp), attackers can potentially predict or influence the lottery outcome, allowing them to game the system and increase their chances of winning."
+}
+```

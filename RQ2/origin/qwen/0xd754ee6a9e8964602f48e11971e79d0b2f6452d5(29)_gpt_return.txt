@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "etherwow.userRollDice.value(msg.value)(31, msg.sender);",
+    "description": "The contract makes an external call to another contract (etherwow.userRollDice) before updating its own state or checking the result. This allows the called contract to potentially call back into the current contract's fallback function recursively, draining the contract's balance. The state variable 'bet' is not reset before the external call, enabling multiple reentrant calls with the same bet condition."
+}
+```

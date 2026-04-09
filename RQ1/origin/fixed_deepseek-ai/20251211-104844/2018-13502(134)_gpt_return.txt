@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "HeliumNetwork",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "SafeMath library is used to prevent arithmetic overflow/underflow vulnerabilities",
+            "variable_code": "using SafeMath for uint256;\n    uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "",
+            "modifier_code": "",
+            "change_type": ""
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath's add() function for all addition operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        emit Transfer(address(0), this, mintedAmount);\n        emit Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

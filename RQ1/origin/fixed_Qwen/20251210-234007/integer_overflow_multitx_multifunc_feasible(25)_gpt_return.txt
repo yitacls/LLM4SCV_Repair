@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowMultiTxMultiFuncFeasible",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Changed uint256 to use SafeMath library for arithmetic operations",
+            "variable_code": "using SafeMath for uint256;\nuint256 public count;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "run",
+            "fix_info": "Fixed arithmetic underflow vulnerability by using SafeMath subtraction",
+            "corrected_code": "function run(uint256 input) {\n        if (initialized == 0) {\n            return;\n        }\n        // Fixed arithmetic underflow vulnerability\n        count = count.sub(input);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

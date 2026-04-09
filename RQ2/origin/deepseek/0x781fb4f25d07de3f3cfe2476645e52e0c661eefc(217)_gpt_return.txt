@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(etherBalance);",
+    "description": "The withdraw() function uses the onlyOwner modifier for access control, but if the contract uses an outdated ownership pattern or the owner variable can be manipulated through other functions (not shown in this snippet), unauthorized withdrawals may occur. In Solidity 0.4.22, common vulnerabilities include missing zero-address checks for owner assignment, unprotected functions that allow owner changes, or delegatecall injections that modify storage. Additionally, if the owner is a contract without a payable fallback function, the transfer() call will fail, potentially locking funds. It is also recommended to use a withdrawal pattern where users withdraw their own balances instead of a single owner transferring all funds, to prevent centralization risks and improve security."
+}
+```

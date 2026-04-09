@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization in the changeOwner function. tx.origin returns the original sender of the transaction chain, not the immediate caller. This makes the contract vulnerable to phishing attacks where a malicious contract could trick the owner into calling a function that subsequently calls FUTM.changeOwner(), passing the authorization check (since tx.origin would still be the owner) and changing the contract ownership to an attacker-controlled address."
+}
+```

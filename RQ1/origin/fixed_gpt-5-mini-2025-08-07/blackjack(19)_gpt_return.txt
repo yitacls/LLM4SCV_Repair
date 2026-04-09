@@ -1,0 +1,46 @@
+[{
+    "contract_name": "Deck",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "entropy",
+            "fix_info": "Added persistent entropy seed to avoid using block variables for randomness. This seed must be fed from an external trusted source (oracle/commit-reveal) and is combined with other inputs to produce unpredictability.",
+            "variable_code": "bytes32 private entropy;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "nonce",
+            "fix_info": "Added a per-deal nonce to ensure unique inputs to the hash and prevent replay of identical outputs for identical inputs.",
+            "variable_code": "uint256 private nonce;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "oracle",
+            "fix_info": "Address authorized to update the entropy seed. The first caller of updateEntropy becomes the oracle if not set, allowing a simple bootstrap pattern.",
+            "variable_code": "address public oracle;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOracle",
+            "fix_info": "Modifier to restrict entropy updates to the configured oracle.",
+            "modifier_code": "modifier onlyOracle() { require(msg.sender == oracle); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deal",
+            "fix_info": "Replaced insecure use of block variables for randomness with a keccak256-based PRNG seeded from an externally-updated entropy value and a local nonce. This preserves the original API and output domain (0-51) but requires that entropy be set by an oracle before use.",
+            "corrected_code": "function deal(address player, uint8 cardNumber) internal returns (uint8) {\n\t// Use externally-provided entropy plus a local nonce to produce unpredictable results\n\trequire(entropy != bytes32(0)); // entropy must be initialized by an oracle\n\tuint8 card = uint8(uint256(keccak256(entropy, player, cardNumber, nonce)) % 52);\n\tnonce++;\n\treturn card;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "updateEntropy",
+            "fix_info": "Allows an authorized oracle to feed fresh external entropy. The first caller becomes the oracle if none is set. New entropy is mixed with existing seed to evolve the state; nonce is incremented to avoid reuse.",
+            "corrected_code": "function updateEntropy(bytes32 newEntropy) external {\n\t// Bootstrap oracle: first caller becomes oracle\n\tif (oracle == address(0)) {\n\t\toracle = msg.sender;\n\t}\n\trequire(msg.sender == oracle);\n\t// Mix in the new entropy with existing seed and a timestamp to evolve state\n\tentropy = keccak256(entropy, newEntropy, now);\n\tnonce++;\n}",
+            "change_type": "added"
+        }
+    ]
+}]

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for send() function and reverting on failure",
+            "corrected_code": "function () external payable {\n\t\tbool success = wallet.send(msg.value);\n\t\trequire(success, \"Transfer failed\");\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

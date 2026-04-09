@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "pendingWithdraws[richest] += msg.value;",
+    "description": "This line contains an unsafe arithmetic operation that is vulnerable to integer overflow in Solidity versions prior to 0.8.0. Since the contract uses ^0.4.24, there is no built-in overflow protection. If pendingWithdraws[richest] + msg.value exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to a small number, potentially allowing the previous richest address to withdraw less funds than they are entitled to. This could lead to loss of funds for that user. The vulnerability is exacerbated because the function accepts arbitrary msg.value amounts without overflow checks."
+}
+```

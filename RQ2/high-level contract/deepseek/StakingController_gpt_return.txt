@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "Lines 92-101: approveDomainBid function",
+        "description": "The approveDomainBid function allows any domain owner to approve bids without proper access control checks specific to individual bids. While it uses the authorizedOwner modifier to check if the caller owns the parent domain, it doesn't verify that the signature corresponds to a bid specifically for that domain owner's domain. This could allow domain owners to approve bids intended for other domains, leading to unauthorized bid approvals and potential theft of tokens during fulfillment."
+    },
+    {
+        "type": "SWC-122-Lack of Proper Signature Verification",
+        "location": "Lines 121-153: fulfillDomainBid function",
+        "description": "The fulfillDomainBid function lacks comprehensive signature verification. It recovers the bidder's address from the signature but doesn't verify that the recovered bidder actually authorized the specific transaction parameters being used. The function only checks that recipient == recoveredBidder, but doesn't prevent replay attacks or ensure that all bid parameters match what was originally signed. Additionally, the approvedBids mapping uses keccak256(abi.encode(signature)) as the key, which doesn't tie the approval to specific domain ownership or parameters."
+    },
+    {
+        "type": "SWC-117-Signature Malleability",
+        "location": "Line 135: recover function usage",
+        "description": "The contract uses ECDSA.recover() without proper protection against signature malleability attacks. In Solidity 0.7.3 with OpenZeppelin's ECDSA library, while the library itself has some protections, the contract doesn't implement additional safeguards to ensure that signatures cannot be modified to create different valid signatures for the same message. This could potentially lead to replay attacks where the same bid could be fulfilled multiple times using different but valid signatures derived from the original signature."
+    }
+]
+```

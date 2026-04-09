@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization in the mint() function. This is dangerous because tx.origin refers to the original external account that initiated the transaction chain, not the immediate caller (msg.sender). A malicious contract could trick the owner into calling a function that then calls mint() via a fallback function, passing the authorization check since tx.origin would still be the owner. This allows unauthorized minting. Additionally, the assert(amount >= 0) is redundant since uint256 amounts are always non-negative, and assert in version 0.4.11 consumes all gas on failure (unlike require). The proper access control should use require(msg.sender == owner) or a modifier-based ownership pattern."
+}
+```

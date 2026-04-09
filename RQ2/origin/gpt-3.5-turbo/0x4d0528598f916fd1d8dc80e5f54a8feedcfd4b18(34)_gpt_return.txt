@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This line directly updates the balance of the recipient without checking for potential overflow or underflow issues. If the addition operation could result in an overflow, it may lead to unexpected behavior or funds being locked."
+}
+```

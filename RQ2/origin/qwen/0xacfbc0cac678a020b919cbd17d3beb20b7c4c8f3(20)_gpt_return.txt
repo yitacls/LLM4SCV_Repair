@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = msg.sender.send(address(this).balance);",
+    "description": "The send() function returns a boolean indicating success or failure, but this return value is not properly checked. In Solidity ^0.4.21, send() can fail silently and return false, which could lead to loss of funds if the contract relies on this function to transfer all available balance. The function only checks the return value but doesn't handle the case where send() fails, potentially leaving funds stuck in the contract."
+}
+```

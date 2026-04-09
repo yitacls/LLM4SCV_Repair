@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "The contract specifies an outdated Solidity compiler pragma (^0.8.2). Using an outdated version increases the risk of bugs or vulnerabilities that have been addressed in newer versions. It is recommended to use the latest stable version of Solidity to leverage bug fixes and improvements."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "A floating pragma allows for using a range of Solidity compiler versions, which could lead to inconsistencies or unexpected behavior if the contract is compiled with a version different from the one used during development or testing. A specific fixed compiler version should be set to mitigate this risk, such as 'pragma solidity 0.8.2;'."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function redistributeRewards(address[] calldata users) public { ... for (uint256 i = 0; i < users.length; i++) { ... } }",
+        "description": "The redistributeRewards function iterates over an unbounded users array, which can lead to gas exhaustion if the input array is too large. This could result in the function being unable to complete execution, effectively denying service. To mitigate this, consider limiting the number of users processed in a single transaction or implementing batching."
+    }
+]
+```

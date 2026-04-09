@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "blockNumber = block.number; in the endRaffle() function",
+    "description": "The contract uses block.number as a source of randomness for determining raffle winners. Block numbers are predictable and can potentially be influenced by miners, making them an insecure source of randomness for applications requiring fair and unpredictable outcomes. In the context of a raffle, this allows malicious participants to predict or manipulate results."
+}
+```

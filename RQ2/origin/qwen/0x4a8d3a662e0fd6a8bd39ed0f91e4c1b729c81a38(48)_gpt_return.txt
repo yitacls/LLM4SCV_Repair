@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "to.call.value(amount)();",
+    "description": "The low-level call operation does not check the return value, which means the function will continue execution even if the call fails. This can lead to incorrect state updates where funds are deducted from the balance but the transfer fails, resulting in loss of funds. The call should be checked for success status."
+}
+```

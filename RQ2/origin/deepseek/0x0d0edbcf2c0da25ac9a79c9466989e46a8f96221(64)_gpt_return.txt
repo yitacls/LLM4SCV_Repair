@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.send(withdrawAmount);",
+    "description": "The contract uses the low-level `send()` function without checking its return value. If the `receiver` is a contract that rejects the transfer (e.g., via a fallback function that reverts or runs out of gas), the transaction will not revert, and the contract's state will be updated as if the transfer succeeded. This leaves the contract in an inconsistent state, as funds remain in the contract but `updateMaxProfit()` is called, potentially misleading the contract logic about the actual balance."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function selfdestructs() payable public {\n    selfdestruct(owner);\n}",
+    "description": "The function 'selfdestructs()' allows any caller to trigger contract self-destruction, sending any remaining Ether to the 'owner' address. This lacks proper access control (e.g., a modifier like 'onlyOwner'), enabling unauthorized users to destroy the contract. This is critically unsafe as it grants permanent destruction authority to any address. The vulnerability is exacerbated by the contract using Solidity ^0.4.16, where function visibility and security patterns were less mature. Recommended fix: Restrict access using a modifier to ensure only the owner can call this function."
+}
+```

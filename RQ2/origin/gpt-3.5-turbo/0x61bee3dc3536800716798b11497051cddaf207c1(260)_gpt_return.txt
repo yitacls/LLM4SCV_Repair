@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The use of tx.origin for access control introduces a potential vulnerability as it can be manipulated in certain scenarios. It is generally recommended to use msg.sender for access control instead of tx.origin."
+        }
+    ]
+}
+```

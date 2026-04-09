@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for access control in the mint() function, which is vulnerable to phishing attacks. tx.origin returns the original address that initiated the transaction chain, not the immediate caller (msg.sender). A malicious contract could trick the owner into calling it, and that contract could then call the ERC20Standard.mint() function, passing the access check since tx.origin would still be the owner. This allows unauthorized minting. Additionally, the assert(amount >= 0) statement is redundant as uint256 values cannot be negative."
+}
+```

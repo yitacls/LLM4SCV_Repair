@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(_target.call.value(_value)(_data));",
+    "description": "The `sendEthValue` function lacks access control restrictions, allowing any external caller to execute arbitrary calls to any address (`_target`) with any amount of Ether (`_value`) taken from the contract's balance. This creates a severe vulnerability where unauthorized users can drain the contract's funds by specifying themselves or a controlled address as the target. The `.value()` low-level call forwards Ether, and the `_data` parameter allows execution of arbitrary code at the target. In Solidity 0.4.24, `.call.value()` is the precursor to the modern `call{value: }` and is inherently dangerous without proper validation of `_target` and `_value`."
+}
+```

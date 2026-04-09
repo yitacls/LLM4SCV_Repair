@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Disperse",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added ownership modifier to restrict access to sensitive functions",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "disperseEther",
+                "fix_info": "Added access control to prevent unauthorized transfers, fixed parameter declarations, added overflow protection, and improved error handling",
+                "corrected_code": "function disperseEther(address[] memory recipients, uint256[] memory values) external payable onlyOwner {\n        require(recipients.length == values.length, \"Arrays length mismatch\");\n        \n        uint256 totalSent = 0;\n        for (uint256 i = 0; i < recipients.length; i++) {\n            require(values[i] > 0, \"Value must be positive\");\n            require(totalSent + values[i] >= totalSent, \"Overflow protection\");\n            recipients[i].transfer(values[i]);\n            totalSent += values[i];\n        }\n        \n        require(msg.value >= totalSent, \"Insufficient ETH sent\");\n        \n        uint256 balance = address(this).balance;\n        if (balance > 0) {\n            msg.sender.transfer(balance);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

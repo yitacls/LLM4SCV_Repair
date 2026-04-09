@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "Reentrancy",
+            "location": "if(msg.sender.call.value(_am)()) {\n                balances[msg.sender]-=_am;\n                Log.AddMessage(msg.sender,_am,\"Collect\");\n            }",
+            "description": "The contract uses the deprecated .call.value()() low-level function to transfer ETH without imposing any gas limits. This allows a malicious contract receiving the ETH to trigger a recursive call to Collect() before the balance is updated (balances[msg.sender]-=_am). Since the balance check (balances[msg.sender]>=_am) passes again, the attacker can drain funds in a single transaction. This violates the Checks-Effects-Interactions pattern, which requires updating state variables before making external calls."
+        }
+    ]
+}
+```

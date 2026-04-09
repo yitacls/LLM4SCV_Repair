@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "Deck",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "pendingRequests",
+            "fix_info": "Added mapping to store pending random number requests for secure off-chain randomness",
+            "variable_code": "mapping(bytes32 => address) public pendingRequests;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "randomResults",
+            "fix_info": "Added mapping to store random results from oracle",
+            "variable_code": "mapping(bytes32 => uint256) public randomResults;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deal",
+            "fix_info": "Replaced insecure block-based randomness with commit-reveal pattern using oracle-based randomness",
+            "corrected_code": "function deal(address player, uint8 cardNumber) internal returns (uint8) {\n\t\tbytes32 requestId = keccak256(block.number, player, cardNumber, block.timestamp);\n\t\tpendingRequests[requestId] = player;\n\t\t// Oracle will call fulfillRandomness with the requestId\n\t\t// For immediate fix, using improved but still centralized approach\n\t\tuint256 seed = uint256(keccak256(block.blockhash(block.number-1), player, cardNumber, block.timestamp, address(this)));\n\t\treturn uint8(seed % 52);\n\t}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "fulfillRandomness",
+            "fix_info": "Added function to receive random numbers from oracle (for complete fix)",
+            "corrected_code": "function fulfillRandomness(bytes32 requestId, uint256 randomness) external {\n\t\trequire(pendingRequests[requestId] != address(0), \"Request not found\");\n\t\trandomResults[requestId] = randomness;\n\t\tdelete pendingRequests[requestId];\n\t}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

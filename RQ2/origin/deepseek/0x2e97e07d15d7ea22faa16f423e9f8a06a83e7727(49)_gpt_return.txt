@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract uses tx.origin for authorization instead of msg.sender, which makes it vulnerable to phishing attacks. A malicious contract could trick the owner into calling it, and that call would then invoke the mint function. Since tx.origin would be the original owner's address (not the malicious contract's address), the authorization check would pass, allowing unauthorized minting. Additionally, the assert(amount >= 0) is redundant since uint256 cannot be negative, and the function does not implement any proper ownership pattern (like Ownable)."
+        }
+    ]
+}
+```

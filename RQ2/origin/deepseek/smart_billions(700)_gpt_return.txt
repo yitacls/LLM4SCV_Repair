@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "calcHashes function, specifically all block.blockhash(_lastb + n) calls",
+    "description": "The function uses block.blockhash of future/past blocks as a source of randomness, which is predictable and manipulable by miners. Block hashes are not reliable for randomness generation as miners can influence or discard blocks to affect the outcome. This vulnerability is particularly severe because it concatenates multiple block hashes (10 blocks) to generate what appears to be a random number, making the contract unsuitable for any application requiring true randomness (like lotteries or games). Additionally, block.blockhash() returns zero for blocks older than 256 blocks from the current block, which could lead to predictable outputs if _lastb is too far in the past."
+}
+```

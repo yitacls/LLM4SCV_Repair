@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())\n        {\n            balances[msg.sender]-=_am;\n            TransferLog.AddMessage(msg.sender,_am,\"CashOut\");\n        }",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the contract's internal state. An attacker can create a malicious contract that calls back into the CashOut function repeatedly before the balance is updated, potentially draining the contract's funds. The balance deduction and event logging happen after the external call, making this a classic reentrancy vulnerability."
+}
+```

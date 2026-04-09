@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "Line 272-299",
+    "description": "The function 'init' can be abused for a denial of service attack if an attacker provides a value for '_stageCount' that is very high, as it loops over the stages in the contract causing high gas consumption."
+},
+{
+    "type": "SWC-119-Shadowing State Variables",
+    "location": "Line 948",
+    "description": "There is a shadowing state variable in the 'acceptContributions' function where the variable 'stages' is defined in the for loop, thereby shadowing the state variable 'stages' of the struct."
+}
+```
+```

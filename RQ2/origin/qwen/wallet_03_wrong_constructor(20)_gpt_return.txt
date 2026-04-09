@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function initWallet() public {\n         creator = msg.sender;\n     }",
+    "description": "The initWallet function is publicly accessible and can be called by anyone, not just the intended creator. This allows any attacker to overwrite the creator variable and take control of the wallet contract. The function should have proper access control restrictions to ensure only authorized parties can initialize the wallet."
+}
+```

@@ -1,0 +1,16 @@
+The required JSON detailing the vulnerabilities of the provided smart contract would look like:
+
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.6.0;",
+        "description": "This indicates that the smart contract does not specify a particular version of the Solidity compiler, and instead, it will be compiled by any compiler version in the range of 0.6.0. This may cause uncertainty and potential incompatibility with future compiler versions."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) {...}",
+        "description": "The massHarvest function contains a loop that goes through unharvested epochs. If the number of epochs becomes very large, it may exceed the block gas limit causing the function to fail. An attacker could potentially misuse this to force users to miss their rewards."
+    }
+]
+```

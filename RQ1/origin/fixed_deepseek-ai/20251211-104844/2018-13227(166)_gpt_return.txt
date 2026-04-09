@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "MoneyChainNetToken",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Implicitly kept but using SafeMath library for arithmetic operations to prevent overflow/underflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "",
+            "modifier_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "1. Updated to Solidity 0.8.0+ with built-in overflow protection\n2. Replaced deprecated 'throw' with 'revert'\n3. Changed 'this' to 'address(this)' for clarity\n4. Used SafeMath pattern for arithmetic operations\n5. Added proper return value check for send operation\n6. Added payable modifier to receive Ether\n7. Checked amount > 0\n8. Added explicit return types\n9. Fixed event emission order",
+            "corrected_code": "function sell(uint256 amount) external payable returns (bool) {\n    require(amount > 0, \"Amount must be greater than zero\");\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    \n    // Use checked arithmetic (Solidity 0.8.0+ built-in)\n    uint256 totalEther = amount * sellPrice;\n    \n    // Update balances with safe operations\n    balanceOf[address(this)] += amount;\n    balanceOf[msg.sender] -= amount;\n    \n    // Send Ether to seller\n    (bool success, ) = msg.sender.call{value: totalEther}(\"\");\n    require(success, \"Ether transfer failed\");\n    \n    // Emit transfer event\n    emit Transfer(msg.sender, address(this), amount);\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

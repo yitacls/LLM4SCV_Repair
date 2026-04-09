@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "bool success = msg.sender.call.value(amount)(\"\");\nrequire(success);\npendingWithdrawals[msg.sender] = 0;",
+    "description": "The contract is vulnerable to reentrancy attack because it calls an external contract (msg.sender) before updating the contract state. In Solidity ^0.4.18, the call.value() function does not prevent reentrant calls. An attacker can create a malicious contract that calls back into the withdraw() function before the pendingWithdrawals[msg.sender] = 0; statement is executed, allowing them to withdraw the same amount multiple times. The state update should occur before the external call to prevent this vulnerability."
+}
+```

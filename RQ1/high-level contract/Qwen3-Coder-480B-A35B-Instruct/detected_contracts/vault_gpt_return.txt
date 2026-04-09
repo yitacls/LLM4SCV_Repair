@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "data.amount = data.amount * (10 ** (uint(decimals) - 9));",
+        "description": "The multiplication operation is not protected by SafeMath, which could lead to an overflow if the result exceeds the maximum value of uint256."
+    },
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "function execute(...)",
+        "description": "The execute function is vulnerable to transaction order dependence because it relies on the state of the contract at the time of execution, which can be manipulated by an attacker by ordering transactions in a specific way."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function execute(...)",
+        "description": "The execute function does not properly protect against unauthorized withdrawal of Ether because it allows the caller to specify the amount of Ether to be used in the call, which could potentially be exploited to withdraw more Ether than intended."
+    }
+]
+```

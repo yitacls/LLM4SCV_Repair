@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "msg.sender.send(address(this).balance);",
+    "description": "The contract uses the send() function which has a fixed gas stipend of 2300 gas. If the recipient is a contract with a fallback function that consumes more than 2300 gas, the send() call will fail silently without reverting the transaction. This can lead to loss of funds as the balance is reduced but the funds are not actually transferred. Additionally, in Solidity ^0.4.24, the send() function does not automatically revert on failure, making this vulnerability more critical. The contract should use transfer() instead of send() for safer ether transfers, or properly handle the return value of send() with require()."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "secondTarget.call.value(msg.value)()",
+    "description": "The low-level call to 'secondTarget' does not check the return value. In Solidity 0.4.x, .call() always returns a boolean indicating success, but this return value is ignored. If the call fails (e.g., due to out-of-gas, reversion, or the target being non-existent), the transaction will continue execution without reverting, potentially leaving the contract in an inconsistent state. Funds may be lost as the ether is still forwarded even if the call reverts. This also opens up potential reentrancy vulnerabilities if state changes are performed after this call. The recommended fix is to check the return value and handle failures appropriately, e.g., require(secondTarget.call.value(msg.value)())."
+}
+```

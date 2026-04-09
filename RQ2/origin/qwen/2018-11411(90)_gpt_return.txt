@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Underflow",
+    "location": "balances[_from] -= _value;",
+    "description": "The contract is vulnerable to arithmetic underflow in the transferFrom function. When subtracting _value from balances[_from], if _value is greater than balances[_from], it will cause an underflow due to Solidity 0.4.16 not having built-in overflow/underflow protection. This can result in incorrect balance calculations and potential token theft."
+}
+```

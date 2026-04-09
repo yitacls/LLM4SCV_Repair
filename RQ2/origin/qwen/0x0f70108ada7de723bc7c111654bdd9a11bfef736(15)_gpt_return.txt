@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.gas(gasToForward)(msg.data);",
+    "description": "The low-level call to 'target' does not check the return value, which means the transaction will continue execution even if the call fails. In Solidity ^0.4.25, low-level calls return a boolean indicating success or failure, but this return value is ignored here. This can lead to unexpected behavior where the contract continues execution despite a failed external call, potentially causing loss of funds or incorrect state changes."
+}
+```

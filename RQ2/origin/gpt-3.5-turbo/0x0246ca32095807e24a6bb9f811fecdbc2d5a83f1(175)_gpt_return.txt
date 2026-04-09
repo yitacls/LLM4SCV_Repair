@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "return oneEther.mul(10**18).div( tokenSaleContract.tokenValueInEther(oneTokenInFiatWei) );",
+            "description": "The expression 'oneEther.mul(10**18)' may cause an arithmetic overflow due to multiplying two uint256 values without proper overflow checks."
+        }
+    ]
+}
+```

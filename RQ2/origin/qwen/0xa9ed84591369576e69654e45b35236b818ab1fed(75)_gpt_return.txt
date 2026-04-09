@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token_reward.call( beneficiary, token_amount);",
+    "description": "The low-level call to token_reward does not check the return value, which means if the call fails (e.g., due to insufficient gas, invalid recipient, or reentrancy), the contract will not revert and will proceed as if the transfer succeeded. This can lead to tokens being released without actually being transferred to the beneficiary, resulting in loss of funds. In Solidity ^0.4.25, low-level calls return a boolean indicating success/failure which should be checked."
+}
+```

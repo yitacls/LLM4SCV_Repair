@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "The function uses 'msg.sender == impl' for access control, which means only the implementation contract can call this function. However, in proxy contract patterns common in Solidity 0.4.25, this can lead to authorization bypass if the proxy delegatecall mechanism is not properly secured. The access control logic may be insufficient to prevent unauthorized access to this sensitive transfer function."
+}
+```

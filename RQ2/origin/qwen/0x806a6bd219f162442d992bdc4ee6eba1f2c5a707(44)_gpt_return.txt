@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call operation does not check the return value, which can lead to silent failures. In Solidity ^0.4.19, low-level calls like 'call.value()' return a boolean indicating success or failure, but this return value is not being checked. If the call fails (e.g., due to insufficient gas, the called contract running out of gas, or reverting), the failure will be ignored and the transaction will continue execution. This can lead to unexpected behavior where funds are sent but the intended operation fails silently. The function should check the return value and handle failures appropriately, potentially by reverting the transaction."
+}
+```

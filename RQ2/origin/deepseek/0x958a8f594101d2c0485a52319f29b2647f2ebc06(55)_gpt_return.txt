@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_dst.call.value(_value)(_data);",
+    "description": "The low-level call in the execute function does not check the return value. In Solidity versions prior to 0.4.16, the .call() method returns a boolean indicating success (true) or failure (false). If the external call fails (e.g., due to an exception in the target contract or running out of gas), it will return false, but the current contract will continue execution without handling this failure. This can lead to silent failures where the contract owner believes a transaction succeeded when it actually failed. This is particularly dangerous in this context as the function allows arbitrary calls with value transfers. It is recommended to always check the return value of low-level calls and implement proper error handling, for example: require(_dst.call.value(_value)(_data));."
+}
+```

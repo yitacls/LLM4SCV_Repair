@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "blockoptions",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "drain",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and reverting on failure",
+            "corrected_code": "function drain() onlyOwner {\n    require(owner.send(this.balance));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

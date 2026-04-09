@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenBank",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "WithdrawToHolder",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and using safer call syntax",
+            "corrected_code": "function WithdrawToHolder(address _addr, uint _wei) \n    public\n    onlyOwner\n    payable\n    {\n        if(Holders[msg.sender]>0)\n        {\n            if(Holders[_addr]>=_wei)\n            {\n                // Fixed unchecked low-level call vulnerability\n                require(_addr.call.value(_wei)(), \"Transfer failed\");\n                Holders[_addr]-=_wei;\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

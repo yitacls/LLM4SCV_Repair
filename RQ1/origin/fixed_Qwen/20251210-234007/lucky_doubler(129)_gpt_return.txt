@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LuckyDoubler",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "rand",
+            "fix_info": "Replaced vulnerable blockhash-based randomness with safer alternative using keccak256 of blockhash and additional entropy",
+            "corrected_code": "function rand(uint max) constant private returns (uint256 result){\n        uint256 factor = FACTOR * 100 / max;\n        uint256 lastBlockNumber = block.number - 1;\n        uint256 hashVal = uint256(keccak256(block.blockhash(lastBlockNumber), now, msg.sender));\n\n        return uint256((uint256(hashVal) / factor)) % max;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

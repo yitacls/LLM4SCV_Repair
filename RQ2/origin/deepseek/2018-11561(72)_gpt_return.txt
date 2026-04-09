@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "Line 2: `require(balances[msg.sender] >= addresses.length * _value);` and Line 5: `balances[msg.sender] -= _value;`",
+    "description": "In Solidity ^0.4.4, arithmetic operations are vulnerable to integer overflow/underflow becauseSafeMath is not used by default. The multiplication `addresses.length * _value` can overflow, potentially causing the require check to pass incorrectly when it should fail. Additionally, repeated subtraction in the loop (`balances[msg.sender] -= _value;`) could underflow if `balances[msg.sender]` becomes less than `_value` due to insufficient balance validation within the loop itself. An attacker could exploit this by providing a large `_value` and/or a large `addresses.length` to manipulate the contract's state."
+}
+```

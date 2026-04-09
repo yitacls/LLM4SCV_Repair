@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This statement uses tx.origin to verify ownership. The vulnerability arises because tx.origin can be manipulated through phishing attacks or malicious contracts, enabling an adversary to execute this function on behalf of the owner without their consent. Instead of using tx.origin, msg.sender should be used to ensure that the caller of the function is verified securely."
+}
+```

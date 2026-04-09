@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Refunder",
+    "contract_version": "0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "refundAll",
+            "fix_info": "Fixed DoS vulnerability by making the loop resilient to individual refund failures. Instead of using require() which would revert the entire transaction on any single failure, we now use a boolean check and remove processed addresses from the array to prevent re-execution. Also switched from send() to transfer() for better gas handling.",
+            "corrected_code": "function refundAll() public {\n        uint length = refundAddresses.length;\n        for(uint x = 0; x < length; x++) {\n            address recipient = refundAddresses[x];\n            uint amount = refunds[recipient];\n            \n            // Reset the refund amount to prevent reentrancy\n            refunds[recipient] = 0;\n            \n            // Use transfer instead of send for better error handling\n            recipient.transfer(amount);\n            \n            // Remove the processed address\n            refundAddresses[x] = refundAddresses[refundAddresses.length - 1];\n            refundAddresses.length--;\n            x--; // Adjust index since we removed an element\n            length--;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

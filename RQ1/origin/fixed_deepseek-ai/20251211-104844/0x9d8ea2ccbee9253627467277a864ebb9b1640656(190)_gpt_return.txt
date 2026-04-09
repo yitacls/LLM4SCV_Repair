@@ -1,0 +1,53 @@
+I'll analyze the vulnerable contract function step by step.
+
+Looking at the function, I can identify the following issues:
+
+1. **Access Control Vulnerability**: The function has `onlyReserveFundContract` modifier which restricts access, but there's a critical issue where `_source == 2` case uses `tx.origin` for authentication instead of a proper access control mechanism.
+
+2. **tx.origin Security Issue**: Using `tx.origin` for authorization is dangerous as it can be manipulated by intermediate contracts.
+
+3. **Missing Input Validation**: There's insufficient validation for `_source` and `_sourceAmount` parameters.
+
+4. **Inconsistent State Updates**: The profit balance reduction logic has a flaw where it checks `if (_to == tx.origin)` - this condition is likely meant to restrict certain operations but is implemented incorrectly.
+
+Here's the corrected function:
+
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAuthorizedSource",
+            "fix_info": "Added modifier to properly control access for source type 2 operations",
+            "modifier_code": "modifier onlyAuthorizedSource(address _sender, address _to, uint8 _source) {\n        require(_source != 2 || _sender == _to || hasRole(RESERVE_FUND_ROLE, _sender), \"Unauthorized operation for source type 2\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin usage with proper authorization, added input validation, and prevented unauthorized profit balance manipulation",
+            "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount)\n    onlyReserveFundContract\n    onlyAuthorizedSource(msg.sender, _to, _source)\n    public {\n        require(_to != address(0x0), \"User address can not be empty\");\n        require(_deposited > 0, \"Package value must be > 0\");\n        require(_source >= 0 && _source <= 2, \"Invalid source type\");\n        \n        uint totalDeposited = walletStore.getTotalDeposited(_to);\n        uint[] memory deposited = walletStore.getDeposited(_to);\n        uint profitableBalance = walletStore.getProfitableBalance(_to);\n        uint profitSourceBalance = walletStore.getProfitSourceBalance(_to);\n        uint profitBalance = getProfitBalance(_to);\n        bool firstDeposit = deposited.length == 0;\n        \n        walletStore.pushDeposited(_to, _deposited);\n        uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n        uint profitSourceIncreaseAmount = _deposited * 10;\n        \n        walletStore.setTotalDeposited(_to, totalDeposited.add(_deposited));\n        walletStore.setProfitableBalance(_to, profitableBalance.add(profitableIncreaseAmount));\n        walletStore.setProfitSourceBalance(_to, profitSourceBalance.add(profitSourceIncreaseAmount));\n        \n        if (_source == 2) {\n            // Only allow the deposit recipient to reduce their own profit balance\n            require(msg.sender == _to, \"Only recipient can perform source type 2 operations on their own account\");\n            \n            uint recipientProfitBalance = getProfitBalance(_to);\n            require(recipientProfitBalance >= _deposited, \"Insufficient profit balance\");\n            \n            walletStore.setProfitBalance(_to, recipientProfitBalance.sub(_deposited));\n            \n            emit ProfitBalanceChanged(_to, _to, int(_deposited) * -1, 1);\n        }\n        \n        citizen.addF1DepositedToInviter(_to, _deposited);\n        addRewardToInviter(_to, _deposited, _source, _sourceAmount);\n        \n        if (firstDeposit) {\n            citizen.increaseInviterF1HaveJoinedPackage(_to);\n        }\n        \n        if (profitableIncreaseAmount > 0) {\n            emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n            emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+**Key Fixes Made:**
+
+1. **Added `onlyAuthorizedSource` modifier**: Replaces the dangerous `tx.origin` check with proper authorization logic.
+
+2. **Removed `tx.origin` usage**: Replaced all instances with `msg.sender` for proper authentication.
+
+3. **Added input validation**: Added validation for `_source` parameter to ensure it's within acceptable range.
+
+4. **Fixed authorization logic for source type 2**: Now properly checks that only the recipient (`_to`) can perform operations on their own profit balance when `_source == 2`.
+
+5. **Added balance check**: Ensures the recipient has sufficient profit balance before subtracting.
+
+6. **Used safe math operations**: The original code already uses `.add()` and `.sub()` methods which are good for preventing overflows in Solidity 0.4.25.
+
+The function now properly controls access and prevents unauthorized manipulation of profit balances while maintaining all original functionality.

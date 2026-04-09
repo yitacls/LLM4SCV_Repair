@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "sourceTokenAmountUsed + tradingFee",
+        "description": "The addition of sourceTokenAmountUsed and tradingFee may cause an integer overflow if the result exceeds the maximum value of uint256. This occurs when tradingFee is not zero and is added back to sourceTokenAmountUsed after being subtracted for fee calculation. There are no checks to prevent overflow."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "vals[2] = vals[2].add(tradingFee)",
+        "description": "The addition of tradingFee to vals[2] using .add() can lead to an integer overflow if the resulting value exceeds uint256 limits. Although SafeMath is likely used, explicit overflow checks or validation of inputs should be present to avoid unexpected behavior."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "destTokenAmountReceived - tradingFee",
+        "description": "Subtracting tradingFee from destTokenAmountReceived may cause an integer underflow if tradingFee exceeds destTokenAmountReceived. The code assumes tradingFee <= destTokenAmountReceived, but this condition should be explicitly checked to prevent underflow."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "sourceTokenAmount = sourceTokenAmount.sub(tradingFee)",
+        "description": "The subtraction of tradingFee from sourceTokenAmount may underflow if tradingFee is greater than sourceTokenAmount. While SafeMath's sub() reverts on underflow, explicit validation or assumptions about fee size relative to amount should be ensured."
+    }
+]
+```

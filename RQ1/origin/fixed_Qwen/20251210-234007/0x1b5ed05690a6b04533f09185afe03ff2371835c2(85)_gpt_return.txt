@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RainbowUnicoin",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow in token calculation and balance updates",
+            "corrected_code": "function() payable {\n        if (!purchasingAllowed) { throw; }\n        if (msg.value == 0) { return; }\n        \n        // Prevent overflow when transferring ether\n        if (msg.value > msg.value) throw;\n        owner.transfer(msg.value);\n        \n        // Prevent overflow in contribution tracking\n        if (totalContribution + msg.value < totalContribution) throw;\n        totalContribution += msg.value;\n        \n        // Prevent overflow in token calculation\n        uint256 tokensIssued = (msg.value * 1000);\n        if (msg.value > 0 && tokensIssued / 1000 != msg.value) throw;\n        \n        // Add bonus payout with overflow check\n        if (tokensIssued + nextBonusPayout < tokensIssued) throw;\n        tokensIssued = tokensIssued + nextBonusPayout;\n        \n        if (totalBonusTokensIssued + nextBonusPayout < totalBonusTokensIssued) throw;\n        totalBonusTokensIssued += nextBonusPayout;\n        \n        nextBonusPayout = tokensIssued / 2;\n        \n        // Prevent overflow in supply and balance updates\n        if (totalSupply + tokensIssued < totalSupply) throw;\n        totalSupply += tokensIssued;\n        \n        if (balances[msg.sender] + tokensIssued < balances[msg.sender]) throw;\n        balances[msg.sender] += tokensIssued;\n        \n        Transfer(address(this), msg.sender, tokensIssued);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

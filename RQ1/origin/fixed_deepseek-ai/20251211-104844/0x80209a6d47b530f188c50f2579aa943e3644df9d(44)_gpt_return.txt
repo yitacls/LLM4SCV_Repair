@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Xirkle",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "collectExcess",
+            "fix_info": "Added checking for low-level call success and explicit address payable conversion. In Solidity 0.4.x, send() returns a boolean but doesn't revert on failure. We should check the return value and handle failure appropriately. Also, 'this.balance' should be used before subtraction to avoid underflow.",
+            "corrected_code": "function collectExcess() onlyOwner {\n    uint256 excess = this.balance - 2100000;\n    require(address(this).balance >= 2100000, \"Insufficient balance to maintain minimum\");\n    bool success = owner.send(excess);\n    require(success, \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

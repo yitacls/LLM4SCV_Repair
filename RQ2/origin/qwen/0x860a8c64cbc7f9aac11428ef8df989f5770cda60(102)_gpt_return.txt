@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function destoryContract(address _recipient) external onlyOwner {\n        selfdestruct(_recipient); // <LEAKING_VUL>, <SUICIDAL_VUL>\n    }",
+    "description": "The destroyContract function has a critical access control vulnerability. Although it uses the 'onlyOwner' modifier, the function name contains a typo ('destory' instead of 'destroy') which could lead to confusion and potential exploitation. More critically, the selfdestruct function will transfer all remaining contract funds to the specified recipient address, which could be misused if the owner's address is compromised or if the function is called maliciously. In Solidity ^0.4.24, selfdestruct is a dangerous operation that permanently destroys the contract and transfers all Ether to the recipient, making it impossible to recover funds if sent to the wrong address."
+}
+```

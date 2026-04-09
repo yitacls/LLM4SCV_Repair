@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "wallet",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Use call.value() to handle low-level calls and include proper error handling.",
+                "corrected_code": "function transfer(address target) payable {
+    require(target != address(0));
+    (bool success, ) = target.call.value(msg.value)("");
+    require(success, 'Transfer failed');
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,5 @@
+{
+    "type": "access_control",
+    "location": "function transferOwnership(address _newOwner) public {\n        require(tx.origin == owner);  // fault line\n        owner = _newOwner;\n    }",
+    "description": "The function uses tx.origin to authorize the caller (require(tx.origin == owner)). Relying on tx.origin for access control is insecure: tx.origin is the original externally owned account (EOA) that started the transaction and does not reflect intermediate contract calls. An attacker can create a malicious contract and trick the real owner into calling that malicious contract (for example via a phishing link). The malicious contract can then call Owned.transferOwnership(_attackerAddress). Inside transferOwnership, tx.origin will still equal the owner's EOA, so the require check passes and ownership is transferred to the attacker. Impact: full ownership takeover (high severity). Recommended fix: use msg.sender for direct caller checks (require(msg.sender == owner)) or adopt a well-audited Ownable pattern (e.g., OpenZeppelin's Ownable) and enforce access with an onlyOwner modifier. Also emit an event when ownership changes for better observability."
+}

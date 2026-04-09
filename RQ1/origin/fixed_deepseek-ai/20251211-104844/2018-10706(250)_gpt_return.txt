@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Assuming balanceOf is defined as a mapping(address => uint256). This mapping must be declared to support the transfers.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "assumed_present"
+        },
+        {
+            "variable_name": "decimals",
+            "fix_info": "Assuming decimals is defined as uint8. This state variable must be declared to calculate token amounts correctly.",
+            "variable_code": "uint8 public decimals = 18;",
+            "change_type": "assumed_present"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferMulti",
+            "fix_info": "Fixed arithmetic overflow/underflow by using SafeMath. Added array length validation for security. Changed uint8 length variables to uint256 to avoid type overflow. Used multiplication with proper overflow checks.",
+            "corrected_code": "function transferMulti(address[] _to, uint256[] _value) public returns (uint256 amount) {\n        require(_to.length == _value.length);\n        require(_to.length > 0);\n        \n        uint256 len = _to.length;\n        amount = 0;\n        \n        // First loop: calculate total amount with SafeMath operations\n        for (uint256 j = 0; j < len; j++) {\n            require(_value[j] > 0, \"Value must be positive\");\n            uint256 scaledValue = _value[j] * (10 ** uint256(decimals));\n            // Check for overflow in multiplication\n            require(scaledValue / (10 ** uint256(decimals)) == _value[j], \"Multiplication overflow\");\n            amount = amount + scaledValue;\n            // Check for overflow in addition\n            require(amount >= scaledValue, \"Addition overflow\");\n        }\n        \n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        \n        // Second loop: execute transfers with overflow checks\n        for (uint256 i = 0; i < len; i++) {\n            address _toI = _to[i];\n            require(_toI != address(0), \"Invalid recipient address\");\n            \n            uint256 _valueI = _value[i] * (10 ** uint256(decimals));\n            // Verify no overflow in multiplication\n            require(_valueI / (10 ** uint256(decimals)) == _value[i], \"Multiplication overflow\");\n            \n            // Update balances with overflow checks\n            balanceOf[_toI] = balanceOf[_toI] + _valueI;\n            require(balanceOf[_toI] >= _valueI, \"Balance overflow for recipient\");\n            \n            balanceOf[msg.sender] = balanceOf[msg.sender] - _valueI;\n            \n            emit Transfer(msg.sender, _toI, _valueI);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

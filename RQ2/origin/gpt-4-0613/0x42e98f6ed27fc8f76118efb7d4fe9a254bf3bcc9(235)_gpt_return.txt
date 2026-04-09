@@ -1,0 +1,12 @@
+```json
+{
+    "contractName": "GAWToken",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "owner.send(address(this).balance);",
+            "description": "Any user can trigger the withdrawEther function, which transfers the contract's entire balance to the owner, resulting in a potential misuse of funds. This is a Access Control vulnerability as the contract does not properly restrict who can execute this function. It's highly suggested to add a modifier to ensure only the owner can perform this function."
+        }
+    ]
+}
+```

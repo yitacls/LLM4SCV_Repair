@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "tokensale",
+    "contract_version": "^0.4.10",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check and using recommended send pattern",
+            "corrected_code": "function () payable {\n        uint256 prevTokensFromPreviousTokensale = tokensFromPreviousTokensale;\n        tokensFromPreviousTokensale = pts.numberOfTokens() - pts.numberOfTokensLeft();\n        uint256 diff = tokensFromPreviousTokensale - prevTokensFromPreviousTokensale;\n        numberOfTokensLeft -= diff * 2;\n        uint256 weiSent = msg.value * 100;\n        if(weiSent==0) {\n            throw;\n        }\n        uint256 weiLeftOver = 0;\n        if(numberOfTokensLeft<=0 || now<dates[0] || now>dates[numberOfDates-1]) {\n            throw;\n        }\n        uint256 percent = 9001;\n        for(uint256 i=0;i<numberOfDates-1;i++) {\n            if(now>=dates[i] && now<=dates[i+1] ) {\n                percent = percents[i];\n                i=numberOfDates-1;\n            }\n        }\n        if(percent==9001) {\n            throw;\n        }\n        uint256 tokensToGive = weiSent / pricePerToken;\n        if(tokensToGive * pricePerToken > weiSent) tokensToGive--;\n        tokensToGive=(tokensToGive*(100000+percent))/100000;\n        if(tokensToGive>numberOfTokensLeft) {\n            weiLeftOver = (tokensToGive - numberOfTokensLeft) * pricePerToken;\n            tokensToGive = numberOfTokensLeft;\n        }\n        numberOfTokensLeft -= tokensToGive;\n        if(addressExists[msg.sender]) {\n            balanceOf[msg.sender] += tokensToGive;\n        } else {\n            addAddress(msg.sender);\n            balanceOf[msg.sender] = tokensToGive;\n        }\n        Transfer(0x0,msg.sender,tokensToGive);\n        if(weiLeftOver>0) {\n            require(msg.sender.send(weiLeftOver));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

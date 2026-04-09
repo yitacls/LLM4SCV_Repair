@@ -1,0 +1,88 @@
+```json
+[
+    {
+        "contract_name": "Crowdsale",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "function () payable public",
+                "fix_info": "Add require statement to check if the amount is greater than 0 before processing the transaction.",
+                "corrected_code": "function () payable public {
+        require(msg.value > 0);
+        require(!crowdsaleClosed);
+        require(!soldOut);
+        uint amount = msg.value;
+        bool orderFilled = false;
+        while(!orderFilled) {
+            uint orderRate;
+            uint curSupply;
+            if(round1Open) {
+                orderRate = priceRound1;
+                curSupply = supplyRound1;
+            } else if(round2Open) {
+                orderRate = priceRound2;
+                curSupply = supplyRound2;
+            } else if(round3Open) {
+                orderRate = priceRound3;
+                curSupply = supplyRound3;
+            } else if(round4Open) {
+                orderRate = priceRound4;
+                curSupply = supplyRound4;
+            }
+            requestedTokens = amount * orderRate;
+            if (requestedTokens <= curSupply) {
+                balanceOf[msg.sender] += amount;
+                amountRaised += amount;
+                tokenReward.transfer(msg.sender, amount * orderRate);
+                tokenReward.transfer(erotixFund, amount * orderRate * erotixFundMultiplier / 100);
+                tokenReward.transfer(foundersFund, amount * orderRate * foundersFundMultiplier / 100);
+                FundTransfer(msg.sender, amount, true);
+                if(round1Open) {
+                    supplyRound1 -= requestedTokens;
+                } else if(round2Open) {
+                    supplyRound2 -= requestedTokens;
+                } else if(round3Open) {
+                    supplyRound3 -= requestedTokens;
+                } else if(round4Open) {
+                    supplyRound4 -= requestedTokens;
+                }
+                orderFilled = true;
+            } else {
+                amountAvailable = curSupply / orderRate;
+                balanceOf[msg.sender] += amountAvailable;
+                amountRaised += amountAvailable;
+                tokenReward.transfer(msg.sender, amountAvailable * orderRate);
+                tokenReward.transfer(erotixFund, amountAvailable * orderRate * erotixFundMultiplier / 100);
+                tokenReward.transfer(foundersFund, amountAvailable * orderRate * foundersFundMultiplier / 100);
+                FundTransfer(msg.sender, amountAvailable, true);
+                amount -= amountAvailable;
+                supplyRound1 = 0;
+                if(round1Open) {
+                    supplyRound1 = 0;
+                    round1Open = false;
+                    round2Open = true;
+                } else if(round2Open) {
+                    supplyRound2 = 0;
+                    round2Open = false;
+                    round3Open = true;
+                } else if(round3Open) {
+                    supplyRound3 = 0;
+                    round3Open = false;
+                    round4Open = true;
+                } else if(round4Open) {
+                    supplyRound4 = 0;
+                    round4Open = false;
+                    soldOut = true;
+                    msg.sender.send(amount);  
+                }
+            }
+        }
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-120-Weak Sources of Randomness from Chain Attributes",
+        "location": "Line 452-494 (function relayEntry)",
+        "description": "The use of `block.number` and `block.timestamp` for determining timeouts and conditions introduces weak sources of randomness. Miners can influence these values to manipulate the outcome of the random beacon generation process. Specifically, they can adjust the timestamp or block number when they include transactions, which makes the randomness susceptible to exploitation."
+    },
+    {
+        "type": "SWC-120-Weak Sources of Randomness from Chain Attributes",
+        "location": "Line 361 (function signRelayEntry takes `keccak256(previousEntry)`)",
+        "description": "The randomness process relies on the `keccak256` hash of `previousEntry`, which itself is produced in reliance on chain state or previous outputs. If miners or malicious actors control or influence the inputs (e.g., previous relay entries), they could bias the random value generation in their favor, undermining the robustness of the resulting randomness."
+    },
+    {
+        "type": "SWC-120-Weak Sources of Randomness from Chain Attributes",
+        "location": "Line 283 (function createGroup uses `_newEntry` derived from `msg.value` and randomness)",
+        "description": "The randomness for the group creation process (`_newEntry`) is partially influenced by the value passed in from `msg.value`. Because this relies on external inputs potentially influenced by an adversary, the seed used to generate randomness can be manipulated."
+    }
+]
+```

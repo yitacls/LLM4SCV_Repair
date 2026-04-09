@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256('donate()')));",
+    "description": "The contract is making an unchecked low-level call to the address 'whale' with a value equal to 'amount' and a function selector 'bytes4(keccak256('donate()'))'. This can lead to unexpected behavior or vulnerabilities such as reentrancy attacks. It is crucial to validate the target address and function call in such low-level calls."
+}
+```

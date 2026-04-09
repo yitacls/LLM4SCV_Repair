@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "EtherWorldCup",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "register",
+                "fix_info": "Fixed access control vulnerability and optimized code.",
+                "corrected_code": "function register() public payable { require(!playerRegistered[msg.sender] && _isCorrectBuyin(msg.value)); registeredPlayers = SafeMath.addint256(registeredPlayers, 1); playerRegistered[msg.sender] = true; playerGamesScored[msg.sender] = 0; playerList.push(msg.sender); uint fivePercent = msg.value / 100 * 5; uint tenPercent = msg.value / 100 * 10; uint prizeEth = msg.value - tenPercent; prizePool = prizePool.add(prizeEth); givethPool = givethPool.add(fivePercent); administrator.transfer(fivePercent); emit Registration(msg.sender); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

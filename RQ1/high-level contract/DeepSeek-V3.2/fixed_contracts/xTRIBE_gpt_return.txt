@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "xTRIBE",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "emitVotingBalances",
+            "fix_info": "Added authentication check to prevent unauthorized calls. The original function was vulnerable as it allowed anyone to emit voting balance events, which could be used for spam or manipulation.",
+            "corrected_code": "    function emitVotingBalances(address[] calldata accounts) external requiresAuth {\n        uint256 size = accounts.length;\n\n        for (uint256 i = 0; i < size; ) {\n            emit DelegateVotesChanged(accounts[i], 0, getVotes(accounts[i]));\n\n            unchecked {\n                i++;\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

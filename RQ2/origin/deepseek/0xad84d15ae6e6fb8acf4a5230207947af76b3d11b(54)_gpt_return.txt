@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.call(_value);",
+    "description": "The low-level call to the recipient address does not check the return value, which can lead to silent failures during transfers. If the recipient is a contract that cannot receive Ether (due to lack of a payable fallback function or insufficient gas), the call will return false, but the function will continue execution and return true without reverting. This creates a discrepancy where the contract state indicates a successful transfer when funds were not actually sent. Since the function lacks a return value check and does not specify a gas limit, it is vulnerable to both transaction ordering dependency attacks and gas stipend exhaustion attacks. The vulnerability is exacerbated by the version ^0.4.13, where the .call() method was less secure by default."
+}
+```

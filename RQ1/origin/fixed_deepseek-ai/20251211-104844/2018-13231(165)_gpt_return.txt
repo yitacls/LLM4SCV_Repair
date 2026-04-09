@@ -1,0 +1,23 @@
+```json
+{
+    "contract_name": "EnterToken",
+    "contract_version": "^0.4.26",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyValidSell",
+            "fix_info": "Added reentrancy guard and overflow protection modifier",
+            "modifier_code": "modifier onlyValidSell(uint256 amount) {\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        uint256 etherAmount = amount * sellPrice;\n        require(etherAmount / amount == sellPrice, \"Multiplication overflow\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow, added reentrancy protection, updated for Solidity 0.4.26, and improved error handling",
+            "corrected_code": "function sell(uint256 amount) public onlyValidSell(amount) returns (bool) {\n        uint256 etherAmount = amount * sellPrice;\n    \n        balanceOf[msg.sender] -= amount;\n        balanceOf[address(this)] += amount;\n        \n        Transfer(msg.sender, address(this), amount);\n        \n        require(msg.sender.send(etherAmount), \"Transfer failed\");\n        \n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}
+```

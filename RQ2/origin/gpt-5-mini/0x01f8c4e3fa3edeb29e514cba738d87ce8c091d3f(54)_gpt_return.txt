@@ -1,0 +1,5 @@
+{
+    "type": "Reentrancy",
+    "location": "function Collect(uint _am)\n    public\n    payable\n    {\n        if(balances[msg.sender]>=MinSum && balances[msg.sender]>=_am)\n        {\n            // <yes> <report> REENTRANCY\n            if(msg.sender.call.value(_am)())\n            {\n                balances[msg.sender]-=_am;\n                Log.AddMessage(msg.sender,_am,\"Collect\");\n            }\n        }\n    }",
+    "description": "The contract performs an external call to msg.sender (if(msg.sender.call.value(_am)())) before updating the contract state (balances[msg.sender] -= _am). Using call.value(...) forwards all remaining gas to the recipient, allowing the recipient's fallback or receive function to reenter the Collect function and withdraw additional funds before their balance is decreased. This allows an attacker to drain more than their intended balance. In Solidity ^0.4.19, this pattern is unsafe; the correct pattern is Checks-Effects-Interactions (update balances before making external calls), or use a reentrancy guard, and prefer using transfer/send where appropriate (recognizing gas stipend limitations) or pull-payment patterns."
+}

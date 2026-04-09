@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Erc20Wallet",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "tokens",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => mapping(address => uint256)) public tokens;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalDeposited",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint256) public totalDeposited;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "commonWithdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding require statement for native token transfer, using transfer() for ERC20 tokens, and using address(0) instead of 0 for Ethereum address comparison",
+            "corrected_code": "function commonWithdraw(address token, uint256 value) internal {\n    require(tokens[token][msg.sender] >= value, \"Insufficient balance\");\n    \n    tokens[token][msg.sender] -= value;\n    totalDeposited[token] -= value;\n    \n    if (token != address(0)) {\n        // ERC20 token transfer\n        require(ERC20(token).transfer(msg.sender, value), \"ERC20 transfer failed\");\n    } else {\n        // Native Ether transfer - using transfer() instead of call() for safety\n        address payable receiver = address(uint160(msg.sender));\n        receiver.transfer(value);\n    }\n    \n    emit Withdraw(\n        token,\n        msg.sender,\n        value,\n        tokens[token][msg.sender]\n    );\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

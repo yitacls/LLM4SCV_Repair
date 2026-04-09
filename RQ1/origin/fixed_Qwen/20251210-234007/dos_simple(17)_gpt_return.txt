@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DosOneFunc",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "ifillArray",
+            "fix_info": "Fixed DoS vulnerability by adding a gas-efficient check and limiting loop iterations to prevent excessive gas consumption",
+            "corrected_code": "function ifillArray() public returns (bool){\n        if(listAddresses.length < 1500) {\n            uint256 remainingSpace = 1500 - listAddresses.length;\n            uint256 iterations = remainingSpace < 350 ? remainingSpace : 350;\n            \n            for(uint i = 0; i < iterations; i++) {\n                listAddresses.push(msg.sender);\n            }\n            return true;\n        } else {\n            listAddresses = new address[](0);\n            return false;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

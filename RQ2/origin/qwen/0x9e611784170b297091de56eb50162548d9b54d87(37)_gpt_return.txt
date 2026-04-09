@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.send(balanceOf[msg.sender]);",
+    "description": "The contract is vulnerable to reentrancy attack because it sends Ether to an external address (msg.sender) before updating the contract's state (balanceOf[msg.sender]). In Solidity version 0.4.25, the send() function forwards a limited amount of gas (2300 gas), but if the recipient is a contract with a fallback function that calls back into the withdraw() function, it can repeatedly withdraw funds before the balance is updated. The balanceOf[msg.sender] should be set to 0 before the send() operation to prevent this vulnerability."
+}
+```

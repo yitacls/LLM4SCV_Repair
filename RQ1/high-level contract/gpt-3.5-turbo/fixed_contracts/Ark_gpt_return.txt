@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "Ark",
+        "contract_version": "0.6.9",
+        "functions": [
+            {
+                "function_name": "withdrawForLoss",
+                "fix_info": "Fixed SWC-113-DoS vulnerability by using transfer instead of _transfer method",
+                "corrected_code": "function withdrawForLoss(Decimal.decimal memory _amount, IERC20 _quoteToken) public override {\n        require(insuranceFund == _msgSender(), \"only insuranceFund\");\n\n        if (_getTokenDecimals(address(_quoteToken)) < 18) {\n            _amount = _amount.addD(_toDecimal(_quoteToken, 1));\n        }\n        require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \"insufficient funds\");\n\n        // stores timestamp and cumulative amount of withdrawn token\n        Decimal.decimal memory cumulativeAmount;\n        uint256 len = withdrawnTokenHistory[_quoteToken].length;\n        if (len == 0) {\n            cumulativeAmount = _amount;\n        } else {\n            cumulativeAmount = withdrawnTokenHistory[_quoteToken][len - 1].cumulativeAmount.addD(_amount);\n        }\n        // store the withdrawal history\n        withdrawnTokenHistory[_quoteToken].push(\n            WithdrawnToken({ timestamp: _blockTimestamp(), cumulativeAmount: cumulativeAmount })\n        );\n        _quoteToken.transfer(_msgSender(), _amount.toUint());\n        emit WithdrawnForLoss(_msgSender(), _amount.toUint(), address(_quoteToken));\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceOf[to] += value;",
+    "description": "The contract is vulnerable to arithmetic overflow/underflow attacks. When adding 'value' to 'balanceOf[to]', if the result exceeds the maximum value of uint256, it will overflow and wrap around to a smaller value. Similarly, when subtracting 'value' from 'balanceOf[msg.sender]', if the balance is less than 'value', it will underflow and wrap around to a large value. This can lead to incorrect balance calculations and potential theft of tokens. The contract should use SafeMath library or implement proper overflow/underflow checks."
+}
+```

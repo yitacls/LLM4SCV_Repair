@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "controlSum += uint160(addrs[i]);",
+    "description": "The controlSum variable can overflow when adding multiple uint160 values. Since Solidity 0.4.11 does not have automatic overflow protection, if the sum of addresses exceeds the maximum value that controlSum can hold, it will wrap around to zero, potentially allowing an attacker to manipulate the checksum verification mechanism."
+}
+```

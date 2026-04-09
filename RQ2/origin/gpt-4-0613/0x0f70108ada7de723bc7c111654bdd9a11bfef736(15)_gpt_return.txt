@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.gas(gasToForward)(msg.data);",
+    "description": "This contract contains a potentially dangerous low-level call. Low-level calls have the potential to change the program control flow, induce a fallback function, manipulate the call stack, return data and consume an arbitrary amount of gas. Moreover, low-level calls are not checked for successful execution, meaning the contract will not throw an error even if the call fails."
+}
+```

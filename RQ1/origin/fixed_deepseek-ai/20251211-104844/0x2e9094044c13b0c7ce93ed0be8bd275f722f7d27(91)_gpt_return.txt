@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "bet1000",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "commitment",
+            "fix_info": "Added commitment variable to store a sealed random value before lottery starts",
+            "variable_code": "bytes32 public commitment;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "revealedNumber",
+            "fix_info": "Added revealedNumber variable to store the opened random value after lottery ends",
+            "variable_code": "uint public revealedNumber;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyInState",
+            "fix_info": "Added modifier to ensure functions are called only in specific contract states",
+            "modifier_code": "modifier onlyInState(State _state) { require(state == _state); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setCommitment",
+            "fix_info": "Added function to set a sealed random commitment before lottery starts",
+            "corrected_code": "function setCommitment(bytes32 _commitment) public onlyInState(State.Started) {\n        commitment = _commitment;\n        state = State.Locked;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "revealNumber",
+            "fix_info": "Added function to reveal the random number after lottery ends",
+            "corrected_code": "function revealNumber(uint _randomNumber, bytes32 _salt) public onlyInState(State.Locked) {\n        require(keccak256(abi.encodePacked(_randomNumber, _salt)) == commitment);\n        revealedNumber = _randomNumber % (maxguess + 1);\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "finish",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by removing predictable random number generation and using commitment-reveal scheme",
+            "corrected_code": "function finish() public onlyInState(State.Locked) {\n        require(revealedNumber != 0, \"Random number not revealed yet\");\n        \n        state = State.Locked;\n        uint lotterynumber = revealedNumber;\n        \n        var guess = findWinners(lotterynumber);\n        uint prize = getLotteryMoney();\n        uint remain = this.balance - (prize * numwinners);\n        \n        for (uint i = 0; i < numwinners; i++) {\n            address winner = winnners[i].addr;\n            winner.transfer(prize);\n            SentPrizeToWinner(winner, prize, guess, _gameindex, lotterynumber, block.timestamp);\n        }\n        \n        SentDeveloperFee(remain, this.balance);\n        developer.transfer(remain);\n        \n        numguesses = 0;\n        for (i = 0; i < stasticsarrayitems; i++) {\n            statistics[i] = 0;\n        }\n        \n        _gameindex++;\n        \n        // Reset revealed number for next round\n        revealedNumber = 0;\n        commitment = 0x0;\n        \n        state = State.Started;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

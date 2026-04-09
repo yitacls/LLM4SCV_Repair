@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(valueToken.allowance(tx.origin, address(this)) >= _amountST);",
+    "description": "The contract allows any address to stake tokens on behalf of any other address without proper authorization or permission check. This can lead to potential misuse of the staking functionality by unauthorized parties."
+}
+```

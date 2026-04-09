@@ -1,0 +1,12 @@
+```json
+{
+    "contract_name": "UniqlyPresale4",
+    "vulnerabilities": [
+        {
+            "type": "Reentrancy",
+            "location": "(success, ) = address(user).call{value: amount}(\"\");",
+            "description": "This code is susceptible to a reentrancy attack. The reentrancy vulnerability allows a contract to be interrupted and entered into again before the first function call is finished. This could potentially allow an attacker to withdraw more ETH than expected. The reentrancy attack can occur because the state of the contract is not updated until after the external call, giving the called contract a chance to run its code again before the caller's state is updated."
+        }
+    ]
+}
+```

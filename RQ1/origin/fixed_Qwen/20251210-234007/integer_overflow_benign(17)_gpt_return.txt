@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "IntegerOverflowBenign1",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "run",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic underflow when subtracting input from count",
+            "corrected_code": "function run(uint256 input) public {\n        // Using SafeMath to prevent underflow\n        uint res = count.sub(input);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EncryptedToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and reverting on failure",
+            "corrected_code": "function () payable public {\n    require(owner.send(msg.value), \"Failed to send Ether to owner\");\n    uint amount = msg.value * buyPrice;\n    _transfer(owner, msg.sender, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function reclaimBNB() external onlyOwner { owner.transfer(address(this).balance); }",
+    "description": "The `reclaimBNB` function allows the contract's balance to be transferred to the owner without adequate protection mechanisms or access control. While it is guarded by `onlyOwner`, vulnerabilities could arise if the ownership of the contract is maliciously transferred or compromised. Additionally, any mistake in defining or updating the `owner` address could lead to the loss of funds. Proper practices such as multi-signature wallet mechanisms or enhanced access control should be considered to secure the withdrawal process."
+}
+```

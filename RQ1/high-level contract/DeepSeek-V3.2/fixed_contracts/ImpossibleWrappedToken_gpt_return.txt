@@ -1,0 +1,34 @@
+```json
+[{
+    "contract_name": "ImpossibleWrappedToken",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed reentrancy vulnerability by applying CEI pattern and adding reentrancy guard. Also fixed state variable update order to prevent transaction order dependence.",
+            "corrected_code": "function deposit(address dst, uint256 wad) public returns (uint256 transferAmt) {\n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n    \n    uint256 previousBalance = underlyingBalance;\n    bool success = IERC20(underlying).transferFrom(msg.sender, address(this), transferAmt);\n    require(success, 'ImpossibleWrapper: TRANSFERFROM_FAILED');\n    \n    underlyingBalance = previousBalance.add(transferAmt);\n    _deposit(dst, wad);\n    \n    emit Transfer(address(0), dst, wad);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "deposit (no parameter version)",
+            "fix_info": "Fixed reentrancy vulnerability by applying CEI pattern. Added check to prevent underflow and ensure safe math operations.",
+            "corrected_code": "function deposit(address dst) public override returns (uint256 transferAmt) {\n    uint256 balance = IERC20(underlying).balanceOf(address(this));\n    require(balance >= underlyingBalance, 'ImpossibleWrapper: UNDERFLOW_CHECK');\n    \n    transferAmt = balance.sub(underlyingBalance);\n    uint256 wad = transferAmt.mul(ratioNum).div(ratioDenom);\n    \n    underlyingBalance = balance;\n    _deposit(dst, wad);\n    \n    emit Transfer(address(0), dst, wad);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed reentrancy vulnerability by applying CEI pattern. Updated state before external call.",
+            "corrected_code": "function withdraw(address dst, uint256 wad) public override returns (uint256 transferAmt) {\n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(wad);\n    totalSupply = totalSupply.sub(wad);\n    \n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n    underlyingBalance = underlyingBalance.sub(transferAmt);\n    \n    emit Transfer(msg.sender, address(0), wad);\n    \n    bool success = IERC20(underlying).transfer(dst, transferAmt);\n    require(success, 'IF Wrapper: UNDERLYING_TRANSFER_FAIL');\n    \n    return transferAmt;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw (with src parameter)",
+            "fix_info": "Fixed reentrancy vulnerability by applying CEI pattern. Updated state before external call.",
+            "corrected_code": "function withdraw(address src, address dst, uint256 wad) public returns (uint256 transferAmt) {\n    allowance[src][msg.sender] = allowance[src][msg.sender].sub(wad);\n    balanceOf[src] = balanceOf[src].sub(wad);\n    totalSupply = totalSupply.sub(wad);\n    \n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n    underlyingBalance = underlyingBalance.sub(transferAmt);\n    \n    emit Transfer(src, address(0), wad);\n    \n    bool success = IERC20(underlying).transfer(dst, transferAmt);\n    require(success, 'IF Wrapper: UNDERLYING_TRANSFER_FAIL');\n    \n    return transferAmt;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

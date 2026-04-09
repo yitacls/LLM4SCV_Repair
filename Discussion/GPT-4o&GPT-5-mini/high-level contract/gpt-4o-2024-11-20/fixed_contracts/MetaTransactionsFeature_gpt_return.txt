@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "MetaTransactionsFeature",
+        "contract_version": "1.1.0",
+        "state_variables": [
+            {
+                "variable_name": "refundsAttachedEth",
+                "fix_info": "Introduced a reentrancy guard mechanism to prevent nested reentrant calls during ETH refunds.",
+                "variable_code": "bool private guard;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "refundsAttachedEth",
+                "fix_info": "Modified to include a reentrancy guard for ETH refunds, preventing reentrancy vulnerabilities.",
+                "modifier_code": "modifier refundsAttachedEth() { require(!guard, 'Reentrant call avoided'); guard = true; _; uint256 remainingBalance = LibSafeMathV06.min256(msg.value, address(this).balance); guard = false; if (remainingBalance > 0) { (bool sent, ) = msg.sender.call{value: remainingBalance}(''); require(sent, 'ETH Transfer failed'); } }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "executeMetaTransaction",
+                "fix_info": "Added extra checks in ETH refunds to ensure reentrancy is avoided by using call instead of transfer, and included the reentrancy guard mechanic.",
+                "corrected_code": "function executeMetaTransaction(MetaTransactionData memory mtx, LibSignature.Signature memory signature) public payable override nonReentrant(REENTRANCY_MTX) refundsAttachedEth returns (bytes memory returnResult) { ExecuteState memory state; state.sender = msg.sender; state.mtx = mtx; state.hash = getMetaTransactionHash(mtx); state.signature = signature; returnResult = _executeMetaTransactionPrivate(state); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "batchExecuteMetaTransactions",
+                "fix_info": "Integrated the updated reentrancy-safe refundsAttachedEth modifier, ensuring ETH refunds are secured against reentrancy attacks.",
+                "corrected_code": "function batchExecuteMetaTransactions(MetaTransactionData[] memory mtxs, LibSignature.Signature[] memory signatures) public payable override nonReentrant(REENTRANCY_MTX) refundsAttachedEth returns (bytes[] memory returnResults) { if (mtxs.length != signatures.length) { LibMetaTransactionsRichErrors.InvalidMetaTransactionsArrayLengthsError(mtxs.length, signatures.length).rrevert(); } returnResults = new bytes[](mtxs.length); for (uint256 i = 0; i < mtxs.length; ++i) { ExecuteState memory state; state.sender = msg.sender; state.mtx = mtxs[i]; state.hash = getMetaTransactionHash(mtxs[i]); state.signature = signatures[i]; returnResults[i] = _executeMetaTransactionPrivate(state); } }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

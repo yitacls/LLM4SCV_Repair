@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ExtendetdToken",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "batchTransfer",
+            "fix_info": "Added SafeMath checks to prevent integer overflow when calculating amount and updating balances",
+            "corrected_code": "function batchTransfer(address[] _receivers, uint256 _value) public returns (bool) { \n        uint256 cnt = _receivers.length;\n        uint256 amount = cnt * _value;\n        // Check for multiplication overflow\n        require(cnt == 0 || amount / cnt == _value);\n        if(amount == 0) return false;\n        if(balanceOf[msg.sender] < amount) return false;\n        // Check for subtraction overflow\n        require(balanceOf[msg.sender] >= amount);\n        balanceOf[msg.sender] -= amount;\n        for (uint i = 0; i < cnt; i++) {\n            // Check for addition overflow\n            require(balanceOf[_receivers[i]] + _value >= balanceOf[_receivers[i]]);\n            balanceOf[_receivers[i]] += _value;\n            Transfer(msg.sender, _receivers[i], _value);\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

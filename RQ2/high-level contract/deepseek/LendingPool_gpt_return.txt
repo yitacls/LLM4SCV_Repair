@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 92-119 (deposit function) and line 577 (flashLoan function)",
+            "description": "The contract contains reentrancy vulnerabilities in the deposit() and flashLoan() functions. In deposit(), the external call IAToken(aToken).mint() is made before transferring tokens, which could allow a malicious aToken contract to reenter and manipulate the state. In flashLoan(), the receiver.executeOperation() call is made before validating the repayment, enabling a malicious receiver to reenter and potentially drain funds."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Line 579 (flashLoan function): IERC20(asset).transferFrom(receiverAddress, vars.aTokenAddress, vars.amountPlusPremium);",
+            "description": "The return value of transferFrom() is not checked. If the transfer fails (returns false), the contract will continue execution without ensuring the flash loan was repaid. This could allow attackers to obtain flash loans without repaying them, potentially draining the protocol's funds."
+        }
+    ]
+}
+```

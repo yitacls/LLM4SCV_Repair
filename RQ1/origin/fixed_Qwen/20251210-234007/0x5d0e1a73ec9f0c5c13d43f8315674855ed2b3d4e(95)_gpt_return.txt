@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ERC20Token",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "approve",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and adding onlyOwner modifier",
+            "corrected_code": "function approve(address _spender, uint256 _value)\n        external\n        onlyOwner\n    returns (bool success) {\n        require(tokenState == true);\n        require(_spender != address(0));\n        allowed[msg.sender][_spender] = mul(_value, 100000000);\n        Approval(msg.sender, _spender, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "beneficiary.send(amountToSend);",
+    "description": "The contract uses the send() function which has a fixed gas stipend of 2300 gas. If the beneficiary is a contract with a fallback function that consumes more than 2300 gas, the send() call will fail silently, causing the transaction to continue execution but the funds will not be transferred. This can lead to loss of funds as the currentBalance is set to 0 before the send() call, but the actual transfer may fail. The send() return value is not checked, so the contract cannot handle failed transfers appropriately."
+}
+```

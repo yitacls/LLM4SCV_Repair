@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; // <IO_VUL> and totalSupply += mintedAmount;",
+    "description": "The contract uses the addition operator without overflow protection. In Solidity version ^0.4.16, integer arithmetic operations do not automatically check for overflow/underflow. If balanceOf[target] + mintedAmount exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to a very small number, causing incorrect token balances and total supply. This vulnerability can be exploited to grant attackers massive token amounts or manipulate the token economics. The issue affects both the balance update and total supply calculation."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. tx.origin refers to the original external caller and can be manipulated by malicious contracts to bypass access control checks. An attacker can create a contract that calls this function on behalf of a legitimate user, making tx.origin point to the legitimate user's address while the actual caller is the malicious contract. This allows unauthorized users to update blocks they don't own."
+}
+```

@@ -1,0 +1,12 @@
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "emails.delegatecall(bytes4(sha3(\"logEvent()\")));",
+        "description": "A low-level delegatecall is performed and its return value is ignored. delegatecall executes code in the context of the calling contract (firstTest), which means the callee can modify the caller's storage, change control flow, or deliberately consume/forward gas. Not checking the return value hides failures and prevents the contract from reacting to malicious or failed delegatecall executions. In addition, using delegatecall with an externally-controlled target (emails) is dangerous because the target contract can corrupt the caller's state.\n\nMitigation: avoid low-level delegatecall when possible. Use a well-defined interface and direct function calls. If delegatecall is necessary, capture and check the returned boolean and returned data, and handle failures explicitly. Example: (bool ok, bytes memory ret) = emails.delegatecall(abi.encodeWithSignature(\"logEvent()\")); require(ok);"
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "adr.send(this.balance);",
+        "description": "The send(...) low-level call returns a boolean indicating success or failure, but the code ignores the return value. Ignoring the result means failed transfers are silently ignored and the contract cannot handle failed payouts, which can lead to stuck funds or inconsistent contract state. Additionally, using send provides only a limited gas stipend and may fail unexpectedly.\n\nMitigation: check the returned boolean and handle failures, or use transfer (which throws on failure) for simple send semantics in this Solidity version, or use a pull-payment pattern where recipients withdraw funds explicitly. Example: bool sent = adr.send(this.balance); require(sent); or implement a withdraw pattern where funds are recorded and the recipient calls withdraw to retrieve them."
+    }
+]

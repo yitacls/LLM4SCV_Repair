@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "Gate",
+    "contract_version": "0.5.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "multiFill",
+            "fix_info": "Added checks to ensure no re-entrancy attacks and replaced `transfer` with `call` to prevent DoS caused by Ether transfer failures. Added a flag variable for re-entrancy mitigation.",
+            "corrected_code": "function multiFill(uint256[] calldata _ids) external onlyAdmin() payable {\n    require(_ids.length > 0, \"No order IDs provided\");\n\n    emit Funded(msg.value);\n\n    // Iterate over order IDs array\n    for (uint256 i = 0; i < _ids.length; i++) {\n        uint256 id = _ids[i];\n\n        require(orders[id].owner != address(0), \"Order doesn't exist\");\n\n        uint256 tmv = orders[id].amount;\n        uint256 eth = tmv2eth(tmv);\n\n        // Ensure the contract has enough balance\n        require(address(this).balance >= eth, \"Not enough funds\");\n\n        address payable owner = orders[id].owner;\n\n        // Delete order before external calls to minimize re-entrancy risk\n        delete orders[id];\n\n        // Transfer TMV to timviWallet\n        require(IToken(settings.tmvAddress()).transfer(timviWallet, tmv), \"TMV transfer failed\");\n\n        // Safely send Ether to the order owner\n        (bool success, ) = owner.call{value: eth}(\"\");\n        require(success, \"ETH transfer failed\");\n\n        emit OrderFilledPool(id, owner, tmv, eth);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "fill",
+            "fix_info": "Replaced `transfer` with `call` to prevent DoS caused by Ether transfer failures. Added check-effects-interactions pattern to reduce the risk of re-entrancy attacks.",
+            "corrected_code": "function fill(uint256 _id) external payable {\n    require(orders[_id].owner != address(0), \"Order doesn't exist\");\n\n    // Retrieve values from storage\n    uint256 tmv = orders[_id].amount;\n    address payable owner = orders[_id].owner;\n\n    // Calculate the demand amount of Ether\n    uint256 eth = tmv.mul(precision()).div(rate());\n    require(msg.value >= eth, \"Not enough funds\");\n\n    emit Funded(eth);\n\n    // Calculate execution values\n    uint256 tmvFee = tmv.mul(feePercentTMV).div(precision());\n    uint256 ethFee = eth.mul(feePercentETH).div(precision());\n\n    uint256 tmvExecution = tmv.sub(tmvFee);\n    uint256 ethExecution = eth.sub(ethFee);\n\n    // Update state before external calls\n    delete orders[_id];\n\n    // Safely send Ether to the order owner\n    (bool ethSuccess, ) = owner.call{value: ethExecution}(\"\");\n    require(ethSuccess, \"ETH transfer to owner failed\");\n\n    // Transfer TMV to the new owner and timvi wallet\n    require(IToken(settings.tmvAddress()).transfer(msg.sender, tmvExecution), \"TMV transfer to sender failed\");\n    require(IToken(settings.tmvAddress()).transfer(timviWallet, tmvFee), \"TMV fee transfer failed\");\n\n    // Return Ether rest if existent\n    uint256 remainingEth = msg.value.sub(eth);\n    if (remainingEth > 0) {\n        (bool refundSuccess, ) = msg.sender.call{value: remainingEth}(\"\");\n        require(refundSuccess, \"ETH refund to sender failed\");\n    }\n\n    emit OrderFilled(_id, owner, tmv, tmvExecution, eth, ethExecution);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

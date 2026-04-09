@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "WOOPStake",
+        "contract_version": "^0.6.6",
+        "functions": [
+            {
+                "function_name": "processReward",
+                "fix_info": "Fixed reentrancy vulnerability",
+                "corrected_code": "function processReward(address sc, uint256 amount) public nonReentrant Active hasApprovedTokens(sc, _msgSender(), amount) ProviderHasToken(sc, amount) returns (bool) { if (!ERC20Exist(sc)) { newERC20(sc); } processRewardInfo memory slot; IERC20 _token = IERC20(sc); _processReward_1(_token, _msgSender(), amount); slot.dealed = _processReward_2(sc, amount); uint256 leftover = amount.sub(slot.dealed); if (leftover > 0) { require(_token.transfer(_remainder, leftover), 'WO:trf'); emit NewLeftover(sc, _remainder, leftover); } return true; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceOf[to] += value;",
+    "description": "The contract is vulnerable to arithmetic overflow/underflow attacks. In Solidity version ^0.4.25, arithmetic operations are not protected against overflow and underflow conditions. The line 'balanceOf[to] += value;' can cause an overflow if the addition result exceeds the maximum uint256 value, leading to unexpected behavior and potential loss of funds. Similarly, the previous line 'balanceOf[msg.sender] -= value;' could cause an underflow if not properly checked. This vulnerability allows attackers to manipulate balance values in unexpected ways."
+}
+```

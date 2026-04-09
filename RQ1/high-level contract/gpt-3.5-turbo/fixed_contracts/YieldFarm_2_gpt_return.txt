@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "^0.6.0",
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Fixed SWC-128 vulnerability by updating gas usage in the loop.",
+                "corrected_code": "for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId && gasleft() > 20000; i++) {",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "bool buyerReceivedMoney = escrows[_tradeHash].buyer.call.value(buyerValue)();",
+    "description": "The contract makes an external call to the buyer's address before deleting the escrow state. This allows a malicious buyer contract to re-enter the cancelEscrow function before the escrow record is deleted, potentially withdrawing funds multiple times. The state modification (delete escrows[_tradeHash]) happens after the external call, which is a classic reentrancy vulnerability pattern."
+}
+```

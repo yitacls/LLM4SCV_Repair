@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "target.call.gas(gasToForward)(msg.data);",
+            "description": "The low-level call to 'target' does not check the return value or handle potential failures. In Solidity 0.4.25, low-level calls like call() return a boolean indicating success, but this return value is ignored. Additionally, if the call runs out of gas (since gas is manually limited to gasToForward) or fails for other reasons, the contract will not revert and the failure will go unnoticed, potentially leaving the contract in an inconsistent state. This could be exploited if 'target' is a malicious contract that deliberately fails after performing state changes. The vulnerability should be fixed by checking the return value and implementing proper error handling, such as: (bool success,) = target.call.gas(gasToForward)(msg.data); require(success, 'Call failed');"
+        },
+        {
+            "type": "unchecked_arithmetic",
+            "location": "uint256 gasToForward = 400000 - 200; gasToForward -= gasToForward % 8191; gasToForward += 388;",
+            "description": "Solidity 0.4.25 does not have default safe arithmetic operations (it was introduced in 0.8.0). The arithmetic operations on gasToForward are not protected against underflow/overflow, although in this specific case the values are constants and likely safe. However, if gasToForward were derived from dynamic inputs, it could be vulnerable. As a best practice, consider using SafeMath library or upgrading to Solidity >=0.8.0."
+        },
+        {
+            "type": "gas_limit_manipulation",
+            "location": "target.call.gas(gasToForward)(msg.data);",
+            "description": "The forwarded gas amount (gasToForward) is calculated based on a fixed gas limit (400000). An attacker could potentially manipulate gas costs in the target contract to cause the call to run out of gas, leading to failure (which is unchecked). This could be used in a reentrancy attack if combined with other vulnerabilities, or to deliberately cause the call to fail while still executing some side effects in the target."
+        }
+    ]
+}
+```

@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Crowdnext",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Added visibility modifier and explicit data type",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added visibility modifier and mapping definition",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyPositiveAmount",
+            "fix_info": "Added modifier to prevent zero value operations",
+            "modifier_code": "modifier onlyPositiveAmount(uint256 amount) { require(amount > 0, \"Amount must be positive\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow, unsafe math operations, deprecated `throw`, and reentrancy vulnerability",
+            "corrected_code": "function sell(uint256 amount) external onlyPositiveAmount(amount) {\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    \n    uint256 payment = amount * sellPrice;\n    require(payment / sellPrice == amount, \"Multiplication overflow\");\n    \n    balanceOf[msg.sender] = balanceOf[msg.sender] - amount;\n    balanceOf[address(this)] = balanceOf[address(this)] + amount;\n    \n    Transfer(msg.sender, address(this), amount);\n    \n    (bool success, ) = msg.sender.call.value(payment)(\"\");\n    require(success, \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

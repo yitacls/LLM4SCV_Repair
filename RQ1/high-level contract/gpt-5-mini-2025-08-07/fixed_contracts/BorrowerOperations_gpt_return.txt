@@ -1,0 +1,40 @@
+[{
+    "contract_name": "BorrowerOperations",
+    "contract_version": "0.6.11",
+    "state_variables": [
+        {
+            "variable_name": "_NOT_ENTERED",
+            "fix_info": "Add constant sentinel for reentrancy guard (prevent unprotected ether withdrawals / reentrant calls).",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_ENTERED",
+            "fix_info": "Add constant sentinel for reentrancy guard (prevent unprotected ether withdrawals / reentrant calls).",
+            "variable_code": "uint256 private constant _ENTERED = 2;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_status",
+            "fix_info": "Add reentrancy status variable and initialize to _NOT_ENTERED to ensure guard is active from deployment.",
+            "variable_code": "uint256 private _status = _NOT_ENTERED;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Add a reentrancy guard modifier to prevent reentrant ether withdrawals and other reentrant interactions.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "closeTrove",
+            "fix_info": "Protect closeTrove with a reentrancy guard and explicit borrower check to prevent unprotected ether withdrawals and reentrancy. Preserves original functionality and ordering of checks/effects/interactions.",
+            "corrected_code": "function closeTrove() external override nonReentrant {\n    ITroveManager troveManagerCached = troveManager;\n    IActivePool activePoolCached = activePool;\n    ILUSDToken lusdTokenCached = lusdToken;\n\n    // Ensure only the borrower can close their own trove\n    _requireCallerIsBorrower(msg.sender);\n\n    _requireTroveisActive(troveManagerCached, msg.sender);\n    uint price = priceFeed.fetchPrice();\n    _requireNotInRecoveryMode(price);\n\n    // Apply pending rewards before reading trove state\n    troveManagerCached.applyPendingRewards(msg.sender);\n\n    uint coll = troveManagerCached.getTroveColl(msg.sender);\n    uint debt = troveManagerCached.getTroveDebt(msg.sender);\n\n    _requireSufficientLUSDBalance(lusdTokenCached, msg.sender, debt.sub(LUSD_GAS_COMPENSATION));\n\n    uint newTCR = _getNewTCRFromTroveChange(coll, false, debt, false, price);\n    _requireNewTCRisAboveCCR(newTCR);\n\n    // Effects: update trove state on TroveManager\n    troveManagerCached.removeStake(msg.sender);\n    troveManagerCached.closeTrove(msg.sender);\n\n    emit TroveUpdated(msg.sender, 0, 0, 0, BorrowerOperation.closeTrove);\n\n    // Interactions: external calls after state changes and protected by nonReentrant\n    _repayLUSD(activePoolCached, lusdTokenCached, msg.sender, debt.sub(LUSD_GAS_COMPENSATION));\n    _repayLUSD(activePoolCached, lusdTokenCached, gasPoolAddress, LUSD_GAS_COMPENSATION);\n\n    // Send the collateral back to the user\n    activePoolCached.sendETH(msg.sender, coll);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

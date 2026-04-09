@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Reentrancy Vulnerability",
+        "location": "(bool success, ) = recipient.call{ value: amount }(\"\");",
+        "description": "The function makes a low-level call to transfer ETH before updating any state variables or performing checks that would prevent reentrancy. This allows the recipient contract to potentially re-enter this function or other functions in the contract before the current execution completes, leading to unexpected behavior or fund loss."
+    }
+]
+```

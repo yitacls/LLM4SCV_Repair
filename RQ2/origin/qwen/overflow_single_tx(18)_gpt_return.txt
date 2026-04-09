@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "count += input;",
+    "description": "The function overflowaddtostate performs addition on the state variable 'count' without any overflow protection. In Solidity version ^0.4.23, arithmetic operations are not protected against overflow by default. When 'count + input' exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to zero, causing an integer overflow. This can lead to unexpected behavior and potential security vulnerabilities where the count variable becomes smaller than expected or resets to zero."
+}
+```

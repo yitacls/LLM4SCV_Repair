@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "beneficiary.send(amountToSend);",
+            "description": "Sending funds through unchecked call to an external contract can lead to vulnerabilities like reentrancy attacks or lost funds. It is recommended to use the transfer() or send() methods with proper checks or update to a more recent Solidity version that includes additional safety features."
+        }
+    ]
+}
+```  

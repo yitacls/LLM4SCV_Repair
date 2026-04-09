@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(now < 1520694000 && tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);",
+    "description": "The migrateDungeon function uses tx.origin for authentication, which is vulnerable to phishing attacks. Since tx.origin refers to the original external caller, if a malicious contract calls this function on behalf of a user, it will still pass the check if the user's address matches the hardcoded address. Additionally, the function has a time-based restriction that expires at a specific timestamp (1520694000), after which the function becomes permanently inaccessible. The combination of tx.origin usage and hardcoded addresses creates a significant security risk."
+}
+```

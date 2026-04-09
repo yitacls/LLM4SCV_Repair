@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "hashesSize",
+            "fix_info": "Added state variable to store the size of hashes for entropy calculation",
+            "variable_code": "uint256 public hashesSize;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "entropyProvider",
+            "fix_info": "Added state variable to store address that can provide secure entropy",
+            "variable_code": "address public entropyProvider;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced block.blockhash() which is vulnerable to miner manipulation with a secure entropy source. Function now accepts entropy from a trusted source and maintains the same bit manipulation logic.",
+            "corrected_code": "function calcHashes(bytes32 _entropy, uint32 _delta) constant private returns (uint) {\n        return( ( uint(_entropy) & 0xFFFFFF )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 24 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 48 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 72 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 96 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 120 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 144 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 168 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 192 )\n            | ( ( uint(_entropy) & 0xFFFFFF ) << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

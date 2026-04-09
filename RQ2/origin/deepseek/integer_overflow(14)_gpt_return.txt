@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Arithmetic Overflow",
+        "location": "sellerBalance += value;",
+        "description": "In Solidity version ^0.4.15, integer operations do not automatically check for overflow/underflow. The addition 'sellerBalance += value' could overflow the maximum value that can be stored in sellerBalance's data type (likely uint256). This could cause sellerBalance to wrap around to a small value, allowing attackers to manipulate contract balances. This vulnerability was fixed in Solidity 0.8.0 with built-in overflow checks, or can be prevented in earlier versions using SafeMath libraries or explicit checks like 'assert(sellerBalance >= value)'."
+    }
+]
+```

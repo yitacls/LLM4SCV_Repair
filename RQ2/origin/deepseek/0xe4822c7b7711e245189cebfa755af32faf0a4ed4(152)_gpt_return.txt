@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "Line starting with '(bool success, ) = msg.sender.call{ value: storedEth }(\"\");'",
+    "description": "The contract performs an external call (msg.sender.call) to transfer ETH before updating the state variables ethRecords[msg.sender] and dcoinRecords[msg.sender] to zero. A malicious contract can receive this call, re-enter the withdraw() function via a fallback/receive function, and because the state variables are not yet updated (the checks at lines 145-146 still pass), it can withdraw additional ETH and Dcoin multiple times, draining the contract's funds. Although the state updates were previously moved to lines 154-155 (as per the comments), they still occur after the external call, making the reentrancy attack possible."
+}
+```

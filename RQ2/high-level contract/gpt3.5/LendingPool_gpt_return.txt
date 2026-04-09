@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Line 92-119",
+    "description": "The deposit function on lines 92-119 is vulnerable to reentrancy as the external call to IAToken(aToken).mint(onBehalfOf, amount, reserve.liquidityIndex) is made before transferring the asset to the aToken contract. An attacker could potentially exploit this reentrancy vulnerability."
+},
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Line 579",
+    "description": "The flashLoan function on line 579 contains an unchecked external call to IERC20(asset).transferFrom(receiverAddress, vars.aTokenAddress, vars.amountPlusPremium) which can lead to potential vulnerabilities if the return value of the transfer is not validated."
+}
+```
+```

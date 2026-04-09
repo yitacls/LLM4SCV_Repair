@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function deal(address player, uint8 cardNumber) internal returns (uint8)",
+    "description": "The function uses multiple predictable blockchain variables (block.number, block.timestamp, block.blockhash) to generate random numbers. In Solidity 0.4.2, these values are controllable by miners who can influence block timestamps and selectively omit transactions. The vulnerability is exacerbated because: 1) block.blockhash(block.number) returns 0 for the current block, making it essentially useless; 2) Miners can predict and manipulate these values to influence game outcomes; 3) The random number generation depends entirely on miner-controllable on-chain data."
+}
+```

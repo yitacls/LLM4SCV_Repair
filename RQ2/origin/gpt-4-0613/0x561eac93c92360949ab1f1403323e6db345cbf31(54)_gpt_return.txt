@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract BANK_SAFE has a reentrancy vulnerability in the Collect function. This is because the contract first sends funds and then decrements the balance (balances[msg.sender]-=_am). An attacker can recursively call the Collect function before the original call is finished, and drain the contract of its funds. This occurs because the condition to check sufficient balance (balances[msg.sender]>=_am) is satisfied multiple times, due to the state not being updated (balance decrement) until after the value transfer. This vulnerability could be potentially severe in nature if not mitigated. The contract should first decrease balances in state variables and then transfer funds to protect against reentrancy attacks."
+}
+```

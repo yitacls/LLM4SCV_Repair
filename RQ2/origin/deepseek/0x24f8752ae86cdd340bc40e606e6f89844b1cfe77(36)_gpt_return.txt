@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "beneficiary.send(amount);",
+        "description": "The low-level 'send' function call does not check the return value, which can result in silent failures. In Solidity 0.4.x, 'send' returns a boolean indicating success or failure, but this return value is ignored. If the send fails (e.g., if the beneficiary is a contract without a payable fallback function, runs out of gas, or reverts), the Ether transfer will fail silently, causing the contract to retain the Ether while still updating state variables (balanceOf, amountRaised) and emitting a FundTransfer event. This creates an inconsistent state where the contract records a successful payment that never actually occurred. The vulnerability should be fixed by checking the return value and handling failures appropriately."
+    }
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "if (!msg.sender.call.value(2 ether)())",
+    "description": "The low-level call function does not check for the existence of a fallback function or if the call actually succeeded. In Solidity ^0.4.24, the call will return false if the recipient is a contract without a payable fallback function, but the code only throws on failure. However, this pattern is vulnerable because it doesn't properly handle all edge cases and the throw mechanism in this version may not be sufficient to prevent reentrancy or other issues. The call should be properly checked and handled with more robust error handling."
+}
+```

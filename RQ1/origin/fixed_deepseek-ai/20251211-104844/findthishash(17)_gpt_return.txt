@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "FindThisHash",
+    "contract_version": "1",
+    "state_variables": [
+        {
+            "variable_name": "hash",
+            "fix_info": "No change needed - this is the target hash to find",
+            "variable_code": "bytes32 public hash;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "paymentWithdrawn",
+            "fix_info": "Added modifier to prevent double spending",
+            "modifier_code": "modifier paymentWithdrawn() {\n    require(!claimed[msg.sender], \"Payment already claimed\");\n    _;\n    claimed[msg.sender] = true;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "solve",
+            "fix_info": "Fixed front-running vulnerability by using commit-reveal pattern with claim lock",
+            "corrected_code": "function solve(string memory solution) public paymentWithdrawn {\n    require(hash == keccak256(abi.encodePacked(solution)), \"Incorrect solution\");\n    require(!claimed[msg.sender], \"Payment already claimed\");\n    \n    // Using safe transfer pattern\n    uint256 reward = 1000 ether;\n    require(address(this).balance >= reward, \"Insufficient contract balance\");\n    \n    (bool success, ) = payable(msg.sender).call{value: reward}(\"\");\n    require(success, \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

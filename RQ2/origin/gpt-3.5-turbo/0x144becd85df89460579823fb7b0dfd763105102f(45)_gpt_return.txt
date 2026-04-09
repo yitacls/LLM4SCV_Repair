@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value( fomo3d.getBuyPrice() *2 )();",
+    "description": "The call to 'address(fomo3d).call.value(...)' performs a low-level call without checking the return value, which can lead to potential issues if the call fails or the called contract behaves unexpectedly. It is advisable to use 'require' or 'if' statements to handle and validate the return value of the low-level call."
+}
+```

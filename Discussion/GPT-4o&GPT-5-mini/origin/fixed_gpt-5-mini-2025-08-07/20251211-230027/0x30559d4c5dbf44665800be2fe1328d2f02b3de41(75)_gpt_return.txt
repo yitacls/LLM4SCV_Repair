@@ -1,0 +1,23 @@
+[
+  {
+    "contract_name": "lockEtherPay",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+      {
+        "variable_name": "token_reward",
+        "fix_info": "Replaced untyped low-level call usage with a typed IERC20 token interface so transfers can be checked for a boolean return value. This avoids unchecked low-level call vulnerabilities.",
+        "variable_code": "IERC20 public token_reward;",
+        "change_type": "modified"
+      }
+    ],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "release",
+        "fix_info": "Replace unchecked low-level call with a checked ERC20 transfer call; follow checks-effects-interactions pattern and validate token amount before transfer.",
+        "corrected_code": "function release() onlyOwner public {\n    require(isLocked);\n    require(!isReleased);\n    require(lockOver());\n\n    uint256 token_amount = tokenBalance();\n    require(token_amount > 0, \"No tokens to release\");\n\n    // Effects first to protect against reentrancy\n    isReleased = true;\n\n    // Interaction: use the ERC20 transfer and require its success\n    require(token_reward.transfer(beneficiary, token_amount), \"Token transfer failed\");\n\n    emit TokenReleased(beneficiary, token_amount);\n  }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]

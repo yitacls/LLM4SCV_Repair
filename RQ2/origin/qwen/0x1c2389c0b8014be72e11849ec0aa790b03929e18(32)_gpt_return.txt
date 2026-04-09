@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authentication, which is vulnerable to phishing attacks. In Solidity ^0.4.25, tx.origin returns the original sender of the transaction, but this can be exploited by malicious contracts that trick the owner into calling a function that ultimately invokes the sweep function. The proper approach is to use msg.sender for access control, as it represents the immediate caller of the function. This vulnerability allows an attacker to potentially bypass the owner check and call selfdestruct, leading to permanent loss of contract funds and functionality."
+}
+```

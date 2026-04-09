@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "creator = msg.sender; //anyone can call this",
+    "description": "The contract initializer function lacks proper access control, allowing anyone to become the creator and gain administrative privileges. This vulnerability enables malicious actors to take control of the contract and potentially drain funds or manipulate contract state."
+}
+```

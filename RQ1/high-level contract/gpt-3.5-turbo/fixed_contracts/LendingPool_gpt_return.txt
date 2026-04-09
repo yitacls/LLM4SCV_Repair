@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "LendingPool",
+        "contract_version": "^0.6.8",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "rebalanceStableBorrowRate",
+                "fix_info": "Fixed reentrancy vulnerability by updating state before interacting with external contracts.",
+                "corrected_code": "function rebalanceStableBorrowRate(address asset, address user) external override { _whenNotPaused(); ReserveLogic.ReserveData storage reserve = _reserves[asset]; IERC20 stableDebtToken = IERC20(reserve.stableDebtTokenAddress); IERC20 variableDebtToken = IERC20(reserve.variableDebtTokenAddress); address aTokenAddress = reserve.aTokenAddress; uint256 stableBorrowBalance = IERC20(stableDebtToken).balanceOf(user); uint256 totalBorrows = stableDebtToken.totalSupply().add(variableDebtToken.totalSupply()).wadToRay(); uint256 availableLiquidity = IERC20(asset).balanceOf(aTokenAddress).wadToRay(); uint256 usageRatio = totalBorrows == 0 ? 0 : totalBorrows.rayDiv(availableLiquidity.add(totalBorrows)); uint256 currentLiquidityRate = reserve.currentLiquidityRate; uint256 maxVariableBorrowRate = IReserveInterestRateStrategy(reserve.interestRateStrategyAddress).getMaxVariableBorrowRate(); require(usageRatio >= REBALANCE_UP_USAGE_RATIO_THRESHOLD && currentLiquidityRate <= maxVariableBorrowRate.percentMul(REBALANCE_UP_LIQUIDITY_RATE_THRESHOLD), Errors.INTEREST_RATE_REBALANCE_CONDITIONS_NOT_MET); reserve.updateState(); IStableDebtToken(address(stableDebtToken)).burn(user, stableBorrowBalance); IStableDebtToken(address(stableDebtToken)).mint(user, stableBorrowBalance, reserve.currentStableBorrowRate); reserve.updateInterestRates(asset, aTokenAddress, 0, 0); emit RebalanceStableBorrowRate(asset, user); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

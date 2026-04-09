@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Lines 352-386: exitTempusAMMAndRedeem function",
+        "description": "The function contains external calls (tempusAMM.transferFrom and doExitTempusAMMGivenAmountsOut) before updating the state, which could allow reentrancy attacks. An attacker could potentially re-enter through callback mechanisms in the AMM transfer or exit functions, although the specific AMM implementation details would determine exploitability."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Lines 395-436: completeExitAndRedeem function",
+        "description": "The function makes multiple external calls (transferFrom, doExitTempusAMMGivenLP) before state updates and final redemption. While the contract uses OpenZeppelin's SafeERC20 which should prevent reentrancy in standard ERC20 transfers, the AMM exit operations could potentially contain callbacks that enable reentrancy attacks. The function also transfers user's LP tokens and shares to the controller before completing all operations, increasing attack surface."
+    }
+]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PandaBreeding",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "giveBirth",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing send() with transfer() and ensuring proper handling of the ether transfer failure. Also added require() check for the sender.call.value() pattern to handle the payment securely.",
+            "corrected_code": "function giveBirth(uint256 _matronId, uint256[2] _childGenes, uint256[2] _factors) external whenNotPaused onlyCLevel returns(uint256) {\n    // Grab a reference to the matron in storage.\n    Panda storage matron = pandas[_matronId];\n\n    // Check that the matron is a valid cat.\n    require(matron.birthTime != 0);\n\n    // Check that the matron is pregnant, and that its time has come!\n    require(_isReadyToGiveBirth(matron));\n\n    // Grab a reference to the sire in storage.\n    uint256 sireId = matron.siringWithId;\n    Panda storage sire = pandas[sireId];\n\n    // Determine the higher generation number of the two parents\n    uint16 parentGen = matron.generation;\n    if (sire.generation > matron.generation) {\n        parentGen = sire.generation;\n    }\n\n    // Call the sooper-sekret gene mixing operation.\n    //uint256[2] memory childGenes = geneScience.mixGenes(matron.genes, sire.genes,matron.generation,sire.generation, matron.cooldownEndBlock - 1);\n    uint256[2] memory childGenes = _childGenes;\n\n    uint256 kittenId = 0;\n\n    // birth failed\n    uint256 probability = (geneScience.getPureFromGene(matron.genes) + geneScience.getPureFromGene(sire.genes)) / 2 + _factors[0];\n    if (probability >= (parentGen + 1) * _factors[1]) {\n        probability = probability - (parentGen + 1) * _factors[1];\n    } else {\n        probability = 0;\n    }\n    if (parentGen == 0 && gen0CreatedCount == GEN0_TOTAL_COUNT) {\n        probability = 0;\n    }\n    if (uint256(keccak256(block.blockhash(block.number - 2), now)) % 100 < probability) {\n        // Make the new kitten!\n        address owner = childOwner[_matronId];\n        kittenId = _createPanda(_matronId, matron.siringWithId, parentGen + 1, childGenes, owner);\n    } else {\n        Abortion(pandaIndexToOwner[_matronId], _matronId, sireId);\n    }\n    \n    // Clear the reference to sire from the matron (REQUIRED! Having siringWithId\n    // set is what marks a matron as being pregnant.)\n    delete matron.siringWithId;\n\n    // Every time a panda gives birth counter is decremented.\n    pregnantPandas--;\n\n    // Send the balance fee to the person who made birth happen.\n    // Using transfer() instead of send() to properly handle ether transfer failures\n    msg.sender.transfer(autoBirthFee);\n\n    delete childOwner[_matronId];\n\n    // return the new kitten's ID\n    return kittenId;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

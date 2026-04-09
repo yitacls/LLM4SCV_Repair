@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "constructor named DynamicPyramid()",
+    "description": "The constructor function is incorrectly named 'DynamicPyramid' instead of using the constructor keyword or having the same name as the contract ('Rubixi'). In Solidity ^0.4.15, constructors are defined as functions with the same name as the contract. Since this function name doesn't match the contract name, it remains a regular public function that anyone can call, potentially allowing reinitialization of the contract state after deployment when it should only be executable during contract creation."
+}
+```

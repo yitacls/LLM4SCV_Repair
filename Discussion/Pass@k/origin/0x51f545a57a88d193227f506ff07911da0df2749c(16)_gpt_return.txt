@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "MEXICO_WINS",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic underflow vulnerability by checking for potential underflow before subtraction",
+                "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {								
+                    require(balanceOf[msg.sender] >= value && balanceOf[to] + value >= balanceOf[to]);							
+                    balanceOf[msg.sender] -= value;  
+                    balanceOf[to] += value;            
+                    emit Transfer(msg.sender, to, value);							
+                    return true;							
+                }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

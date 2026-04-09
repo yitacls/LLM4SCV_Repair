@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "commitments",
+            "fix_info": "Added mapping to store player commitments for secure randomness",
+            "variable_code": "mapping(address => bytes32) public commitments;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "hasCommitted",
+            "fix_info": "Added mapping to track which addresses have committed",
+            "variable_code": "mapping(address => bool) public hasCommitted;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "revealDeadline",
+            "fix_info": "Added variable to track commitment reveal deadline",
+            "variable_code": "uint256 public revealDeadline;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "commitHash",
+            "fix_info": "Added function to allow players to commit their random hashes before the draw",
+            "corrected_code": "function commitHash(bytes32 hash) public {\n    require(!hasCommitted[msg.sender]);\n    commitments[msg.sender] = hash;\n    hasCommitted[msg.sender] = true;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "chooseWinner",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by using committed hashes from players instead of predictable blockchain variables",
+            "corrected_code": "function chooseWinner() private {\n    // Collect committed hashes from players for secure randomness\n    bytes32[] memory playerHashes = new bytes32[](totalTickets);\n    uint256 hashIndex = 0;\n    \n    for (uint256 i = 0; i < nextTicket; i++) {\n        if (hasCommitted[contestants[i].addr]) {\n            playerHashes[hashIndex] = commitments[contestants[i].addr];\n            hashIndex++;\n        }\n    }\n    \n    // Use current blockhash and timestamp for additional entropy\n    bytes32 randHash = keccak256(\n        abi.encodePacked(\n            playerHashes,\n            blockhash(block.number - 1),\n            now\n        )\n    );\n\n    uint winningNumber = uint(randHash) % totalTickets;\n    address winningAddress = contestants[winningNumber].addr;\n    RaffleResult(raffleId, winningNumber, winningAddress, address(0), address(0), 0, randHash);\n\n    // Start next raffle\n    raffleId++;\n    nextTicket = 0;\n    blockNumber = block.number;\n\n    // Clear commitments for next round\n    for (uint256 j = 0; j < nextTicket; j++) {\n        hasCommitted[contestants[j].addr] = false;\n        commitments[contestants[j].addr] = 0;\n    }\n\n    // Distribute prize and fee\n    winningAddress.transfer(prize);\n    feeAddress.transfer(fee);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

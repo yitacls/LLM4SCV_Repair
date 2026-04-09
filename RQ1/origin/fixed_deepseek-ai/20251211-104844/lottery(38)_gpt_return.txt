@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "Lottery",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "commitments",
+            "fix_info": "Added mapping to store commitments for commit-reveal pattern",
+            "variable_code": "mapping(address => bytes32) public commitments;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "nonce",
+            "fix_info": "Added nonce to ensure unique commitments",
+            "variable_code": "uint256 private nonce = 0;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "makeBet",
+            "fix_info": "Replaced block.number with commit-reveal pattern for secure randomness. Added two-phase bet: commit and reveal.",
+            "corrected_code": "function commitBet(bytes32 _commitment) public payable {\n    require(msg.value > 0, \"Bet must have value\");\n    require(commitments[msg.sender] == 0, \"Already committed\");\n    commitments[msg.sender] = _commitment;\n    \n    // Record the commitment\n    bets.push(Bet(msg.value, block.number, false, CommitmentPhase.COMMITTED));\n}\n\nfunction revealBet(bytes32 _secret) public {\n    require(commitments[msg.sender] != 0, \"No commitment found\");\n    \n    // Verify the commitment\n    require(keccak256(abi.encodePacked(_secret, msg.sender)) == commitments[msg.sender], \"Invalid secret\");\n    \n    // Generate deterministic randomness using revealed secret and contract state\n    uint256 random = uint256(keccak256(abi.encodePacked(\n        _secret, \n        address(this), \n        nonce\n    )));\n    \n    bool won = (random % 2) == 0;\n    \n    // Record the final result\n    bets.push(Bet(msg.value, block.number, won, CommitmentPhase.REVEALED));\n    \n    // Clean up commitment\n    delete commitments[msg.sender];\n    nonce++;\n    \n    // Payout if the user won, otherwise keep their money\n    if(won) {\n        msg.sender.transfer(msg.value);\n    }\n}\n\n// Helper function to generate commitment off-chain\nfunction generateCommitment(bytes32 secret) public view returns (bytes32) {\n    return keccak256(abi.encodePacked(secret, msg.sender));\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "Bet",
+            "fix_info": "Modified Bet struct to include phase tracking",
+            "corrected_code": "enum CommitmentPhase { NONE, COMMITTED, REVEALED }\n\nstruct Bet {\n    uint256 amount;\n    uint256 blockNumber;\n    bool won;\n    CommitmentPhase phase;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "recipient.send(weiAmount);",
+        "description": "The low-level call 'send()' is used without checking its return value. In Solidity 0.4.15, 'send()' returns a boolean indicating success, and if it fails (e.g., recipient is a contract with a fallback function that reverts, or runs out of gas with the 2300 gas stipend), the transaction will NOT automatically revert. This can lead to silent failures where the interest payment is recorded via 'PayInterest()' even though no Ether was actually transferred, breaking contract state consistency. The call should be checked with a require() statement or the transfer() function could be used instead (though transfer() has the same gas limitations)."
+    }
+}
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "HeroToken",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "migrationOwner",
+            "fix_info": "Added state variable to store the authorized migration owner address",
+            "variable_code": "address public migrationOwner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyMigrationOwner",
+            "fix_info": "Added modifier to restrict access to migration owner only",
+            "modifier_code": "modifier onlyMigrationOwner() {\n    require(msg.sender == migrationOwner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "migrateHero",
+            "fix_info": "Fixed access control vulnerability by replacing hardcoded address and timestamp with proper owner validation and modifier. Removed deprecated tx.origin usage and now timestamp check.",
+            "corrected_code": "function migrateHero(uint _genes, address _owner) external onlyMigrationOwner {\n    _createHero(_genes, _owner);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

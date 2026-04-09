@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "developer.transfer(this.balance);",
+    "description": "The withdraw function allows transferring the entire contract balance and tokens to the developer without enforcing access control measures to restrict who can invoke the function. This can potentially allow any unauthorized user to invoke the function and drain funds if the function is publicly accessible or improperly protected."
+}
+```

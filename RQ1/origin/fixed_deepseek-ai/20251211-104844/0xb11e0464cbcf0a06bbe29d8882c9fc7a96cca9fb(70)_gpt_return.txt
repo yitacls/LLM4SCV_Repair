@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "NewLottery",
+    "contract_version": "^0.4.20",
+    "state_variables": [
+        {
+            "variable_name": "totalBounty",
+            "fix_info": "Changed from uint to uint256 to prevent arithmetic overflow/underflow and ensure safe addition",
+            "variable_code": "uint256 public totalBounty;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "ticketPrice",
+            "fix_info": "Added uint256 type declaration for explicit safe arithmetic",
+            "variable_code": "uint256 public ticketPrice;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "numtickets",
+            "fix_info": "Changed from possibly uint to uint256 for safe arithmetic",
+            "variable_code": "uint256 public numtickets;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "maxTickets",
+            "fix_info": "Changed from possibly uint to uint256 for safe arithmetic",
+            "variable_code": "uint256 public maxTickets;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "AddTicket",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath library for addition and comparison operations, updated timestamp handling, and improved logic flow",
+            "corrected_code": "function AddTicket() public payable {\n    require(msg.value == ticketPrice, \"Incorrect ticket price\");\n    require(numtickets < maxTickets, \"Maximum tickets reached\");\n    \n    // Use SafeMath for safe addition\n    totalBounty = totalBounty.add(ticketPrice);\n    \n    lastTicketTime = block.timestamp;\n    \n    // Increment ticket count using SafeMath\n    numtickets = numtickets.add(1);\n    \n    // Check if this was the last ticket\n    bool success = (numtickets == maxTickets);\n    \n    NewTicket(msg.sender, success);\n    \n    if(success) {\n        PayWinner(msg.sender);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

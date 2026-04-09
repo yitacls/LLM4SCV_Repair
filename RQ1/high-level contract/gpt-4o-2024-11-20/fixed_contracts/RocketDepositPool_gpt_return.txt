@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "RocketDepositPool",
+        "contract_version": "1.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "assignDeposits",
+                "fix_info": "Rewritten to prevent potential DoS with block gas limit by replacing the unbounded for loop with a while loop and including gas checks to break the loop safely.",
+                "corrected_code": "function assignDeposits() override public onlyLatestContract(\"rocketDepositPool\", address(this)) {\n    // Load contracts\n    RocketDAOProtocolSettingsDepositInterface rocketDAOProtocolSettingsDeposit = RocketDAOProtocolSettingsDepositInterface(getContractAddress(\"rocketDAOProtocolSettingsDeposit\"));\n    RocketMinipoolQueueInterface rocketMinipoolQueue = RocketMinipoolQueueInterface(getContractAddress(\"rocketMinipoolQueue\"));\n    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n    \n    // Check deposit settings\n    require(rocketDAOProtocolSettingsDeposit.getAssignDepositsEnabled(), \"Deposit assignments are currently disabled\");\n\n    // Track gas usage to prevent exceeding block gas limit\n    uint256 gasLimit = gasleft();\n    uint256 maxGasUsagePerIteration = 100000; // Example: Set a gas threshold for each iteration\n    uint256 maxAssignments = rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments();\n\n    uint256 assignments = 0;\n    while (assignments < maxAssignments && gasleft() > maxGasUsagePerIteration) {\n        // Get the next available minipool capacity\n        uint256 minipoolCapacity = rocketMinipoolQueue.getNextCapacity();\n        if (minipoolCapacity == 0 || getBalance() < minipoolCapacity) {\n            // Break if no capacity or insufficient balance\n            break;\n        }\n\n        // Dequeue the next available minipool\n        address minipoolAddress = rocketMinipoolQueue.dequeueMinipool();\n        RocketMinipoolInterface minipool = RocketMinipoolInterface(minipoolAddress);\n\n        // Withdraw ETH from vault\n        rocketVault.withdrawEther(minipoolCapacity);\n\n        // Assign deposit to the minipool\n        minipool.userDeposit{value: minipoolCapacity}();\n\n        // Emit deposit assigned event\n        emit DepositAssigned(minipoolAddress, minipoolCapacity, block.timestamp);\n\n        assignments++;\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

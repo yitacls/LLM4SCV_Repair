@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function addMeByRC() uses tx.origin for authorization instead of msg.sender. This creates a vulnerability where a malicious contract could trick the owner into calling it, causing the owner's address to be stored as tx.origin. An attacker could then call TokenSale.addMeByRC() from their malicious contract when the owner interacts with it, making the owner's address appear as tx.origin and bypassing the access control. Additionally, in Solidity 0.4.19, the function is public without appropriate visibility restrictions, allowing any external caller to attempt exploitation."
+}
+```

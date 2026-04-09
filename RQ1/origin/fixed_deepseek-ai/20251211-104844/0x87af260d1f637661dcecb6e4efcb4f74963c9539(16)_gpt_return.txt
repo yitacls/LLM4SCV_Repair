@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "VINCI_301201",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Ensure the balanceOf mapping uses uint256 for both keys and values in Solidity 0.4.x",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by implementing safe arithmetic checks and preventing reentrancy. Added validation for zero address and non-zero value transfer. Used SafeMath pattern appropriate for Solidity 0.4.x.",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n    require(to != address(0), \"Invalid recipient address\");\n    require(value > 0, \"Transfer value must be positive\");\n    require(balanceOf[msg.sender] >= value, \"Insufficient balance\");\n    \n    // Prevent overflow with safe subtraction and addition\n    // In Solidity 0.4.x, we need to manually check for overflow\n    require(balanceOf[msg.sender] >= value, \"Balance underflow\");\n    \n    // Check for overflow on recipient balance\n    uint256 newRecipientBalance = balanceOf[to] + value;\n    require(newRecipientBalance >= balanceOf[to], \"Recipient balance overflow\");\n    \n    // Perform state changes after all checks\n    balanceOf[msg.sender] -= value;\n    balanceOf[to] = newRecipientBalance;\n    \n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

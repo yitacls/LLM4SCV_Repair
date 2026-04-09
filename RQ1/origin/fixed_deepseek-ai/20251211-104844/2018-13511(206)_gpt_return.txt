@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CorelliCoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for addition operations to prevent integer overflows. Added SafeMath import for uint256. Also fixed deprecated 'this' keyword usage in older Solidity versions.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid address\");\n        \n        // Safe addition to prevent overflow\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        \n        // Using address(this) instead of deprecated 'this' keyword\n        Transfer(0, address(this), mintedAmount);\n        Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

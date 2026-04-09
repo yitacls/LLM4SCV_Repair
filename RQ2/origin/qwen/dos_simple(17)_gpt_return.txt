@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "for(uint i=0;i<350;i++) {\n                listAddresses.push(msg.sender);\n            }",
+    "description": "The contract is vulnerable to Denial of Service (DoS) attack due to an unbounded loop that allows a single transaction to consume excessive gas. In the ifillArray function, when listAddresses.length is less than 1500, the contract pushes msg.sender 350 times in a single transaction. This can cause the transaction to run out of gas, especially as the array grows larger, making the function unusable and potentially causing the contract to become unresponsive. The attacker can repeatedly call this function to exhaust gas limits and prevent legitimate users from interacting with the contract."
+}
+```

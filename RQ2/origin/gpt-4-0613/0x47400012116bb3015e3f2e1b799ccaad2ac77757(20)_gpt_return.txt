@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_recipient] += _value;", 
+    "description": "This code might result in the overflow or underflow of the contract's state. Ethereum and Solidity do not use 'safe maths' by default which means operations could return inaccurate results that aren't necessarily errors. For instance, if balances[_recipient] is very high, adding _value might result in an overflow that sets balances[_recipient] to zero or some other low number, thereby causing unexpected behavior in the contract."
+}
+```

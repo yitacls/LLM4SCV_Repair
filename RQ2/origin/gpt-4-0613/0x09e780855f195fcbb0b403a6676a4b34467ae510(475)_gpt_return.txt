@@ -1,0 +1,7 @@
+```json
+{
+  "type": "access_control",
+  "location": "require(tx.origin == owner);",
+  "description": "The contract checks whether the transaction initiator (tx.origin) is the contract owner, instead of checking msg.sender. This is problematic because if a malicious contract is called by the contract owner, then tx.origin will be the contract owner, thus bypassing this check. If the contract uses tx.origin for access control, it may be susceptible to attacks by other contracts. This vulnerability can be avoided by not using tx.origin for access control, and instead using permissions-based schemes."
+}
+```

@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "SML",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added owner address variable to implement proper access control",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to restrict access to owner only",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Added constructor to set contract deployer as owner",
+                "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "transferOwnership",
+                "fix_info": "Added function to allow safe transfer of ownership",
+                "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n        require(newOwner != address(0), \"Invalid address\");\n        owner = newOwner;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "admin",
+                "fix_info": "Added proper access control to prevent unauthorized selfdestruct calls",
+                "corrected_code": "function admin() external onlyOwner {\n        // This function should be carefully considered before use\n        // Consider adding additional safety measures like timelocks or multi-sig requirements\n        selfdestruct(0x6b1FC9a08F1ED0e2d4f33D769510f0a0a345772c);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

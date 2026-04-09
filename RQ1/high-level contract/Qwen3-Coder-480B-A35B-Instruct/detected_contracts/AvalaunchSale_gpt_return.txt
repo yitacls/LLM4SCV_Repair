@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "postponeSale function, line 294: for(uint i = 0; i < roundIds.length; i++)",
+        "description": "The postponeSale function iterates through all registered rounds to update their start times. If the number of rounds is large, this loop could consume excessive gas, potentially causing the transaction to fail due to gas limits, leading to a denial of service."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "setCapPerRound function, line 346: for(uint i = 0; i < rounds.length; i++)",
+        "description": "The setCapPerRound function contains a loop that iterates over the provided rounds array to update the max participation caps. If the array length is too large, the transaction may run out of gas and fail, preventing the function from completing successfully."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "bool res = msg.sender.call.value(amount)();\ncredit[msg.sender]-=amount;",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the credit balance. In Solidity ^0.4.2, the call.value() function can trigger a fallback function in the caller's contract, allowing malicious contracts to recursively call withdraw() before the credit is reduced, thereby withdrawing more funds than they should be able to."
+}
+```

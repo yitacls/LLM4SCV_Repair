@@ -1,0 +1,16 @@
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Mitigate use of raw block.blockhash values for randomness by mixing multiple blockhashes with caller-provided and contextual entropy via keccak256, then deriving the 240-bit pseudo-random portion. This avoids returning raw blockhash fragments directly while preserving the original packed-return structure.",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Mix multiple recent blockhashes with contextual entropy into a single seed.\n    // Avoid returning raw blockhash fragments (BAD_RANDOMNESS) by hashing them first.\n    bytes32 seed = keccak256(\n        block.blockhash(uint(_lastb)),\n        block.blockhash(uint(_lastb + 1)),\n        block.blockhash(uint(_lastb + 2)),\n        block.blockhash(uint(_lastb + 3)),\n        block.blockhash(uint(_lastb + 4)),\n        block.blockhash(uint(_lastb + 5)),\n        block.blockhash(uint(_lastb + 6)),\n        block.blockhash(uint(_lastb + 7)),\n        block.blockhash(uint(_lastb + 8)),\n        block.blockhash(uint(_lastb + 9)),\n        _delta,\n        msg.sender,\n        block.timestamp\n    );\n\n    // Use the lower 240 bits of the hash as the packed block-derived portion\n    // and preserve the original upper-part encoding of (_delta / hashesSize) << 240.\n    uint random240 = uint(seed) & ((uint(1) << 240) - 1);\n    return random240 | ((uint(_delta) / hashesSize) << 240);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

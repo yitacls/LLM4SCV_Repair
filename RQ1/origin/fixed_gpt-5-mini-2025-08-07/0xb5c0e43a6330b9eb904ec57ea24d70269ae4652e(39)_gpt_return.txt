@@ -1,0 +1,34 @@
+[{
+    "contract_name": "StandardToken",
+    "contract_version": "^0.4.17",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable so self-destruct can be restricted to the contract owner (fixes access_control vulnerability).",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to restrict sensitive operations (like selfdestruct) to the owner.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "StandardToken",
+            "fix_info": "Constructor to set the deployer as the owner so access control has an initial privileged account.",
+            "corrected_code": "function StandardToken() public {\n    owner = msg.sender;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "destroycontract",
+            "fix_info": "Restricted to owner using onlyOwner modifier to prevent unauthorized destruction and asset leakage while preserving original selfdestruct behavior.",
+            "corrected_code": "function destroycontract(address _to) public onlyOwner {\n    selfdestruct(_to);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

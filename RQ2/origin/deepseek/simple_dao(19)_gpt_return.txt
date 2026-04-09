@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "bool res = msg.sender.call.value(amount)();",
+    "description": "The contract uses a low-level call.value() function to send Ether before updating the sender's credit balance. In Solidity ^0.4.2, when using .call.value()(), the fallback function of the receiving address is executed. If this address is a malicious contract, it can recursively call the `withdraw` function again before `credit[msg.sender]-=amount;` is executed, allowing attackers to repeatedly drain funds from the SimpleDAO contract until its balance is depleted, due to the state update occurring after the external call."
+}
+```

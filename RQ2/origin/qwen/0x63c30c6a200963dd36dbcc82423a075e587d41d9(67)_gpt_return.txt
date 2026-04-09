@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "pay_user__ += msg.value;",
+    "description": "The addition operation on pay_user__ variable is vulnerable to arithmetic overflow. In Solidity 0.4.25, arithmetic operations are not protected against overflow by default. When msg.value is added to pay_user__, if the result exceeds the maximum value that can be stored in the variable, it will wrap around to zero or a smaller value, leading to incorrect accounting of user payments. This could allow attackers to manipulate the payment tracking mechanism."
+}
+```

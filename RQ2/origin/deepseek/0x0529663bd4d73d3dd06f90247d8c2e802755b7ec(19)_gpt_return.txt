@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { // fault line",
+    "description": "This contract uses the low-level call.value()() function which forwards all remaining gas by default. This allows a malicious contract to re-enter the Collect function recursively before the balance update (acc.balance-=_am) occurs. An attacker can repeatedly call Collect() within the fallback function to drain the contract's funds. The vulnerability is exacerbated by: 1) State variable update occurring after external call; 2) No reentrancy guard; 3) Use of call.value() with all gas; 4) The Acc mapping update happens in a different transaction from the caller's balance check, enabling multiple withdrawals before the state is finalized."
+}
+```

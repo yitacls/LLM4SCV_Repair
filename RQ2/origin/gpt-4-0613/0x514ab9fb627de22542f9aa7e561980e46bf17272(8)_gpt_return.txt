@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.send(msg.value);",
+    "description": "In Solidity, low-level calls such as 'send' function, return 'false' on failure but do not throw an exception. Therefore, the failure of this call is not checked which causes an unchecked_low_level_calls vulnerability. This vulnerability could be exploited by an attacker to cause unexpected behaviours in the contract function. This can be largely mitigated by using 'transfer' instead of 'send' as 'transfer' throws an exception on failure. Always remember to handle the potential exception either by using a check or reverting the state to mitigate this vulnerability in Solidity ^0.4.25."
+}
+```

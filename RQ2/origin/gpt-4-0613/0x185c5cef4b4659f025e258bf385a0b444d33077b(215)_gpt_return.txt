@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(sender == tx.origin && !isContract(sender));",
+    "description": "This line of code can allow an unauthorized user to have control over the contract. The function checks whether the sender is a smart contract by using the isContract(sender) method. However, this is not a secure check and can be bypassed. The tx.origin can potentially refer to a malicious user if they initiate the transaction which does not go through any contract. This effectively bypasses the intended access controls and allows unauthorized contracts or users to perform actions they should not have access to."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HunterCoin",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow when adding amount to balance and total supply",
+            "corrected_code": "function mintToken(address target, uint256 amount) returns (uint256 mintedAmount) {\n    require(balanceOf[target] + amount >= balanceOf[target]); // Check for overflow\n    require(totalSupply + amount >= totalSupply); // Check for overflow\n    balanceOf[target] += amount;\n    totalSupply += amount;\n    Transfer(owner, target, amount);\n    return amount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MiningRigRentalsToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath operations to prevent integer overflow/underflow vulnerabilities in arithmetic operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        if (!canMint) {\n            return;\n        }\n        require(totalSupply + mintedAmount >= totalSupply, \"Integer overflow on totalSupply\");\n        require(balanceOf[target] + mintedAmount >= balanceOf[target], \"Integer overflow on balanceOf\");\n        \n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        emit Transfer(address(0), this, mintedAmount);\n        emit Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PonziScheme",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed the unchecked low-level call vulnerability by checking the return value of the send() call and using transfer() instead for revert-on-failure behavior. Also replaced deprecated 'throw' with 'revert()'.",
+                "corrected_code": "function() external payable {\n    if(round == 1) {\n      if(msg.value != startingAmount) {\n        revert();\n      }\n    } else {\n      checkAmount(msg.value);\n      // Use transfer() instead of send() since it automatically reverts on failure\n      lastDepositor.transfer(msg.value);\n    }\n    lastDepositorAmount = msg.value;\n    lastDepositor = msg.sender;\n    nextAmount = msg.value * 2;\n    increaseRound();\n  }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StrategicToken",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for send() function and reverting on failure",
+            "corrected_code": "function() payable{\n        ethInWei = ethInWei + msg.value;\n        uint256 amount = msg.value * STRTToEth;\n        if (balances[devWallet] < amount) {return;}\n        balances[devWallet] = balances[devWallet] - amount;\n        balances[msg.sender] = balances[msg.sender] + amount;\n        Transfer(devWallet, msg.sender, amount);\n        require(devWallet.send(msg.value), \"Transfer to devWallet failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

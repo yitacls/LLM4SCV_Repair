@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 74-76: uint lockedToDelegate = tokenState.getLockedCount(holder) - tokenState.getPurchasedAmount(holder);",
+    "description": "The subtraction operation may result in an integer underflow when tokenState.getPurchasedAmount(holder) is greater than tokenState.getLockedCount(holder). In Solidity 0.5.3, arithmetic operations do not automatically revert on underflow/overflow (this was introduced in Solidity 0.8.0). This could cause lockedToDelegate to wrap around to a very large number, potentially bypassing the subsequent balance check and allowing delegation requests that should be rejected."
+}
+```

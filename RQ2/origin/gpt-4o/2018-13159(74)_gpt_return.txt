@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "The code is vulnerable to an integer overflow when adding 'mintedAmount' to 'balanceOf[target]'. If the addition exceeds the maximum value of uint256, it will wrap around to zero, potentially leading to incorrect balances."
+}
+```

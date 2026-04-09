@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract uses `tx.origin` for authorization in the `checkOwner()` function. Using `tx.origin` for authentication makes the contract vulnerable to phishing attacks. A malicious contract could trick the owner into calling a function that invokes this contract, and since `tx.origin` would still be the original owner's address (the transaction initiator), the authorization would pass. This violates the principle of least privilege and allows intermediate contracts to impersonate the owner. The recommended fix is to replace `tx.origin` with `msg.sender` for proper authorization checks."
+}
+```

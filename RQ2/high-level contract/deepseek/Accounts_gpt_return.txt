@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 387-395 in getBorrowETH function",
+        "description": "The function loops through all tokens (globalConfig.tokenInfoRegistry().getCoinLength()) and performs storage reads and calculations in each iteration. If the number of supported tokens grows too large, this could exceed the block gas limit, making the function uncallable."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 336-350 in getBorrowPower function",
+        "description": "The function loops through all tokens to calculate borrow power. As the number of supported tokens increases, the gas consumption may exceed block limits, preventing users from borrowing or accessing their borrow power."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 354-370 in getDepositETH function",
+        "description": "Similar to getBorrowETH, this function iterates through all tokens to calculate total deposit ETH value. With many tokens, this could hit gas limits and become uncallable."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 411-421 in isAccountLiquidatable function",
+        "description": "The function iterates through all tokens and calls newRateIndexCheckpoint for each token the user interacts with. This nested loop structure with external calls could exceed gas limits when many tokens are involved."
+    },
+    {
+        "type": "SWC-128-Dos With Block Gas Limit",
+        "location": "Lines 479-496 in claim function",
+        "description": "The function iterates through all tokens (coinLength) and performs multiple storage operations and external calls for each token the user has interacted with. This could easily exceed gas limits as the number of tokens grows."
+    }
+]
+```

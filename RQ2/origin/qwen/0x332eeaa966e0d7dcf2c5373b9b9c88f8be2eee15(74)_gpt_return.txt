@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "totalSupply += amount;",
+    "description": "The addition operation on totalSupply is vulnerable to integer overflow. In Solidity ^0.4.25, arithmetic operations are not protected against overflow/underflow by default. When the totalSupply exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to zero, causing an overflow. This can lead to incorrect total supply calculations and potential exploitation. The vulnerability occurs because there's no overflow check or SafeMath library usage to prevent this condition."
+}
+```

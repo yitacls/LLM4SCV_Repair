@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = msg.sender.send(address(this).balance);",
+    "description": "The send() function returns a boolean indicating success or failure, but this return value is not checked. If the call fails (e.g., if the recipient is a contract with a fallback function that throws or exceeds gas limits), the transaction will not revert, potentially leaving the contract's balance locked and giving the false impression that the withdrawal succeeded. In Solidity 0.4.21, send() forwards only 2300 gas, making it prone to failure with contracts that require more gas for their fallback function."
+}
+```

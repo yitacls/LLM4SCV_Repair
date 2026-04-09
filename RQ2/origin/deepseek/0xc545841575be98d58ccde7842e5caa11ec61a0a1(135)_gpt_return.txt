@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "benefit.send(amount);",
+    "description": "The function `getFunds` contains a classic reentrancy vulnerability. The external call `benefit.send(amount)` is made to the potentially untrusted address stored in the `benefit` variable *after* the state-changing event `Raise(benefit, amount)` is emitted but *before* any contract state (like the contract's balance tracking) is updated. If `benefit` is a malicious contract, its fallback or receive function can recursively call back into `getFunds` before the initial call completes. Since the requirement `require(amount <= this.balance)` uses `this.balance`, which is only updated after the `send` operation completes, the recursive call can pass the same balance check repeatedly, potentially draining the contract's Ether. The use of `.send()` (which forwards only 2300 gas) instead of `.call.value()` limits but does not eliminate the risk, as 2300 gas is sufficient for logging and a single reentrant call to a function with minimal operations. The vulnerability is compounded by the lack of a Checks-Effects-Interactions pattern; state changes and balance updates should occur before external calls."
+}
+```

@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "ReversibleICO",
+        "contract_version": "^0.5.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcUnlockedAmount",
+                "fix_info": "Avoid assigning to function parameters to prevent shadowing state variables.",
+                "corrected_code": "uint256 currentBlock = getCurrentBlockNumber();\nuint256 frozenPeriodBlock = frozenPeriod;\nrequire(currentBlock >= buyPhaseStartBlock && currentBlock < buyPhaseEndBlock, 'Block outside of rICO period.');",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "acceptContributions",
+                "fix_info": "Fixed looping issue and calculations within the loop.",
+                "corrected_code": "// Iterate over all stages and their pending contributions\nfor (uint8 stageId = 0; stageId <= currentStage; stageId++) {\n    ParticipantStageDetails storage stages = participantStats.stages[stageId];\n    // skip if not ETH is pending\n    if (stages.pendingETH == 0) {\n        continue;\n    }\n    uint256 maxCommittableEth = committableEthAtStage(stageId);\n    uint256 newlyCommittedEth = stages.pendingETH;\n    uint256 returnEth = 0;\n    // If incoming value is higher than what we can accept, just accept the difference and return the rest\n    if (newlyCommittedEth > maxCommittableEth) {\n        returnEth = newlyCommittedEth.sub(maxCommittableEth);\n        newlyCommittedEth = maxCommittableEth;\n        totalRefundedETH = totalRefundedETH.add(returnEth);\n    }\n    // convert ETH to TOKENS\n    uint256 newTokenAmount = getTokenAmountForEthAtStage(newlyCommittedEth, stageId);\n    totalNewReservedTokens = totalNewReservedTokens.add(newTokenAmount);\n    // UPDATE PARTICIPANT STATS\n    participantStats._currentReservedTokens = participantStats._currentReservedTokens.add(newTokenAmount);\n    participantStats.reservedTokens = participantStats.reservedTokens.add(newTokenAmount);\n    participantStats.committedETH = participantStats.committedETH.add(newlyCommittedEth);\n    participantStats.pendingETH = participantStats.pendingETH.sub(newlyCommittedEth).sub(returnEth);\n    stages.pendingETH = stages.pendingETH.sub(newlyCommittedEth).sub(returnEth);\n    // UPDATE GLOBAL STATS\n    tokenSupply = tokenSupply.sub(newTokenAmount);\n    pendingETH = pendingETH.sub(newlyCommittedEth).sub(returnEth);\n    committedETH = committedETH.add(newlyCommittedEth);\n    _projectCurrentlyReservedETH = _projectCurrentlyReservedETH.add(newlyCommittedEth);\n    // Emit event\n    emit ApplicationEvent(uint8(ApplicationEventTypes.CONTRIBUTION_ACCEPTED), uint32(stageId), _participantAddress, newlyCommittedEth);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

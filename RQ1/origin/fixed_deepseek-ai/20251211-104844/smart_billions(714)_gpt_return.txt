@@ -1,0 +1,66 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "VERSION",
+            "fix_info": "Added version tracking for Chainlink VRF compatibility",
+            "variable_code": "string public constant VERSION = '1.0.0';",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "vrfCoordinator",
+            "fix_info": "Added Chainlink VRF coordinator address for secure randomness",
+            "variable_code": "address private vrfCoordinator;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "linkToken",
+            "fix_info": "Added LINK token address for VRF fee payments",
+            "variable_code": "address private linkToken;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "keyHash",
+            "fix_info": "Added Chainlink VRF key hash for randomness generation",
+            "variable_code": "bytes32 private keyHash;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "vrfFee",
+            "fix_info": "Added Chainlink VRF fee amount",
+            "variable_code": "uint256 private vrfFee;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "randomnessRequestId",
+            "fix_info": "Added mapping to track randomness requests",
+            "variable_code": "mapping(bytes32 => uint32) public randomnessRequestId;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "randomnessResult",
+            "fix_info": "Added mapping to store randomness results",
+            "variable_code": "mapping(uint32 => uint256) public randomnessResult;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyVRFCoordinator",
+            "fix_info": "Added modifier to restrict access to Chainlink VRF coordinator only",
+            "modifier_code": "modifier onlyVRFCoordinator() {\n        require(msg.sender == vrfCoordinator, 'Only VRF coordinator can call');\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced vulnerable blockhash-based randomness with Chainlink VRF integration. Added function to request randomness and callback to receive it.",
+            "corrected_code": "function requestRandomness(uint32 _lastb, uint32 _delta) private returns (bytes32 requestId) {\n        require(LINK.balanceOf(address(this)) >= vrfFee, 'Not enough LINK');\n        \n        bytes32 _requestId = requestRandomness(keyHash, vrfFee);\n        randomnessRequestId[_requestId] = _lastb;\n        return _requestId;\n    }\n\n    function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override onlyVRFCoordinator {\n        uint32 lastb = randomnessRequestId[_requestId];\n        randomnessResult[lastb] = _randomness;\n    }\n\n    function calcHashes(uint32 _lastb, uint32 _delta) private returns (uint) {\n        uint256 randomness = randomnessResult[_lastb];\n        require(randomness != 0, 'Randomness not ready');\n        \n        return uint(keccak256(abi.encodePacked(randomness, _delta))) % hashesSize + 1;\n    }\n\n    function initializeVRF(address _vrfCoordinator, address _linkToken, bytes32 _keyHash, uint256 _fee) public {\n        require(vrfCoordinator == address(0), 'VRF already initialized');\n        vrfCoordinator = _vrfCoordinator;\n        linkToken = _linkToken;\n        keyHash = _keyHash;\n        vrfFee = _fee;\n    }\n\n    function withdrawLINK() public onlyOwner {\n        require(LINK.transfer(owner, LINK.balanceOf(address(this))), 'Unable to transfer');\n    }\n\n    function setVRFFee(uint256 _fee) public onlyOwner {\n        vrfFee = _fee;\n    }\n\n    function getRandomnessStatus(uint32 _lastb) public view returns (bool) {\n        return randomnessResult[_lastb] != 0;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

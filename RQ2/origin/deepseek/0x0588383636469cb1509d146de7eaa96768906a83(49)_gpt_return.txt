@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This access control mechanism uses `tx.origin` for authorization, which is vulnerable to phishing attacks. A malicious contract could trick the owner into calling a function that, in turn, calls the `mint` function. Since `tx.origin` returns the original external account that initiated the transaction, the check would pass if the owner was the original sender, even if the immediate caller (`msg.sender`) is a malicious contract. This allows unauthorized minting. Additionally, `assert(amount >= 0)` is redundant (since `uint256` cannot be negative) and will consume all gas if triggered. The proper mitigation is to use `msg.sender == owner` for authorization and remove the unnecessary assert statement."
+}
+```

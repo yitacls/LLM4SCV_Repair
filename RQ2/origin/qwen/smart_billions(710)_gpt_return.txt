@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "return( ( uint(block.blockhash(_lastb  )) & 0xFFFFFF )\n            | ( ( uint(block.blockhash(_lastb+1)) & 0xFFFFFF ) << 24 )\n            | ( ( uint(block.blockhash(_lastb+2)) & 0xFFFFFF ) << 48 )\n            | ( ( uint(block.blockhash(_lastb+3)) & 0xFFFFFF ) << 72 )\n            | ( ( uint(block.blockhash(_lastb+4)) & 0xFFFFFF ) << 96 )\n            | ( ( uint(block.blockhash(_lastb+5)) & 0xFFFFFF ) << 120 )\n            | ( ( uint(block.blockhash(_lastb+6)) & 0xFFFFFF ) << 144 )\n            | ( ( uint(block.blockhash(_lastb+7)) & 0xFFFFFF ) << 168 )\n            | ( ( uint(block.blockhash(_lastb+8)) & 0xFFFFFF ) << 192 )\n            | ( ( uint(block.blockhash(_lastb+9)) & 0xFFFFFF ) << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));",
+    "description": "The function 'calcHashes' uses 'block.blockhash()' to generate pseudo-random numbers. In Solidity ^0.4.13, 'block.blockhash()' (and its successor 'blockhash()') only works for the most recent 256 blocks, and miners can influence the blockhash to some extent. This makes the generated randomness predictable and exploitable by attackers, especially since multiple blockhash values are combined in a deterministic way. This vulnerability allows malicious actors to potentially manipulate or predict outcomes that rely on this 'random' value."
+}
+```

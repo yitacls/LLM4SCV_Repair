@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "KeepRandomBeaconOperator",
+        "contract_version": "^0.5.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "genesis",
+                "fix_info": "Replaced reliance on block attributes with a more secure and predictable randomness source.",
+                "corrected_code": "function genesis() public payable {\n    require(numberOfGroups() == 0, \"Groups exist\");\n    // Set latest added service contract as a group selection starter to receive any DKG fee surplus.\n    groupSelectionStarterContract = ServiceContract(serviceContracts[serviceContracts.length.sub(1)]);\n\n    uint256 secureSeed = uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), address(this), msg.sender)));\n    startGroupSelection(secureSeed, msg.value);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "startGroupSelection",
+                "fix_info": "Ensure the random seed leverage a secure external parameter for randomness instead of just block attributes.",
+                "corrected_code": "function startGroupSelection(uint256 _newEntry, uint256 _payment) internal {\n    require(\n        _payment >= gasPriceWithFluctuationMargin(priceFeedEstimate).mul(dkgGasEstimate),\n        \"Insufficient DKG fee\"\n    );\n\n    require(isGroupSelectionPossible(), \"Group selection in progress\");\n\n    // If previous group selection failed and there is reimbursement left\n    // return it to the DKG fee pool.\n    if (dkgSubmitterReimbursementFee > 0) {\n        uint256 surplus = dkgSubmitterReimbursementFee;\n        dkgSubmitterReimbursementFee = 0;\n        ServiceContract(msg.sender).fundDkgFeePool.value(surplus)();\n    }\n\n    uint256 secureSeed = uint256(keccak256(abi.encodePacked(_newEntry, blockhash(block.number - 1), msg.sender, address(this))));\n    groupSelection.start(secureSeed);\n    emit GroupSelectionStarted(secureSeed);\n    dkgSubmitterReimbursementFee = _payment;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "signRelayEntry",
+                "fix_info": "Replaced direct usage of block attributes with a more secure randomness generation using keccak256.",
+                "corrected_code": "function signRelayEntry(\n    uint256 requestId,\n    bytes memory previousEntry,\n    address serviceContract,\n    uint256 entryVerificationAndProfitFee,\n    uint256 callbackFee\n) internal {\n    require(!isEntryInProgress() || hasEntryTimedOut(), \"Beacon is busy\");\n\n    currentEntryStartBlock = block.number;\n\n    uint256 groupIndex = groups.selectGroup(\n        uint256(keccak256(abi.encodePacked(previousEntry, blockhash(block.number - 1), address(this))))\n    );\n\n    signingRequest = SigningRequest(\n        requestId,\n        entryVerificationAndProfitFee,\n        callbackFee,\n        groupIndex,\n        previousEntry,\n        serviceContract\n    );\n\n    bytes memory groupPubKey = groups.getGroupPublicKey(groupIndex);\n    emit RelayEntryRequested(previousEntry, groupPubKey);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getDelayFactor",
+                "fix_info": "Prevent reliance on direct block attributes for critical calculations by adding stricter checks.",
+                "corrected_code": "function getDelayFactor() internal view returns (uint256 delayFactor) {\n    uint256 decimals = 1e16; // Adding 16 decimals to perform float division.\n\n    // T_deadline is the earliest block when no submissions are accepted.\n    uint256 deadlineBlock = currentEntryStartBlock.add(relayEntryTimeout).add(1);\n\n    // T_begin is the earliest block the result can be published in.\n    uint256 submissionStartBlock = currentEntryStartBlock.add(relayEntryGenerationTime).add(1);\n\n    // Ensure entryReceivedBlock is taken securely in current context.\n    uint256 entryReceivedBlock = block.number <= submissionStartBlock\n        ? submissionStartBlock\n        : block.number;\n\n    // Additional check: Ensure entry reception block doesn’t exceed deadlineBlock.\n    require(entryReceivedBlock <= deadlineBlock, \"Invalid entry reception time\");\n\n    uint256 remainingBlocks = deadlineBlock.sub(entryReceivedBlock);\n    uint256 submissionWindow = deadlineBlock.sub(submissionStartBlock);\n\n    delayFactor = ((remainingBlocks.mul(decimals).div(submissionWindow))**2).div(decimals);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

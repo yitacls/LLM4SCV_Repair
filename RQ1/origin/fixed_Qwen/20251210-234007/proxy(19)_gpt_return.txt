@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Proxy",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "forward",
+            "fix_info": "Added access control to prevent unauthorized users from calling delegatecall, which could lead to arbitrary code execution",
+            "corrected_code": "function forward(address callee, bytes _data) public onlyOwner {\n    // Added access control to prevent unauthorized delegatecall execution\n    require(callee.delegatecall(_data));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "SusanTokenERC20",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Mapping should already be defined; no change needed",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Variable should already be defined; using SafeMath functions to prevent overflow",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Added SafeMath library and used safe addition to prevent arithmetic overflow vulnerability (IO_VUL). Also fixed Transfer event parameters to properly reflect minting semantics (from zero address).",
+                "corrected_code": "function mintToken(address target, uint256 initialSupply) public {\n    require(target != address(0), \"Invalid target address\");\n    require(initialSupply > 0, \"Initial supply must be positive\");\n    \n    // Using SafeMath's addition to prevent overflow\n    balanceOf[target] = balanceOf[target].add(initialSupply);\n    totalSupply = totalSupply.add(initialSupply);\n    \n    // Emit Transfer events to reflect minting\n    Transfer(address(0), msg.sender, initialSupply);\n    Transfer(msg.sender, target, initialSupply);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

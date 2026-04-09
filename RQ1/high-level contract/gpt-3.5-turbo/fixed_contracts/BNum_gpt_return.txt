@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "BNum",
+        "contract_version": "0.5.12",
+        "functions": [
+            {
+                "function_name": "bmul",
+                "fix_info": "Check for overflow before performing multiplication.",
+                "corrected_code": "function bmul(uint a, uint b) internal pure returns (uint) {\n        if (a == 0 || b == 0) return 0;\n        if ((a * b) / a != b) revert(\"ERR_MUL_OVERFLOW\");\n        uint c0 = a * b;\n        if (c0 % BONE == 0) return c0 / BONE;\n        uint c1 = c0 + (BONE / 2);\n        require(c1 >= c0, \"ERR_MUL_OVERFLOW\");\n        uint c2 = c1 / BONE;\n        return c2;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

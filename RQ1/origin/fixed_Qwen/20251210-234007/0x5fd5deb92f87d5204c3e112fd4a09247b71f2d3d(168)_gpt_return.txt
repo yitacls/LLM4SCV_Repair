@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "T",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyPendingOwner",
+            "fix_info": "Added modifier to restrict access to pending owner only",
+            "modifier_code": "modifier onlyPendingOwner() {\n    require(msg.sender == ownerTemp);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "acceptOwnership",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyPendingOwner modifier to fix access control vulnerability",
+            "corrected_code": "function acceptOwnership() public onlyPendingOwner {\n    owner = ownerTemp;\n    ownerTemp = address(0);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

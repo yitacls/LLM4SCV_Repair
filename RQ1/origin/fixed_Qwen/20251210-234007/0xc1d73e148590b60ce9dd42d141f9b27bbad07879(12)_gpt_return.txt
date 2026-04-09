@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EthReceiver",
+    "contract_version": "^0.4.22",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Put",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath addition for unlockTime calculation",
+            "corrected_code": "function Put(address _receiver) public payable {\n        if ((!closed && msg.value > 0.5 ether) || sender == 0x0 ) {\n            sender = msg.sender;\n            receiver = _receiver;\n            unlockTime = unlockTime.add(now);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

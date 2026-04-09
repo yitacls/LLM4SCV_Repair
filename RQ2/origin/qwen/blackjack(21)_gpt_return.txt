@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint b = block.number;",
+    "description": "Using block.number as a source of randomness is predictable and can be manipulated by miners. Since block.number is publicly known and deterministic, attackers can calculate the expected value and potentially influence the outcome of the random number generation."
+}
+```

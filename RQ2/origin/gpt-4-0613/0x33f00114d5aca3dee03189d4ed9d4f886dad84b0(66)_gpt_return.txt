@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOfOld[_to] += _value;",
+    "description": "The above location in the code is vulnerable to an arithmetic overflow attack. This can occur when a uint256 variable exceeds its maximum value. In this case, if '_value' is chosen in such a way, it can force 'balanceOfOld[_to]' to overflow, potentially allowing an attacker to gain an unreasonably large amount of tokens."
+}
+```

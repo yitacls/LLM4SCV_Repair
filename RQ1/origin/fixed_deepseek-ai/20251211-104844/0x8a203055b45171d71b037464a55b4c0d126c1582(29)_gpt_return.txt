@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Owned",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added 'public' visibility and explicit data type for clarity and best practices",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to centralize ownership checks using msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Owned: caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyOwner modifier; added input validation and event emission",
+            "corrected_code": "function transferOwnership(address _newOwner) public onlyOwner {\n        require(_newOwner != address(0), \"Owned: new owner is the zero address\");\n        require(_newOwner != owner, \"Owned: new owner is same as current\");\n        emit OwnershipTransferred(owner, _newOwner);\n        owner = _newOwner;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

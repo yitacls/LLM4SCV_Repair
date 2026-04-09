@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "AVToken",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwnerOrApprovedOrCurrentOwner",
+                "fix_info": "Added a new modifier to properly check transfer authorization, replacing the original tx.origin check",
+                "modifier_code": "modifier onlyOwnerOrApprovedOrCurrentOwner(uint256 _itemId) {\n        address itemOwner = ownerOf(_itemId);\n        require(\n            msg.sender == itemOwner ||\n            getApproved(_itemId) == msg.sender ||\n            isApprovedForAll(itemOwner, msg.sender),\n            \"AVToken: transfer caller is not owner nor approved\"\n        );\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed access control vulnerability by replacing tx.origin check with proper authorization check. The original tx.origin check was vulnerable to phishing attacks and didn't follow ERC721 standards. Changed to check if caller is either the owner, approved address for the token, or approved for all tokens of the owner.",
+                "corrected_code": "function transfer(address _to, uint256 _itemId) onlyERC721() onlyOwnerOrApprovedOrCurrentOwner(_itemId) public {\n        _transfer(msg.sender, _to, _itemId);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

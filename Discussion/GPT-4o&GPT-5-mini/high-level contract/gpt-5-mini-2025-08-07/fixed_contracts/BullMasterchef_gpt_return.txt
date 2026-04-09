@@ -1,0 +1,32 @@
+[{
+    "contract_name": "MasterChef",
+    "contract_version": "0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "add",
+            "fix_info": "Removed mass update of all pools to avoid DoS via growing pool array. Preserve original pool creation logic. Owner can call massUpdatePools(...) manually if a full sync is required.",
+            "corrected_code": "function add(uint32 _allocPoint, IBEP20 _lpToken, uint16 _depositFeeBP, uint32 _harvestInterval, bool _withRewards) public onlyOwner nonDuplicated(_lpToken) {\n    require(_depositFeeBP <= 1500, \"add: deposit fee can't be more than 15%\");\n    require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"add: invalid harvest interval\");\n\n    // Avoid mass updating all pools here to prevent potential DoS with large pool arrays.\n    // The new pool will start accumulating rewards from `lastRewardBlock`.\n    uint256 lastRewardBlock = block.number > startBlock ? block.number : startBlock;\n    totalAllocPoint = totalAllocPoint.add(_allocPoint);\n    poolExistence[_lpToken] = true;\n    poolInfo.push(PoolInfo({\n        lpToken: _lpToken,\n        allocPoint: _allocPoint,\n        lastRewardBlock: lastRewardBlock,\n        accBullPerShare: 0,\n        depositFeeBP: _depositFeeBP,\n        harvestInterval: _harvestInterval,\n        totalStrength: 0\n    }));\n    if(_withRewards){\n        uint16 pid = uint16(poolInfo.length - 1);\n        rewardDistribution.add(_lpToken, pid);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "set",
+            "fix_info": "Replace global mass update with updating only the affected pool before changing its parameters. This reduces gas and prevents DoS while keeping the pool's accounting consistent for that pool.",
+            "corrected_code": "function set(uint256 _pid, uint32 _allocPoint, uint16 _depositFeeBP, uint32 _harvestInterval) public onlyOwner {\n    require(_depositFeeBP <= 10000, \"set: invalid deposit fee basis points\");\n    require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"set: invalid harvest interval\");\n\n    // Update only the specific pool to refresh its accBullPerShare and lastRewardBlock.\n    // Avoid mass updating all pools here to prevent potential DoS.\n    _updatePool(_pid);\n\n    totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);\n    poolInfo[_pid].allocPoint = _allocPoint;\n    poolInfo[_pid].depositFeeBP = _depositFeeBP;\n    poolInfo[_pid].harvestInterval = _harvestInterval;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "updateEmissionRate",
+            "fix_info": "Stop performing a mass update of all pools within this function to avoid DoS. Fix event to emit the previous and new emission rates correctly. Owner can call massUpdatePools in batches if desired.",
+            "corrected_code": "function updateEmissionRate(uint128 _bullPerBlock) public onlyOwner {\n    uint128 previous = bullPerBlock;\n    // Do NOT mass update all pools here to avoid DoS when pool array is large.\n    // If a full sync is desired, the owner can call massUpdatePools(from, to) to update in batches.\n    bullPerBlock = _bullPerBlock;\n    emit EmissionRateUpdated(msg.sender, previous, _bullPerBlock);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "massUpdatePools",
+            "fix_info": "Added a new owner-only batch updater that allows updating a range of pools ([_from, _to)) to enable safe, gas-limited updates. This replaces the previous single-call mass update pattern which could run out of gas when the pool list grows large.",
+            "corrected_code": "function massUpdatePools(uint256 _from, uint256 _to) external onlyOwner {\n    uint256 length = poolInfo.length;\n    require(length > 0, \"massUpdatePools: no pools\");\n    if (_to > length) {\n        _to = length;\n    }\n    require(_from < _to, \"massUpdatePools: invalid range\");\n\n    for (uint256 pid = _from; pid < _to; ++pid) {\n        _updatePool(pid);\n    }\n}",
+            "change_type": "added"
+        }
+    ]
+}]

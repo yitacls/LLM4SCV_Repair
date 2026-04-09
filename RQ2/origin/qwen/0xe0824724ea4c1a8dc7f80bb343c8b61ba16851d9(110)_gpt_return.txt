@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(result);",
+    "description": "The send() function is used to transfer ETH to the msg.sender, but its return value is not checked. In Solidity 0.4.24, send() returns false instead of reverting when the transfer fails (e.g., due to insufficient gas or receiver contract fallback function failure). This can lead to silent failures where the contract execution continues even though the ETH transfer failed, potentially causing loss of funds or inconsistent state."
+}
+```

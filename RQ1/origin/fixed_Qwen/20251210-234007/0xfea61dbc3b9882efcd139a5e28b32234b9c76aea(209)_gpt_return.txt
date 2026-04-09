@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CoinCrowdICO",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced insecure tx.origin check with secure onlyOwner modifier to prevent potential authorization bypass",
+            "corrected_code": "function addMeByRC(address _ambassadorAddr) public onlyOwner {\n    ambassadorAddressOf[msg.sender] = _ambassadorAddr;\n    NewAmbassador(_ambassadorAddr, msg.sender);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

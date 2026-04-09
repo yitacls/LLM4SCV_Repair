@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DrainMe",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "winPrize",
+            "fix_info": "Added check for successful low-level call to prevent unchecked return value vulnerability",
+            "corrected_code": "function winPrize() public payable onlyOwner {\n    // Fixed unchecked low-level call vulnerability\n    require(owner.call.value(1 wei)());\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

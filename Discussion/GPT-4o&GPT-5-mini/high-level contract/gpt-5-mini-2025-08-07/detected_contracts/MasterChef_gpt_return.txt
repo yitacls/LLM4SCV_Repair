@@ -1,0 +1,47 @@
+[
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function add(...)\n{\n    if (_withUpdate) {\n        massUpdatePools();\n    }\n    ...\n}",
+    "description": "add() calls massUpdatePools() while still in the add() call context. massUpdatePools() iterates pools and calls updatePool(), which performs external calls to pud.mint(...). updatePool() performs those external calls before finishing updating the pool state (accPudPerShare and lastRewardBlock). Because an external call occurs before internal state updates complete, a malicious pud contract (or a reentrant token implementation) could reenter MasterChef and manipulate state or cause inconsistent accounting. Even though add() is onlyOwner, the pattern of calling external contracts before completing state updates is unsafe and constitutes a reentrancy risk."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function set(...)\n{\n    if (_withUpdate) {\n        massUpdatePools();\n    }\n    totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(\n        _allocPoint\n    );\n    poolInfo[_pid].allocPoint = _allocPoint;\n}",
+    "description": "set() can call massUpdatePools() which triggers updatePool() and in turn makes external calls (pud.mint). Those external calls occur before completing critical state updates inside updatePool(). This reentrancy window (external calls occurring prior to atomic state updates) can be abused by a malicious pud or other contracts invoked during massUpdatePools() to reenter and corrupt accounting or manipulate allocation points."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function deposit(uint256 _pid, uint256 _amount) public {\n    updatePool(_pid);\n    if (user.shares > 0) {\n        uint256 pending = ...;\n        safePudTransfer(msg.sender, pending);\n    }\n\n    uint256 _pool = balance(_pid);\n    if (_amount > 0) {\n        uint256 _before = pool.lpToken.balanceOf(pool.strategy);\n        pool.lpToken.safeTransferFrom(\n            address(msg.sender),\n            pool.strategy,\n            _amount\n        );\n        uint256 _after = pool.lpToken.balanceOf(pool.strategy);\n        _amount = _after.sub(_before);\n    }\n    ...\n}",
+    "description": "deposit() performs multiple external interactions before completing its state updates. It transfers pending Pud to the user (safePudTransfer) before updating the user's shares/rewardDebt. It then transfers LP tokens to pool.strategy (an external contract) before updating user.shares and pool.totalShares. Because external calls happen while the user's and pool's accounting is still mutable and not yet finalized, a malicious strategy or token (or token transferrer) could reenter MasterChef (for example call withdraw/emergencyWithdraw/deposit) and exploit inconsistent state to steal funds or inflate rewards."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "Inside deposit():\nuint256 _before = pool.lpToken.balanceOf(pool.strategy);\npool.lpToken.safeTransferFrom(\n    address(msg.sender),\n    pool.strategy,\n    _amount\n);\nuint256 _after = pool.lpToken.balanceOf(pool.strategy);\n_amount = _after.sub(_before);",
+    "description": "The transfer of LP tokens to pool.strategy (safeTransferFrom to pool.strategy) sends tokens to an external contract while MasterChef has not yet updated user.shares and pool.totalShares. A malicious pool.strategy could reenter MasterChef on receipt of tokens (e.g. via token hooks or if strategy calls back) and exploit the fact that accounting for the deposit is not yet finalized. This specific external transfer before state updates creates a reentrancy window."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function withdraw(uint256 _pid, uint256 _shares) public {\n    require(user.shares >= _shares, \"withdraw: not good\");\n    updatePool(_pid);\n\n    uint256 r = (balance(_pid).mul(_shares)).div(pool.totalShares);\n    uint256 pending = user.shares.mul(pool.accPudPerShare).div(1e12).sub(user.rewardDebt);\n\n    safePudTransfer(msg.sender, pending);\n    user.shares = user.shares.sub(_shares);\n    user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n    pool.totalShares = pool.totalShares.sub(_shares);\n\n    if (r > 0) {\n        uint256 b = pool.lpToken.balanceOf(address(this));\n\n        IStrategy(pool.strategy).withdraw(r);\n        ...\n        pool.lpToken.safeTransfer(address(msg.sender), r);\n    }\n}",
+    "description": "withdraw() transfers pending Pud to the user (safePudTransfer) before reducing user.shares and pool.totalShares. Because the external token transfer occurs while the user's share balance is still the old value, a malicious ERC token (or token implementing hooks) could reenter MasterChef and call withdraw/deposit again, passing the initial require checks and causing double-withdrawals or other inconsistent accounting. Although later calls (IStrategy.withdraw) occur after state update, the initial external transfer earlier in the function opens a reentrancy window."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function emergencyWithdraw(uint256 _pid) public {\n    PoolInfo storage pool = poolInfo[_pid];\n    UserInfo storage user = userInfo[_pid][msg.sender];\n    uint256 r = (balance(_pid).mul(user.shares)).div(pool.totalShares);\n\n    uint256 b = pool.lpToken.balanceOf(address(this));\n\n    IStrategy(pool.strategy).withdraw(r);\n    uint256 _after = pool.lpToken.balanceOf(address(this));\n    uint256 _diff = _after.sub(b);\n    if (_diff < r) {\n        r = b.add(_diff);\n    }\n\n    pool.lpToken.safeTransfer(address(msg.sender), r);\n    emit EmergencyWithdraw(msg.sender, _pid, user.shares);\n    user.shares = 0;\n    user.rewardDebt = 0;\n}",
+    "description": "emergencyWithdraw() calls the external strategy.withdraw(r) and transfers LP tokens to the user before zeroing out user.shares and user.rewardDebt. This order allows a malicious strategy (or token with hooks) to reenter MasterChef before the user's balances are cleared and exploit the still-present share accounting (for example call emergencyWithdraw/withdraw again), enabling double-withdrawal or other inconsistent state manipulations."
+  },
+  {
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function safePudTransfer(address _to, uint256 _amount) internal {\n    uint256 pudBal = pud.balanceOf(address(this));\n    if (_amount > pudBal) {\n        pud.transfer(_to, pudBal);\n    } else {\n        pud.transfer(_to, _amount);\n    }\n}",
+    "description": "safePudTransfer uses pud.transfer(...) directly and does not check the returned boolean value. Some ERC20 tokens return false on failure instead of reverting; failing to check the return value can cause the contract to assume a transfer succeeded when it did not. Additionally, calling transfer on a token contract can trigger arbitrary code (e.g. ERC777 hooks) — combined with the missing checks and the fact that transfers are executed before important state updates elsewhere, this creates both an unchecked-return risk and a reentrancy vector."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function balance(uint256 _pid) public view returns (uint256) {\n    PoolInfo storage pool = poolInfo[_pid];\n    return IStrategy(pool.strategy).balanceOf();\n}",
+    "description": "balance() is a public function that calls an external strategy contract's balanceOf() and returns its value. While this is a view, relying on an external untrusted contract for on-chain accounting each time can be dangerous: a malicious strategy could make balanceOf() behave unpredictably or revert, causing inconsistent results in callers (deposit/withdraw/emergencyWithdraw) that use balance(). If balance() is called within state-changing flows, this external call could be manipulated to create inconsistent accounting or be used as part of a reentrancy exploit."
+  },
+  {
+    "type": "SWC-104-Unchecked Call Return Value / SWC-107-Reentrancy",
+    "location": "function setPoolStrategy(uint256 _pid,address _strategy) public onlyOwner {\n    PoolInfo storage pool = poolInfo[_pid];\n    IStrategy(pool.strategy).harvest();\n    IStrategy(pool.strategy).withdrawAll(_strategy);\n    pool.strategy = _strategy;\n}",
+    "description": "setPoolStrategy performs external calls to the current strategy (harvest and withdrawAll) before updating pool.strategy. Because these external calls are made prior to updating MasterChef's state, a malicious strategy could reenter and exploit inconsistent state. Additionally, the contract does not check return values or handle failures from these external calls, increasing the risk of unexpected behavior. Even though setPoolStrategy is onlyOwner, the pattern of calling external untrusted contracts before updating internal references is unsafe."
+  }
+]

@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "MasterChef",
+        "contract_version": "0.8.4",
+        "functions": [
+            {
+                "function_name": "_massUpdatePools",
+                "fix_info": "Optimized the mass update of pools to prevent gas limit issues.",
+                "corrected_code": "function _massUpdatePools() private {\n        uint256 length = poolInfo.length;\n        uint256 gasToUse = gasleft() > 50000 ? 50000 : gasleft();\n        for (uint256 pid = 0; pid < length; ++pid) {\n            if (gasToUse < 35000) {\n                break;\n            }\n            _updatePool(pid);\n            gasToUse -= 35000;\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed the gas consumption issue and optimized the deposit function.",
+                "corrected_code": "function deposit(uint16 _pid, uint256 _amount, address _referrer) public nonReentrant {\n        PoolInfo storage pool = poolInfo[_pid];\n        UserInfo storage user = userInfo[_pid][msg.sender];\n        _updatePool(_pid);\n        payOrLockupPendingBull(_pid);\n        if (_amount > 0) {\n            pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);\n            if (address(pool.lpToken) == address(bull)) {\n                uint256 transferTax = _amount.mul(bull.transferTaxRate()).div(10000);\n                _amount = _amount.sub(transferTax);\n            }\n            if (pool.depositFeeBP > 0) {\n                uint256 depositFee = _amount.mul(pool.depositFeeBP).div(10000);\n                pool.lpToken.safeTransfer(feeAddress, depositFee);\n                user.amount = user.amount.add(_amount).sub(depositFee);\n            } else {\n                user.amount = user.amount.add(_amount);\n                if(rewardDistribution.poolExistence(_pid)){\n                    rewardDistribution.incrementBalance(_pid, _amount, msg.sender);\n                }\n            }\n        }\n        _updateStrength(_pid);\n        user.rewardDebt = user.strength.mul(pool.accBullPerShare).div(1e12);\n        emit Deposit(msg.sender, _pid, _amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

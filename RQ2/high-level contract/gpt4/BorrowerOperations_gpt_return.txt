@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Lines 321 to 351 in `_adjustTrove` and `closeTrove` functions",
+    "description": "In these functions, Ether is transferred in a call without verifying the outgoing address. This means that the contract could potentially allow an adversary to steal funds by providing a malicious, target account during execution. The unprotected ether transfer functions actively allow for vulnerability to reentrancy attacks and should be protected appropriately."
+}
+```

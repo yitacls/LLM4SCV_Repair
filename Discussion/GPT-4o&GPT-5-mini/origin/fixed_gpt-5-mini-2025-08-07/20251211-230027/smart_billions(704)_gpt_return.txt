@@ -1,0 +1,40 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner to restrict setting of external entropy (randomSeed) to a trusted party — avoids miner manipulation by requiring an off-chain seed provider.",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "randomSeed",
+            "fix_info": "Added externally-updatable entropy (must be set by owner) that is mixed with block hashes to reduce miner manipulability. This moves randomness responsibility off-chain or to an oracle/owner instead of relying solely on blockhash.",
+            "variable_code": "bytes32 public randomSeed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Restricts sensitive operations (like updating the external seed) to the contract owner to avoid arbitrary updates.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced the naïve concatenation of individual blockhash values with a cryptographic mix using keccak256 and an externally-provided seed. This reduces the ability of miners to bias outcomes by requiring an off-chain/owner-supplied seed to be mixed into the entropy. Preserves original return layout (ten 24-bit chunks packed plus the delta-derived value at shift 240).",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Mix an externally-provided seed with recent blockhashes and the _delta to derive the combined value.\n    // Using keccak256 to cryptographically mix the inputs reduces the effectiveness of miner manipulation\n    // compared to using raw blockhash concatenation alone. The external seed (randomSeed) must be\n    // provided/set by the owner (or an oracle) and rotated off-chain to preserve unpredictability.\n\n    bytes32 h = keccak256(\n        randomSeed,\n        block.blockhash(_lastb),\n        block.blockhash(_lastb + 1),\n        block.blockhash(_lastb + 2),\n        block.blockhash(_lastb + 3),\n        block.blockhash(_lastb + 4),\n        block.blockhash(_lastb + 5),\n        block.blockhash(_lastb + 6),\n        block.blockhash(_lastb + 7),\n        block.blockhash(_lastb + 8),\n        block.blockhash(_lastb + 9),\n        _delta\n    );\n\n    uint result = 0;\n    // Extract ten 24-bit chunks from the hash and pack them as in the original implementation.\n    for (uint8 i = 0; i < 10; i++) {\n        uint chunk = (uint(h) >> (i * 24)) & 0xFFFFFF;\n        result |= (chunk << (i * 24));\n    }\n\n    // Preserve original delta-based high bits behavior\n    result |= ((uint(_delta) / hashesSize) << 240);\n    return result;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setRandomSeed",
+            "fix_info": "Allows the owner to set/update the external entropy seed. This function must be called off-chain by the trusted seed provider/oracle to rotate the seed periodically to maintain unpredictability.",
+            "corrected_code": "function setRandomSeed(bytes32 _seed) public onlyOwner {\n    randomSeed = _seed;\n}",
+            "change_type": "added"
+        }
+    ]
+}]

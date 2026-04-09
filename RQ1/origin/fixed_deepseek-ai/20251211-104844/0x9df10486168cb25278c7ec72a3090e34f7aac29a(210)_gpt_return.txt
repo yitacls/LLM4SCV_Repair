@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "GPowerToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "icoStart",
+            "fix_info": "Timestamp variable should use uint256 to prevent overflow",
+            "variable_code": "uint256 public icoStart;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "enableIco",
+            "fix_info": "ICO flag variable",
+            "variable_code": "bool public enableIco;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "isIco",
+            "fix_info": "Fixed arithmetic overflow by using SafeMath operations, added explicit visibility, and improved logic clarity",
+            "corrected_code": "function isIco() public view returns (bool ico) {\n    // Using SafeMath to prevent overflow in time calculation\n    uint256 icoDuration = 35 days;\n    uint256 icoEndTime = icoStart.add(icoDuration);\n    \n    bool timeCheck = (now <= icoEndTime);\n    \n    if (enableIco) {\n        return true;\n    } else {\n        return timeCheck;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

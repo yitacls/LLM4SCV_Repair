@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "SYCPrivateEarlyPurchase",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "totalEarlyPurchaseRaised",
+                "fix_info": "Added overflow protection through SafeMath library",
+                "variable_code": "using SafeMath for uint256;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "appendEarlyPurchase",
+                "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() with proper error handling, added SafeMath operations to prevent overflows, and replaced deprecated 'throw' with 'revert'",
+                "corrected_code": "function appendEarlyPurchase(address purchaser, uint amount, uint purchasedAt)\n        internal\n        onlyEarlyPurchaseTerm\n        returns (bool)\n    {\n        require(purchasedAt > 0 && purchasedAt <= now, \"Invalid purchase timestamp\");\n        \n        if(totalEarlyPurchaseRaised.add(amount) >= WEI_MAXIMUM_EARLYPURCHASE){\n            uint refundAmount = totalEarlyPurchaseRaised.add(amount).sub(WEI_MAXIMUM_EARLYPURCHASE);\n            uint purchaseAmount = WEI_MAXIMUM_EARLYPURCHASE.sub(totalEarlyPurchaseRaised);\n            \n            if (refundAmount > 0) {\n                require(purchaser.send(refundAmount), \"Refund transfer failed\");\n            }\n            \n            earlyPurchases.push(EarlyPurchase(purchaser, purchaseAmount, purchasedAt));\n            totalEarlyPurchaseRaised = totalEarlyPurchaseRaised.add(purchaseAmount);\n        }\n        else{\n            earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));\n            totalEarlyPurchaseRaised = totalEarlyPurchaseRaised.add(amount);\n        }\n        \n        if(totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE || now >= ENDING_TIME){\n            earlyPurchaseClosedAt = now;\n        }\n        \n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

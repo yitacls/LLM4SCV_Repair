@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "Relayer",
+        "contract_version": "0.7.6",
+        "functions": [
+            {
+                "function_name": "setDstPrice",
+                "fix_info": "Fixed potential integer overflow vulnerabilities by updating data types in function parameters and storage variables.",
+                "corrected_code": "function setDstPrice(uint16 _chainId, uint128 _dstPriceRatio, uint128 _dstGasPriceInWei) external onlyApproved {\n        dstPriceLookup[_chainId] = DstPrice(uint128(_dstPriceRatio), uint128(_dstGasPriceInWei));\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setDstConfig",
+                "fix_info": "Fixed potential integer overflow vulnerabilities by updating data types in function parameters and storage variables.",
+                "corrected_code": "function setDstConfig(uint16 _chainId, uint16 _outboundProofType, uint128 _dstNativeAmtCap, uint64 _baseGas, uint64 _gasPerByte) external onlyApproved {\n        dstConfigLookup[_chainId][_outboundProofType] = DstConfig(uint128(_dstNativeAmtCap), uint64(_baseGas), uint64(_gasPerByte));\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

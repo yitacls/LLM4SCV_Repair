@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level 'call' method is not checked for success. In Solidity 0.4.19, this call silently continues execution even if the external call fails (e.g., due to insufficient gas, revert, or non-existent contract). This can cause unexpected state changes in the calling contract as it won't be aware of the failure. It's recommended to always check the return value of low-level calls, handle failure cases explicitly, and consider using transfer() or send() for plain Ether transfers, or at minimum: 'require(adr.call.value(msg.value)(data));'"
+}
+```

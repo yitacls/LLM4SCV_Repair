@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "IntegerOverflowMultiTxOneFuncFeasible",
+        "contract_version": "^0.4.23",
+        "state_variables": [
+            {
+                "variable_name": "initialized",
+                "fix_info": "No changes needed",
+                "variable_code": "uint256 private initialized;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "count",
+                "fix_info": "No changes needed",
+                "variable_code": "uint256 private count;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "run",
+                "fix_info": "Fixed arithmetic underflow vulnerability by using SafeMath library for subtraction",
+                "corrected_code": "function run(uint256 input) public {\n    if (initialized == 0) {\n        initialized = 1;\n        return;\n    }\n    // Fixed: Use SafeMath subtraction to prevent underflow\n    count = count.sub(input);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "SafeMath_sub",
+                "fix_info": "Added SafeMath library function for safe subtraction to prevent underflow",
+                "corrected_code": "library SafeMath {\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a, \"SafeMath: subtraction overflow\");\n        return a - b;\n    }\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

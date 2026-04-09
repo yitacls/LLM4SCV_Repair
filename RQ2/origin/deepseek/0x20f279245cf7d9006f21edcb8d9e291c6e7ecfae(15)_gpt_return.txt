@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "This line performs an unchecked addition of two unsigned integers. In Solidity < 0.8.0, integer overflow/underflow does not automatically revert. If the sum of balanceOf[_from] and balanceOf[_to] exceeds the maximum value of uint (2^256 - 1), it will wrap around, causing an overflow. This behavior can be exploited to bypass the subsequent assertion (assert(balanceOf[_from] + balanceOf[_to] == previousBalances);), allowing unauthorized token transfers or corrupting the token supply accounting."
+}
+```

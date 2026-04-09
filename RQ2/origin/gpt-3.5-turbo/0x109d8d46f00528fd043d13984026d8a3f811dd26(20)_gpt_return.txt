@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "benecifiary.send(msg.value);",
+    "description": "The contract transfers ether to the beneficiary using a low-level call, which does not check the success of the operation. This can lead to potential issues such as reentrancy attacks or loss of funds if the beneficiary is a contract that does not handle Ether appropriately."
+}
+```  

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(balances[_token][tx.origin] >= _amounts[i]);",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, which makes it vulnerable to phishing attacks. A malicious contract could call this function, causing the original transaction sender (tx.origin) to pay for transfers from their balance without their direct intent. Additionally, the function lacks access control modifiers (like onlyOwner), allowing any user to trigger token transfers from other users' balances as long as they are the tx.origin of a transaction initiated by that user."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 131: int24 tickSpacing = int24(fee) / 50;",
+    "description": "The contract uses integer division on line 131 which can lead to precision loss. The 'fee' parameter (uint24) is cast to int24 and then divided by 50. This division operation truncates any remainder, which may result in tickSpacing being 0 for fee values less than 50. A tickSpacing of 0 would cause division by zero issues in subsequent calculations on lines 132-133 where tickSpacing is used as a divisor in the expressions ((tick - tickDelta) / tickSpacing) and ((tick + tickDelta) / tickSpacing). Additionally, the contract uses Solidity 0.7.6 which does not have built-in overflow/underflow protection for arithmetic operations, making all arithmetic operations susceptible to integer overflow/underflow vulnerabilities."
+}
+```

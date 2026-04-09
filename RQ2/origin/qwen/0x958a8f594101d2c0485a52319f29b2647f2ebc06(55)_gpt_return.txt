@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_dst.call.value(_value)(_data);",
+    "description": "The low-level call operation does not check the return value, which can lead to silent failures. In Solidity ^0.4.16, low-level calls like call.value() return a boolean indicating success or failure, but this return value is not being checked. If the call fails (e.g., due to out-of-gas or revert in the called contract), the function will continue execution without handling the failure, potentially leading to unexpected behavior or loss of funds."
+}
+```

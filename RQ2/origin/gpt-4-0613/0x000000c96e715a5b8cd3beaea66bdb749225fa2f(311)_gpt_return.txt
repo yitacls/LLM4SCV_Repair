@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function totalSupply() public view returns (uint256) { return totalSupply_; }",
+    "description": "The function totalSupply allows anyone to view the total supply of BasicToken. This is potentially a security vulnerability as it should only be accessible to the owner of the contract or authorized individuals to prevent unwanted disclosure of sensitive information."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "answer = uint8(keccak256(block.blockhash(block.number - 1), now));",
+    "description": "This contract uses predictable on-chain data (blockhash and timestamp) to generate a random number, making it vulnerable to exploitation. Attackers can replicate the same calculation by reading the previous block's hash and timestamp from the blockchain, allowing them to guess the answer correctly. Additionally, using 'now' (alias for 'block.timestamp') and 'block.blockhash' (deprecated in favor of 'blockhash()') are miner-influenced values that should never be used for randomness in smart contracts requiring security."
+}
+```

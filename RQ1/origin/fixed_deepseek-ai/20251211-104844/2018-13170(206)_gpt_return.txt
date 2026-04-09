@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "SnoqualmieCoin",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Added SafeMath library for secure arithmetic operations",
+                "variable_code": "using SafeMath for uint256;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No change needed",
+                "modifier_code": "",
+                "change_type": ""
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath and updated syntax for Solidity 0.4.x",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        emit Transfer(address(0), this, mintedAmount);\n        emit Transfer(this, target, mintedAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

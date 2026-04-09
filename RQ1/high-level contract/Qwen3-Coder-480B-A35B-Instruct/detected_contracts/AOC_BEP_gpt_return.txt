@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-118-Incorrect Constructor Name",
+        "location": "function initialize() public initializer { ... }",
+        "description": "The contract uses an 'initialize' function instead of a constructor for setting up initial state in an upgradeable contract. While this is standard for upgradeable contracts, the comment '// SWC-118-Incorrect Constructor Name: L115 - L126' indicates possible misinterpretation or confusion regarding constructor usage in the context of upgradeable contracts."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "SWC-135-Code With No Effects: L362",
+        "description": "The comment points to line 362 with potential code having no effect. However, the actual code line is not directly visible in the provided snippet but may relate to statements that do not alter the contract's state or produce side effects."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner payable { ... }",
+        "description": "There's a misleading comment '// SWC-105-Unprotected Ether Withdrawal: L362' pointing to this function. However, the function is protected with 'onlyOwner' modifier, which prevents unauthorized access. This seems to be a false positive or misplaced vulnerability reference."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract is vulnerable to an access control attack because it relies on 'tx.origin' for authenticating the transaction initiator. A malicious contract can still control 'tx.origin' and impersonate the owner, thus gaining unauthorized access to contract functionalities. To prevent this vulnerability, 'msg.sender' should be used instead of 'tx.origin' to verify the immediate sender of the transaction."
+}
+```

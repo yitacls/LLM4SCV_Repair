@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == state.owner, \"Owner\");",
+    "description": "The contract uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. tx.origin returns the original external caller's address, while msg.sender returns the immediate caller's address. This allows malicious contracts to bypass access control by tricking the owner into calling a malicious contract, as tx.origin will still be the owner's address. This vulnerability can lead to unauthorized access to owner-only functions."
+}
+```

@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "function withdraw(uint256 amount) public",
+        "description": "The function lacks proper access control checks, allowing any user to withdraw any amount as long as it's greater than or equal to their balance. However, the critical issue is that it uses 'amount >= balances[msg.sender]' instead of 'amount <= balances[msg.sender]', which could allow withdrawals even when 'amount' exceeds the balance (though it requires 'amount' to be at least the balance). More importantly, there is no ownership verification or role-based restriction, making it vulnerable if combined with other flaws like reentrancy (though reentrancy is mitigated by updating the balance after transfer in this specific version). The main access control vulnerability is the absence of checks to ensure only authorized users can trigger withdrawals."
+    }
+}
+```

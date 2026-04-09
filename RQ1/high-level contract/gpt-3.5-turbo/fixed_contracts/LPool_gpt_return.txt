@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "LPool",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "borrowFresh",
+                "fix_info": "Fixed reentrancy vulnerability by ensuring the borrow amount is checked before transfer",
+                "corrected_code": "function borrowFresh(address payable borrower, address payable payee, uint borrowAmount) internal sameBlock { require(getCashPrior() >= borrowAmount, 'cash < borrow'); (ControllerInterface(controller)).borrowAllowed(address(this), borrower, payee, borrowAmount); ... }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "repayBorrowFresh",
+                "fix_info": "Fixed reentrancy vulnerability by ensuring the actual repay amount is checked before updating balances",
+                "corrected_code": "function repayBorrowFresh(address payer, address borrower, uint repayAmount, bool isEnd) internal sameBlock returns (uint) { (ControllerInterface(controller)).repayBorrowAllowed(address(this), payer, borrower, repayAmount, isEnd); if (isEnd) { repayAmount = accountBorrows[borrower].principal; } ... }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

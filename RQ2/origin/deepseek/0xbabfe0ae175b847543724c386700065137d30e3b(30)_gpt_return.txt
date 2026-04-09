@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "This contract uses the low-level 'call.value()' function to transfer Ether without implementing the Checks-Effects-Interactions pattern. The external call to 'msg.sender' is executed before the contract's state (balances[msg.sender]) is updated. This allows a malicious recipient contract to implement a fallback/receive function that recursively calls CashOut again before the balance deduction occurs, potentially draining funds from the contract. In Solidity ^0.4.18, there is no native reentrancy guard, making this version particularly vulnerable. The vulnerability is exacerbated by using 'call.value()' which forwards all available gas by default."
+}
+```

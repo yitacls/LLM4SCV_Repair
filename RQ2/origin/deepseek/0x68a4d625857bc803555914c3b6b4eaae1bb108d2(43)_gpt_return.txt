@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "This function uses tx.origin for authorization instead of msg.sender, which is vulnerable to phishing attacks. Malicious contracts can trick the owner into calling them, and when the owner's transaction flows through the malicious contract, tx.origin will still be the owner's address, allowing unauthorized execution. Additionally, the contract uses ^0.4.25 which has known security issues and the unlockSupply() function lacks proper access control modifiers."
+    }
+}
+```

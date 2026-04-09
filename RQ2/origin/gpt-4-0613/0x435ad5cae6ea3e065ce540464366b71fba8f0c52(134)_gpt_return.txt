@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool ret = med_.call(bytes4(keccak256(\"poke()\")));",
+    "description": "In the function 'post', a low level call is made without checking its return value. This can be a possible security vulnerability because failure of the 'med_.call' is not handled in the contract. If the call fails and there are no checks in place it could lead to undesirable states in the smart contract."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "owner.transfer(reward);\n        reward = msg.value;",
+    "description": "The contract updates the reward after transferring it, creating a transaction ordering dependency. An attacker can monitor the mempool for pending transactions and front-run them by sending a transaction with higher gas price to claim the reward before the intended transaction executes. This is a classic front-running vulnerability where the order of transactions affects the contract's state and fund distribution."
+}
+```

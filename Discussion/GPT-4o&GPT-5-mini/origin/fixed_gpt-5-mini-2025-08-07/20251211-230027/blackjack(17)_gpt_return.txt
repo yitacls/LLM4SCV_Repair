@@ -1,0 +1,48 @@
+[
+    {
+        "contract_name": "Deck",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added owner to gate updates to the randomness seed. Must be set in the contract constructor (outside of this snippet).",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "randomSeed",
+                "fix_info": "Added a contract-controlled entropy seed that must be supplied by an off-chain trusted source (oracle / VRF). Avoids using block data for randomness.",
+                "variable_code": "bytes32 public randomSeed;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "nonce",
+                "fix_info": "Added an internal nonce to ensure each deal produces a distinct output even with the same seed and inputs.",
+                "variable_code": "uint256 internal nonce;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Adds an ownership check to restrict who can update the random seed.",
+                "modifier_code": "modifier onlyOwner() {\n\t\tif (msg.sender != owner) throw;\n\t\t_;\n\t}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "deal",
+                "fix_info": "Replaced insecure block-dependent randomness with a seed-based approach. Uses an off-chain-set randomSeed and an internal nonce to produce a 0-51 card index. Increments nonce to avoid reuse.",
+                "corrected_code": "function deal(address player, uint8 cardNumber) internal returns (uint8) {\n\t\t// Use an off-chain-provided unpredictable seed and a contract nonce\n\t\t// randomSeed must be set by the contract owner (for example, from an oracle/VRF)\n\t\t// This avoids miner-manipulable block data like blockhash/timestamp\n\t\tuint8 card = uint8(uint256(keccak256(randomSeed, player, cardNumber, nonce)) % 52);\n\t\tnonce += 1;\n\t\treturn card;\n\t}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setRandomSeed",
+                "fix_info": "Allows the owner to update the off-chain-provided random seed. This function should be called with entropy sourced securely (e.g. VRF).",
+                "corrected_code": "function setRandomSeed(bytes32 _seed) external onlyOwner {\n\t\trandomSeed = _seed;\n\t}",
+                "change_type": "added"
+            }
+        ]
+    }
+]

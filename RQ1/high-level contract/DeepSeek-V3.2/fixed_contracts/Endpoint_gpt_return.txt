@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Endpoint",
+    "contract_version": "0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "latestVersion",
+            "fix_info": "Changed type from uint16 to uint256 to prevent overflow when incrementing beyond 65535",
+            "variable_code": "uint256 public latestVersion;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "newVersion",
+            "fix_info": "Fixed integer overflow vulnerability by replacing unchecked increment with safe addition and explicit overflow check",
+            "corrected_code": "function newVersion(address _newLayerZeroLibraryAddress) external onlyOwner {\n    require(_newLayerZeroLibraryAddress != address(0x0), \"LayerZero: new version cannot be zero address\");\n    require(latestVersion < type(uint256).max - 1, \"LayerZero: cannot add new messaging library - maximum version reached\");\n    uint256 newVersionNumber = latestVersion + 1;\n    require(newVersionNumber <= type(uint16).max, \"LayerZero: version number exceeds uint16 range\");\n    latestVersion = newVersionNumber;\n    libraryLookup[uint16(newVersionNumber)] = ILayerZeroMessagingLibrary(_newLayerZeroLibraryAddress);\n    emit NewLibraryVersionAdded(uint16(newVersionNumber));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

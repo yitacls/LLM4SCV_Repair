@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "FairDice",
+    "contract_version": "^0.4.26",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "kill",
+            "fix_info": "Replaced deprecated selfdestruct with newer syntax and maintained access control",
+            "corrected_code": "function kill() external onlyOwner {\n        require (lockedInBets == 0, \"All bets should be processed (settled or refunded) before self-destruct.\");\n        selfdestruct(address(owner));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

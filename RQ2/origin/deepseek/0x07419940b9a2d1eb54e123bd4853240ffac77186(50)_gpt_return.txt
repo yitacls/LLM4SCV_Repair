@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(uint tokenCount) public returns (bool) { ... msg.sender.transfer(balance); ... }",
+    "description": "The withdraw() function has no access control modifier (such as onlyOwner) and allows any caller to withdraw the contract's dividend balance without proper authorization. This vulnerability enables unauthorized withdrawals of contract funds, potentially draining all ETH from the contract. Additionally, the function parameter tokenCount is unused, suggesting potential confusion in function logic, though the primary risk is the missing access restriction on fund withdrawals."
+}
+```

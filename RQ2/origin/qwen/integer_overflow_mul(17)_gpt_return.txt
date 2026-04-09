@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "count *= input;",
+    "description": "The multiplication operation is vulnerable to integer overflow. In Solidity version ^0.4.19, arithmetic operations do not have built-in overflow protection. When the result of multiplying 'count' by 'input' exceeds the maximum value that can be stored in the variable's type, it will wrap around to a much smaller value, potentially causing unexpected behavior and security vulnerabilities."
+}
+```

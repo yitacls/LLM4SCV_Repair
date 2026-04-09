@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EnterToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic underflow vulnerability by using SafeMath operations for balance calculations and reordered operations to follow checks-effects-interactions pattern",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balanceOf[msg.sender] < amount) throw;        // checks if the sender has enough to sell\n        balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance first\n        balanceOf[this] += amount;                         // adds the amount to owner's balance\n        if (!msg.sender.send(amount * sellPrice)) {        // sends ether to the seller. It's important\n            throw;                                         // to do this last to avoid recursion attacks\n        } else {\n            Transfer(msg.sender, this, amount);            // executes an event reflecting on the change\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

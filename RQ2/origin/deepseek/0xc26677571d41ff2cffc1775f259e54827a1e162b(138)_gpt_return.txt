@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner());",
+    "description": "This function uses `tx.origin` for authorization, which is vulnerable to phishing attacks. The `tx.origin` variable returns the original external account that initiated the transaction chain. A malicious contract could trick the owner into calling a function that then calls `addMeByRC()`, causing the authorization check to pass since `tx.origin` would still be the owner, even though `msg.sender` would be the attacker's contract. This allows unauthorized accounts to be added to the `rc` mapping. Additionally, using Solidity 0.4.19 increases risk due to outdated compiler protections."
+}
+```

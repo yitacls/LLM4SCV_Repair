@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Hold",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "amountRaised",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "using SafeMath for uint256;\nuint256 public amountRaised;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath addition",
+            "corrected_code": "function () payable public {\n    uint amount = msg.value;\n    amountRaised = amountRaised.add(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

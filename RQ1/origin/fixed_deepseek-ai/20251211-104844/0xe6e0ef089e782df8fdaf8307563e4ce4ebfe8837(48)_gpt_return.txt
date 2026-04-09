@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TestCrypteriumToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for safe addition and subtraction operations. The unchecked addition in line 'balances[_to] = balances[_to] + _value' could overflow, and the subtraction could underflow. Added require statements to prevent these edge cases.",
+            "corrected_code": "function transfer(address _to, uint256 _value) whenTransferAllowed public returns (bool) {\n    require(_to != address(0));\n    require(_value <= balances[msg.sender]);\n    \n    // Safe subtraction to prevent underflow\n    balances[msg.sender] = balances[msg.sender] - _value;\n    \n    // Safe addition to prevent overflow\n    uint256 newBalance = balances[_to] + _value;\n    require(newBalance >= balances[_to]); // Check for overflow\n    balances[_to] = newBalance;\n    \n    Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

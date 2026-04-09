@@ -1,0 +1,32 @@
+[{
+    "contract_name": "Vault",
+    "contract_version": "0.6.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "depositERC20",
+            "fix_info": "Add the logic to prevent the integer underflow when the token's decimal is larger than 9.",
+            "corrected_code": "function depositERC20(address token, uint amount, string calldata incognitoAddress) external payable nonReentrant {\n  IERC20 erc20Interface = IERC20(token);\n  uint8 decimals = getDecimals(address(token));\n  uint tokenBalance = erc20Interface.balanceOf(address(this));\n  uint beforeTransfer = tokenBalance;\n  uint emitAmount = amount;\n\n  require(decimals <= 18);\n\n  if (decimals > 9) {\n    emitAmount = SafeMath.safeDiv(emitAmount, (10 ** (uint(decimals) - 9)));\n    tokenBalance = SafeMath.safeDiv(tokenBalance, (10 ** (uint(decimals) - 9)));\n  }\n\n  require(emitAmount <= 10 ** 18 && tokenBalance <= 10 ** 18 && emitAmount.safeAdd(tokenBalance) <= 10 ** 18, errorToString(Errors.VALUE_OVER_FLOW));\n  erc20Interface.transferFrom(msg.sender, address(this), amount);\n  require(checkSuccess(), errorToString(Errors.INTERNAL_TX_ERROR));\n  require(balanceOf(token).safeSub(beforeTransfer) == amount, errorToString(Errors.NOT_EQUAL));\n\n  emit Deposit(token, incognitoAddress, emitAmount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "submitBurnProof",
+            "fix_info": "Added the SafeMath lib to prevent the integer underflow when the token's decimal is larger than 9.",
+            "corrected_code": "function submitBurnProof(\n  bytes memory inst,\n  uint heights,\n  bytes32[] memory instPaths,\n  bool[] memory instPathIsLefts,\n  bytes32 instRoots,\n  bytes32 blkData,\n  uint[] memory sigIdxs,\n  uint8[] memory sigVs,\n  bytes32[] memory sigRs,\n  bytes32[] memory sigSs\n) public nonReentrant {\n  require(inst.length >= 130);\n  BurnInstData memory data = parseBurnInst(inst);\n  require(data.meta == 243 && data.shard == 1);\n\n  require(!isWithdrawed(data.itx), errorToString(Errors.ALREADY_USED));\n  withdrawed[data.itx] = true;\n\n  if (data.token == ETH_TOKEN) {\n    require(address(this).balance >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n  } else {\n    uint8 decimals = getDecimals(data.token);\n\n    require(decimals <= 18);\n    if (decimals > 9) {\n      data.amount = SafeMath.safeMul(data.amount, (10 ** (uint(decimals) - 9)));\n    }\n    require(IERC20(data.token).balanceOf(address(this)) >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n  }\n\n  verifyInst(\n    inst,\n    heights,\n    instPaths,\n    instPathIsLefts,\n    instRoots,\n    blkData,\n    sigIdxs,\n    sigVs,\n    sigRs,\n    sigSs\n  );\n\n  withdrawRequests[data.to][data.token] = withdrawRequests[data.to][data.token].safeAdd(data.amount);\n  totalDepositedToSCAmount[data.token] = totalDepositedToSCAmount[data.token].safeAdd(data.amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "requestWithdraw",
+            "fix_info": "Add SafeMath library to prevent wrap around attacks when decreasing the requested withdrawal.",
+            "corrected_code": "function requestWithdraw(\n  string calldata incognitoAddress,\n  address token,\n  uint amount,\n  bytes calldata signData,\n  bytes calldata timestamp\n) external nonReentrant {\n   address verifier = verifySignData(abi.encode(incognitoAddress, token, timestamp, amount), signData);\n\n   migrateBalance(verifier, token);\n\n   require(withdrawRequests[verifier][token] >= amount, errorToString(Errors.WITHDRAW_REQUEST_TOKEN_NOT_ENOUGH));\n   withdrawRequests[verifier][token] = withdrawRequests[verifier][token].safeSub(amount);\n   totalDepositedToSCAmount[token] = totalDepositedToSCAmount[token].safeSub(amount);\n\n   uint emitAmount = amount;\n   if (token != ETH_TOKEN) {\n     uint8 decimals = getDecimals(token);\n     if (decimals > 9) {\n       emitAmount = amount / (10 ** (uint(decimals) - 9));\n     }\n   }\n\n   emit Deposit(token, incognitoAddress, emitAmount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "callExtFunc",
+            "fix_info": "Prevent front-running by only interacting with a preauthorized exchange.",
+            "corrected_code": "function callExtFunc(address recipientToken, uint ethAmount, bytes memory callData, address exchangeAddress) internal returns (uint) {\n   require(exchangeAddress == authorizedExchange, errorToString(Errors.UN_AUTHORIZED_EXCHANGE));\n   uint balanceBeforeTrade = balanceOf(recipientToken);\n   if (recipientToken == ETH_TOKEN) {\n     balanceBeforeTrade = balanceBeforeTrade.safeSub(msg.value);\n   }\n   (bool success, bytes memory result) = exchangeAddress.call{value: ethAmount}(callData);\n   require(success);\n   (address returnedTokenAddress, uint returnedAmount) = abi.decode(result, (address, uint));\n   require(returnedTokenAddress == recipientToken && balanceOf(recipientToken).safeSub(balanceBeforeTrade) == returnedAmount, errorToString(Errors.INVALID_RETURN_DATA));\n\n   return returnedAmount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

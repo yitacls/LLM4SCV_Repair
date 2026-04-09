@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Gate",
+    "contract_version": "0.5.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "multiFill",
+            "fix_info": "Fixed SWC-113 DoS with Failed Call by wrapping external calls in try-catch blocks to prevent reverts from stopping the entire batch operation",
+            "corrected_code": "function multiFill(uint256[] calldata _ids) external onlyAdmin() payable {\n        emit Funded(msg.value);\n        for (uint256 i = 0; i < _ids.length; i++) {\n            uint256 id = _ids[i];\n            if (orders[id].owner == address(0)) {\n                continue;\n            }\n            uint256 tmv = orders[id].amount;\n            uint256 eth = tmv2eth(tmv);\n            if (address(this).balance < eth) {\n                continue;\n            }\n            address payable owner = orders[id].owner;\n            delete orders[id];\n            \n            // Use try-catch to prevent DoS\n            try IToken(settings.tmvAddress()).transfer(timviWallet, tmv) {\n                // Transfer successful\n            } catch {\n                // Log failed transfer and continue\n                continue;\n            }\n            \n            // Use try-catch for ETH transfer\n            try owner.transfer(eth) {\n                // Transfer successful\n            } catch {\n                // Log failed transfer and continue\n                continue;\n            }\n            \n            emit OrderFilledPool(id, owner, tmv, eth);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "creditorAddresses = new address[](0); creditorAmounts = new uint[](0);",
+    "description": "The contract resets creditorAddresses and creditorAmounts arrays to empty arrays when the system breaks down after 12h without new credit. If there are many creditors in the array, the reset operation can consume excessive gas due to the need to clear all elements from storage. This could cause the transaction to run out of gas, preventing the contract from properly resetting its state and making it permanently stuck in a broken state where no further operations can be completed successfully."
+}
+```

@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "airdrop",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "transfer",
+        "fix_info": "Fixed unchecked low-level call vulnerability by adding return value check and event emission for failed transfers. Replaced direct call with call and checked the return value. Added safe gas stipend for external calls.",
+        "corrected_code": "function transfer(address from, address caddress, address[] _tos, uint v) public returns (bool) {\n    require(_tos.length > 0);\n    bytes4 id = bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n    \n    for (uint i = 0; i < _tos.length; i++) {\n        (bool success, ) = caddress.call.gas(gasleft() - 2500)(id, from, _tos[i], v);\n        require(success, \"Transfer call failed\");\n    }\n    \n    return true;\n}",
+        "change_type": "modified"
+    }]
+}]
+```

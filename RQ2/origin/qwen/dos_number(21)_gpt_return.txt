@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "for(uint i=0;i<numbers;i++) {\n            if(numElements == array.length) {\n                array.length += 1;\n            }\n            array[numElements++] = value;\n        }",
+    "description": "The function is vulnerable to Gas Denial of Service (DoS) attack. When a large value is passed for the 'numbers' parameter, the loop will execute many iterations, consuming excessive gas. Since the gas cost increases with the number of iterations, an attacker can provide a sufficiently large 'numbers' value to exceed the block gas limit, causing the transaction to fail and making the function unusable. This effectively results in a DoS condition where legitimate users cannot execute the function due to gas exhaustion."
+}
+```

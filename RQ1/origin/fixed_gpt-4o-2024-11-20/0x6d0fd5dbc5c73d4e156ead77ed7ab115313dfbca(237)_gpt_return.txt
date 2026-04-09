@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ItemToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replaced tx.origin usage with msg.sender for proper access control and added an additional require to ensure msg.sender is authorized to transfer the item.",
+            "corrected_code": "function transfer(address _to, uint256 _itemId) onlyERC721() public {\n    require(msg.sender == ownerOf(_itemId), \"Caller is not the owner of the item\");\n    _transfer(msg.sender, _to, _itemId);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

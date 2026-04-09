@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Line 78 - Line 152",
+    "description": "The harvest() function contains an unchecked return value from various external calls. For example, the call to claimReward() and safeTransfer() functions do not check the return values for success or failure, which may result in unexpected behavior or vulnerabilities if the calls fail."
+}
+```

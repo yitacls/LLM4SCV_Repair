@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "LendingPool",
+    "contract_version": "^0.6.8",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed reentrancy vulnerability by moving external calls after state updates and using checks-effects-interactions pattern",
+            "corrected_code": "  function deposit(\n    address asset,\n    uint256 amount,\n    address onBehalfOf,\n    uint16 referralCode\n  ) external override {\n    _whenNotPaused();\n    ReserveLogic.ReserveData storage reserve = _reserves[asset];\n\n    ValidationLogic.validateDeposit(reserve, amount);\n\n    address aToken = reserve.aTokenAddress;\n\n    reserve.updateState();\n    reserve.updateInterestRates(asset, aToken, amount, 0);\n\n    bool isFirstDeposit = IAToken(aToken).balanceOf(onBehalfOf) == 0;\n    if (isFirstDeposit) {\n      _usersConfig[onBehalfOf].setUsingAsCollateral(reserve.id, true);\n    }\n\n    // Transfer first to prevent reentrancy\n    IERC20(asset).safeTransferFrom(msg.sender, aToken, amount);\n\n    // Mint after transfer to follow checks-effects-interactions\n    IAToken(aToken).mint(onBehalfOf, amount, reserve.liquidityIndex);\n\n    emit Deposit(asset, msg.sender, onBehalfOf, amount, referralCode);\n  }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "flashLoan",
+            "fix_info": "Fixed unchecked call return value by adding explicit check for transfer success and reentrancy by adding reentrancy guard",
+            "corrected_code": "  function flashLoan(\n    address receiverAddress,\n    address asset,\n    uint256 amount,\n    uint256 mode,\n    bytes calldata params,\n    uint16 referralCode\n  ) external override {\n    _whenNotPaused();\n    require(!_flashLiquidationLocked, Errors.REENTRANCY_NOT_ALLOWED);\n    _flashLiquidationLocked = true;\n    \n    ReserveLogic.ReserveData storage reserve = _reserves[asset];\n    FlashLoanLocalVars memory vars;\n\n    vars.aTokenAddress = reserve.aTokenAddress;\n\n    vars.premium = amount.mul(FLASHLOAN_PREMIUM_TOTAL).div(10000);\n\n    ValidationLogic.validateFlashloan(mode, vars.premium);\n\n    ReserveLogic.InterestRateMode debtMode = ReserveLogic.InterestRateMode(mode);\n\n    vars.receiver = IFlashLoanReceiver(receiverAddress);\n\n    //transfer funds to the receiver\n    IAToken(vars.aTokenAddress).transferUnderlyingTo(receiverAddress, amount);\n\n    //execute action of the receiver\n    vars.receiver.executeOperation(asset, amount, vars.premium, params);\n\n    vars.amountPlusPremium = amount.add(vars.premium);\n\n    if (debtMode == ReserveLogic.InterestRateMode.NONE) {\n      // Check return value explicitly\n      bool success = IERC20(asset).transferFrom(receiverAddress, vars.aTokenAddress, vars.amountPlusPremium);\n      require(success, \"Transfer failed\");\n\n      reserve.updateState();\n      reserve.cumulateToLiquidityIndex(IERC20(vars.aTokenAddress).totalSupply(), vars.premium);\n      reserve.updateInterestRates(asset, vars.aTokenAddress, vars.premium, 0);\n\n      emit FlashLoan(receiverAddress, asset, amount, vars.premium, referralCode);\n    } else {\n      // If the transfer didn't succeed, the receiver either didn't return the funds, or didn't approve the transfer.\n      _executeBorrow(\n        ExecuteBorrowParams(\n          asset,\n          msg.sender,\n          msg.sender,\n          vars.amountPlusPremium,\n          mode,\n          vars.aTokenAddress,\n          referralCode,\n          false\n        )\n      );\n    }\n    _flashLiquidationLocked = false;\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

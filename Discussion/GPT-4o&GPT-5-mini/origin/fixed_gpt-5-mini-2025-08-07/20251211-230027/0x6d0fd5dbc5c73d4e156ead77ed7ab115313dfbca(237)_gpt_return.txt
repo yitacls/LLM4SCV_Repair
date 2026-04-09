@@ -1,0 +1,16 @@
+[
+  {
+    "contract_name": "ItemToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "transfer",
+        "fix_info": "Replaced unsafe tx.origin authorization with msg.sender and added a check to prevent transfers to the zero address. This prevents access_control bypasses through intermediary contracts and avoids accidental burns.",
+        "corrected_code": "function transfer(address _to, uint256 _itemId) onlyERC721() public {\n    // Use msg.sender instead of tx.origin for authorization to prevent phishing via intermediary contracts\n    require(msg.sender == ownerOf(_itemId));\n    // Prevent sending to the zero address\n    require(_to != address(0));\n    _transfer(msg.sender, _to, _itemId);\n  }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(fee);",
+    "description": "The vulnerability in the function registerNameCore lies in the unchecked low-level call to the owner's address using send(). This operation does not validate if the recipient is a contract or an externally owned account, and it does not check if the call was successful or handle any potential reentrancy attacks. This can lead to unexpected behavior if the owner's address is a contract that has a fallback function or reentrancy vulnerability."
+}
+```

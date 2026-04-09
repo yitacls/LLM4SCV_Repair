@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "OddsAndEvens",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "commitReveal",
+            "fix_info": "Added commit-reveal scheme to prevent frontrunning by requiring players to commit to their choice before revealing",
+            "modifier_code": "modifier commitReveal(bytes32 commitHash) {\n    require(commitHash != 0);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "play",
+            "fix_info": "Fixed frontrunning vulnerability by implementing commit-reveal scheme. Players now commit to their number using hash before revealing to prevent opponents from seeing and countering their moves.",
+            "corrected_code": "function play(bytes32 commitHash) payable {\n    if (msg.value != 1 ether) throw;\n    \n    // Store commitment to prevent frontrunning\n    commitments[msg.sender] = commitHash;\n    playerAddresses[tot] = msg.sender;\n    tot++;\n    \n    if (tot == 2) andTheWinnerIs();\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

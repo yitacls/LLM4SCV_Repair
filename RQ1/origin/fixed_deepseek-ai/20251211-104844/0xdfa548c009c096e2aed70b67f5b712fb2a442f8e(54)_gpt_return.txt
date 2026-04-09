@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Wallet",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to restrict access to owner-only functions",
+                "modifier_code": "modifier onlyOwner() {\n        require(owner == msg.sender);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed multiple vulnerabilities: 1) Replaced owner check with modifier 2) Added safe math operations 3) Replaced low-level call with transfer() for security 4) Added proper return type 5) Added error handling",
+                "corrected_code": "function transfer(address _to, uint _value) public onlyOwner returns (bool) {\n        require(_value <= this.balance);\n        require(_value > 0);\n        require(_to != address(0));\n        \n        _to.transfer(_value);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

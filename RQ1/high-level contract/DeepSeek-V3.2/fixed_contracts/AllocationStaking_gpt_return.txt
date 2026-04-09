@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "AllocationStaking",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fund",
+                "fix_info": "Added safemath operations to prevent integer overflow/underflow when calculating endTimestamp",
+                "corrected_code": "function fund(uint256 _amount) public {\n        require(block.timestamp < endTimestamp, \"fund: too late, the farm is closed\");\n        erc20.safeTransferFrom(address(msg.sender), address(this), _amount);\n        \n        // Using SafeMath to prevent integer overflow\n        uint256 additionalTime = _amount.div(rewardPerSecond);\n        endTimestamp = endTimestamp.add(additionalTime);\n        \n        totalRewards = totalRewards.add(_amount);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "totalPending",
+                "fix_info": "Replaced subtraction with SafeMath to prevent underflow when calculating total pending rewards",
+                "corrected_code": "function totalPending() external view returns (uint256) {\n        if (block.timestamp <= startTimestamp) {\n            return 0;\n        }\n\n        uint256 lastTimestamp = block.timestamp < endTimestamp ? block.timestamp : endTimestamp;\n        uint256 totalRewardsToDistribute = rewardPerSecond.mul(lastTimestamp.sub(startTimestamp));\n        \n        // Using SafeMath to prevent underflow\n        return totalRewardsToDistribute.sub(paidOut);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "erc20Transfer",
+                "fix_info": "Replaced addition assignment with SafeMath to prevent integer overflow of paidOut",
+                "corrected_code": "function erc20Transfer(address _to, uint256 _amount) internal {\n        erc20.transfer(_to, _amount);\n        \n        // Using SafeMath to prevent integer overflow\n        paidOut = paidOut.add(_amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

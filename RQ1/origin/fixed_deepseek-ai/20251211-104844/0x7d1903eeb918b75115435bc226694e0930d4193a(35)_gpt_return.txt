@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "TokenERC20",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to ensure proper access control using msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "toggleLockIn",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyOwner modifier to prevent phishing attacks and ensure proper access control",
+            "corrected_code": "function toggleLockIn() public onlyOwner {\n        lockIn = !lockIn;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

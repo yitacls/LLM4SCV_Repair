@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MyAdvancedToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "selfdestructs",
+            "fix_info": "Added access control modifier to prevent unauthorized self-destruction",
+            "corrected_code": "function selfdestructs() payable public onlyOwner {\n    selfdestruct(owner);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

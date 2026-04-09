@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "seed",
+            "fix_info": "Added a seed variable for better randomness generation to mitigate BAD_RANDOMNESS vulnerability",
+            "variable_code": "uint256 private seed = 0;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "blockNumber",
+            "fix_info": "Modified to track block number with seed mixing for randomness",
+            "variable_code": "uint256 public blockNumber;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyFeeAddress",
+            "fix_info": "Added modifier to enforce access control for feeAddress",
+            "modifier_code": "modifier onlyFeeAddress() {\n        require(msg.sender == feeAddress, \"Only fee address can call this\");\n        _;\n    }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "whenNotPaused",
+            "fix_info": "Added modifier to ensure function can only be called when not paused",
+            "modifier_code": "modifier whenNotPaused() {\n        require(!paused, \"Contract is paused\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "endRaffle",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by using a commit-reveal pattern with seed mixing and added access control modifiers",
+            "corrected_code": "function endRaffle() public onlyFeeAddress whenNotPaused {\n        paused = true;\n        \n        // Generate more robust randomness using multiple sources\n        bytes32 combinedHash = keccak256(abi.encodePacked(\n            blockhash(block.number - 1),\n            block.timestamp,\n            block.difficulty,\n            totalTickets,\n            seed,\n            address(this)\n        ));\n        \n        // Update seed for next round using entropy from current state\n        seed = uint256(combinedHash);\n        \n        // Process ticket refunds\n        uint256 refundAmount = 0;\n        for (uint i = 0; i < totalTickets; i++) {\n            if (raffleId == contestants[i].raffleId && contestants[i].addr != address(0)) {\n                TicketRefund(raffleId, contestants[i].addr, i);\n                refundAmount += pricePerTicket;\n                contestants[i].addr.transfer(pricePerTicket);\n            }\n        }\n        \n        // Use the combined hash for any random selection needed\n        address[3] memory winners = [address(0), address(0), address(0)];\n        uint256[2] memory prizes = [0, 0];\n        \n        // If there are contestants, select winners using better randomness\n        if (totalTickets > 0) {\n            uint256 randomIndex = uint256(combinedHash) % totalTickets;\n            if (randomIndex < totalTickets && contestants[randomIndex].addr != address(0)) {\n                winners[0] = contestants[randomIndex].addr;\n                prizes[0] = address(this).balance;\n            }\n        }\n        \n        // Store block number for reference (but not for randomness)\n        blockNumber = block.number;\n        \n        // Emit event with results\n        RaffleResult(raffleId, totalTickets, winners[0], winners[1], winners[2], prizes[0], prizes[1]);\n        \n        // Reset for next raffle\n        raffleId++;\n        nextTicket = 0;\n        totalTickets = 0;\n        gaps.length = 0;\n        \n        // Ensure contract state is properly updated\n        require(address(this).balance >= refundAmount, \"Insufficient balance for refunds\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "updateSeed",
+            "fix_info": "Added function to allow external seed contribution for better randomness",
+            "corrected_code": "function updateSeed(uint256 _userSeed) public {\n        // Mix user-provided seed with existing seed and contract state\n        seed = uint256(keccak256(abi.encodePacked(seed, _userSeed, block.timestamp, msg.sender)));\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "getCurrentSeedHash",
+            "fix_info": "Added view function to get hash of current state for verification",
+            "corrected_code": "function getCurrentSeedHash() public view returns (bytes32) {\n        return keccak256(abi.encodePacked(seed, blockhash(block.number - 1), block.timestamp, totalTickets));\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,54 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return( ( uint(block.blockhash(_lastb  )) & 0xFFFFFF )",
+        "description": "The use of `block.blockhash` to generate randomness can be manipulated by miners, making it unsuitable as a reliable source of randomness. The value of `block.blockhash` can be influenced by miners to gain an unfair advantage in outcome prediction."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+1)) & 0xFFFFFF ) << 24 )",
+        "description": "The use of `block.blockhash(_lastb+1)` introduces the same vulnerability as previously described, allowing manipulation by miners to influence the randomness generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+2)) & 0xFFFFFF ) << 48 )",
+        "description": "The randomness generated through `block.blockhash(_lastb+2)` is not secure because miners can manipulate the block hash, resulting in predictable or non-random behavior."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+3)) & 0xFFFFFF ) << 72 )",
+        "description": "Using `block.blockhash(_lastb+3)` contributes to the generation of weak randomness that miners can exploit to predict or manipulate outcomes."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+4)) & 0xFFFFFF ) << 96 )",
+        "description": "As in the previous cases, `block.blockhash(_lastb+4)` lacks sufficient randomness and is vulnerable to miner-based manipulation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+5)) & 0xFFFFFF ) << 120 )",
+        "description": "The use of `block.blockhash(_lastb+5)` for randomness generation introduces predictability, making it insecure for any application requiring true randomness."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+6)) & 0xFFFFFF ) << 144 )",
+        "description": "The segment using `block.blockhash(_lastb+6)` suffers from the same predictability and susceptibility to manipulation issues as other similar blockhash-based components."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+7)) & 0xFFFFFF ) << 168 )",
+        "description": "Using `block.blockhash(_lastb+7)` as a source of randomness is insecure, enabling miners to influence its behavior for their benefit."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+8)) & 0xFFFFFF ) << 192 )",
+        "description": "The randomness derived from `block.blockhash(_lastb+8)` is predictable and susceptible to tampering by miners, making it a weak source of randomness."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+9)) & 0xFFFFFF ) << 216 )",
+        "description": "The inclusion of `block.blockhash(_lastb+9)` as an element for randomness generation subjects the contract to predictability and potential manipulation by miners."
+    }
+]
+```

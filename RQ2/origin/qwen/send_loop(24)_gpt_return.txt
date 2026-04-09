@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "for(uint x; x < refundAddresses.length; x++) {\n        require(refundAddresses[x].send(refunds[refundAddresses[x]]));\n    }",
+    "description": "The refundAll function is vulnerable to Denial of Service due to the use of require() with send() in a loop. If any single send() call fails (e.g., due to gas exhaustion or recipient being a contract without payable fallback), the entire transaction will revert, preventing all refunds from being processed. Additionally, the loop iterates through an arbitrary number of addresses, which could exceed gas limits and cause the function to fail entirely. In Solidity 0.4.24, send() only provides 2300 gas stipend, making it likely to fail if recipient is a contract with non-trivial fallback function."
+}
+```

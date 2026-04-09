@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "Reentrancy Vulnerability",
+            "location": "to.call{value:value}(new bytes(0))",
+            "description": "The external call to address 'to' is made before any state changes occur and without applying a reentrancy guard or using the Checks-Effects-Interactions pattern. The function transfers ETH using a low-level call with arbitrary gas, allowing the recipient contract's fallback/receive function to re-enter the calling contract before the 'require' statement executes. This could enable reentrancy attacks if the calling contract has other functions that modify state or perform further transfers. To mitigate, use reentrancy guards, transfer ETH via 'transfer' or 'send' (which limit gas to 2300), or follow Checks-Effects-Interactions by performing state changes before the external call."
+        },
+        {
+            "type": "Out-of-Gas/DoS Risk",
+            "location": "to.call{value:value}(new bytes(0))",
+            "description": "The low-level call forwards all remaining gas by default, which could allow the recipient contract to execute complex operations that consume excessive gas, potentially causing the call to run out of gas and revert (even if the recipient behaves maliciously). While not directly exploitable for fund theft here (since it would fail the require), it could be used for DoS by causing legitimate transfers to fail. Consider limiting gas by using .transfer or .send, or explicitly specifying a gas limit."
+        }
+    ]
+}
+```

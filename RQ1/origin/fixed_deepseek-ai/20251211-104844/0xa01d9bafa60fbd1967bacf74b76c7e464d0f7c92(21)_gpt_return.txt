@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "ElevenOfTwelve",
+        "contract_version": "^0.4.12",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Added SafeMath library to prevent arithmetic overflows/underflows in balance calculations",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "",
+                "fix_info": "No modifier changes made",
+                "modifier_code": "",
+                "change_type": ""
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and added explicit return type",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_value > 0, \"Transfer value must be positive\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

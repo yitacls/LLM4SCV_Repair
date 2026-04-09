@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "The mintToken function performs unchecked addition operations. In Solidity versions prior to 0.8.0, integer overflow/underflow is not automatically checked. An attacker (or a compromised owner) could call this function with a very large mintedAmount value that causes balanceOf[target] or totalSupply to overflow, wrapping around to a small number and breaking token accounting. This violates the ERC-20 standard and allows unauthorized token creation or balance corruption. The vulnerability is exacerbated because the function is onlyOwner restricted but relies on the owner's account security; if compromised, it enables catastrophic supply manipulation."
+}
+```】

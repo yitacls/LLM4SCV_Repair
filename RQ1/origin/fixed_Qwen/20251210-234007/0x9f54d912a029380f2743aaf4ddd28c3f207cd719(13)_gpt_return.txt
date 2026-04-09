@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Giveaway",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "kill",
+            "fix_info": "Replaced tx.origin with msg.sender for proper access control to prevent unauthorized self-destruction",
+            "corrected_code": "function kill() public {\n        require(msg.sender == owner);\n\t    selfdestruct(msg.sender);\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

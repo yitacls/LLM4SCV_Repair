@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Lotto",
+        "contract_version": "^0.4.0",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyActiveRound",
+                "fix_info": "Added modifier to ensure rounds are properly initialized before use",
+                "modifier_code": "modifier onlyActiveRound(uint256 roundIndex) {\n        require(roundIndex < rounds.length && rounds[roundIndex].pot > 0, \"Round not active\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed unchecked low-level call vulnerability by using transfer instead of send, added require statements, improved gas efficiency, and fixed incorrect ticketsCount increment",
+                "corrected_code": "function() external payable {\n    // this is the function that gets called when people send money to the contract\n    require(msg.value > 0, \"No ETH sent\");\n    \n    uint256 roundIndex = getRoundIndex();\n    require(roundIndex < rounds.length, \"Invalid round index\");\n    \n    uint256 value = msg.value - (msg.value % ticketPrice);\n    require(value > 0, \"Value too small for ticket purchase\");\n    \n    // Handle partial refund\n    uint256 refundAmount = msg.value - value;\n    if (refundAmount > 0) {\n        msg.sender.transfer(refundAmount);\n    }\n    \n    // Calculate tickets count\n    uint256 ticketsCount = value / ticketPrice;\n    require(ticketsCount > 0, \"No tickets purchased\");\n    \n    // Add buyer to round if not already present\n    if (rounds[roundIndex].ticketsCountByBuyer[msg.sender] == 0) {\n        rounds[roundIndex].buyers.push(msg.sender);\n    }\n    \n    // Update buyer's ticket count\n    rounds[roundIndex].ticketsCountByBuyer[msg.sender] += ticketsCount;\n    \n    // Update round statistics\n    rounds[roundIndex].ticketsCount += ticketsCount;\n    rounds[roundIndex].pot += value;\n    \n    // Emit event for logging\n    emit TicketPurchased(msg.sender, roundIndex, ticketsCount, value);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

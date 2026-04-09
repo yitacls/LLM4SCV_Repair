@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TestERC721",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "approve",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and using ownerOf(_tokenId) to check token ownership instead of tx.origin",
+            "corrected_code": "function approve(address _to, uint256 _tokenId) public {\n        require(msg.sender == ownerOf(_tokenId));\n        require(msg.sender != _to);\n        allowed[msg.sender][_to] = _tokenId;\n        emit Approval(msg.sender, _to, _tokenId);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

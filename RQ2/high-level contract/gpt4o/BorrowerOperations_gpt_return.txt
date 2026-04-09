@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "L321 - L351",
+    "description": "The closeTrove function allows Ether to be sent back to the user via the following line 'activePoolCached.sendETH(msg.sender, coll)'. This action is performed without proper access control (e.g., checks to validate the caller’s actions). This could potentially lead to exploits where unauthorized parties withdraw Ether from the contract."
+}
+```

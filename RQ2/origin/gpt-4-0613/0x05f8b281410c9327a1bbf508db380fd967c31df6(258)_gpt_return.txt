@@ -1,0 +1,12 @@
+```json
+{
+    "contract_name": "MyAdvancedToken",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function selfdestructs() payable public { selfdestruct(owner); }",
+            "description": "The selfdestruct function may only be called by the contract owner. This does not implement any verification mechanism to ensure that the caller of the function has the appropriate permissions. This may potentially allow for unauthorized users to destruct the contract."
+        }
+    ]
+}
+```

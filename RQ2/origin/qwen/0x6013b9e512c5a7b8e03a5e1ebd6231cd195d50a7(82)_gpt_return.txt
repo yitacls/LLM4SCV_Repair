@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "frozenAccount[msg.sender] += _value;",
+    "description": "The contract is vulnerable to arithmetic overflow because the addition operation on frozenAccount[msg.sender] is not checked for overflow conditions. In Solidity ^0.4.15, arithmetic operations do not have built-in overflow protection, which could lead to integer overflow when adding large values to frozenAccount[msg.sender], potentially causing incorrect accounting of frozen funds."
+}
+```

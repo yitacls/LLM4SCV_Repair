@@ -1,0 +1,19 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "vulnerabilities": [
+        {
+            "location": "L242-L258",
+            "description": "The `depositAA` and `depositBB` functions invoke `_deposit`, which contains a call to `IERC20Detailed(token).safeTransferFrom`. This can result in an external call to an arbitrary token contract. If the token contract contains malicious code or allows re-entrancy, it might lead to unexpected behavior."
+        },
+        {
+            "location": "L945-L954",
+            "description": "The `_liquidate` function is called as part of the `_withdraw` function during a tranche withdrawal. Since `_liquidate` interacts with external contracts through the strategy (e.g., redeeming underlying tokens), it could be manipulated if the external contracts involve malicious actions or re-entrancy vulnerabilities."
+        },
+        {
+            "location": "L963-L969",
+            "description": "In the `_withdraw` function, after the `_liquidate` call, the contract modifies state variables (e.g., `lastNAVAA` or `lastNAVBB`) and performs token transfers to `msg.sender`. If a re-entrant call occurs to the contract during these external calls, it could lead to inconsistent state changes or token theft."
+        }
+    ]
+}
+```

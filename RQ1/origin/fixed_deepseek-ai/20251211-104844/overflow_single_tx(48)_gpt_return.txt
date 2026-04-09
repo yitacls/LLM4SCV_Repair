@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowSingleTransaction",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Original contract was missing the state variable declaration, so added it to fix the compilation error",
+            "variable_code": "uint256 private count;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "underflowlocalonly",
+            "fix_info": "Fixed potential underflow vulnerability by using SafeMath for subtraction and ensuring input validation",
+            "corrected_code": "function underflowlocalonly(uint256 input) public {\n    require(input <= count, \"Input exceeds current count\");\n    uint256 res = count - input;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function withdrawUnstakedTokens(address staker) (Lines 370-404)",
+    "description": "The `withdrawUnstakedTokens` function iterates through the entire `_unstakingExpiration` array for the `staker` and performs operations based on the given conditions. If the `_unstakingExpiration` array is large, this loop could consume significant gas and potentially run into the block gas limit, causing the transaction to fail. This could prevent users with large unstaking histories from withdrawing their tokens."
+}
+```

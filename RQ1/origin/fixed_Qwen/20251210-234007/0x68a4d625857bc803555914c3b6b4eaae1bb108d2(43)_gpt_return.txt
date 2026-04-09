@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ZClassicGold",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "unlockSupply",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and added onlyOwner modifier",
+            "corrected_code": "function unlockSupply() onlyOwner returns(bool)\n{\n    require(!fullSupplyUnlocked);\n    balances[owner] = balances[owner].add(0);\n    fullSupplyUnlocked = true;\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

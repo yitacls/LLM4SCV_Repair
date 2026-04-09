@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "nftAddress.send(this.balance);",
+    "description": "The contract uses the deprecated 'send()' method without checking its return value. In Solidity 0.4.x, 'send()' returns a boolean indicating success/failure but does not propagate errors automatically. If the low-level call fails (e.g., recipient contract runs out of gas or reverts), the transaction will continue executing, potentially leaving funds trapped in the contract. This violates the checks-effects-interactions pattern. The vulnerability is compounded by using 'this.balance' which sends the entire contract balance without withdrawal amount controls."
+}
+```

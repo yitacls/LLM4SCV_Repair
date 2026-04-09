@@ -1,0 +1,14 @@
+[{
+    "contract_name": "CRTRC",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added zero-address check and explicit overflow check for recipient balance to prevent arithmetic overflow; preserved original functionality and return value.",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(_to != address(0));\n        require(balances[msg.sender] >= _value);\n        // Prevent overflow on recipient balance\n        require(balances[_to] + _value >= balances[_to]);\n\n        balances[msg.sender] = balances[msg.sender] - _value;\n        balances[_to] = balances[_to] + _value;\n\n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

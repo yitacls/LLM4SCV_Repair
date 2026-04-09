@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) {  // fault line",
+    "description": "The vulnerability occurs due to using the call.value() pattern. This allows an external contract to execute malicious code when the Collect function is called, potentially leading to reentrancy attacks."
+}
+```  

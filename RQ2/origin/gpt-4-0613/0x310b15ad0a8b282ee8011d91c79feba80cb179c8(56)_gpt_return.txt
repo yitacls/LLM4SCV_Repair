@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(balance);",
+    "description": "The 'withdraw' function transfers Ethereum to whoever requests it, without checking whether the requester is an authorized user or whether they have enough tokens. An attacker could use this to drain the contract of Ethereum."
+}
+```

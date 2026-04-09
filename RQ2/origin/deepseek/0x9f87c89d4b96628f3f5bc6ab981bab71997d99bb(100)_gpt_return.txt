@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_tokenId));",
+    "description": "Using tx.origin for authorization creates a phishing vulnerability. The check verifies the original transaction initiator, not the immediate caller (msg.sender). A malicious contract can trick the token owner into calling it, and when that contract calls transfer(), tx.origin will still be the owner, allowing unauthorized transfers. This bypasses intended ownership checks. Additionally, reliance on tx.origin is incompatible with smart contract wallets and breaks common delegation patterns. The function should use msg.sender == ownerOf(_tokenId) or proper approval mechanisms instead."
+}
+```

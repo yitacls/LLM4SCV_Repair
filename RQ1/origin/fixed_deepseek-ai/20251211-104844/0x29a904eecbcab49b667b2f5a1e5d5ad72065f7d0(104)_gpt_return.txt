@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Proxy",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_emit",
+            "fix_info": "Fixed potential DoS vulnerability by checking if callData has valid length before using it in assembly block and avoiding unnecessary memory copy",
+            "corrected_code": "function _emit(bytes callData, uint numTopics, bytes32 topic1, bytes32 topic2, bytes32 topic3, bytes32 topic4)\n    external\n    onlyTarget\n{\n    require(callData.length > 0, \"callData must not be empty\");\n    uint size = callData.length;\n    \n    assembly {\n        let dataPtr := add(callData, 32)  // Skip length prefix, get actual data pointer\n        \n        switch numTopics\n        case 0 {\n            log0(dataPtr, size)\n        } \n        case 1 {\n            log1(dataPtr, size, topic1)\n        }\n        case 2 {\n            log2(dataPtr, size, topic1, topic2)\n        }\n        case 3 {\n            log3(dataPtr, size, topic1, topic2, topic3)\n        }\n        case 4 {\n            log4(dataPtr, size, topic1, topic2, topic3, topic4)\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

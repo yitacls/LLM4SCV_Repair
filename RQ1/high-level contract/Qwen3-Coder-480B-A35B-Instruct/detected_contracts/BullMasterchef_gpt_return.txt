@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function _massUpdatePools() private {\n        uint256 length = poolInfo.length;\n        for (uint256 pid = 0; pid < length; ++pid) {\n            _updatePool(pid);\n        }\n    }",
+        "description": "The _massUpdatePools function iterates through all pools to update their reward variables. As the number of pools increases, the gas cost of this operation also increases. If the gas required exceeds the block gas limit, transactions calling this function will fail, potentially causing a denial of service. This vulnerability arises because the loop's gas consumption scales linearly with the number of pools, making it susceptible to block gas limit constraints."
+    }
+]
+```

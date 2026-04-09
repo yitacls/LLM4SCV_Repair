@@ -1,0 +1,12 @@
+[
+    {
+        "type": "Arithmetic",
+        "location": "balanceOf[target] += mintedAmount;",
+        "description": "Integer overflow/underflow risk: Solidity ^0.4.16 does not perform automatic overflow checks. If mintedAmount is large enough, balanceOf[target] can wrap around (overflow) and produce an incorrect, much smaller balance, enabling the owner to manipulate balances or create inconsistent state. There is no validation of mintedAmount (e.g., non-zero, upper bound) and no use of a safe-add routine (SafeMath)."
+    },
+    {
+        "type": "Arithmetic",
+        "location": "totalSupply += mintedAmount;",
+        "description": "Integer overflow/underflow risk: totalSupply can overflow when adding mintedAmount, causing the total supply to wrap around to a much smaller value. This breaks token accounting and can be exploited to create or hide tokens. Because the contract uses plain '+' without SafeMath or explicit checks, mintedAmount can lead to incorrect totalSupply and inconsistent token economics."
+    }
+]

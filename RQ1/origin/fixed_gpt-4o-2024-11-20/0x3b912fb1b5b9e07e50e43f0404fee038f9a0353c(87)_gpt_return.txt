@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "CountryCoin",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Ensure owner is set properly during contract deployment and remains immutable.",
+                "variable_code": "address private owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added a modifier to properly handle access control by ensuring only the owner can call specific functions.",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Caller is not the owner\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Replaced tx.origin with msg.sender in the require statement and added onlyOwner modifier for better access control.",
+                "corrected_code": "function withdraw() public onlyOwner { owner.transfer(address(this).balance); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

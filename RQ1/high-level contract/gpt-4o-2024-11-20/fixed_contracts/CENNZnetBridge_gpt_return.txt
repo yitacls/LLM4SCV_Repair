@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "CENNZnetBridge",
+        "contract_version": "0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setValidators",
+                "fix_info": "Added checks and safeguards for proper Ether withdrawal to prevent unprotected behavior. Ensured Ether withdrawal only occurs to a trusted recipient - the contract owner - for security.",
+                "corrected_code": "function setValidators(\n    address[] memory newValidators,\n    uint32 newValidatorSetId,\n    CENNZnetEventProof memory proof\n) external payable {\n    require(newValidators.length > 0, \"empty validator set\");\n    require(newValidatorSetId > activeValidatorSetId, \"validator set id replayed\");\n\n    bytes memory message = abi.encode(newValidators, newValidatorSetId, proof.validatorSetId, proof.eventId);\n    this.verifyMessage(message, proof);\n\n    // Update validator set\n    validators[newValidatorSetId] = newValidators;\n    activeValidatorSetId = newValidatorSetId;\n\n    // Send accumulated fees to the contract owner securely\n    uint reward = address(this).balance;\n    if (reward > 0) {\n        (bool sent, ) = owner().call{value: reward}(\"\");\n        require(sent, \"Failed to send Ether to owner\");\n    }\n\n    emit SetValidators(newValidators, reward, newValidatorSetId);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

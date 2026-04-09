@@ -1,0 +1,13 @@
+```json
+{
+  "contract_name": "LBN",
+  "solidity_version": "^0.4.16",
+  "vulnerabilities": [
+    {
+      "type": "access_control",
+      "location": "require(tx.origin == owner);",
+      "description": "The contract has an access control vulnerability where it uses 'tx.origin' instead of 'msg.sender'. 'tx.origin' refers to the original address that initiated the contract call, which can be manipulated by a malicious contract. It is a potential security threat and is not recommended for use. The correct way is to use 'msg.sender', which refers to the immediate caller of the contract, to check whether the caller has the appropriate permissions."
+    }
+  ]
+}
+```

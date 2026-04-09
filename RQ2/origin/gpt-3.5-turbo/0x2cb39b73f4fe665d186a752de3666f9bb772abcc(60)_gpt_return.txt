@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The use of `owner.send(msg.value);` to transfer funds can potentially result in unexpected behavior. This method does not handle failures, making the contract vulnerable if the transfer fails. It is recommended to use the transfer() method or implement checks to handle potential failures."
+}
+```

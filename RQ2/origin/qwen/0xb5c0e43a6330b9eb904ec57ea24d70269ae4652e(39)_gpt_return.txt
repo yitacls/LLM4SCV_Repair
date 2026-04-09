@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function destroycontract(address _to) {\n        selfdestruct(_to); // <SUICIDAL_VUL>, <LEAKING_VUL>\n    }",
+    "description": "The destroycontract function lacks proper access control modifiers, allowing any caller to invoke selfdestruct and destroy the contract. In Solidity ^0.4.17, the function should have access modifiers like 'onlyOwner' or 'internal' to restrict who can call it. Without such restrictions, malicious actors can drain all contract funds and destroy the contract, leading to permanent loss of assets."
+}
+```

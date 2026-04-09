@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The 'require(tx.origin == owner)' statement in the 'clear' function uses the 'tx.origin' to check the caller's address, which is a known security risk due to potential callback attacks. It is recommended to use 'msg.sender' for access control checks instead of 'tx.origin' to prevent potential vulnerabilities."
+}
+```

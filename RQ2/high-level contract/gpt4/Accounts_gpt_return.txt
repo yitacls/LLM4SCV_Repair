@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "for loops __isAccountLiquidatable__, __getBorrowPower__, __getDepositETH__, __getBorrowETH__",
+    "description": "The contract uses For loops with potentially large bound in multiple locations. If the number of tokens increases more than expected, each iteration could cost more than the gas limit, causing a transaction failure. As a result, users may be denied service when trying to interact with the contract. Consider limiting the size of the loops to prevent exceeding block gas limits."
+}
+```

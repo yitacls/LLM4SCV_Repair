@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.call(_value);",
+    "description": "The low-level call function does not check if the call was successful. In Solidity ^0.4.13, call() returns a boolean indicating success/failure, but this return value is not checked. If the call fails (e.g., recipient is a contract that throws an exception or runs out of gas), the transaction will not revert and the function will continue execution, potentially leading to loss of funds. The return value of call() should be checked and handled appropriately."
+}
+```

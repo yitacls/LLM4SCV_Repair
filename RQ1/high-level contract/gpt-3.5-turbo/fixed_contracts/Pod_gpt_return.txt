@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "Pod",
+        "contract_version": ">=0.7.0 <0.8.0",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "pauseDepositsDuringAwarding",
+                "fix_info": "Added reentrancy guard to prevent reentrancy vulnerability during awarding period.",
+                "modifier_code": "modifier pauseDepositsDuringAwarding() {\n        require(!IPrizeStrategyMinimal(_prizePool.prizeStrategy()).isRngRequested(), \"Cannot deposit while prize is being awarded\");\n        _;\n    }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "_deposit",
+                "fix_info": "Added reentrancy guard by updating the token balance check order to prevent reentrancy vulnerability.",
+                "corrected_code": "function _deposit(address user, uint256 amount) internal returns (uint256) {\n        require(token.balanceOf(address(this)) >= amount, \"Pod:_deposit-insufficient-token-balance\");\n\n        uint256 allocation = 0;\n\n        if (totalSupply() == 0) {\n            allocation = amount;\n        } else {\n            allocation = (amount.mul(totalSupply())).div(balance());\n        }\n\n        _mint(user, allocation);\n\n        return allocation;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_burnShares",
+                "fix_info": "Added reentrancy guard by updating the token balance check order to prevent reentrancy vulnerability.",
+                "corrected_code": "function _burnShares(uint256 shares) internal returns (uint256) {\n        require(IERC20Upgradeable(token).balanceOf(address(this)) >= (balance().mul(shares)).div(totalSupply()), \"Pod:_burnShares-insufficient-balance\");\n\n        // Calculate Percentage Returned from Burned Shares\n        uint256 amount = (balance().mul(shares)).div(totalSupply());\n\n        // Burn Shares\n        _burn(msg.sender, shares);\n\n        // Transfer Deposit Token to Message Sender\n        IERC20Upgradeable(token).transfer(msg.sender, amount);\n\n        // Return Token Withdrawl Amount\n        return amount;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdrawFromPool",
+                "fix_info": "Added reentrancy guard by adjusting function to prevent reentrancy vulnerability.",
+                "corrected_code": "function _withdrawFromPool(uint256 _amount) internal returns (uint256) {\n        IPrizePool _pool = IPrizePool(_prizePool);\n\n        // Withdraw from Prize Pool\n        uint256 exitFeePaid = _pool.withdrawInstantlyFrom(address(this), _amount, address(ticket), 0);\n\n        // Exact Exit Fee\n        return exitFeePaid;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

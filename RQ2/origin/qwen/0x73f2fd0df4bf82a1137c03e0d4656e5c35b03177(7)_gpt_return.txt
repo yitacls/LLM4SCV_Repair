@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (msg.value >= address(this).balance || tx.origin == Owner) {",
+    "description": "The function uses 'tx.origin' for authorization, which is vulnerable to phishing attacks. Any contract can call this function on behalf of the user, and tx.origin will still refer to the original user, not the malicious contract. This allows attackers to bypass the intended access control. Additionally, the condition 'msg.value >= address(this).balance' creates an unusual and potentially exploitable logic flow where sending sufficient ether could trigger self-destruction."
+}
+```

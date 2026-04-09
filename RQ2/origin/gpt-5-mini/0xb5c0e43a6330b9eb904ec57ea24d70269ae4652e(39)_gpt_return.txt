@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "function destroycontract(address _to) {\n        selfdestruct(_to); // <SUICIDAL_VUL>, <LEAKING_VUL>\n\n    }",
+  "description": "The function destroycontract lacks any access control and (in Solidity ^0.4.17) defaults to public visibility. Any external caller can invoke this function and trigger selfdestruct(_to), which will: (1) remove the contract bytecode from the blockchain (breaking any dependent logic and state), and (2) forward all remaining Ether to the arbitrary _to address. Impact: unauthorized users can permanently destroy the contract, cause denial of service, and redirect contract funds to an attacker-controlled address. Recommendation: remove or restrict this functionality. If a kill mechanism is required, explicitly restrict it to a trusted account/role (for example via an onlyOwner modifier or OpenZeppelin Ownable), and explicitly declare visibility (e.g., external) after adding access checks. Avoid allowing an arbitrary _to parameter (or validate it to be a safe recipient such as the owner). Consider removing selfdestruct entirely unless absolutely necessary."
+}

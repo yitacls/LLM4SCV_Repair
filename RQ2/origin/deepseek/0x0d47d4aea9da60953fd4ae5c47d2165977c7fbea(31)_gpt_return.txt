@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "generalManager.send(this.balance);",
+    "description": "The low-level call `.send()` can fail silently without reverting the transaction. In Solidity 0.4.11, `.send()` returns a boolean value indicating success or failure, but this return value is ignored. If the send fails (e.g., due to the recipient contract's fallback function failing or running out of gas), the funds will remain in the contract, but the withdrawal will appear successful to the caller. This can permanently lock the contract's balance. Additionally, using `.send()` transfers a fixed gas stipend of 2300 gas, which is insufficient for any complex operations in the recipient, potentially causing the transfer to fail."
+}
+```

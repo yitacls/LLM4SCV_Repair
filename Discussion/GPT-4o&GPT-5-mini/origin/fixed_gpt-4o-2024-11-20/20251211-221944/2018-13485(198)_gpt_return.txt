@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BitcoinAgileToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability by adding SafeMath library to handle additions and refactored the function to use SafeMath's `add` function.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid address\"); // Ensure a valid target address\n    balanceOf[target] = balanceOf[target].add(mintedAmount); // SafeMath used to prevent overflow\n    totalSupply = totalSupply.add(mintedAmount); // SafeMath used to prevent overflow\n    emit Transfer(address(0), address(this), mintedAmount); // Updated to use emit for events\n    emit Transfer(address(this), target, mintedAmount); // Updated to use emit for events\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The send() function is a low-level call that returns a boolean indicating success or failure, but the return value is not checked. In Solidity ^0.4.16, if the send() call fails (e.g., due to gas limitations or the owner's fallback function reverting), the function will continue execution without handling the failure. This could lead to situations where ETH is not properly transferred to the owner, but the token transfer still occurs, potentially causing financial loss for users."
+}
+```

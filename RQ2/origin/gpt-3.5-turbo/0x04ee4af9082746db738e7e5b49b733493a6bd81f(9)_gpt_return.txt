@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The use of send() to perform a low-level call in this context can pose a security risk as it does not throw an exception if the call fails. This can result in loss of funds if the receiving contract has a fallback function that consumes too much gas or reverts unexpectedly."
+}
+```

@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "PredictTheBlockHashChallenge",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "commitments",
+            "fix_info": "Added mapping to store salted commitments instead of raw guesses to prevent front-running and bad randomness",
+            "variable_code": "mapping(address => bytes32) public commitments;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "commitmentBlocks",
+            "fix_info": "Added mapping to store the block number when commitment was made",
+            "variable_code": "mapping(address => uint256) public commitmentBlocks;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "makeGuess",
+            "fix_info": "Added new function to allow users to submit salted commitments instead of raw guesses",
+            "corrected_code": "function makeGuess(bytes32 commitment) public payable {\n    require(msg.value == 1 ether, \"Must send exactly 1 ETH\");\n    require(commitments[msg.sender] == bytes32(0), \"Already committed\");\n    commitments[msg.sender] = commitment;\n    commitmentBlocks[msg.sender] = block.number;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "settle",
+            "fix_info": "Modified to use commit-reveal pattern with seeded randomness to prevent blockhash manipulation",
+            "corrected_code": "function settle(uint256 guess, uint256 salt) public {\n    require(commitments[msg.sender] != bytes32(0), \"No commitment found\");\n    require(block.number > commitmentBlocks[msg.sender], \"Too early to settle\");\n    \n    // Verify the commitment matches the revealed guess and salt\n    bytes32 calculatedCommitment = keccak256(abi.encodePacked(guess, salt, msg.sender));\n    require(commitments[msg.sender] == calculatedCommitment, \"Invalid reveal\");\n    \n    // Use predictable but verifiable randomness based on known future block\n    uint256 targetBlock = commitmentBlocks[msg.sender] + 1;\n    bytes32 answer = blockhash(targetBlock);\n    \n    // If block is older than 256 blocks, blockhash returns 0\n    if (answer == bytes32(0)) {\n        answer = keccak256(abi.encodePacked(targetBlock, block.coinbase, block.difficulty));\n    }\n    \n    bytes32 userGuess = bytes32(guess);\n    \n    // Clear commitments\n    commitments[msg.sender] = bytes32(0);\n    commitmentBlocks[msg.sender] = 0;\n    \n    if (userGuess == answer) {\n        msg.sender.transfer(2 ether);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

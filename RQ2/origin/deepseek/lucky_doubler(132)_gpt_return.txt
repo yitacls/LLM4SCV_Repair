@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function rand(uint max) constant private returns (uint256 result){ ... }",
+    "description": "The rand() function generates pseudo-random numbers using block.blockhash(block.number - 1), which is predictable and can be manipulated by miners. Miners can withhold blocks or influence the block hash to control the outcome. Additionally, using blockhash of only the previous block makes it even more vulnerable since miners have immediate knowledge of this value when creating the next block. This pattern is insecure for any application requiring true randomness (like lotteries or games)."
+}
+```

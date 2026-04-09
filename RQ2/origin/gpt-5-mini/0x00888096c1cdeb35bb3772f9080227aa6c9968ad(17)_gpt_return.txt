@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "function withdraw(){\n      developer.transfer(this.balance);\n      require(token.transfer(developer, token.balanceOf(address(this))));  // fault line\n  }",
+  "description": "The withdraw() function has no access control (no onlyOwner or similar modifier). Any external account can call withdraw(), which will transfer the contract's entire ETH balance and all ERC20 tokens held by the contract to the developer address. This allows arbitrary callers to trigger movement of funds at any time (for example prematurely or in a way that interferes with contract logic), and if the developer key is compromised or maliciously set, funds can be diverted. Recommended fix: restrict withdraw() to an authorized account (e.g., owner/developer) using an access control modifier or require check (e.g., require(msg.sender == owner))." 
+}

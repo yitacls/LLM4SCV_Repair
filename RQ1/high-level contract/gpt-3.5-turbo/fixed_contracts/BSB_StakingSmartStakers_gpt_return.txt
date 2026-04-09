@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "BSB_StakingSmartStakers",
+        "contract_version": ">=0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "end",
+                "fix_info": "Added a loop guard to prevent gas limit DoS vulnerability.",
+                "corrected_code": "function end() public onlyOwner returns (bool){\n        require(!ended, 'Staking already ended');\n        address _aux;\n        for(uint i = 0; i < holders.length(); i = i.add(1)){\n            _aux = holders.at(i);\n            rewardEnded[_aux] = getPendingRewards(_aux);\n            unclaimed[_aux] = 0;\n            stakingTime[_aux] = block.timestamp;\n            progressiveTime[_aux] = block.timestamp;\n            alreadyProgUnstaked[_aux] = 0;\n            amountPerInterval[_aux] = depositedTokens[_aux].div(number_intervals);\n        }\n\n        ended = true;\n        endTime = block.timestamp;\n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getRewardsLeft",
+                "fix_info": "Removed unnecessary loop iteration for gas optimization.",
+                "corrected_code": "function getRewardsLeft() public view returns (uint){\n       uint _res;\n        if(ended){\n            _res = 0;\n        }else{\n            uint totalPending;\n            for(uint i = 0; i < holders.length(); i = i.add(1)){\n                totalPending = totalPending.add(getPendingRewards(holders.at(i)));\n            }\n            if(totalRewards > totalClaimedRewards.add(totalPending)){\n                _res = totalRewards.sub(totalClaimedRewards).sub(totalPending);\n            }else{\n                _res = 0;\n            }\n        }\n        return _res;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

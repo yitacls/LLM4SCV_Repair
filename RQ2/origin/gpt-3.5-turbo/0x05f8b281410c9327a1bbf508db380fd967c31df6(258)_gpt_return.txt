@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "selfdestruct(owner); // <SUICIDAL_VUL>",
+    "description": "The selfdestruct function in the smart contract allows the owner to destroy the contract and send any remaining Ether to the specified address. However, there is no proper access control mechanism in place, meaning anyone can call this function and potentially destroy the contract. This can lead to a loss of funds or disruption of the contract's intended functionality."
+}
+```

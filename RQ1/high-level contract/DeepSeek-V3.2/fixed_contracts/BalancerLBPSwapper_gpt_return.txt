@@ -1,0 +1,59 @@
+Let's analyze the vulnerabilities step by step:
+
+1. **SWC-114 Transaction Order Dependence**: In the `init()` function, there's no access control check - anyone can initialize the contract. This should be restricted.
+
+2. **SWC-105 Unprotected Ether Withdrawal**: In the `swap()` function, the transfer `IERC20(tokenReceived).transfer(...)` happens without any access control, allowing anyone to trigger it. Also, there's no validation to prevent multiple concurrent swaps or ensure proper auction state.
+
+Here are the fixes:
+
+```json
+[
+    {
+        "contract_name": "BalancerLBPSwapper",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "",
+                "fix_info": "No state variables need modification",
+                "variable_code": "",
+                "change_type": ""
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "",
+                "fix_info": "No modifiers need modification",
+                "modifier_code": "",
+                "change_type": ""
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "init",
+                "fix_info": "Added onlyGovernorOrAdmin modifier to prevent unauthorized initialization and reentrancy protection",
+                "corrected_code": "    function init(IWeightedPool _pool) external onlyGovernorOrAdmin nonReentrant {\n        require(address(pool) == address(0), \"BalancerLBPSwapper: initialized\");\n\n        pool = _pool;\n        IVault _vault = _pool.getVault();\n\n        vault = _vault;\n\n        // Check ownership\n        require(_pool.getOwner() == address(this), \"BalancerLBPSwapper: contract not pool owner\");\n\n        // Check correct pool token components\n        bytes32 _pid = _pool.getPoolId();\n        pid = _pid;\n        (IERC20[] memory tokens,,) = _vault.getPoolTokens(_pid);\n        require(tokens.length == 2, \"BalancerLBPSwapper: pool does not have 2 tokens\");\n        require(\n            tokenSpent == address(tokens[0]) || \n            tokenSpent == address(tokens[1]), \n            \"BalancerLBPSwapper: tokenSpent not in pool\"\n        );        \n        require(\n            tokenReceived == address(tokens[0]) || \n            tokenReceived == address(tokens[1]), \n            \"BalancerLBPSwapper: tokenReceived not in pool\"\n        );\n\n        // Set the asset array and target weights\n        assets = new IAsset[](2);\n        assets[0] = IAsset(address(tokens[0]));\n        assets[1] = IAsset(address(tokens[1]));\n\n        bool tokenSpentAtIndex0 = tokenSpent == address(tokens[0]);\n        initialWeights = new uint[](2);\n        endWeights = new uint[](2);\n\n        if (tokenSpentAtIndex0) {\n            initialWeights[0] = NINETY_NINE_PERCENT;\n            initialWeights[1] = ONE_PERCENT;\n\n            endWeights[0] = ONE_PERCENT;\n            endWeights[1] = NINETY_NINE_PERCENT;\n        }  else {\n            initialWeights[0] = ONE_PERCENT;\n            initialWeights[1] = NINETY_NINE_PERCENT;\n\n            endWeights[0] = NINETY_NINE_PERCENT;\n            endWeights[1] = ONE_PERCENT;\n        }\n        \n        // Approve pool tokens for vault\n        _pool.approve(address(_vault), type(uint256).max);\n        IERC20(tokenSpent).approve(address(_vault), type(uint256).max);\n        IERC20(tokenReceived).approve(address(_vault), type(uint256).max);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "swap",
+                "fix_info": "Added onlyGovernorOrAdmin modifier to protect token withdrawal and prevent unauthorized swaps",
+                "corrected_code": "    function swap() external override afterTime whenNotPaused onlyGovernorOrAdmin nonReentrant {\n        (\n            uint256 spentReserves, \n            uint256 receivedReserves, \n            uint256 lastChangeBlock\n        ) = getReserves();\n\n        // Ensures no actor can change the pool contents earlier in the block\n        require(lastChangeBlock < block.number, \"BalancerLBPSwapper: pool changed this block\");\n\n        (\n            uint256 bptTotal,\n            uint256 bptBalance, \n            uint256 spentBalance, \n            uint256 receivedBalance\n        ) = getPoolBalances(spentReserves, receivedReserves);\n\n        // Balancer locks a small amount of bptTotal after init, so 0 bpt means pool needs initializing\n        if (bptTotal == 0) {\n            _initializePool();\n            return;\n        }\n        require(swapEndTime() < block.timestamp, \"BalancerLBPSwapper: weight update in progress\");\n\n        // 1. Withdraw existing LP tokens (if currently held)\n        if (bptBalance != 0) {\n            IVault.ExitPoolRequest memory exitRequest;\n\n            // Uses encoding for exact BPT IN withdrawal using all held BPT\n            bytes memory userData = abi.encode(IWeightedPool.ExitKind.EXACT_BPT_IN_FOR_TOKENS_OUT, bptBalance);\n\n            exitRequest.assets = assets;\n            exitRequest.minAmountsOut = new uint256[](2); // 0 min\n            exitRequest.userData = userData;\n            exitRequest.toInternalBalance = false; // use external balances to be able to transfer out tokenReceived\n\n            vault.exitPool(\n                pid,\n                address(this),\n                payable(address(this)),\n                exitRequest\n            );\n        }\n        // 2. Reset weights to 99:1\n        // Using current block time triggers immediate weight reset\n        _updateWeightsGradually(\n            pool,\n            block.timestamp, \n            block.timestamp, \n            initialWeights\n        );\n\n        // 3. Provide new liquidity\n        uint256 spentTokenBalance = IERC20(tokenSpent).balanceOf(address(this));\n        if (spentTokenBalance > minTokenSpentBalance) {\n            // uses exact tokens in encoding for deposit, supplying both tokens\n            // will use some of the previously withdrawn tokenReceived to seed the 1% required for new auction\n            uint256[] memory amountsIn = _getTokensIn(spentTokenBalance);\n            bytes memory userData = abi.encode(IWeightedPool.JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT, amountsIn, 0);\n\n            IVault.JoinPoolRequest memory joinRequest;\n            joinRequest.assets = assets;\n            joinRequest.maxAmountsIn = amountsIn;\n            joinRequest.userData = userData;\n            joinRequest.fromInternalBalance = false; // uses external balances because tokens are held by contract\n\n            vault.joinPool(\n                pid,\n                address(this),\n                payable(address(this)),\n                joinRequest\n            );\n\n            // 4. Kick off new auction ending after `duration` seconds\n            _updateWeightsGradually(\n                pool,\n                block.timestamp, \n                block.timestamp + duration, \n                endWeights\n            );\n            _initTimed(); // reset timer\n        }\n        // 5. Send remaining tokenReceived to target\n        uint256 tokenReceivedBalance = IERC20(tokenReceived).balanceOf(address(this));\n        if (tokenReceivedBalance > 0) {\n            IERC20(tokenReceived).transfer(tokenReceivingAddress, tokenReceivedBalance);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+**Key changes made:**
+
+1. **init() function**:
+   - Added `onlyGovernorOrAdmin` modifier to prevent unauthorized initialization
+   - Added `nonReentrant` modifier for reentrancy protection
+
+2. **swap() function**:
+   - Added `onlyGovernorOrAdmin` modifier to prevent unauthorized swaps and token withdrawals
+   - Added `nonReentrant` modifier for reentrancy protection
+   - Added check `if (tokenReceivedBalance > 0)` before transfer to save gas
+
+These fixes ensure that only authorized administrators can initialize the contract and trigger swaps, preventing both transaction order dependence attacks and unauthorized token withdrawals.

@@ -1,0 +1,12 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_from] -= _value; // <IO_VUL>",
+    "description": "The subtraction operation `balances[_from] -= _value` is not safeguarded against underflows. If `_value` is greater than `balances[_from]`, the contract will underflow, resulting in an incorrect value and loss of funds."
+},
+{
+    "type": "Arithmetic",
+    "location": "allowed[_from][msg.sender] -= _value; // <IO_VUL>",
+    "description": "The subtraction operation `allowed[_from][msg.sender] -= _value` is not safeguarded against underflows. If `_value` is greater than `allowed[_from][msg.sender]`, the contract will underflow, resulting in an incorrect value and potential unintended behavior."
+}
+```

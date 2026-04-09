@@ -1,0 +1,26 @@
+[{
+    "contract_name": "AOC_BEP",
+    "contract_version": "0.8.9",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Ensure correct initializer ordering for upgradeable contracts and preserve original initialization logic. Use non-unchained initializers in the recommended order to properly initialize inherited contracts.",
+            "corrected_code": "function initialize() public initializer {\n    // Initialize inherited upgradeable contracts in the recommended order\n    __Context_init();\n    __Ownable_init();\n    __Pausable_init();\n\n    // mint the initial total supply to the deployer\n    _mint(_msgSender(), (1000 * 10**9 * 10**18));\n    ltafPercentage = 50;\n\n    addLevels(1, 1640995200, 1704153599, 20);\n    addLevels(2, 1704153600, 1767311999, 15);\n    addLevels(3, 1767312000, 1830383999, 10);\n    addLevels(4, 1830384000, 0, 5);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawBNBFromContract",
+            "fix_info": "Remove unnecessary payable specifier and use a safe call pattern instead of transfer to avoid gas-limit related failures and reentrancy risks. Ensure proper balance check and require the call success.",
+            "corrected_code": "function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner {\n    require(recipient != address(0), \"Address cant be zero address\");\n    uint256 balance = address(this).balance;\n    require(amount <= balance, \"withdrawBNBFromContract: withdraw amount exceeds BNB balance\");\n\n    // Use call to forward gas and handle EIP-1884 compatibility; check return value\n    (bool sent, ) = recipient.call{value: amount}(\"\");\n    require(sent, \"withdrawBNBFromContract: failed to send BNB\");\n\n    emit BNBFromContractTransferred(amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawToken",
+            "fix_info": "Fix balance comparison to allow withdrawing the full balance (use >=) and check ERC20 transfer return value to ensure transfer success.",
+            "corrected_code": "function withdrawToken(address _tokenContract, uint256 _amount) external onlyOwner {\n    require(_tokenContract != address(0), \"Address cant be zero address\");\n    require(_amount > 0, \"amount cannot be 0\");\n\n    IERC20Upgradeable tokenContract = IERC20Upgradeable(_tokenContract);\n    uint256 contractBalance = tokenContract.balanceOf(address(this));\n    require(contractBalance >= _amount, \"withdrawToken: withdraw amount exceeds token balance\");\n\n    bool success = tokenContract.transfer(msg.sender, _amount);\n    require(success, \"withdrawToken: token transfer failed\");\n\n    emit ExternalTokenTransfered(_tokenContract, msg.sender, _amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

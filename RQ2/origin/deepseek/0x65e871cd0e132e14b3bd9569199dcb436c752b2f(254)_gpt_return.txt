@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(bricks[_brickId].owner == 0x0 || bricks[_brickId].owner == tx.origin);",
+            "description": "This access control check allows any original creator (tx.origin) to modify any brick they previously created, regardless of current ownership or permissions. This bypasses intended ownership controls and could allow front-running attacks where malicious contracts intercept and manipulate brick updates. Using tx.origin for authorization is dangerous as it refers to the original externally-owned account, not the immediate caller (msg.sender), enabling phishing-style attacks where users are tricked into interacting with malicious contracts that then call this function."
+        }
+    ]
+}
+```

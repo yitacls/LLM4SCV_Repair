@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(this.balance);",
+    "description": "The 'owner' does not have access control implemented, allowing anyone to call the ownerWithdrawFees function and withdraw the contract's balance. This can lead to unauthorized withdrawal of funds by any address."
+}
+```

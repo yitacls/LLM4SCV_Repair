@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "GERMANY_WINS",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath protection to prevent integer underflow/overflow vulnerabilities in balance calculations",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n\t\trequire(balanceOf[msg.sender] >= value);\n\t\tbalanceOf[msg.sender] = balanceOf[msg.sender].sub(value);\n\t\tbalanceOf[to] = balanceOf[to].add(value);\n\t\temit Transfer(msg.sender, to, value);\n\t\treturn true;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

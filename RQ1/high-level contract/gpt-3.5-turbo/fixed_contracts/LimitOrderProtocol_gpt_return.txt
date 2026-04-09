@@ -1,0 +1,16 @@
+```json
+{
+    "contract_name": "LimitOrderProtocol",
+    "contract_version": "^0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fillOrderTo",
+            "fix_info": "Fixed the reentrancy vulnerability in fillOrderTo function by updating the state before external calls.",
+            "corrected_code": "function fillOrderTo(Order memory order, bytes calldata signature, uint256 makingAmount, uint256 takingAmount, uint256 thresholdAmount, address target) public returns(uint256, uint256) {\n        bytes32 orderHash = _hash(order);\n\n        uint256 remainingMakerAmount;\n        bool orderExists;\n        (orderExists, remainingMakerAmount) = _remaining[orderHash].trySub(1);\n        if (!orderExists) {\n            // First fill: validate order and permit maker asset\n            _validate(order.makerAssetData, order.takerAssetData, signature, orderHash);\n            remainingMakerAmount = order.makerAssetData.decodeUint256(_AMOUNT_INDEX);\n            if (order.permit.length > 0) {\n                _permit(order.permit);\n                require(_remaining[orderHash] == 0, \"LOP: reentrancy detected\");\n            }\n            _remaining[orderHash] = remainingMakerAmount + 1;\n        }\n\n        // Check if order is valid\n        if (order.predicate.length > 0) {\n            require(checkPredicate(order), \"LOP: predicate returned false\");\n        }\n\n        // Compute maker and taker assets amount\n        if ((takingAmount == 0) == (makingAmount == 0)) {\n            revert(\"LOP: only one amount should be 0\");\n        }\n        else if (takingAmount == 0) {\n            takingAmount = _callGetTakerAmount(order, makingAmount);\n            require(takingAmount <= thresholdAmount, \"LOP: taking amount too high\");\n        }\n        else {\n            makingAmount = _callGetMakerAmount(order, takingAmount);\n            require(makingAmount >= thresholdAmount, \"LOP: making amount too low\");\n        }\n\n        require(makingAmount > 0 && takingAmount > 0, \"LOP: can't swap 0 amount\");\n\n        emit OrderFilled(msg.sender, orderHash, remainingMakerAmount);\n\n        // Taker => Maker\n        _callTakerAssetTransferFrom(order.takerAsset, order.takerAssetData, takingAmount);\n\n        // SWC-128-DoS With Block Gas Limit: L339\n        // Maker can handle funds interactively\n        if (order.interaction.length > 0) {\n            InteractiveMaker(order.makerAssetData.decodeAddress(_FROM_INDEX))\n                .notifyFillOrder(order.makerAsset, order.takerAsset, makingAmount, takingAmount, order.interaction);\n        }\n\n        // Maker => Taker\n        _callMakerAssetTransferFrom(order.makerAsset, order.makerAssetData, target, makingAmount);\n\n        return (makingAmount, takingAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}
+```

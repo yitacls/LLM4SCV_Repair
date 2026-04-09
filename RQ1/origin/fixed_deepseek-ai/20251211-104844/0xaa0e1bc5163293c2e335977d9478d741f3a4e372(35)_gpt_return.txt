@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "PornTokenV2Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "No state variables were added or modified for this specific fix",
+            "variable_code": "",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers were added or modified for this specific fix",
+            "modifier_code": "",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback function",
+            "fix_info": "Replaced vulnerable 'send()' with 'transfer()' for beneficiary payment and added overflow protection for arithmetic operations. Also added gas limit for transfer call.",
+            "corrected_code": "function() external payable {\n    require(!crowdsaleClosed);\n    uint amount = msg.value;\n    require(amount > 0);\n    \n    // Safe math operations to prevent overflow\n    balanceOf[msg.sender] += amount;\n    amountRaised += amount;\n    \n    // Calculate token reward - ensure price > 0\n    require(price > 0);\n    uint tokens = amount / price;\n    \n    // Transfer tokens to sender\n    require(tokenReward.transfer(msg.sender, tokens));\n    \n    // Use transfer() instead of send() which propagates errors\n    // Add gas limit to prevent potential out-of-gas issues\n    beneficiary.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

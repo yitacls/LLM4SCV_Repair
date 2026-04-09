@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contractName":"PornTokenV2Crowdsale",
+    "location": "beneficiary.send(amountToSend)",
+    "description": "The send() function is used without a check for its return value. The send() function in Solidity can fail due to the call stack depth limit or due to a recipient contract throwing an exception. If the call fails, no exception is thrown in the calling contract, and the contract continues to execute the next line, resulting in a state where the withdrawal has failed but the balance has been reset. This can lead to serious vulnerabilities in the system if not managed properly."
+}
+```

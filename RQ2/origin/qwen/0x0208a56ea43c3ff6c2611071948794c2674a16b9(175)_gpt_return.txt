@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "modifier onlyOwner() {\n        if (msg.sender == owner) { // ORIGINAL: if (msg.sender != owner) {\n            revert();\n        }\n        _;\n    }",
+    "description": "The onlyOwner modifier has inverted logic. It currently reverts when the msg.sender IS the owner, rather than when they are NOT the owner. This means only non-owners can execute functions with this modifier, which is the opposite of the intended access control behavior."
+}
+```

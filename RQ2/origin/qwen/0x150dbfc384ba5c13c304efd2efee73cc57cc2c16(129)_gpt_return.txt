@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function newTicket() external restricted",
+    "description": "The function uses 'tx.origin' for authorization checks instead of 'msg.sender', making it vulnerable to phishing attacks. In Solidity 0.4.25, 'tx.origin' refers to the original external caller, not the immediate caller, which can be exploited by malicious contracts to bypass access controls. The 'restricted' modifier likely checks against 'msg.sender', creating a mismatch that allows unauthorized access when a malicious contract calls this function on behalf of a legitimate user."
+}
+```

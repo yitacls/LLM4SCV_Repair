@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "CTS",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Add an access control modifier ensuring only the owner can withdraw, instead of relying on tx.origin.",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "A new modifier added to centralize owner check logic to enhance reusability and secure access control.",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawEther",
+            "fix_info": "Replaced vulnerable tx.origin check with modifier for more secure and maintainable access control.",
+            "corrected_code": "function withdrawEther(uint256 amount) public onlyOwner { require(address(this).balance >= amount); owner.transfer(amount); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

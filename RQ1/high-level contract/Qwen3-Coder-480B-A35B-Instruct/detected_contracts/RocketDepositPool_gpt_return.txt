@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments(); ++i) { ... }",
+        "description": "The assignDeposits function contains a loop that iterates up to a maximum number defined by getMaximumDepositAssignments(). If this value is set too high, the loop could consume more gas than is allowed in a single Ethereum block, causing the transaction to fail and potentially making the assignDeposits function unusable. This would prevent deposits from being assigned to minipools, effectively freezing part of the deposit functionality."
+    }
+]
+```

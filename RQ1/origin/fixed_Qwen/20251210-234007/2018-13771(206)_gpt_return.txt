@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ExacoreContract",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow when adding mintedAmount to balanceOf[target] and totalSupply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(balanceOf[target] + mintedAmount >= balanceOf[target], \"Overflow in balance addition\");\n        require(totalSupply + mintedAmount >= totalSupply, \"Overflow in totalSupply addition\");\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        emit Transfer(0, this, mintedAmount);\n        emit Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

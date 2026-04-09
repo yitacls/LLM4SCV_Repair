@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == _customerAddress)",
+    "description": "Using tx.origin for authentication creates a phishing vulnerability. An attacker can create a malicious contract that calls register() on behalf of users. When users interact with the malicious contract, tx.origin will be the user's address (not the contract's), allowing the attacker to register users without their consent and potentially manipulate game logic. This violates the principle that msg.sender should be used for authentication in contract-to-contract interactions."
+}
+```

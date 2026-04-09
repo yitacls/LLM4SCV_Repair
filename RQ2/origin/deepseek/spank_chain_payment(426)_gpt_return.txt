@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "Lines 8 and 12: Channels[_lcID].partyAddresses[0].transfer(Channels[_lcID].ethBalances[0]) and Channels[_lcID].token.transfer(Channels[_lcID].partyAddresses[0], Channels[_lcID].erc20Balances[0])",
+    "description": "Both external transfers are made before the state is cleared via `delete Channels[_lcID]` (line 19). If `partyAddresses[0]` is a malicious contract, its fallback/receive function could re-enter `LCOpenTimeout` and bypass the `isOpen == false` requirement (since `isOpen` is still in storage during the first call), potentially allowing repeated withdrawals. This is a classic reentrancy vulnerability similar to the DAO attack pattern."
+}
+```

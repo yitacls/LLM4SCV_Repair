@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Function setValidators",
+    "description": "The function setValidators allows anyone to call it and transfer accumulated fees to the sender without proper access control, potentially leading to unauthorized withdrawals."
+}
+```

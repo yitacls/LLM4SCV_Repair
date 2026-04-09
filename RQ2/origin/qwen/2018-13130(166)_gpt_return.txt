@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "require((totalSupply + _amount) <= maxSupply);",
+    "description": "The addition operation 'totalSupply + _amount' can overflow in Solidity version ^0.4.23 which does not have built-in overflow protection. This could allow minting tokens beyond the intended maximum supply if the sum exceeds the uint256 maximum value, causing the overflow to wrap around to a smaller number that satisfies the <= maxSupply condition."
+}
+```

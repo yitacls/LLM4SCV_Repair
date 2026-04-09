@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "amountRaised",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "uint256 public amountRaised;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added SafeMath protection to prevent arithmetic overflow in balance and amount calculations",
+            "corrected_code": "function () payable {\n        require(block.timestamp >= start && block.timestamp <= deadline && amountRaised < (6000 ether));\n        uint amount = msg.value;\n        require(balanceOf[msg.sender] + amount >= balanceOf[msg.sender]); // Overflow check\n        require(amountRaised + amount >= amountRaised); // Overflow check\n        balanceOf[msg.sender] += amount;\n        amountRaised += amount;\n        FundTransfer(msg.sender, amount, true);\n        if (beneficiary.send(amount)) {\n            FundTransfer(beneficiary, amount, false);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

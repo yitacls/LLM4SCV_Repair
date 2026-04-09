@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[owner] += totalTokenToMint; totalSupply += totalTokenToMint;",
+    "description": "In Solidity ^0.4.17, integer arithmetic does not automatically check for overflow/underflow. The operation 'tokensToMint * (10 ** 18)' can overflow if tokensToMint is large enough (approximately > 1.15e59 for uint256). Additionally, subsequent additions to balanceOf[owner] and totalSupply can overflow, allowing the owner to mint excessive tokens or cause incorrect token accounting. The contract should use SafeMath library or Solidity >=0.8.0 which has built-in overflow checks."
+}
+```

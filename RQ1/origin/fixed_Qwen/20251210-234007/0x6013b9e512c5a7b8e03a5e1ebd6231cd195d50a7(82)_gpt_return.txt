@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RBC",
+    "contract_version": "^0.4.15",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "freezeAccount",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding overflow checks and using SafeMath-like patterns for balance operations",
+            "corrected_code": "function freezeAccount(uint256 _value) onlyOwner returns (bool success) {\n        if (balanceOf[msg.sender] < _value) throw;\n        if (_value <= 0) throw;\n        if (balanceOf[msg.sender] - _value > balanceOf[msg.sender]) throw;\n        if (frozenAccount[msg.sender] + _value < frozenAccount[msg.sender]) throw;\n        balanceOf[msg.sender] -= _value;\n        frozenAccount[msg.sender] += _value;\n        FrozenFunds(msg.sender, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

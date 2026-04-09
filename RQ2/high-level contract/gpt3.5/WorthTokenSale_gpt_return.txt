@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "withdrawCrypto function",
+    "description": "The withdrawCrypto function allows the owner to withdraw funds from the contract without any check on the recipient address. This can lead to potential vulnerabilities if the beneficiary address is a smart contract that is not capable of handling Ether transactions properly."
+}
+```

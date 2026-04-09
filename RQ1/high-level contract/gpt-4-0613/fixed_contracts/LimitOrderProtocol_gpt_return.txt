@@ -1,0 +1,38 @@
+【```json
+[{
+    "contract_name": "LimitOrderProtocol",
+    "contract_version": "^0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fillOrderTo",
+            "fix_info": "Added a reentrancy guard to prevent reentrancy attack and used low-level gas-limited call for external contract interaction to mitigate potential DOS attack",
+            "corrected_code": "modifier nonReentrant() {
+                require(!locked, \"Reentrant call.\");
+                locked = true;
+                _;
+                locked = false;
+            }
+            
+            function fillOrderTo(
+                Order memory order,
+                bytes calldata signature,
+                uint256 makingAmount,
+                uint256 takingAmount,
+                uint256 thresholdAmount,
+                address target
+            ) public nonReentrant returns(uint256, uint256) {
+                ...
+                if (order.interaction.length > 0) {
+                    bool callSuccess = try InteractiveMaker(order.makerAssetData.decodeAddress(_FROM_INDEX))
+                        .notifyFillOrder{gas: 5000}(order.makerAsset, order.takerAsset, makingAmount, takingAmount, order.interaction);
+                    require(callSuccess, \"Failed to call notifyFillOrder\");
+                }
+                ...
+            }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

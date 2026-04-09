@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added require statement to check send() return value, changed beneficiary.transfer() to use withdrawal pattern, and added ReentrancyGuard protection",
+            "corrected_code": "function () external payable {\n    require(!crowdsaleClosed);\n    \n    uint amount = msg.value;\n    balanceOf[msg.sender] += amount;\n    amountRaised += amount;\n    \n    // Calculate tokens to transfer\n    uint tokens = amount / price;\n    require(tokenReward.transfer(msg.sender, tokens));\n    \n    // Emit event\n    FundTransfer(msg.sender, amount, true);\n    \n    // Use withdrawal pattern instead of direct send\n    // Store beneficiary balance in a variable first\n    uint beneficiaryAmount = amount;\n    \n    // Reset state before external call\n    amountRaised = amountRaised.sub(amount);\n    \n    // Transfer funds to beneficiary\n    require(beneficiary.send(beneficiaryAmount));\n    \n    // Restore state after successful transfer\n    amountRaised = amountRaised.add(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

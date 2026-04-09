@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity 0.8.11;",
+        "description": "Using a floating pragma (^0.8.11) allows the contract to be compiled with different compiler versions, which can introduce unexpected behaviors. The contract should be locked to a specific compiler version to ensure consistent behavior across deployments."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "function _approve(address owner, address spender, uint256 amount) private { ... }",
+        "description": "The function parameters 'owner' and 'spender' shadow the state variable names from the IERC20 interface. This shadowing can cause confusion and potential errors when accessing state variables within the function."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function setCharges(uint256 community_charge, uint256 ecoSysFee, uint256 surcharge1, uint256 surcharge2, uint256 surcharge3) external onlyOwner { ... }",
+        "description": "The function validates percentages to be <= 100% but divides by 10^11 (instead of 10^9 for 9 decimals) when applying charges in _getTValues(). For example: 100 * 10^9 = 100% in 9 decimals, but validation uses 100 * 10^9 while division uses 10^11, making the validation ineffective."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < cacheLength; i++) { ... } in _getCurrentSupply() function",
+        "description": "The loop iterates over all excluded addresses from rewards, which could grow unbounded over time. If too many addresses are excluded, this loop could exceed the block gas limit during transactions, causing denial of service."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function takeCharges(uint256 tEcoSys, uint256 tSurcharge1, uint256 tSurcharge2, uint256 tSurcharge3) private { ... }",
+        "description": "The conditions checking `_isExcludedFromSurcharge1[_surcharge_2_Wallet]` and `_isExcludedFromSurcharge3[_surcharge_3_Wallet]` use incorrect mapping checks. The surcharge2 wallet is checked against _isExcludedFromSurcharge1 mapping instead of _isExcludedFromSurcharge2, and similar issue for surcharge3 wallet."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "else { _transferStandard(sender, recipient, amount); } in _tokenTransfer function",
+        "description": "The final else clause is unreachable because all four possible combinations of (sender excluded, recipient excluded) are already handled by the four if-else if conditions. This dead code increases contract size without providing functionality."
+    },
+    {
+        "type": "SWC6-101-Integer Overflow and Underflow",
+        "location": "uint256 timePassed = block.timestamp - (startTime + (initialLock * 1 days)); in unlock function",
+        "description": "While Solidity 0.8.x has built-in overflow/underflow checks, if startTime + initialLock calculation overflows or if block.timestamp is less than the calculated unlock time, it could cause unexpected underflow. However, with Solidity 0.8.11's checked arithmetic, this would revert rather than wrap."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "require(initialLock >= 0, \"timeindays should be greater than or equal to 0\"); in transferWithLock function",
+        "description": "This requirement is always true since uint256 initialLock cannot be negative. The check provides no actual validation and should either be removed or changed to require(initialLock > 0) if a positive initial lock period is intended."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function _transferFromExcluded(address sender, address recipient, uint256 tAmount) private { ... }",
+        "description": "The function parameters include tAmount but this value is only used in the subtraction from _tOwned[sender]. The function calls _getValues(tAmount) which recreates the amount values, making the parameter name potentially confusing since the actual transfer amount is mvalues.tTransferAmount."
+    }
+]
+```

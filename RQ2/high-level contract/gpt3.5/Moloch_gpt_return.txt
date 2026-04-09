@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-114-Transaction Order Dependence",
+            "location": "Line 266-305",
+            "description": "The contract is vulnerable to transaction order dependence where the order of transactions can affect the outcome. This can potentially lead to front-running attacks or manipulations by miners."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Line 408-413",
+            "description": "There is an unprotected ether withdrawal vulnerability where tokens may be returned to the proposer in a failing vote scenario without proper checks, potentially allowing unauthorized withdrawals of tokens."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Line 638-640",
+            "description": "There is a potential integer overflow or underflow vulnerability in the max() function which is used for getting the maximum of two numbers. Proper input validation and overflow checks should be implemented."
+        }
+    ]
+}
+```

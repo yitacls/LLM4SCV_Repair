@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "require(latestVersion < 65535, \"LayerZero: can not add new messaging library\");",
+    "description": "The contract uses the latestVersion to track the version of messaging libraries, and at the vulnerability location, it checks if latestVersion is less than 65535 before adding a new messaging library version. If latestVersion reaches 65535, an integer overflow will occur when trying to increment it, potentially leading to unexpected behavior or vulnerabilities."
+}
+```

@@ -1,0 +1,37 @@
+```json
+[{
+    "contract_name": "StablePriceOracle",
+    "contract_version": "^0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "price",
+            "fix_info": "Fixed the integer overflow and underflow vulnerability by including a check for safe multiplication and addition in the 'price' function.",
+            "corrected_code": "
+                function price(string calldata name, uint /*expires*/, uint duration) view external returns(uint) {
+                    uint len = name.strlen();
+                    require(len > 0);
+                    if(len > rentPrices.length) {
+                        len = rentPrices.length;
+                    }
+
+                    // Added checks for safe multiplication and addition
+                    require(rentPrices[len - 1] <= (2**256 - 1) / duration, 'multiplication overflow'); 
+                    uint priceUSD = rentPrices[len - 1].mul(duration);
+
+                    // Price of one ether in attodollars
+                    uint ethPrice = uint(usdOracle.read());
+
+                    // priceUSD and ethPrice are both fixed-point values with 18dp, so we
+                    // multiply the numerator by 1e18 before dividing.
+                    // Added check for safe multiplication
+                    require(priceUSD <= (2**256 - 1) / 1e18, 'multiplication overflow');
+                    return priceUSD.mul(1e18).div(ethPrice);
+                }
+            ",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

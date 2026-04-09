@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Lottery",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "bets",
+            "fix_info": "Added nonce to prevent replay attacks and improve randomness",
+            "variable_code": "uint256 nonce;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "makeBet",
+            "fix_info": "Fixed bad randomness vulnerability by using keccak256 hash of block information and nonce for better entropy",
+            "corrected_code": "function makeBet() {\n         // Won if hash of block info is even (better randomness)\n         bytes32 randomHash = keccak256(block.number, block.timestamp, nonce);\n         bool won = (uint256(randomHash) % 2) == 0;\n         nonce++;\n\n         // Record the bet with an event\n         bets.push(Bet(msg.value, block.number, won));\n\n         // Payout if the user won, otherwise take their money\n         if(won) {\n             if(!msg.sender.send(msg.value * 2)) {\n                 // Return ether to sender\n                 throw;\n             }\n         }\n     }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

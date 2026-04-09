@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StrategicToken",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() for safe Ether transfers and added overflow protection with SafeMath. Replaced deprecated send() with transfer() for automatic exception handling and gas limiting. Added explicit payable keyword for receive function.",
+            "corrected_code": "function() external payable {\n        ethInWei = ethInWei.add(msg.value);\n        uint256 amount = msg.value.mul(STRTToEth);\n        \n        require(balances[devWallet] >= amount, \"Insufficient balance in devWallet\");\n        \n        balances[devWallet] = balances[devWallet].sub(amount);\n        balances[msg.sender] = balances[msg.sender].add(amount);\n        \n        emit Transfer(devWallet, msg.sender, amount);\n        \n        // Use transfer() instead of send() for safe Ether transfer\n        // transfer() automatically reverts on failure\n        address payable wallet = address(uint160(devWallet));\n        wallet.transfer(msg.value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

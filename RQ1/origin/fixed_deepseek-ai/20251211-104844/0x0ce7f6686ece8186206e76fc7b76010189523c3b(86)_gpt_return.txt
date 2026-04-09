@@ -1,0 +1,56 @@
+```json
+[
+    {
+        "contract_name": "MakeYourBet",
+        "contract_version": ">=0.5.0",
+        "state_variables": [
+            {
+                "variable_name": "leaderInfo",
+                "fix_info": "Added to track current leader during bet placement to avoid O(n) lookup during getLeader",
+                "variable_code": "struct LeaderInfo { address payable winnerAddress; uint256 totalBet; } LeaderInfo public currentLeader;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "lastGameIdProcessed",
+                "fix_info": "Added to ensure leader tracking is synchronized with game cycles",
+                "variable_code": "uint256 public lastGameIdProcessed;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyValidGame",
+                "fix_info": "Added to ensure function only operates on valid game states",
+                "modifier_code": "modifier onlyValidGame() { require(gameId == lastGameIdProcessed, \"Game ID mismatch\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "updateLeader",
+                "fix_info": "Added internal function to update leader when bets are placed, preventing DoS in getLeader",
+                "corrected_code": "function updateLeader(address payable _player, uint256 _betAmount) internal { if (_betAmount > currentLeader.totalBet && bets[_player].gameId == gameId) { currentLeader.winnerAddress = _player; currentLeader.totalBet = _betAmount; } }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "placeBet",
+                "fix_info": "Modified to include leader tracking during bet placement",
+                "corrected_code": "function placeBet(uint256 gameId) external payable { // ... existing bet placement logic updateLeader(msg.sender, msg.value); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getLeader",
+                "fix_info": "Fixed DoS vulnerability by removing O(n) loop and using pre-computed leader data",
+                "corrected_code": "function getLeader() public view onlyValidGame returns (address payable, uint256) { require(currentLeader.winnerAddress != address(0), \"No leader found\"); return (currentLeader.winnerAddress, currentLeader.totalBet); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "resetLeader",
+                "fix_info": "Added to reset leader tracking when starting new game",
+                "corrected_code": "function resetLeader() internal { currentLeader.winnerAddress = address(0); currentLeader.totalBet = 0; lastGameIdProcessed = gameId; }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

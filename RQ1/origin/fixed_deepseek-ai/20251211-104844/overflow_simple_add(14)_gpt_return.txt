@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Overflow_Add",
+        "contract_version": "0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "balance",
+                "fix_info": "Uses SafeMath library to prevent arithmetic overflow",
+                "variable_code": "using SafeMath for uint256;\nuint256 public balance;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "add",
+                "fix_info": "Added SafeMath addition to prevent overflow vulnerability",
+                "corrected_code": "function add(uint256 deposit) public {\n    balance = balance.add(deposit);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

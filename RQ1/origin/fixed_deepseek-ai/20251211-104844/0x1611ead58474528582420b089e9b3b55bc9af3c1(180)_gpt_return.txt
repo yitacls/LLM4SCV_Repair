@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added ownership modifier to restrict access control vulnerability",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner, \"Not owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sendEthValue",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier, updated deprecated .value() syntax to .transfer(), and added event for transparency",
+            "corrected_code": "function sendEthValue(address target, uint256 value) external onlyOwner {\n        require(value <= address(this).balance, \"Insufficient contract balance\");\n        require(target != address(0), \"Invalid target address\");\n        \n        // Use .transfer() for security (automatically reverts on failure)\n        target.transfer(value);\n        \n        // Emit event for transparency\n        emit ValueSent(target, value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

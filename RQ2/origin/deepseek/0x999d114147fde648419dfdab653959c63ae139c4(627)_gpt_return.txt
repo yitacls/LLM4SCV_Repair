@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call{ value: userShare }(\"\");",
+    "description": "The contract uses low-level call.value() to transfer ETH without implementing the checks-effects-interactions pattern. The state update (provided[msg.sender] = 0) occurs after the external call, allowing a malicious contract to recursively call claim() multiple times before the balance is cleared, potentially draining contract funds if totalProvided < MINIMAL_PROVIDE_AMOUNT."
+}
+```

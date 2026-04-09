@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "TSwap",
+    "contract_version": "0.4.26",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Changed from potentially vulnerable fixed-point representation to using SafeMath for multiplication",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Use SafeMath library to prevent arithmetic overflow/underflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to ensure only contract owner can execute certain functions if needed",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Only owner can call this\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability in amount * sellPrice calculation using SafeMath. Added require statements for better error handling. Fixed reentrancy vulnerability by following checks-effects-interactions pattern. Updated to modern Solidity version syntax.",
+            "corrected_code": "function sell(uint256 amount) public returns (bool success) {\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance to sell\");\n    \n    // Using SafeMath for multiplication to prevent overflow\n    uint256 etherAmount = amount.mul(sellPrice);\n    \n    // Update balances first (checks-effects-interactions pattern)\n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n    balanceOf[address(this)] = balanceOf[address(this)].add(amount);\n    \n    // Transfer ether to sender\n    msg.sender.transfer(etherAmount);\n    \n    // Emit transfer event\n    emit Transfer(msg.sender, address(this), amount);\n    \n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setSellPrice",
+            "fix_info": "Added function to safely set sell price (if contract owner functionality is needed)",
+            "corrected_code": "function setSellPrice(uint256 newSellPrice) public onlyOwner {\n    require(newSellPrice > 0, \"Price must be greater than zero\");\n    sellPrice = newSellPrice;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

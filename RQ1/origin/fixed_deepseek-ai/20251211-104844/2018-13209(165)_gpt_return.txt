@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "NectarCoin",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "sellPrice",
+                "fix_info": "Added SafeMath library to prevent arithmetic overflow in multiplication",
+                "variable_code": "using SafeMath for uint256;\nuint256 public sellPrice;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "validAmount",
+                "fix_info": "Added modifier to check for valid non-zero amounts and prevent reentrancy",
+                "modifier_code": "modifier validAmount(uint256 amount) {\n    require(amount > 0);\n    require(balanceOf[msg.sender] >= amount);\n    require(sellPrice > 0);\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath, added reentrancy protection, and updated to modern Solidity syntax",
+                "corrected_code": "function sell(uint256 amount) external validAmount(amount) {\n    uint256 etherAmount = amount.mul(sellPrice);\n    \n    balanceOf[address(this)] = balanceOf[address(this)].add(amount);\n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n    \n    require(msg.sender.send(etherAmount));\n    \n    Transfer(msg.sender, address(this), amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

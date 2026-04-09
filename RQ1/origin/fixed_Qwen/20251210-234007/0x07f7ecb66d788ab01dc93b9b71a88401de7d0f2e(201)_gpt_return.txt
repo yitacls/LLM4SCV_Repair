@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PoCGame",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "donateToWhale",
+            "fix_info": "Added check for low-level call success to prevent unchecked call vulnerabilities",
+            "corrected_code": "function donateToWhale(uint256 amount) \n    internal \n    {\n        // Check if the call was successful to prevent unchecked low-level call vulnerability\n        require(whale.call.value(amount)(bytes4(keccak256(\"donate()\"))));\n        totalDonated += amount;\n        emit Donate(amount, whale, msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

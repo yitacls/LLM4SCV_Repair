@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "revenue = amount * sellPrice; // <IO_VUL>",
+    "description": "Integer overflow vulnerability in line 'revenue = amount * sellPrice;'. In Solidity versions prior to 0.8.0, multiplication operations do not automatically check for overflow. If 'amount * sellPrice' exceeds the maximum value of uint256 (2^256 - 1), the result will wrap around, causing revenue to be much smaller than expected. This could allow attackers to receive far less Ether than they should when selling tokens, especially with large amounts or high sellPrice values. Recommended fix: Use SafeMath library or upgrade to Solidity 0.8.0+ which has built-in overflow checks."
+}
+```

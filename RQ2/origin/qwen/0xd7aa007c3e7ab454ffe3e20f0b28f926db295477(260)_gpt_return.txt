@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function uses tx.origin for authentication instead of msg.sender, which is vulnerable to cross-contract attacks. In Solidity ^0.4.25, tx.origin refers to the original external account that initiated the transaction, not the immediate caller. This allows malicious contracts to bypass access control by tricking the owner into calling the function through a proxy contract. The owner check should use msg.sender to properly verify the immediate caller's identity."
+}
+```

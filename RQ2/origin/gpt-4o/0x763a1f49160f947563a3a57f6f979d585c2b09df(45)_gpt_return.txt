@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value( fomo3d.getBuyPrice() * 2 )();",
+    "description": "The use of the low-level `call` function is unchecked, which means the success or failure of the call is not verified. If the external call to the `fomo3d` contract fails or is malicious, it could result in unexpected behavior or loss of funds. Instead, it is recommended to use the `transfer` or `send` methods with proper error handling to ensure the safety of the operations. Furthermore, low-level calls might introduce reentrancy vulnerabilities if not carefully managed."
+}
+```

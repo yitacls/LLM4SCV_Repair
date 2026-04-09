@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WMCToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "batchTransfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for multiplication and addition operations. Also reordered require statements to check conditions before performing arithmetic operations.",
+            "corrected_code": "function batchTransfer(address[] _receivers, uint256 _value) public {\n    uint cnt = _receivers.length;\n    require(cnt > 0 && cnt <= 10);\n    require(_value > 0);\n    require(!frozenAccount[msg.sender]);\n    \n    uint256 amount = uint256(cnt) * _value;\n    require(balanceOf[msg.sender] >= amount);\n    \n    balanceOf[msg.sender] -= amount;\n    for (uint i = 0; i < cnt; i++) {\n        balanceOf[_receivers[i]] += _value;\n        Transfer(msg.sender, _receivers[i], _value);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

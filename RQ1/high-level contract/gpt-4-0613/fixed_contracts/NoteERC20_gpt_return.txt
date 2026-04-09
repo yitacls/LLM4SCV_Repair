@@ -1,0 +1,69 @@
+【```json
+[
+  {
+    "contract_name": "NoteERC20",
+    "contract_version": "^0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "_add96",
+        "fix_info": "use SafeMath library for addition to prevent integer overflow",
+        "corrected_code": "function _add96(uint96 a, uint96 b, string memory errorMessage) private pure returns (uint96) {
+            uint96 c = a + b;
+            require(c >= a, errorMessage);
+            return c;
+        }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_sub96",
+        "fix_info": "use SafeMath library for subtraction to prevent integer underflow",
+        "corrected_code": "function _sub96(uint96 a, uint96 b, string memory errorMessage) private pure returns (uint96) {
+            require(b <= a, errorMessage);
+            uint96 c = a - b;
+            return c;
+        }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_transferTokens",
+        "fix_info": "use SafeMath library for addition and subtraction to prevent integer overflow and underflow",
+        "corrected_code": "function _transferTokens(address src, address dst, uint96 amount) internal {
+            require(src != address(0), 'Note::_transferTokens: cannot transfer from the zero address');
+            require(dst != address(0), 'Note::_transferTokens: cannot transfer to the zero address');
+
+            balances[src] = _sub96(balances[src], amount, 'Note::_transferTokens: transfer amount exceeds balance');
+            balances[dst] = _add96(balances[dst], amount, 'Note::_transferTokens: transfer amount overflows');
+            emit Transfer(src, dst, amount);
+
+            _moveDelegates(delegates[src], delegates[dst], amount);
+        }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_moveDelegates",
+        "fix_info": "use SafeMath library for subtraction and addition to prevent integer underflow and overflow",
+        "corrected_code": "function _moveDelegates(address srcRep, address dstRep, uint96 amount) internal {
+            if (srcRep != dstRep && amount > 0) {
+                if (srcRep != address(0)) {
+                    uint32 srcRepNum = numCheckpoints[srcRep];
+                    uint96 srcRepOld = srcRepNum > 0 ? checkpoints[srcRep][srcRepNum - 1].votes : 0;
+                    uint96 srcRepNew = _sub96(srcRepOld, amount, 'Note::_moveVotes: vote amount underflow');
+                    _writeCheckpoint(srcRep, srcRepNum, srcRepOld, srcRepNew);
+                }
+
+                if (dstRep != address(0)) {
+                    uint32 dstRepNum = numCheckpoints[dstRep];
+                    uint96 dstRepOld = dstRepNum > 0 ? checkpoints[dstRep][dstRepNum - 1].votes : 0;
+                    uint96 dstRepNew = _add96(dstRepOld, amount, 'Note::_moveVotes: vote amount overflows');
+                    _writeCheckpoint(dstRep, dstRepNum, dstRepOld, dstRepNew);
+                }
+            }
+        }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```】

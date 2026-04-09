@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target[0].call.value(msg.value).gas(600000)();",
+    "description": "The low-level call operation does not check the return value, which means if the call fails (e.g., due to out-of-gas or the recipient contract throwing an exception), the failure will not be detected. This can lead to unexpected behavior where the transaction continues execution as if the call succeeded. In Solidity ^0.4.23, low-level calls return a boolean indicating success/failure, but this return value is not being checked here."
+}
+```

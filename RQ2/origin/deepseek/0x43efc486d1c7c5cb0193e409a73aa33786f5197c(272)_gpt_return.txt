@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public {\n        uint256 etherBalance = this.balance;\n        owner.transfer(etherBalance);\n    }",
+    "description": "The withdraw() function is protected with the onlyOwner modifier, ensuring that only a privileged account can invoke it. However, it transfers the entire contract balance. If the owner account's private key is compromised or the owner acts maliciously, all locked funds in the contract could be drained without any restrictions. Additionally, using this.balance is deprecated in later Solidity versions, and the function lacks a withdrawal event for transparency. As no withdrawal limits or timelocks are implemented, this centralized control poses a significant risk to user funds."
+}
+```

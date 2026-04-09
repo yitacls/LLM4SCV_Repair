@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "transferTo(transferPointer);",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to transferTo() function before updating the contract's state variables. In Solidity 0.4.16, there is no automatic reentrancy protection. An attacker can reenter the makeTransfer function before transferPointer is incremented and times is decremented, potentially causing the same transfer to be executed multiple times or allowing the attacker to drain funds by recursively calling back into the contract before the state updates are completed."
+}
+```

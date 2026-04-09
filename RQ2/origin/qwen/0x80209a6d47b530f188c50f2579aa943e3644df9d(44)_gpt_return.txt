@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance - 2100000);",
+    "description": "The send() function call is not checked for success. In Solidity 0.4.25, send() returns a boolean indicating whether the transfer succeeded, but this return value is not being verified. If the send() call fails (e.g., due to gas limitations or the recipient being a contract with a failing fallback function), the function will continue execution without handling the failure, potentially leading to unexpected behavior or loss of funds."
+}
+```

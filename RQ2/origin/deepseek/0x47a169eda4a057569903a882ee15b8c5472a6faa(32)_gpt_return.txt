@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "The contract uses tx.origin for authorization instead of msg.sender, which makes it vulnerable to phishing attacks. A malicious contract could trick the owner into calling a function that triggers empty(), causing the contract's self-destruction. Additionally, there is no reentrancy guard, and this version of Solidity is outdated and contains known security issues. This access control flaw allows unauthorized selfdestruction if the owner is tricked."
+    }
+}
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Made owner private and added explicit type",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to replace tx.origin check",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced tx.origin with msg.sender check via modifier, removed unnecessary assert, added overflow protection",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner {\n        require(amount > 0, \"Amount must be greater than zero\");\n        balances[msg.sender] += amount;\n        totalSupply += amount;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

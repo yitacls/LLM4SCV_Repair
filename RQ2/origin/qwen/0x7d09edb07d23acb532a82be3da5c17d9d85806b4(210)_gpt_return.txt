@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256(\"donate()\")))",
+    "description": "The low-level call to 'whale' contract is not checked for success or failure. In Solidity 0.4.21, low-level calls return a boolean indicating success, but this return value is ignored here. If the call fails (e.g., due to out-of-gas, invalid opcode, or the target contract reverting), the transaction will continue execution without handling the failure, potentially leading to incorrect state updates. The 'totalDonated' variable is incremented and 'Lose' event is emitted regardless of whether the ether transfer actually succeeded."
+}
+```

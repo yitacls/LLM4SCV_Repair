@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control", 
+    "location": "require(_target.call.value(_value)(_data));", 
+    "description": "This vulnerability is due to the lack of restricting access to the sendEthValue function. Any user can make a transaction to the contract's method without any control. The function does not have any modifier to control the access."
+}
+```

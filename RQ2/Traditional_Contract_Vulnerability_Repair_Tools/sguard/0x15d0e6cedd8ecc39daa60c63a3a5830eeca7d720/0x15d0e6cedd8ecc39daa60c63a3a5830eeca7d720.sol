@@ -1,0 +1,14 @@
+pragma solidity ^0.4.19;
+contract Lottery {
+    address public owner = msg.sender;
+    bytes32 secretNumberHash = 0x04994f67dc55b09e814ab7ffc8df3686b4afb2bb53e60eae97ef043fe03fb829;
+    function withdraw() public {
+        require(tx.origin == owner);  // fault line
+        owner.transfer(this.balance);
+    }
+    function guess(uint8 number) public payable {
+        if (keccak256(number) == secretNumberHash && msg.value > this.balance) {
+            msg.sender.transfer(this.balance + msg.value);
+        }
+    }
+}

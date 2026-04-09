@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "XG4K",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Added SafeMath protection to prevent integer overflow when adding balances",
+            "corrected_code": "function mint(address receiver, uint amount) public {\n        if (msg.sender != coiner) return;\n        balances[receiver] = balances[receiver].add(amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

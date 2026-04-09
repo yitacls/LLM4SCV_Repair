@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "function init(...) public onlyDeployingAddress isNotInitialized { ... }",
+        "description": "The init function performs multiple state updates and external calls within a loop. If any of these operations fail, it could lead to a denial of service as the entire transaction would revert, preventing the contract from being initialized properly."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "for (uint8 stageId = 0; stageId <= currentStage; stageId++) { ParticipantStageDetails storage stages = participantStats.stages[stageId]; ... }",
+        "description": "In the acceptContributions function, the local variable 'stages' shadows the global 'stages' mapping, which can lead to confusion and potential errors when referencing the state variable instead of the local one."
+    }
+]
+```

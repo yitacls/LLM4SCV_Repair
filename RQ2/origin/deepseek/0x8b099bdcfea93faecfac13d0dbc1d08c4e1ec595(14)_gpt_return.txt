@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(withdraw_amt);",
+    "description": "The `send()` function call does not check its return value. In Solidity 0.4.x, the `send()` function returns a boolean indicating success or failure, but this return value is ignored. If the transfer fails (e.g., due to insufficient gas, a revert in a fallback function, or the recipient being a contract without a payable fallback), the transaction will not revert, leaving the contract state unchanged while giving a false impression that the withdrawal succeeded. This could lock funds permanently if the `send()` consistently fails. Additionally, the logic error in the condition `if (msg.sender != owner || withdraw_amt < 1000 ether)` means only the owner can withdraw, but they can only do so if the contract balance is 1000 ether or more; otherwise, `withdraw_amt` is set to 0, which may be unintended. The vulnerability is compounded by ignoring the return value of `send()`, making failures silent."
+}
+```

@@ -1,0 +1,13 @@
+```json
+[
+    {
+        "contract_name": "AOC_BEP",
+        "contract_version": "0.8.9",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Updated the initializer function to include checks for reinitialization and clarified comments regarding SWC-118 vulnerability.",
+                "corrected_code": "function initialize() public initializer {\n    require(!initialized, \"Already Initialized\"); // Ensuring initialization only once\n    _mint(_msgSender(), (1000 * 10**9 * 10**18)); // Mint the   ```
+```

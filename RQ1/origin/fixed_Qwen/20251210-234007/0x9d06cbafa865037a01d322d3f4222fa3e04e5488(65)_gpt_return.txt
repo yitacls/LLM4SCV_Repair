@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Delta",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and using transfer() for automatic gas stipend",
+            "corrected_code": "function withdraw(uint256 _amount) onlyOwner returns (bool result) {\n    uint256 balance = this.balance;\n    if(_amount > 0 && _amount <= balance) balance = _amount;\n    owner.transfer(balance);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

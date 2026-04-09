@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ERBIUMCOIN",
+    "contract_version": "0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Fixed access control logic to properly restrict access to owner only",
+            "modifier_code": "modifier onlyOwner() {\n        if (msg.sender != owner) {\n            revert();\n        }\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": []
+}]
+```

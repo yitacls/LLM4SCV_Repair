@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DELEGATECALL Vulnerability",
+    "location": "require(fibonacciLibrary.delegatecall(fibSig, withdrawalCounter));",
+    "description": "The use of delegatecall to an external library (fibonacciLibrary) for calculating a Fibonacci number allows the library contract to execute code in the context of the caller (FibonacciBalance) contract. This gives the library contract full write access to the caller's storage, including critical state variables like 'owner' and 'calculatedFibNumber'. An attacker could deploy a malicious library that modifies these variables to bypass access controls, drain funds, or alter contract logic during the delegatecall execution."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "if(creditorAddresses.length>1500) {\n            creditorAddresses = new address[](0);\n            win = true;\n        }",
+    "description": "The function emptyCreditors() creates a denial of service vulnerability because it requires the creditorAddresses array to have more than 1500 elements before it can be executed. In Solidity ^0.4.25, clearing a large array would consume significant gas, potentially exceeding the block gas limit and making the function unexecutable. This prevents the contract from being able to clear the array when it grows too large, effectively causing a DoS condition."
+}
+```

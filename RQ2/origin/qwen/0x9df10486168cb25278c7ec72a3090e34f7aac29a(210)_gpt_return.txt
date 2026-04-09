@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "bool result=((icoStart+(35*24*60*60)) >= now);",
+    "description": "The arithmetic operation (35*24*60*60) could potentially cause an integer overflow when added to icoStart, especially if icoStart is a large timestamp value. In Solidity ^0.4.18, arithmetic operations are not protected against overflow/underflow by default, which could lead to unexpected behavior in the ICO status calculation."
+}
+```

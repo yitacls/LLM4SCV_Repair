@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "BIGCAdvancedToken",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "No changes needed to variable declaration",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "No changes needed to variable declaration",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Updated from Solidity 0.4.16 to 0.8.0+ syntax, added visibility",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Not contract owner\");\n        _;\n    }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability, updated Solidity version, replaced Transfer events with emit keyword, used SafeMath or checked arithmetic",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n        require(target != address(0), \"Invalid target address\");\n        \n        // Safe arithmetic operations to prevent overflow\n        uint256 newBalance = balanceOf[target] + mintedAmount;\n        uint256 newTotalSupply = totalSupply + mintedAmount;\n        \n        // Check for overflow in addition\n        require(newBalance >= balanceOf[target], \"Balance overflow detected\");\n        require(newTotalSupply >= totalSupply, \"Total supply overflow detected\");\n        \n        balanceOf[target] = newBalance;\n        totalSupply = newTotalSupply;\n        \n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

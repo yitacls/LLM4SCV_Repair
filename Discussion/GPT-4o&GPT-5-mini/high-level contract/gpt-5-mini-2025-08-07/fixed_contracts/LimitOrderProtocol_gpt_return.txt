@@ -1,0 +1,58 @@
+[{
+    "contract_name": "LimitOrderProtocol",
+    "contract_version": "^0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "_status",
+            "fix_info": "Added a reentrancy guard state variable to prevent reentrancy across public entry points.",
+            "variable_code": "uint256 private _status = 1; // 1 = not entered, 2 = entered",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy on critical public functions.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status == 1, \"LOP: reentrant\");\n    _status = 2;\n    _;\n    _status = 1;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "_fillOrderTo",
+            "fix_info": "Extracted core logic of fillOrderTo into an internal function. Added try/catch around interactive external call to mitigate DoS and left logic unchanged otherwise.",
+            "corrected_code": "function _fillOrderTo(\n    Order memory order,\n    bytes memory signature,\n    uint256 makingAmount,\n    uint256 takingAmount,\n    uint256 thresholdAmount,\n    address target\n) internal returns (uint256, uint256) {\n    bytes32 orderHash = _hash(order);\n\n    {  // Stack too deep\n        uint256 remainingMakerAmount;\n        { // Stack too deep\n            bool orderExists;\n            (orderExists, remainingMakerAmount) = _remaining[orderHash].trySub(1);\n            if (!orderExists) {\n                // First fill: validate order and permit maker asset\n                _validate(order.makerAssetData, order.takerAssetData, signature, orderHash);\n                remainingMakerAmount = order.makerAssetData.decodeUint256(_AMOUNT_INDEX);\n                if (order.permit.length > 0) {\n                    _permit(order.permit);\n                    require(_remaining[orderHash] == 0, \"LOP: reentrancy detected\");\n                }\n            }\n        }\n\n        // Check if order is valid\n        if (order.predicate.length > 0) {\n            require(checkPredicate(order), \"LOP: predicate returned false\");\n        }\n\n        // Compute maker and taker assets amount\n        if ((takingAmount == 0) == (makingAmount == 0)) {\n            revert(\"LOP: only one amount should be 0\");\n        }\n        else if (takingAmount == 0) {\n            takingAmount = _callGetTakerAmount(order, makingAmount);\n            require(takingAmount <= thresholdAmount, \"LOP: taking amount too high\");\n        }\n        else {\n            makingAmount = _callGetMakerAmount(order, takingAmount);\n            require(makingAmount >= thresholdAmount, \"LOP: making amount too low\");\n        }\n\n        require(makingAmount > 0 && takingAmount > 0, \"LOP: can't swap 0 amount\");\n\n        // Update remaining amount in storage (effects)\n        remainingMakerAmount = remainingMakerAmount.sub(makingAmount, \"LOP: taking > remaining\");\n        _remaining[orderHash] = remainingMakerAmount + 1;\n        emit OrderFilled(msg.sender, orderHash, remainingMakerAmount);\n    }\n\n    // Taker => Maker (interaction: external)\n    _callTakerAssetTransferFrom(order.takerAsset, order.takerAssetData, takingAmount);\n\n    // Maker can handle funds interactively. Wrap in try/catch to avoid DoS by reverting interactive maker.\n    if (order.interaction.length > 0) {\n        try InteractiveMaker(order.makerAssetData.decodeAddress(_FROM_INDEX))\n            .notifyFillOrder(order.makerAsset, order.takerAsset, makingAmount, takingAmount, order.interaction) {\n            // ignore successful return data\n        } catch {\n            // On any failure, continue without reverting to avoid DoS\n        }\n    }\n\n    // Maker => Taker\n    _callMakerAssetTransferFrom(order.makerAsset, order.makerAssetData, target, makingAmount);\n\n    return (makingAmount, takingAmount);\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "fillOrderTo",
+            "fix_info": "Public entry wrapper for order fill using nonReentrant modifier. Calls internal core implementation to allow safe permit+fill flows without double-guard issues.",
+            "corrected_code": "function fillOrderTo(\n    Order memory order,\n    bytes calldata signature,\n    uint256 makingAmount,\n    uint256 takingAmount,\n    uint256 thresholdAmount,\n    address target\n) public nonReentrant returns (uint256, uint256) {\n    // copy calldata signature to memory when calling internal implementation\n    return _fillOrderTo(order, bytes(signature), makingAmount, takingAmount, thresholdAmount, target);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "fillOrderToWithPermit",
+            "fix_info": "Permit wrapper made nonReentrant and now calls internal implementation after performing permit. This prevents reentrancy during permit while avoiding nested nonReentrant failures.",
+            "corrected_code": "function fillOrderToWithPermit(\n    Order memory order,\n    bytes calldata signature,\n    uint256 makingAmount,\n    uint256 takingAmount,\n    uint256 thresholdAmount,\n    address target,\n    bytes memory permit\n) external nonReentrant returns (uint256, uint256) {\n    // Perform permit while guard is active to prevent reentrancy during permit execution\n    _permit(permit);\n    return _fillOrderTo(order, bytes(signature), makingAmount, takingAmount, thresholdAmount, target);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_fillOrderRFQTo",
+            "fix_info": "Extracted core logic of fillOrderRFQTo into an internal function and kept original behavior. This allows permit wrappers to set the reentrancy guard before calling the core logic.",
+            "corrected_code": "function _fillOrderRFQTo(\n    OrderRFQ memory order,\n    bytes memory signature,\n    uint256 makingAmount,\n    uint256 takingAmount,\n    address target\n) internal returns (uint256, uint256) {\n    // Check time expiration\n    uint256 expiration = uint128(order.info) >> 64;\n    require(expiration == 0 || block.timestamp <= expiration, \"LOP: order expired\");  // solhint-disable-line not-rely-on-time\n\n    {  // Stack too deep\n        // Validate double spend\n        address maker = order.makerAssetData.decodeAddress(_FROM_INDEX);\n        uint256 invalidatorSlot = uint64(order.info) >> 8;\n        uint256 invalidatorBit = 1 << uint8(order.info);\n        uint256 invalidator = _invalidator[maker][invalidatorSlot];\n        require(invalidator & invalidatorBit == 0, \"LOP: already filled\");\n        _invalidator[maker][invalidatorSlot] = invalidator | invalidatorBit;\n    }\n\n    // Compute partial fill if needed\n    uint256 orderMakerAmount = order.makerAssetData.decodeUint256(_AMOUNT_INDEX);\n    uint256 orderTakerAmount = order.takerAssetData.decodeUint256(_AMOUNT_INDEX);\n    if (takingAmount == 0 && makingAmount == 0) {\n        // Two zeros means whole order\n        makingAmount = orderMakerAmount;\n        takingAmount = orderTakerAmount;\n    }\n    else if (takingAmount == 0) {\n        takingAmount = (makingAmount.mul(orderTakerAmount).add(orderMakerAmount).sub(1)).div(orderMakerAmount);\n    }\n    else if (makingAmount == 0) {\n        makingAmount = takingAmount.mul(orderMakerAmount).div(orderTakerAmount);\n    }\n    else {\n        revert(\"LOP: one of amounts should be 0\");\n    }\n\n    require(makingAmount > 0 && takingAmount > 0, \"LOP: can't swap 0 amount\");\n    require(makingAmount <= orderMakerAmount, \"LOP: making amount exceeded\");\n    require(takingAmount <= orderTakerAmount, \"LOP: taking amount exceeded\");\n\n    // Validate order\n    bytes32 orderHash = _hash(order);\n    _validate(order.makerAssetData, order.takerAssetData, signature, orderHash);\n\n    // Maker => Taker, Taker => Maker\n    _callMakerAssetTransferFrom(order.makerAsset, order.makerAssetData, target, makingAmount);\n    _callTakerAssetTransferFrom(order.takerAsset, order.takerAssetData, takingAmount);\n\n    emit OrderFilledRFQ(orderHash, makingAmount);\n    return (makingAmount, takingAmount);\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "fillOrderRFQTo",
+            "fix_info": "Public wrapper for RFQ fill using nonReentrant modifier. Calls internal core implementation to allow safe permit+fill flows.",
+            "corrected_code": "function fillOrderRFQTo(\n    OrderRFQ memory order,\n    bytes memory signature,\n    uint256 makingAmount,\n    uint256 takingAmount,\n    address target\n) public nonReentrant returns (uint256, uint256) {\n    return _fillOrderRFQTo(order, signature, makingAmount, takingAmount, target);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "fillOrderRFQToWithPermit",
+            "fix_info": "Permit wrapper for RFQ made nonReentrant and calls internal implementation after permit to prevent reentrancy during permit execution.",
+            "corrected_code": "function fillOrderRFQToWithPermit(\n    OrderRFQ memory order,\n    bytes memory signature,\n    uint256 makingAmount,\n    uint256 takingAmount,\n    address target,\n    bytes memory permit\n) external nonReentrant returns (uint256, uint256) {\n    _permit(permit);\n    return _fillOrderRFQTo(order, signature, makingAmount, takingAmount, target);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

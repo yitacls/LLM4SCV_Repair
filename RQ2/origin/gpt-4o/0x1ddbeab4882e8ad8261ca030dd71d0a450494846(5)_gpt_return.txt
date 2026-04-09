@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The use of `send` in this smart contract does not check for the return value to confirm whether the transfer succeeded or failed. This can result in unexpected behavior or loss of funds if the transfer fails. For example, the recipient address might be a contract that rejects payments, a contract with logic that consumes more than 2300 gas, or an address that accidentally runs out of gas. Replacing `send` with `transfer` or properly handling the return value of `send` can help mitigate this vulnerability."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "releaseWallet.send(address(this).balance)",
+    "description": "The send() function is used without checking its return value. In Solidity versions >= 0.4.24, send() returns false if the transfer fails (e.g., due to gas exhaustion or recipient contract rejection), but the code does not handle this case. This could lead to the contract's balance not being transferred to releaseWallet while the transaction continues executing, potentially causing unexpected behavior or loss of funds."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "VRFtoken",
+    "contract_version": "^0.4.15",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "burn",
+            "fix_info": "Replaced vulnerable tx.origin check with secure onlyOwner modifier and improved access control",
+            "corrected_code": "function burn(uint256 amount) public onlyOwner\n        returns (bool)\n    {\n        if (balances[msg.sender] >= amount) \n        {\n            balances[msg.sender] -= amount;\n            currentSupply -= amount;\n            Burn(msg.sender, amount);\n            return true;\n        }\n        else \n        {\n            return false;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

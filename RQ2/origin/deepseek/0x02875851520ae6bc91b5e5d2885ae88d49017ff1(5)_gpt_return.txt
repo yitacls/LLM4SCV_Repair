@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.call(msg.value);",
+    "description": "The contract uses a low-level .call() to forward funds to the 'wallet' address. In Solidity versions prior to 0.5.0, .call() returns a boolean success value that is ignored here. If the call fails (e.g., if the wallet is a contract that runs out of gas, throws an exception, or is non-payable), the transaction will not revert, and the funds will remain trapped in this contract. Additionally, the syntax 'wallet.call(msg.value)' is incorrect and will forward all available gas. The proper syntax for forwarding a specific value is 'wallet.call.value(msg.value)()'. The correct mitigation is to check the return value and revert on failure, for example: 'require(wallet.call.value(msg.value)());'."
+}
+```

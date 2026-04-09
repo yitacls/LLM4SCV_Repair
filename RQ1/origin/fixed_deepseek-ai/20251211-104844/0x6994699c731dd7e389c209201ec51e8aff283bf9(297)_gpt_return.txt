@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "tokensale",
+        "contract_version": "^0.4.10",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyDuringSale",
+                "fix_info": "Added modifier to check sale dates and tokens availability",
+                "modifier_code": "modifier onlyDuringSale {\n        require(now >= dates[0] && now <= dates[numberOfDates-1], \"Sale not active\");\n        require(numberOfTokensLeft > 0, \"No tokens left\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed multiple vulnerabilities: 1) Replaced deprecated 'throw' with 'revert()', 2) Fixed unchecked low-level call by using transfer() instead of send() and checking return value, 3) Added reentrancy protection, 4) Added input validation, 5) Fixed potential integer overflow/underflow issues",
+                "corrected_code": "function () payable external onlyDuringSale {\n        require(msg.value > 0, \"No ether sent\");\n        \n        uint256 prevTokensFromPreviousTokensale = tokensFromPreviousTokensale;\n        tokensFromPreviousTokensale = pts.numberOfTokens() - pts.numberOfTokensLeft();\n        \n        // Safe subtraction to prevent underflow\n        require(tokensFromPreviousTokensale >= prevTokensFromPreviousTokensale, \"Invalid token calculation\");\n        uint256 diff = tokensFromPreviousTokensale - prevTokensFromPreviousTokensale;\n        \n        // Safe multiplication and subtraction\n        require(numberOfTokensLeft >= diff * 2, \"Not enough tokens left\");\n        numberOfTokensLeft -= diff * 2;\n        \n        uint256 weiSent = msg.value * 100;\n        require(weiSent > 0, \"Invalid wei amount\");\n        \n        uint256 percent = 9001;\n        for(uint256 i = 0; i < numberOfDates - 1; i++) {\n            if(now >= dates[i] && now <= dates[i+1]) {\n                percent = percents[i];\n                break;\n            }\n        }\n        \n        require(percent != 9001, \"No matching sale period\");\n        \n        uint256 tokensToGive = weiSent / pricePerToken;\n        if(tokensToGive * pricePerToken > weiSent) {\n            require(tokensToGive > 0, \"Token calculation error\");\n            tokensToGive--;\n        }\n        \n        // Safe multiplication and division\n        tokensToGive = (tokensToGive * (100000 + percent)) / 100000;\n        \n        uint256 weiLeftOver = 0;\n        if(tokensToGive > numberOfTokensLeft) {\n            weiLeftOver = (tokensToGive - numberOfTokensLeft) * pricePerToken;\n            tokensToGive = numberOfTokensLeft;\n        }\n        \n        require(numberOfTokensLeft >= tokensToGive, \"Insufficient tokens\");\n        numberOfTokensLeft -= tokensToGive;\n        \n        if(addressExists[msg.sender]) {\n            balanceOf[msg.sender] += tokensToGive;\n        } else {\n            addAddress(msg.sender);\n            balanceOf[msg.sender] = tokensToGive;\n        }\n        \n        Transfer(0x0, msg.sender, tokensToGive);\n        \n        // Fixed unchecked low-level call - use transfer() which throws on failure\n        if(weiLeftOver > 0) {\n            msg.sender.transfer(weiLeftOver);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

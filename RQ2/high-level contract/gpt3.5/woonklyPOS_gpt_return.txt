@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function processReward",
+    "description": "The contract is susceptible to reentrancy vulnerability in the processReward function. The function can receive tokens from the sender and then call internal functions that manipulate state variables and transfer tokens. An attacker could exploit this vulnerability to re-enter the contract and interfere with the token transfers and state changes."
+}
+```

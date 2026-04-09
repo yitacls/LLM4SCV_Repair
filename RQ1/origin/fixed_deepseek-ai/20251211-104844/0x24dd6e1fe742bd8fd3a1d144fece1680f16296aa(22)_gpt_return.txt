@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "OBK",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Added overflow protection with SafeMath library",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability using SafeMath operations and added input validation",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Invalid recipient address\");\n    require(_value > 0, \"Transfer amount must be positive\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

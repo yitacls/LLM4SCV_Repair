@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "amount * sellPrice",
+    "description": "The multiplication operation 'amount * sellPrice' is vulnerable to integer overflow. Since Solidity 0.4.x uses unchecked arithmetic by default, if the product of 'amount' and 'sellPrice' exceeds the maximum value of uint256 (2^256 - 1), it will wrap around rather than revert, potentially allowing an attacker to receive far less ether than intended or causing unexpected behavior. Additionally, the multiplication occurs before the ether transfer, and if 'sellPrice' is zero (or if the overflow results in zero), the send operation could succeed without transferring any ether while still deducting tokens from the sender's balance."
+}
+```

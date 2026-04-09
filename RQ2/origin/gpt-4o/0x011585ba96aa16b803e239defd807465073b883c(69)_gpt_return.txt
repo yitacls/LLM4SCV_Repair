@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The use of the `send` function to transfer Ether is vulnerable to failure due to minimal gas stipend issues. The `send` function does not propagate an exception if the transfer fails; instead, it returns a boolean value, which is not checked in this code. If the transfer fails, the contract's logic may behave incorrectly, leaving the contract in an inconsistent state or causing funds to be irrecoverable."
+}
+```

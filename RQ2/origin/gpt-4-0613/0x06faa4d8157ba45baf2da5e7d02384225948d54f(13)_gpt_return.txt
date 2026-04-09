@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;",
+    "description": "In this specific line of code, due to the division operation, an underflow or overflow vulnerability may occur. Because Solidity before 0.8.0 does not handle underflows or overflows in the way many developers expect, this can lead to vulnerabilities in the contract. Specifically, if 'block.number - atBlock[msg.sender]' is too big, the multiplication operation might overflow, making 'getout' less than expected. Similarly, if block.number < atBlock[msg.sender], an underflow could occur and result in an enormous erroneous 'getout' value. To mitigate this, mathematical operations in Solidity should be performed using the SafeMath library or checked manually for overflows and underflows."
+}
+```

@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "MasterChef",
+        "contract_version": "0.6.7",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed reentrancy issue by updating user's reward before transferring LP tokens.",
+                "corrected_code": "function deposit(uint256 _pid, uint256 _amount) public {\n        PoolInfo storage pool = poolInfo[_pid];\n        UserInfo storage user = userInfo[_pid][msg.sender];\n\n        updatePool(_pid);\n        if (user.shares > 0) {\n            uint256 pending = user.shares.mul(pool.accPudPerShare).div(1e12).sub(user.rewardDebt);\n            safePudTransfer(msg.sender, pending);\n            user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n        }\n\n        //\n        uint256 _pool = balance(_pid); //get _pid lptoken balance\n        if (_amount > 0) {\n            uint256 _before = pool.lpToken.balanceOf(pool.strategy);\n            // SWC-107-Reentrancy: L247 - L251\n            pool.lpToken.safeTransferFrom(address(msg.sender), pool.strategy, _amount);\n\n            uint256 _after = pool.lpToken.balanceOf(pool.strategy);\n            _amount = _after.sub(_before); // Additional check for deflationary tokens\n        }\n        uint256 shares = 0;\n        if (pool.totalShares == 0) {\n            shares = _amount;\n        } else {\n            shares = (_amount.mul(pool.totalShares)).div(_pool);\n        }\n\n        user.shares = user.shares.add(shares); //add shares instead of amount\n        user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n        pool.totalShares = pool.totalShares.add(shares); //add shares in pool\n\n        emit Deposit(msg.sender, _pid, _amount);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed reentrancy issue by transferring LP tokens before updating user's information.",
+                "corrected_code": "function withdraw(uint256 _pid, uint256 _shares) public {\n        PoolInfo storage pool = poolInfo[_pid];\n        UserInfo storage user = userInfo[_pid][msg.sender];\n\n        require(user.shares >= _shares, 'withdraw: not good');\n        updatePool(_pid);\n\n        uint256 r = (balance(_pid).mul(_shares)).div(pool.totalShares);        \n        uint256 pending = user.shares.mul(pool.accPudPerShare).div(1e12).sub(user.rewardDebt);\n\n        safePudTransfer(msg.sender, pending);\n        user.shares = user.shares.sub(_shares);\n        user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n        pool.totalShares = pool.totalShares.sub(_shares); //minus shares in pool\n\n        // Check balance\n        if (r > 0) {\n            uint256 b = pool.lpToken.balanceOf(address(this));\n\n            IStrategy(pool.strategy).withdraw(r);\n            uint256 _after = pool.lpToken.balanceOf(address(this));\n            uint256 _diff = _after.sub(b);\n            if (_diff < r) {\n                r = b.add(_diff);\n            }\n\n            pool.lpToken.safeTransfer(address(msg.sender), r);\n\n        }\n\n        emit Withdraw(msg.sender, _pid, r);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "emergencyWithdraw",
+                "fix_info": "Changed the order of transferring tokens to prevent reentrancy upon emergency withdrawal.",
+                "corrected_code": "function emergencyWithdraw(uint256 _pid) public {\n        PoolInfo storage pool = poolInfo[_pid];\n        UserInfo storage user = userInfo[_pid][ msg.sender];\n        uint256 r = (balance(_ pid).mul(user.shares)).div(pool.totalShares);\n\n        // Check balance\n        uint256 b = pool.lpToken.balanceOf(address(this));\n\n        IStrategy(pool.strategy).withdraw(r);\n        uint256 _after = pool.lpToken.balanceOf(address(this));\n        uint256 _diff = _after.sub(b);\n        if (_diff < r) {\n            r = b.add(_diff);\n        }\n\n        pool.lpToken.safeTransfer(address(msg.sender), r);\n        emit EmergencyWithdraw(msg.sender, _pid, user.shares);\n        user.shares = 0;\n        user.rewardDebt = 0;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "safePudTransfer",
+                "fix_info": "Changed transfer ordering to handle potential reentrancy issues.",
+                "corrected_code": "function safePudTransfer(address _to, uint256 _amount) internal {\n        uint256 pudBal = pud.balanceOf(address(this));\n        if (_amount > pudBal) {\n            pud.transfer(_to, pudBal);\n        } else if (_amount > 0) {\n            pud.transfer(_to, _amount);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

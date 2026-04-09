@@ -1,0 +1,21 @@
+[{
+    "contract_name": "LT",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No change required; included for context. Balances mapping remains as originally declared.",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added checks to prevent integer overflow on recipient balance and to disallow transfers to the zero address while preserving original behavior.",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(_to != address(0));\n        require(balances[msg.sender] >= _value);\n        // prevent overflow on receiver balance\n        require(balances[_to] + _value >= balances[_to]);\n\n        balances[msg.sender] -= _value;\n        balances[_to] += _value;\n        Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

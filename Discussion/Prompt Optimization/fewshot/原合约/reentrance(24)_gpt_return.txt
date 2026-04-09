@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Reentrance",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Prevent reentrancy by updating balance before transferring funds.",
+                "corrected_code": "function withdraw(uint _amount) public {
+    if(balances[msg.sender] >= _amount) {
+        balances[msg.sender] -= _amount;
+        if(msg.sender.call.value(_amount)()) {
+            _amount;
+        }
+    }
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

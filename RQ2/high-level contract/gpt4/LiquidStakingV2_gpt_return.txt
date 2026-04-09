@@ -1,0 +1,9 @@
+Here is the vulnerability found in JSON format:
+
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function withdrawUnstakedTokens(address staker)",
+    "description": "In the withdrawUnstakedTokens function, there is a loop that iterates over a mapping based on user input, this could potentially cause a block gas limit issue. A user could theoretically stake/unstake many tokens to increase the length of the _unstakingExpiration and _unstakingAmount mappings. This could cause the function to run out of gas when trying to iterate through these mappings if they become too large, hence making the contract unable to execute the function and lock the user's funds. "
+}
+```

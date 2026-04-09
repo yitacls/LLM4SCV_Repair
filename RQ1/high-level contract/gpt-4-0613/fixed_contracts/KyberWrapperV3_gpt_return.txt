@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "KyberWrapperV3",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getBuyRate",
+                "fix_info": "Fix to address potential integer underflow",
+                "corrected_code": "function getBuyRate(address _srcAddr, address _destAddr, uint _destAmount, bytes memory _additionalData) public override view returns (uint rate) {
+                    uint256 srcRate = getSellRate(_destAddr, _srcAddr, _destAmount, _additionalData);
+                    uint256 srcAmount = wmul(srcRate, _destAmount);
+                    rate = getSellRate(_srcAddr, _destAddr, srcAmount, _additionalData);
+                    // increased rate by 3% in a safe way to handle underflow
+                    rate = rate.mul(103).div(100);
+                }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getSellRate",
+                "fix_info": "Fix to address potential integer underflow",
+                "corrected_code": "function getSellRate(address _srcAddr, address _destAddr, uint _srcAmount, bytes memory) public override view returns (uint rate) {
+                    (rate, ) = KyberNetworkProxyInterface(KYBER_INTERFACE)
+                        .getExpectedRate(IERC20(_srcAddr), IERC20(_destAddr), _srcAmount);
+                    // calculation of rate using safe math functions to prevent under/overflow
+                    rate = rate.mul(10**(18 - IERC20(_srcAddr).decimals()));
+                    rate = rate.div(10**(18 - IERC20(_destAddr).decimals()));
+                }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

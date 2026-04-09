@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Puppet",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added check for low-level call success to prevent unchecked return value",
+            "corrected_code": "function() public payable{\n    if(msg.sender != target[0]){\n        // <yes> <report> UNCHECKED_LL_CALLS - Fixed by checking return value\n        require(target[0].call.value(msg.value).gas(600000)());\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

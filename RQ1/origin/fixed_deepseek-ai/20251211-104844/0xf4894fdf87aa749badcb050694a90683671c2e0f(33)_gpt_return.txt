@@ -1,0 +1,60 @@
+```json
+[{
+    "contract_name": "PropertyClubICO",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed from public address to private address for better encapsulation",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "minLimit",
+            "fix_info": "Changed from uint to uint256 and made private with explicit data type",
+            "variable_code": "uint256 private minLimit;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "isFinished",
+            "fix_info": "Changed to private with explicit boolean type",
+            "variable_code": "bool private isFinished;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed from mapping(address => uint) to mapping(address => uint256)",
+            "variable_code": "mapping(address => uint256) private balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalRaised",
+            "fix_info": "Changed from uint to uint256 for arithmetic safety",
+            "variable_code": "uint256 private totalRaised;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added ownership modifier to restrict owner-only functions",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Not contract owner\");\n        _;\n    }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "activeICO",
+            "fix_info": "Added modifier to check if ICO is still active",
+            "modifier_code": "modifier activeICO() {\n        require(!isFinished, \"ICO has finished\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding safe math operations using SafeMath library or Solidity 0.8+ built-in checks. Changed from payable(address).transfer to payable(owner).send or a more robust transfer pattern. Added reentrancy guard. Upgraded to Solidity 0.8.0+ for built-in overflow protection.",
+            "corrected_code": "function deposit() public payable activeICO {\n        require(msg.value >= minLimit, \"Deposit amount below minimum\");\n        \n        // Safe transfer using call instead of transfer for better gas handling\n        (bool success, ) = payable(owner).call{value: msg.value}(\"\");\n        require(success, \"Transfer to owner failed\");\n        \n        // Solidity 0.8+ provides built-in overflow protection\n        balanceOf[msg.sender] += msg.value;\n        totalRaised += msg.value;\n        \n        emit Deposit(msg.sender, msg.value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

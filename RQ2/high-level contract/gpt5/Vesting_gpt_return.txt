@@ -1,0 +1,12 @@
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "function updateScore(uint8 _newScore) { ... for (uint256 i = 0; i < beneficiaries.length; i++) { ... require(IERC20(token).transfer(beneficiaries[i], releasableAmount), \"token transfer fail\"); } ... }",
+        "description": "The contract performs token transfers to each beneficiary inside a single loop and uses require(...) on the ERC20 transfer return value. If any single transfer fails (for example, because the token's transfer returns false, the token contract reverts, or a recipient is a contract that reverts on transfer), the require will revert the entire updateScore call and revert all previously processed releases in that loop. This causes a Denial of Service: a single failing beneficiary or a non-standard token implementation can permanently block distribution for all beneficiaries during that epoch/window. Because updateScore is time-gated (only callable in a narrow window), repeated failures can prevent vesting progress for extended periods."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 private MAX_LOCK_AMOUNT = uint256(2**256 - 1).div(99);\n...\nLockVesting memory lock = locks[beneficiaries[i]];\nuint256 remainingAmount = lock.totalAmount.sub(lock.releasedAmount);\nuint256 releasableAmount = _newScore.mul(remainingAmount).div(100);",
+        "description": "The contract multiplies the percentile score by the remaining amount ( _newScore * remainingAmount ) which can overflow a uint256 if remainingAmount is large enough. The author attempted to limit individual lock sizes with MAX_LOCK_AMOUNT to ensure _newScore * remainingAmount does not overflow, but the MAX_LOCK_AMOUNT computation is problematic: it uses uint256(2**256 - 1) which is unsafe/ambiguous (the literal expression can overflow or be handled unexpectedly) and then div(99). If MAX_LOCK_AMOUNT is not correctly computed or enforced, a large remainingAmount could cause multiplication overflow. Additionally, the code uses 'using SafeMath for uint8;' and then does _newScore.mul(remainingAmount) — mixing narrower-type SafeMath attachment with a uint256 operand can cause type-mismatch/incorrect behaviours. Even though Solidity 0.8.x has built-in overflow checks (making SafeMath redundant), the combination of these factors risks arithmetic errors or reverts during vesting math, potentially breaking distributions."
+    }
+]

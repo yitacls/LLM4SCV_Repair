@@ -1,0 +1,61 @@
+```json
+[{
+    "contract_name": "ZperPreSale",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "totalContributed",
+            "fix_info": "Changed from uint to uint256 with explicit SafeMath library usage and added explicit visibility",
+            "variable_code": "uint256 public totalContributed;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "__",
+            "fix_info": "Added SafeMath library usage for safe arithmetic operations",
+            "variable_code": "using SafeMath for uint256;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "hardCap",
+            "fix_info": "Added explicit uint256 type and visibility",
+            "variable_code": "uint256 public hardCap;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "startTime",
+            "fix_info": "Added explicit uint256 type and visibility",
+            "variable_code": "uint256 public startTime;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "endTime",
+            "fix_info": "Added explicit uint256 type and visibility",
+            "variable_code": "uint256 public endTime;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath's add() function, added explicit time variable naming, and improved require statements",
+            "corrected_code": "function () external payable {\n    require(block.timestamp >= startTime && block.timestamp <= endTime, \"Contribution period not active\");\n    require(hardCap >= msg.value + totalContributed, \"Hard cap exceeded\");\n    totalContributed = totalContributed.add(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+**Note:** This fix requires the SafeMath library to be included in the contract. In Solidity 0.4.18, you should add the following library to your contract:
+
+```solidity
+library SafeMath {
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a, "SafeMath: addition overflow");
+        return c;
+    }
+}
+```
+
+Additionally, `now` has been replaced with `block.timestamp` for clarity, and descriptive error messages have been added to require statements for better debugging and user experience.

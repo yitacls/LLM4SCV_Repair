@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "wallet",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Added proper error handling for low-level call return value and gas limit. In Solidity 0.4.25, send() returns false on failure but doesn't revert automatically. Changed to require() to ensure failure reverts transaction, preventing silent failures. Also added address payable type for target parameter to be compatible with send().",
+                "corrected_code": "function transfer(address payable target) payable public {\n    require(target.send(msg.value), \"Transfer failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

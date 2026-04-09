@@ -1,0 +1,53 @@
+```json
+[{
+    "contract_name": "Relayer",
+    "contract_version": "0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "using SafeMath for uint",
+            "fix_info": "SafeMath is unnecessary starting from Solidity 0.8.0 due to built-in overflow/underflow checks. Removed.",
+            "variable_code": "",
+            "change_type": "deleted"
+        },
+        {
+            "variable_name": "using SafeMath for uint128",
+            "fix_info": "SafeMath is unnecessary starting from Solidity 0.8.0 due to built-in overflow/underflow checks. Removed.",
+            "variable_code": "",
+            "change_type": "deleted"
+        },
+        {
+            "variable_name": "using SafeMath for uint64",
+            "fix_info": "SafeMath is unnecessary starting from Solidity 0.8.0 due to built-in overflow/underflow checks. Removed.",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Updated function to set approvedAddresses properly and ensure proper initialization. Removed SafeMath usage.",
+            "corrected_code": "function initialize(address _uln) public proxied initializer {\n    __Ownable_init();\n    uln = ILayerZeroUltraLightNodeV1(_uln);\n    approvedAddresses[address(this)] = true;\n    emit ApproveAddress(address(this), true);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "validateTransactionProofV2",
+            "fix_info": "Fixed vulnerability by validating inputs and using safe Ether transfer pattern. Removed SafeMath usage.",
+            "corrected_code": "function validateTransactionProofV2(uint16 _srcChainId, address _dstAddress, uint _gasLimit, bytes32 _blockHash, bytes calldata _transactionProof, address payable _to) external payable onlyApproved nonReentrant {\n    require(_to != address(0), \"Relayer: invalid recipient address\");\n    (bool sent, ) = _to.call{value: msg.value}(\"\");\n    require(sent, \"Relayer: failed to send ether\");\n    uln.validateTransactionProof(_srcChainId, _dstAddress, _gasLimit, _blockHash, _transactionProof);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawQuotedFromULN",
+            "fix_info": "Added a require check to ensure valid amount and safe withdrawals.",
+            "corrected_code": "function withdrawQuotedFromULN(address payable _to, uint _amount) external onlyApproved {\n    require(_to != address(0), \"Relayer: invalid recipient address\");\n    require(_amount > 0, \"Relayer: invalid amount\");\n    uln.withdrawNative(2, address(0), _to, _amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getPrices",
+            "fix_info": "Fixed arithmetic vulnerabilities by removing SafeMath and leveraging Solidity 0.8+ checks. Checked inputs more rigorously.",
+            "corrected_code": "function _getPrices(uint16 _dstChainId, uint16 _outboundProofType, address, bytes memory _adapterParameters) internal view returns (uint basePrice, uint pricePerByte) {\n    require(_adapterParameters.length == 34 || _adapterParameters.length > 66, \"Relayer: wrong _adapterParameters size\");\n    uint16 txType;\n    uint extraGas;\n    assembly {\n        txType := mload(add(_adapterParameters, 2))\n        extraGas := mload(add(_adapterParameters, 34))\n    }\n    require(extraGas > 0, \"Relayer: gas too low\");\n    require(txType == 1 || txType == 2, \"Relayer: unsupported txType\");\n\n    DstPrice storage dstPrice = dstPriceLookup[_dstChainId];\n    DstConfig storage dstConfig = dstConfigLookup[_dstChainId][_outboundProofType];\n\n    uint totalRemoteToken = 0;\n    if (txType == 2) {\n        uint dstNativeAmt;\n        assembly {\n            dstNativeAmt := mload(add(_adapterParameters, 66))\n        }\n        require(dstConfig.dstNativeAmtCap >= dstNativeAmt, \"Relayer: dstNativeAmt too large\");\n        totalRemoteToken += dstNativeAmt;\n    }\n\n    uint remoteGasTotal = dstPrice.dstGasPriceInWei * (dstConfig.baseGas + extraGas);\n    totalRemoteToken += remoteGasTotal;\n\n    basePrice = (totalRemoteToken * dstPrice.dstPriceRatio) / (10**10);\n    pricePerByte = (dstPrice.dstGasPriceInWei * dstConfig.gasPerByte * dstPrice.dstPriceRatio) / (10**10);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

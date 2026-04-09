@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-126 Insufficient Gas Griefing",
+        "location": "contract EpochVotingPowerStrategy, function handleProposalCancellation(uint256 proposalId)",
+        "description": "This function iterates through a mapping, potentially causing a gas issue if the mapping gets quite large. An attacker might make a proposal with a very large startTime, causing the function to run out of gas when trying to delete the proposalId."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "contract EpochVotingPowerStrategy, function handleWithdrawal(address user, uint256 reduceAmount)",
+        "description": "This function might potentially cause a DoS attack as it calls 'governance.handleVotingPowerChanged' function which could contain heavy computations. An attacker might create a large list of epochProposals to exhaust the gas limit of a block, making withdrawal impossible."
+    }
+]
+```

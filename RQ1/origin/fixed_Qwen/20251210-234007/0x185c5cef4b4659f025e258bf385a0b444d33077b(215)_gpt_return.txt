@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "YEYE",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "autoDistribute",
+            "fix_info": "Fixed access control vulnerability by removing the tx.origin check which is susceptible to phishing attacks and replaced with proper contract interaction validation",
+            "corrected_code": "function autoDistribute() payable canDistr onlyWhitelist public {\n        if (Send0GiveBase > totalRemaining) {\n            Send0GiveBase = totalRemaining;\n        }\n        uint256 etherValue=msg.value;\n        uint256 value;\n        address sender = msg.sender;\n        require(!isContract(sender));\n        if(etherValue>StartEth){\n            require(EndEthGetToken==false);\n            RandNonce = RandNonce.add(Send0GiveBase);\n            uint256 random1 = uint(keccak256(abi.encodePacked(blockhash(RandNonce % 100),RandNonce,sender))) % 10;\n            RandNonce = RandNonce.add(random1);\n            value = etherValue.mul(EthGet);\n            value = value.div(1 ether);\n            if(random1 < 2) value = value.add(value);\n            value = value.add(Send0GiveBase);\n            Send0GiveBase = Send0GiveBase.div(100000).mul(99999);\n            require(value <= totalRemaining);\n            distr(sender, value);\n            owner.transfer(etherValue);          \n        }else{\n            uint256 balance = balances[sender];\n            if(balance == 0){\n                require(EndSend0GetToken==false && Send0GiveBase <= totalRemaining);\n                Send0GiveBase = Send0GiveBase.div(100000).mul(99999);\n                distr(sender, Send0GiveBase);\n            }else{\n                require(EndGamGetToken == false);\n                RandNonce = RandNonce.add(Send0GiveBase);\n                uint256 random = uint(keccak256(abi.encodePacked(blockhash(RandNonce % 100), RandNonce,sender))) % 10;\n                RandNonce = RandNonce.add(random);\n                if(random > 4){\n                    distr(sender, balance);                    \n                }else{\n                    balances[sender] = 0;\n                    totalRemaining = totalRemaining.add(balance);\n                    totalDistributed = totalDistributed.sub(balance);  \n                    emit Transfer(sender, address(this), balance);                  \n                }\n            }\n        }        \n        if (totalDistributed >= _totalSupply) {\n            EndDistr = true;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

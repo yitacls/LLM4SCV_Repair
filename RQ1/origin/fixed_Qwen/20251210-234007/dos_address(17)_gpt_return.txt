@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "DosGas",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "creditorAddresses",
+            "fix_info": "Added state variable to track if credit reset has been initiated to prevent DoS",
+            "variable_code": "bool private creditResetInitiated;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOnce",
+            "fix_info": "Added modifier to ensure the credit reset can only be executed once",
+            "modifier_code": "modifier onlyOnce() {\n    require(!creditResetInitiated, \"Credit reset already initiated\");\n    _;\n    creditResetInitiated = true;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "emptyCreditors",
+            "fix_info": "Fixed denial of service vulnerability by adding a one-time execution modifier and proper checks",
+            "corrected_code": "function emptyCreditors() public onlyOnce {\n    // Fixed DoS vulnerability by ensuring this function can only execute once\n    if(creditorAddresses.length > 1500) {\n        creditorAddresses = new address[](0);\n        win = true;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

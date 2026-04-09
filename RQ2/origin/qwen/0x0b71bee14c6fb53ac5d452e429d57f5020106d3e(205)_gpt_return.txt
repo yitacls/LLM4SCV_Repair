@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(    !playerRegistered[_customerAddress] && tx.origin == _customerAddress);",
+    "description": "The contract uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. tx.origin returns the original external caller address, while msg.sender returns the immediate caller. This means that a malicious contract can trick a user into calling it, and the contract will see the user's address as tx.origin, potentially allowing unauthorized access. Additionally, the check is redundant since msg.sender is already assigned to _customerAddress, making the tx.origin check unnecessary and dangerous."
+}
+```

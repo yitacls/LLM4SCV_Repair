@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "DENIAL_OF_SERVICE",
+        "location": "creditorAddresses = new address[](0);",
+        "description": "Resetting the creditorAddresses array to a new empty array can lead to high gas consumption and potential DoS if the previous array was large, as deleting large arrays costs significant gas."
+    },
+    {
+        "type": "DENIAL_OF_SERVICE",
+        "location": "creditorAmounts = new uint[](0);",
+        "description": "Resetting the creditorAmounts array to a new empty array can lead to high gas consumption and potential DoS if the previous array was large, as deleting large arrays costs significant gas."
+    }
+]
+```

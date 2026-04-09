@@ -1,0 +1,21 @@
+[{
+    "contract_name": "YieldFarm",
+    "contract_version": "0.6.12",
+    "state_variables": [
+        {
+            "variable_name": "MAX_EPOCHS_PER_TX",
+            "fix_info": "Added a cap on the number of epochs processed per massHarvest call to mitigate DoS via block gas limit and allow callers to batch through epochs safely.",
+            "variable_code": "uint128 private constant MAX_EPOCHS_PER_TX = 10;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "massHarvest",
+            "fix_info": "Fixed potential underflow when computing epochId during epoch 0 and mitigated DoS by limiting loop iterations per transaction. Preserves original behaviour by allowing callers to repeatedly call massHarvest until all epochs are processed.",
+            "corrected_code": "function massHarvest() external returns (uint){\n        uint totalDistributedValue = 0;\n        // compute current epoch safely (avoid underflow in epoch 0)\n        uint128 currentEpoch = _getEpochId();\n        if (currentEpoch == 0) {\n            emit MassHarvest(msg.sender, 0, 0);\n            return 0;\n        }\n\n        // last fully completed epoch\n        uint128 epochId = currentEpoch - 1;\n        if (epochId > NR_OF_EPOCHS) {\n            epochId = NR_OF_EPOCHS;\n        }\n\n        uint128 startEpoch = lastEpochIdHarvested[msg.sender] + 1;\n        // nothing to harvest\n        if (startEpoch > epochId) {\n            emit MassHarvest(msg.sender, 0, 0);\n            return 0;\n        }\n\n        // limit work per transaction to avoid DoS by block gas limit\n        uint128 remaining = epochId - startEpoch + 1;\n        uint128 toProcess = remaining;\n        if (toProcess > MAX_EPOCHS_PER_TX) {\n            toProcess = MAX_EPOCHS_PER_TX;\n        }\n\n        uint128 endEpoch = startEpoch + toProcess - 1;\n\n        for (uint128 i = startEpoch; i <= endEpoch; i++) {\n            totalDistributedValue = totalDistributedValue.add(_harvest(i));\n        }\n\n        emit MassHarvest(msg.sender, toProcess, totalDistributedValue);\n\n        if (totalDistributedValue > 0) {\n            _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n        }\n\n        return totalDistributedValue;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

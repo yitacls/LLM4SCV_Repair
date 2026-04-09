@@ -1,0 +1,14 @@
+```json
+[
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "LendingPool.deposit()",
+    "description": "The deposit function is marked with a reentrancy warning. Although it uses safeTransferFrom, it performs state changes after the external call, which could theoretically be exploited in certain edge cases. The state modifications occur after the token transfer, making it vulnerable to reentrancy if the token contract has malicious behavior or callbacks."
+  },
+  {
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "LendingPool.flashLoan()",
+    "description": "In the flashLoan function, when debtMode is ReserveLogic.InterestRateMode.NONE, the transferFrom call is made but its return value is not checked. This can lead to the transaction continuing even if the token transfer failed, potentially causing incorrect accounting or loss of funds. The comment 'SWC-104-Unchecked Call Return Value: L579' marks this specific line."
+  }
+]
+```

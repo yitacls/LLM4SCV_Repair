@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MMMultiplierX",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added SafeMath protection for multiplication operation to prevent arithmetic overflow",
+            "corrected_code": "function () public payable {\n        if(msg.value > 0){\n            require(gasleft() >= 220000, \"We require more gas!\"); \n            require(msg.value <= maxDep); \n            totalIn += msg.value;\n            uint128 multiplierValue = uint128(msg.value);\n            uint128 result = mul(multiplierValue, uint128(MULTIPLIER)) / 100;\n            queue.push(Deposit(msg.sender, uint128(msg.value), result));\n            pay();\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (msg.value >= address(this).balance || tx.origin == Owner)",
+    "description": "The condition `tx.origin == Owner` uses tx.origin for authorization, which is vulnerable to phishing attacks. An attacker can trick the Owner into calling a malicious contract that subsequently calls Xply(), making tx.origin equal to the Owner's address and passing the check. Furthermore, the selfdestruct(tx.origin) sends all contract funds to tx.origin (the original caller), not the contract owner, allowing theft of funds if the Owner is tricked into initiating the transaction. In Solidity 0.4.25, the use of tx.origin for authentication is a known security anti-pattern."
+}
+```

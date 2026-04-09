@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.send(_value);",
+    "description": "The contract uses the low-level `send()` function without checking its return value. In Solidity ^0.4.13, `send()` returns a boolean indicating success/failure and does not propagate errors. If `send()` fails (e.g., due to out of gas, recipient revert, etc.), execution continues, causing silent failure where funds are neither transferred nor refunded. This violates the contract's intended behavior by returning `true` even when the transfer fails."
+}
+```

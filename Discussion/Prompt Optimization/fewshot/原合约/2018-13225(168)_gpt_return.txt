@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "MyYLCToken",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Add overflow check before updating balances.",
+                "corrected_code": "function sell(uint256 amount) {
+    require(balanceOf[msg.sender] >= amount);
+    balanceOf[this] += amount;
+    balanceOf[msg.sender] -= amount;
+    require(msg.sender.send(amount * sellPrice));
+    Transfer(msg.sender, this, amount);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

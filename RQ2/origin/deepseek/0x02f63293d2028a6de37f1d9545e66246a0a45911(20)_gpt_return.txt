@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Integer Overflow/Arithmetic Vulnerability",
+    "location": "DragonsBurned += _amount;",
+    "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflows. The unchecked addition `DragonsBurned += _amount;` could overflow, causing the `DragonsBurned` state variable to wrap around to a very small number. This would break the contract's accounting logic, allowing an attacker to burn dragons while resetting or underreporting the total count. This can be exploited to bypass limits or cause logical errors in the system. The vulnerability exists because the contract uses Solidity ^0.4.11, which lacks built-in SafeMath protections unless explicitly implemented."
+}
+```】

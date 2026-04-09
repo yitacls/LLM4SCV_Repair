@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "The addition operation does not check for integer overflow. In Solidity versions prior to 0.8.0, arithmetic operations wrap around on overflow/underflow without reverting. An attacker could cause the recipient's balance to overflow back to a small value (or zero) by transferring a large amount, or by combining with other functions to create an overflow scenario. This violates the expected behavior where balances should only increase by the exact transferred amount. Use SafeMath library or upgrade to Solidity ^0.8.0 which has built-in overflow checks."
+}
+```

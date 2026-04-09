@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value(fomo3d.getBuyPrice() * 2)();",
+    "description": "This line uses a low-level call to send value and execute a fallback function on the `fomo3d` contract without checking for success or failure of the call. If the call fails, the transaction will not revert, and the failure will go unnoticed. This can lead to unexpected behavior or loss of funds."
+}
+```

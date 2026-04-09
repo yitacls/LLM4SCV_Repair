@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceMap[msg.sender] -= amount;\n    balanceMap[this] += amount;",
+    "description": "The contract is vulnerable to arithmetic underflow/overflow. In Solidity 0.4.8, there are no automatic overflow/underflow protections. If the amount is larger than the current balance, balanceMap[msg.sender] -= amount will cause an underflow, resulting in a very large positive number. Similarly, balanceMap[this] += amount could cause an overflow if the addition exceeds the maximum uint256 value. This could allow users to manipulate balances in unexpected ways."
+}
+```

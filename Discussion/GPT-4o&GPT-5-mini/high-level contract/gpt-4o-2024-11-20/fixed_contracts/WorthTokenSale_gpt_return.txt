@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "WorthTokenSale",
+        "contract_version": "0.8.10",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdrawTokens",
+                "fix_info": "Added a validation check to ensure the amount being transferred doesn't exceed the balance of the contract, avoiding potential overflows or unprotected token withdrawal issues.",
+                "corrected_code": "function withdrawTokens(address beneficiary, address _tokenAddr) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n    uint256 balance = Token(_tokenAddr).balanceOf(address(this));\n    require(balance > 0, \"No tokens available for withdrawal\");\n    require(Token(_tokenAddr).transfer(beneficiary, balance), \"Transfer failed\");\n    emit TokenWithdrawn(_tokenAddr, balance);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawCrypto",
+                "fix_info": "Added a validation to explicitly fetch the contract's ETH balance before attempting the transfer, ensuring that the ETH withdrawal is secure and accurate.",
+                "corrected_code": "function withdrawCrypto(address payable beneficiary) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n    uint256 contractBalance = address(this).balance;\n    require(contractBalance > 0, \"No crypto inside the contract\");\n    (bool success, ) = beneficiary.call{value: contractBalance}(\"\");\n    require(success, \"Transfer failed\");\n    emit CryptoWithdrawn(beneficiary, contractBalance);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

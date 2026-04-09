@@ -1,0 +1,1 @@
+{"REN": [], "IOU": [], "TXO": [], "UCR": [{"function_name": "OddsAndEvens::play", "strategys": [{"type": "check", "repair_location": []}]}, {"function_name": "OddsAndEvens::andTheWinnerIs", "strategys": [{"type": "check", "repair_location": [38, 41]}]}, {"function_name": "OddsAndEvens::getProfit", "strategys": [{"type": "check", "repair_location": [50]}]}], "USI": []}

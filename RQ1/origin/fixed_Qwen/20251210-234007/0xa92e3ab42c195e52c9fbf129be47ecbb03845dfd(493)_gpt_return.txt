@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ClockAuction",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and using recommended transfer() method for safer Ether transfers",
+            "corrected_code": "function withdrawBalance() external {\n        address nftAddress = address(nonFungibleContract);\n        require(\n            msg.sender == owner ||\n            msg.sender == nftAddress\n        );\n        nftAddress.transfer(this.balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

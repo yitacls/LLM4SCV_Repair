@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(balance);",
+    "description": "The return value of the low-level send() call is not checked, which means failed transactions will not be detected. In Solidity 0.4.23, send() returns false on failure rather than reverting. If the owner is a contract that runs out of gas or rejects the payment, the transaction will continue as if successful (returning true) even though no funds were actually transferred. This violates the contract's intended behavior where withdrawals should only return true if the transfer succeeds."
+}
+```

@@ -1,0 +1,12 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": [
+        "SGX_ADDRESS.send(CANCELLATION_FEE);",
+        "SGX_ADDRESS.send(fee);",
+        "requests[requestId].requester.call.gas(2300).value(fee)();",
+        "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);"
+    ],
+    "description": "The contract uses low-level calls (send() and call()) without checking their return values. In Solidity 0.4.9, send() only provides 2300 gas and returns false on failure, while call() returns false on failure but continues execution. This can lead to silent failures where: 1) SGX_ADDRESS may not receive CANCELLATION_FEE or fee payments, 2) requesters may not receive refunds when errors occur, 3) callback functions may fail to execute without notification. The contract should check return values and handle failures appropriately, potentially using require() statements or implementing proper error handling logic."
+}
+```

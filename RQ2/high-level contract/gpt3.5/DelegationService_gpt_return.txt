@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 152-158",
+            "description": "The function 'getAllDelegationRequests' does not have any effects but is defined to return delegation requests, which could lead to confusion or unnecessary code execution."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 310-316",
+            "description": "The function 'distributeBounty' potentially locks the execution with the loop iterating through the shares array, which could lead to a denial of service (DoS) if the array is very large, consuming all available gas in a block."
+        }
+    ]
+}
+```

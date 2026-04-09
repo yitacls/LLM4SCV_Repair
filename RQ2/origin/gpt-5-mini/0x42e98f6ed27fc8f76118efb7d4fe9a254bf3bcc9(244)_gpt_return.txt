@@ -1,0 +1,5 @@
+{
+    "type": "access_control",
+    "location": "function close() public onlyOwner {\n        selfdestruct(owner); // <LEAKING_VUL>, <SUICIDAL_VUL>\n    }",
+    "description": "The close() function lets the contract owner call selfdestruct(owner), which permanently destroys the contract and sends its ETH balance to owner. This is an access-control vulnerability because a single privileged account (owner) can perform a destructive, irreversible operation without additional safeguards. If the owner's private key is compromised, or the owner acts maliciously, the entire contract (including token state and any locked funds) can be erased and become irrecoverable. In Solidity 0.4.18 selfdestruct removes code and storage, so token balances and contract logic are lost. Recommended mitigations include removing the selfdestruct functionality, requiring a multisignature or on-chain governance vote for destructive actions, adding a timelock and explicit confirmation steps, or otherwise reducing single-key authority for high-impact operations."
+}

@@ -1,0 +1,50 @@
+```json
+[
+    {
+        "contract_name": "GeneScience",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added owner variable to replace tx.origin check with proper access control",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to restrict privileged functions to contract owner",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+                "change_type": "added"
+            },
+            {
+                "modifier_name": "onlyPrivilegedBirther",
+                "fix_info": "Added modifier to check both contract owner and privileged birther address",
+                "modifier_code": "modifier onlyPrivilegedBirther() { require(_privilegedBirther == address(0) || msg.sender == _privilegedBirther || msg.sender == owner); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mixGenes",
+                "fix_info": "Replaced tx.origin with msg.sender for proper access control, added modifiers, and removed vulnerable privilege check",
+                "corrected_code": "function mixGenes(uint256 _genes1, uint256 _genes2, uint256 _targetBlock) public onlyPrivilegedBirther returns (uint256) {\n        if (_privilegedBirther == address(0) || msg.sender == _privilegedBirther || msg.sender == owner) {\n            require(block.number > _targetBlock);\n        } else {\n            require(block.number > _targetBlock + privilegedBirtherWindowSize);\n        }\n        uint256 randomN = uint256(block.blockhash(_targetBlock));\n        if (randomN == 0) {\n            _targetBlock = (block.number & maskFirst248Bits) + (_targetBlock & maskLast8Bits);\n            if (_targetBlock >= block.number) _targetBlock -= 256;\n            randomN = uint256(block.blockhash(_targetBlock));\n        }\n        randomN = uint256(keccak256(abi.encodePacked(randomN, _genes1, _genes2, _targetBlock)));\n        uint256 randomIndex = 0;\n        uint8[] memory genes1Array = decode(_genes1);\n        uint8[] memory genes2Array = decode(_genes2);\n        uint8[] memory babyArray = new uint8[](48);\n        uint256 traitPos;\n        uint8 swap;\n        for(uint256 i = 0; i < 12; i++) {\n            uint256 j;\n            uint256 rand;\n            for(j = 3; j >= 1; j--) {\n                traitPos = (i * 4) + j;\n                rand = _sliceNumber(randomN, 2, randomIndex);\n                randomIndex += 2;\n                if (rand == 0) {\n                    swap = genes1Array[traitPos];\n                    genes1Array[traitPos] = genes1Array[traitPos - 1];\n                    genes1Array[traitPos - 1] = swap;\n                }\n                rand = _sliceNumber(randomN, 2, randomIndex);\n                randomIndex += 2;\n                if (rand == 0) {\n                    swap = genes2Array[traitPos];\n                    genes2Array[traitPos] = genes2Array[traitPos - 1];\n                    genes2Array[traitPos - 1] = swap;\n                }\n            }\n        }\n        for(traitPos = 0; traitPos < 48; traitPos++) {\n            uint8 ascendedTrait = 0;\n            uint256 rand;\n            if ((traitPos % 4 == 0) && (genes1Array[traitPos] & 1) != (genes2Array[traitPos] & 1)) {\n                rand = _sliceNumber(randomN, 3, randomIndex);\n                randomIndex += 3;\n                ascendedTrait = _ascend(genes1Array[traitPos], genes2Array[traitPos], rand);\n            }\n            if (ascendedTrait > 0) {\n                babyArray[traitPos] = uint8(ascendedTrait);\n            } else {\n                rand = _sliceNumber(randomN, 1, randomIndex);\n                randomIndex += 1;\n                if (rand == 0) {\n                    babyArray[traitPos] = uint8(genes1Array[traitPos]);\n                } else {\n                    babyArray[traitPos] = uint8(genes2Array[traitPos]);\n                }\n            }\n        }\n        return encode(babyArray);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "constructor",
+                "fix_info": "Added constructor to set the contract owner upon deployment",
+                "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "transferOwnership",
+                "fix_info": "Added function to allow ownership transfer with proper access control",
+                "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n        require(newOwner != address(0));\n        owner = newOwner;\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

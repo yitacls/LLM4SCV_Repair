@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[to] += tokens;\n         balances[msg.sender] -= tokens;",
+    "description": "The transfer function is vulnerable to arithmetic overflow and underflow attacks. In Solidity ^0.4.24, arithmetic operations are not protected against overflow/underflow by default. An attacker could potentially cause an overflow when adding tokens to the recipient's balance or an underflow when subtracting tokens from the sender's balance, leading to incorrect balance calculations and potential token theft."
+}
+```

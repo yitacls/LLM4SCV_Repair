@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "Arithmetic",
+        "location": "totalAmount += _amounts[a];",
+        "description": "This statement is vulnerable to an integer overflow, where `totalAmount` could wrap around to zero or another unintended value if `_amounts[a]` is large enough. This can result in unexpected behavior, such as incorrect calculations or bypassing the `require` checks."
+    },
+    {
+        "type": "Arithmetic",
+        "location": "balances[msg.sender] -= totalAmount;",
+        "description": "This statement is vulnerable to an integer underflow, where `balances[msg.sender]` could wrap around to a very high value if `balances[msg.sender]` is less than `totalAmount`. This bypasses the intended logic of deducting the amount securely from the sender's balance."
+    },
+    {
+        "type": "Arithmetic",
+        "location": "balances[_addresses[b]] += _amounts[b];",
+        "description": "This statement is vulnerable to integer overflow, where `balances[_addresses[b]]` could wrap around if `_amounts[b]` is very large or if `balances[_addresses[b]]` already holds a large value. This could result in unintended behavior, such as providing a receiver more balance than intended."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "owner.transfer(reward); reward = msg.value;",
+    "description": "The function `setReward()` is vulnerable to front-running because it transfers the existing `reward` before updating it with `msg.value`. A malicious actor (potentially the owner) can monitor the mempool, see when someone calls this function with a new reward amount, and front-run that transaction with their own call that has a higher gas price. The attacker's transaction would execute first, receiving the current reward via `owner.transfer(reward)`, while the victim's later transaction would then update `reward` to the new value, effectively allowing the attacker to claim the reward intended for the previous transaction. This is a classic transaction order dependence vulnerability where the order of transactions affects the final state and can be exploited for financial gain."
+}
+```

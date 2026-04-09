@@ -1,0 +1,21 @@
+[{
+    "contract_name": "BasicToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply_",
+            "fix_info": "Restricted external access and clarified naming. Rename to _totalSupply and make it private to prevent accidental external writes or name collisions with the public getter, preserving the getter-only access pattern.",
+            "variable_code": "uint256 private _totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "totalSupply",
+            "fix_info": "Return the internal private supply variable. Keeps the original public read-only behavior while avoiding a public mutable state variable with the same implicit getter name.",
+            "corrected_code": "function totalSupply() public view returns (uint256) {\n    return _totalSupply;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

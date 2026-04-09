@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "The line of code 'balanceOf[to] += value;' is subject to integer overflow, which can occur when an arithmetic operation attempts to create a numeric value that is outside of the range that can be represented with a given number of bits. This can result in unexpected values and can compromise the logic of the smart contract."
+}
+```

@@ -1,0 +1,21 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L352-386",
+    "description": "The 'exitTempusAMMAndRedeem' function allows reentrancy by transferring LP tokens to the controller and then exiting the Tempus AMM with 'msg.sender' as the recipient. This design can potentially lead to reentrancy attacks if the recipient contract interacts with external contracts within the same transaction."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L395-436",
+    "description": "The 'completeExitAndRedeem' function allows reentrancy by transferring all shares to the controller and then redeeming them to either backing tokens or yield bearing tokens. This design can potentially lead to reentrancy attacks if the recipient contract interacts with external contracts within the same transaction."
+}
+```
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Multiple functions",
+    "description": "Several functions in the contract involve transferring tokens and calling external contracts afterward, which could introduce reentrancy vulnerabilities if not handled carefully. It's essential to ensure that token transfers are done after all internal state changes and external calls to prevent reentrancy exploits."
+}
+```

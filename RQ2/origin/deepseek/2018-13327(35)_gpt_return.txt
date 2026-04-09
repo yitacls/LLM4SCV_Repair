@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value; and balances[_from] -= _value;",
+    "description": "The contract uses integer arithmetic without overflow checks. In Solidity versions prior to 0.8.0, integer overflows/underflows are not automatically prevented. An attacker could cause balances[_to] to overflow to a very low value by transferring a large amount, or cause balances[_from] to underflow (wrapping to a very high value) if _value exceeds the current balance. This is particularly dangerous with the 'allowed' mapping as well, where allowed[_from][msg.sender] could underflow, potentially granting infinite spending allowance."
+}
+```

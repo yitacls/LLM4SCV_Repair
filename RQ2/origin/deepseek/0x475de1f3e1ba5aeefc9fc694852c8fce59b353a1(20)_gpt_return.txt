@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send( tx.gasprice*(startGasLeft-endGasLeft+35000) );",
+    "description": "The 'send()' function is used without checking its return value. In Solidity 0.4.25, 'send()' returns a boolean indicating success, but if it fails (e.g., recipient is a contract without fallback function, out of gas, etc.), the transaction will not revert. This causes the gas refund to silently fail, leaving users uncompensated. Additionally, the gas calculation is vulnerable to manipulation as 'startGasLeft' and 'endGasLeft' can be influenced through gas stipends and opcode costs, potentially allowing attackers to extract more Ether than intended. The fixed gas cost (35000) is also arbitrary and may not cover actual costs."
+}
+```

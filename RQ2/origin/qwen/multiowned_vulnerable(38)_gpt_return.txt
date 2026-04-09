@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function newOwner(address _owner) external returns (bool) {\n    require(_owner != 0);\n    owners[_owner] = msg.sender;\n    return true;\n  }",
+    "description": "The newOwner function lacks access control modifiers, allowing any external address to call it and set themselves as owners. This creates a critical security vulnerability where malicious actors can gain unauthorized ownership privileges. The function should include a modifier to restrict access to existing owners or authorized addresses only."
+}
+```

@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Ubiou",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added overflow protection through SafeMath library",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added overflow protection through SafeMath library",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner, \"Only owner can call this\"); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by using SafeMath operations and updated syntax for address(0)",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid target address\");\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

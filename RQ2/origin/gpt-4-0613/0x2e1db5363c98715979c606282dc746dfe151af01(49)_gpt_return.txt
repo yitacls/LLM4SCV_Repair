@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract_name": "ERC20Standard",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract checks whether the origin of the transaction is the owner of the smart contract, which can lead to serious security issues. The 'tx.origin' is the account that originally initiated the transaction. An attacker can manipulate a transaction to make it look like it's originated from a specific account. Instead of 'tx.origin', using 'msg.sender' would be a secure way since it represents the address of the currently executing external function."
+}
+```

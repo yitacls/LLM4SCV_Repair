@@ -1,0 +1,42 @@
+【```json
+[{
+    "contract_name": "LiquidStakingV2",
+    "contract_version": ">=0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawUnstakedTokens",
+            "fix_info": "To fix the vulnerability, a queue based implementation should be used to avoid the scenario where large number of array iterations causing a gas limit error. Here the state variable '_withdrawCounters' is already existing in the code that can be used for a queue-like structure to eliminate the need for looping through the arrays. Now, the function only deals with the next withdrawal, if it is ready. Hence, it will not have any problems caused by gas limits.",
+            "corrected_code": "
+            function withdrawUnstakedTokens(address staker)
+                public
+                override
+                whenNotPaused
+            {
+                require(staker == _msgSender(), 'LQ20');
+                require(_unstakingExpiration[staker].length > _withdrawCounters[staker], 'No tokens to withdraw');
+
+                //get getUnstakeTime and compare it with current timestamp to check if 21 days + epoch difference has passed
+                (uint256 _unstakeTime, , ) = getUnstakeTime(_unstakingExpiration[staker][_withdrawCounters[staker]]);
+
+                require(block.timestamp >= _unstakeTime, 'Tokens are still locked');
+
+                uint256 _withdrawBalance = _unstakingAmount[staker][_withdrawCounters[staker]];
+
+                // Reset the expired unstaking record
+                _unstakingExpiration[staker][_withdrawCounters[staker]] = 0;
+                _unstakingAmount[staker][_withdrawCounters[staker]] = 0;
+
+                // Move the withdrawal queue to the next
+                _withdrawCounters[staker] = _withdrawCounters[staker].add(1);
+
+                require(_withdrawBalance > 0, 'Invalid balance to withdraw');
+                emit WithdrawUnstakeTokens(staker, _withdrawBalance, block.timestamp);
+                _uTokens.mint(staker, _withdrawBalance);
+            }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

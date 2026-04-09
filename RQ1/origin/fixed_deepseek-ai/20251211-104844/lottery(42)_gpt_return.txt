@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "Lottery",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "nonce",
+            "fix_info": "Added nonce variable to improve randomness by combining with block data",
+            "variable_code": "uint256 private nonce;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "bets",
+            "fix_info": "Bet array already exists, no changes needed",
+            "variable_code": "Bet[] public bets;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyEOA",
+            "fix_info": "Added modifier to restrict contracts from participating (helps prevent predictability)",
+            "modifier_code": "modifier onlyEOA() {\n    require(msg.sender == tx.origin, \"Contracts not allowed\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "makeBet",
+            "fix_info": "Replaced block.number-based randomness with more resistant approach using multiple block properties and nonce",
+            "corrected_code": "function makeBet() external payable onlyEOA {\n    // Combine multiple block properties with nonce for better randomness resistance\n    // Note: No on-chain source is truly random, but this is more resistant than block.number alone\n    bytes32 randomHash = keccak256(abi.encodePacked(\n        blockhash(block.number - 1),\n        block.coinbase,\n        block.difficulty,\n        block.timestamp,\n        msg.sender,\n        nonce\n    ));\n    \n    // Increment nonce for next call\n    nonce++;\n    \n    // Determine win (50% chance using last byte of hash)\n    bool won = (uint8(randomHash[31]) % 2) == 0;\n    \n    // Record the bet with an event\n    bets.push(Bet(msg.value, block.number, won));\n    \n    // Payout if the user won\n    if (won) {\n        // Use transfer for safer sending in newer versions, but send() is correct for 0.4.0\n        bool sent = msg.sender.send(msg.value);\n        require(sent, \"Transfer failed\");\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getHouseBalance",
+            "fix_info": "Added view function to check contract balance safely",
+            "corrected_code": "function getHouseBalance() public view returns (uint256) {\n    return address(this).balance;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

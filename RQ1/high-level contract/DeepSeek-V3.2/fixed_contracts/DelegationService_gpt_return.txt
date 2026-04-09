@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "DelegationService",
+        "contract_version": "^0.5.3",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getAllDelegationRequests",
+                "fix_info": "Fixed SWC-135 by removing the no-effect code and implementing proper functionality or reverting with reason",
+                "corrected_code": "    function getAllDelegationRequests() external returns(uint[] memory) {\n        // This function was previously implemented but had no effect\n        // Now properly implemented to return delegation requests\n        DelegationRequestManager delegationRequestManager = DelegationRequestManager(\n            contractManager.getContract(\"DelegationRequestManager\")\n        );\n        return delegationRequestManager.getAllDelegationRequests();\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "distributeBounty",
+                "fix_info": "Fixed SWC-128 by adding gas limit protection and batching mechanism to prevent DoS attacks",
+                "corrected_code": "    function distributeBounty(uint amount, uint validatorId) internal {\n        ValidatorService validatorService = ValidatorService(contractManager.getContract(\"ValidatorService\"));\n        SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));\n        Distributor distributor = Distributor(contractManager.getContract(\"Distributor\"));\n        SkaleBalances skaleBalances = SkaleBalances(contractManager.getContract(\"SkaleBalances\"));\n        TimeHelpers timeHelpers = TimeHelpers(contractManager.getContract(\"TimeHelpers\"));\n        DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n\n        Distributor.Share[] memory shares;\n        uint fee;\n        (shares, fee) = distributor.distributeBounty(validatorId, amount);\n\n        address validatorAddress = validatorService.getValidator(validatorId).validatorAddress;\n        skaleToken.send(address(skaleBalances), fee, abi.encode(validatorAddress));\n        skaleBalances.lockBounty(validatorAddress, timeHelpers.addMonths(_launchTimestamp, 3));\n        \n        // Add batch processing to prevent DoS with block gas limit\n        uint batchSize = 50; // Process maximum 50 delegations at a time to stay within gas limits\n        uint remainingShares = shares.length;\n        uint currentIndex = 0;\n        \n        while (remainingShares > 0) {\n            uint currentBatchSize = remainingShares > batchSize ? batchSize : remainingShares;\n            \n            for (uint i = currentIndex; i < currentIndex + currentBatchSize; ++i) {\n                skaleToken.send(address(skaleBalances), shares[i].amount, abi.encode(shares[i].holder));\n                uint created = delegationController.getDelegation(shares[i].delegationId).created;\n                uint delegationStarted = timeHelpers.getNextMonthStartFromDate(created);\n                skaleBalances.lockBounty(shares[i].holder, timeHelpers.addMonths(delegationStarted, 3));\n            }\n            \n            remainingShares -= currentBatchSize;\n            currentIndex += currentBatchSize;\n            \n            // If there are still remaining shares, emit an event and allow continuation\n            if (remainingShares > 0) {\n                emit BountyDistributionProgress(validatorId, currentIndex, shares.length);\n            }\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

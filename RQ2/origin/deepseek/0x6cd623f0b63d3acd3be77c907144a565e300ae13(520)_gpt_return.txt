@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authentication is a severe access control vulnerability. tx.origin returns the original external account that initiated the transaction chain, not the immediate caller (msg.sender). This allows phishing attacks where a malicious contract can trick the owner into calling a function that then calls RigIdle.WithdrawDevFunds(). Since tx.origin would still be the owner, the check would pass, allowing unauthorized fund withdrawal. Additionally, send() returns a boolean but does not revert on failure; if the send fails (e.g., due to gas/recursion), devFund will not be reset to 0 while funds may still have been transferred. The function lacks proper access control (should use msg.sender == owner) and has unsafe fund transfer patterns."
+}
+```

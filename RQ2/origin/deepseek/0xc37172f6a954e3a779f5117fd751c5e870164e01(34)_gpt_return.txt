@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "tokenReward.transfer(msg.sender, (amount / price) * 1 ether);",
+            "description": "The calculation (amount / price) performs integer division before multiplication with 1 ether, which can result in rounding errors and loss of precision. If 'price' is greater than 'amount', the division will result in 0, giving the investor 0 tokens despite sending ETH. Additionally, if 'price' is not properly validated (e.g., non-zero), this could lead to division by zero, though the division by zero risk may be mitigated by SafeMath (not used here)."
+        },
+        {
+            "type": "Logic/Reentrancy",
+            "location": "beneficiary.send(currentBalance);",
+            "description": "After setting currentBalance to 0, the contract calls beneficiary.send(0) because currentBalance was just zeroed. This line should send the previous balance, but due to the order of operations, it sends 0. The intended logic appears to be to send the balance before resetting it, but the code resets first. Additionally, .send() can fail silently and does not propagate errors, potentially leaving funds locked."
+        },
+        {
+            "type": "Integer Overflow/Underflow",
+            "location": "balanceOf[msg.sender] += amount; amountRaised += amount; currentBalance += amount;",
+            "description": "The contract does not use SafeMath for arithmetic operations, which could lead to integer overflows if the values exceed the maximum uint256. This is especially risky for amountRaised and currentBalance, which accumulate ETH amounts (in wei), and balanceOf, which tracks user balances."
+        }
+    ]
+}
+```

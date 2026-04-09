@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "DosGas",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "creditorAddresses",
+            "fix_info": "Changed from dynamic array to fixed-size array to prevent unbounded gas consumption",
+            "variable_code": "address[1500] public creditorAddresses;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "creditorCount",
+            "fix_info": "Added counter to track actual number of creditors",
+            "variable_code": "uint public creditorCount;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "emptyCreditors",
+            "fix_info": "Fixed DoS vulnerability by using fixed-size array and proper indexing instead of unbounded array operations",
+            "corrected_code": "function emptyCreditors() public {\n        // Fixed DoS vulnerability by using bounded array size\n        if(creditorCount > 1500) {\n            // Reset counter instead of reallocating array\n            creditorCount = 0;\n            win = true;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

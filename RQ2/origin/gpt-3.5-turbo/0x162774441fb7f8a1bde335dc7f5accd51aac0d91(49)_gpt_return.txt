@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "if (cbAddresses[tx.origin] != 0)",
+            "description": "The contract allows any address to call the cbAddress function and potentially access sensitive information if cbAddresses[tx.origin] is not equal to 0, which can lead to unauthorized access to data or functionality."
+        }
+    ]
+}
+```

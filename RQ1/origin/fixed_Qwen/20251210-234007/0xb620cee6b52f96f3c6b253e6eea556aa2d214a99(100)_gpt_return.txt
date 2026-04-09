@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DrainMe",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "callFirstTarget",
+            "fix_info": "Added check for low-level call success to prevent unchecked return value",
+            "corrected_code": "function callFirstTarget () public payable onlyPlayers {\n\trequire (msg.value >= 0.005 ether);\n\trequire(firstTarget.call.value(msg.value)());\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

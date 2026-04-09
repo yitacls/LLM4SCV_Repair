@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner variable to implement proper access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to owner-only functions",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferTokenProportionToOrigin",
+            "fix_info": "1. Removed dangerous use of tx.origin (replaced with msg.sender)\n   2. Changed from asmTransfer to standard transfer\n   3. Fixed balanceOf reference from 'this' to 'address(this)'\n   4. Added onlyOwner modifier for access control\n   5. Added SafeMath for arithmetic operations\n   6. Added input validation",
+            "corrected_code": "function transferTokenProportionToOrigin(ERC20 token, uint256 mul, uint256 div) external onlyOwner {\n        require(mul <= div && div != 0, \"Invalid proportion parameters\");\n        \n        uint256 contractBalance = token.balanceOf(address(this));\n        uint256 amount = contractBalance.mul(mul).div(div);\n        \n        require(amount > 0, \"Amount must be greater than zero\");\n        require(contractBalance >= amount, \"Insufficient contract balance\");\n        \n        require(token.transfer(msg.sender, amount), \"Token transfer failed\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set the contract owner",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

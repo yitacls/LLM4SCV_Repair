@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "DaddyToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change needed - vulnerability is in function logic",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added overflow protection through safe math library usage",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No change needed - access control remains unchanged",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for all arithmetic operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public returns (bool) {\n    // Use SafeMath for all arithmetic operations\n    uint256 scaledAmount = mintedAmount.mul(10**18);\n    \n    // Update balances with overflow protection\n    balanceOf[target] = balanceOf[target].add(scaledAmount);\n    totalSupply = totalSupply.add(scaledAmount);\n    \n    // Emit transfer events (note: in 0.4.16, Transfer is an event, not a method)\n    Transfer(0, this, scaledAmount);\n    Transfer(this, target, scaledAmount);\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

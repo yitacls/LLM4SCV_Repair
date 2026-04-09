@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Owned",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with msg.sender for proper access control",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Replaced vulnerable tx.origin check with proper msg.sender validation through onlyOwner modifier to prevent unauthorized access",
+            "corrected_code": "function transferOwnership(address _newOwner) public onlyOwner {\n    owner = _newOwner;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

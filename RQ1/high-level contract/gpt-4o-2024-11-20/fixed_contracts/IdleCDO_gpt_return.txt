@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "IdleCDO",
+        "contract_version": "0.8.4",
+        "state_variables": [
+            {
+                "variable_name": "_lastCallerBlock",
+                "fix_info": "Added state variable to mitigate reentrancy attack by storing the hash of tx.origin and block number.",
+                "variable_code": "bytes32 private _lastCallerBlock;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrantFixed",
+                "fix_info": "Added a nonReentrant modifier using the `_lastCallerBlock` state variable to mitigate reentrancy vulnerabilities.",
+                "modifier_code": "modifier nonReentrantFixed() {\n    require(keccak256(abi.encodePacked(tx.origin, block.number)) != _lastCallerBlock, 'SAME_BLOCK');\n    _lastCallerBlock = keccak256(abi.encodePacked(tx.origin, block.number));\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "_deposit",
+                "fix_info": "Added the `nonReentrantFixed` modifier to prevent reentrancy attacks. Updated order of operations to ensure funds are transferred after minting tranche tokens.",
+                "corrected_code": "function _deposit(uint256 _amount, address _tranche) internal nonReentrantFixed returns (uint256 _minted) {\n    _guarded(_amount);\n    _updateCallerBlock();\n    _checkDefault();\n    _updatePrices();\n\n    // Mint tranche tokens before transferring funds\n    _minted = _mintShares(_amount, msg.sender, _tranche);\n\n    IERC20Detailed(token).safeTransferFrom(msg.sender, address(this), _amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdraw",
+                "fix_info": "Added the `nonReentrantFixed` modifier to prevent reentrancy attacks. Adjusted operations by restricting state modifications and external calls.",
+                "corrected_code": "function _withdraw(uint256 _amount, address _tranche) internal nonReentrantFixed returns (uint256 toRedeem) {\n    _checkSameTx();\n    _checkDefault();\n    _updatePrices();\n\n    if (_amount == 0) {\n        _amount = IERC20Detailed(_tranche).balanceOf(msg.sender);\n    }\n    require(_amount > 0, 'IDLE:IS_0');\n\n    uint256 tranchePrice = _lastTranchePrice(_tranche);\n    toRedeem = (_amount * tranchePrice) / ONE_TRANCHE_TOKEN;\n\n    uint256 balanceUnderlying = _contractTokenBalance(token);\n    if (toRedeem > balanceUnderlying) {\n        toRedeem = _liquidate(toRedeem - balanceUnderlying, revertIfTooLow);\n    }\n\n    IdleCDOTranche(_tranche).burn(msg.sender, _amount);\n    IERC20Detailed(token).safeTransfer(msg.sender, toRedeem);\n\n    if (_tranche == AATranche) {\n        lastNAVAA -= toRedeem;\n    } else {\n        lastNAVBB -= toRedeem;\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "harvest",
+                "fix_info": "Added the `nonReentrantFixed` modifier to prevent nested calls. Removed external calls within loops and replaced them with safer patterns.",
+                "corrected_code": "function harvest(bool _skipRedeem, bool _skipIncentivesUpdate, bool[] calldata _skipReward, uint256[] calldata _minAmount) external nonReentrantFixed {\n    require(msg.sender == rebalancer || msg.sender == owner(), 'IDLE:!AUTH');\n    address _token = token;\n    address _strategy = strategy;\n\n    if (!_skipRedeem) {\n        address[] memory _incentiveTokens = incentiveTokens;\n        address _weth = weth;\n        IUniswapV2Router02 _uniRouter = uniswapRouterV2;\n\n        IIdleCDOStrategy(_strategy).redeemRewards();\n        address[] memory rewards = getRewards();\n        for (uint256 i = 0; i < rewards.length; i++) {\n            address rewardToken = rewards[i];\n            uint256 _currentBalance = _contractTokenBalance(rewardToken);\n            if (_skipReward[i] || _currentBalance == 0 || _includesAddress(_incentiveTokens, rewardToken)) {\n                continue;\n            }\n            address[] memory _path = new address[](3);\n            _path[0] = rewardToken;\n            _path[1] = _weth;\n            _path[2] = _token;\n\n            IERC20Detailed(rewardToken).safeIncreaseAllowance(address(_uniRouter), _currentBalance);\n\n            _uniRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(\n                _currentBalance,\n                _minAmount[i],\n                _path,\n                address(this),\n                block.timestamp + 1\n            );\n        }\n\n        _updatePrices();\n        _updateLastTranchePrices();\n\n        uint256 currAARatio = _depositFees(unclaimedFees);\n\n        if (!_skipIncentivesUpdate) {\n            _updateIncentives(currAARatio);\n        }\n    }\n\n    uint256 underlyingBal = _contractTokenBalance(_token);\n    IIdleCDOStrategy(_strategy).deposit(\n        underlyingBal - (underlyingBal * unlentPerc / FULL_ALLOC)\n    );\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "EDCoreVersion1",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "migrateDungeon",
+                "fix_info": "Add proper access control to the function.",
+                "corrected_code": "function migrateDungeon(uint _id, uint _playerCount) external onlyOwner {
+        require(now < 1520694000);
+        dungeonIdToPlayerCount[_id] = _playerCount;
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

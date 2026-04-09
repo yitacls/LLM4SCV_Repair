@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "PELOCoinToken",
+        "contract_version": "^0.4.19",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Implicitly referenced in the mintToken function, but not defined in the provided snippet. Assuming it's a public mapping defined elsewhere.",
+                "variable_code": "",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Implicitly referenced in the mintToken function, but not defined in the provided snippet. Assuming it's a public uint256 defined elsewhere.",
+                "variable_code": "",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyManyOwners",
+                "fix_info": "Implicitly referenced in the mintToken function, but not defined in the provided snippet. Assuming it's a modifier defined elsewhere.",
+                "modifier_code": "",
+                "change_type": "unchanged"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed potential arithmetic overflow in balanceOf[target] and totalSupply using SafeMath, and replaced deprecated Transfer event syntax. Used SafeMath's add() to prevent overflow. Added comment for clarity.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyManyOwners public {\n    // Use SafeMath to prevent overflow in balanceOf and totalSupply\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Emit Transfer events (corrected syntax for Solidity ^0.4.19)\n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

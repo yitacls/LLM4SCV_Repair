@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "Reentrancy Vulnerability",
+        "location": "(bool success,) = to.call{value:value}(new bytes(0));",
+        "description": "The safeTransferETH function is vulnerable to reentrancy attacks. Although it uses a low-level call, it doesn't implement reentrancy guards or follow the checks-effects-interactions pattern. The function makes an external call to a user-provided address 'to' before updating any state, which could allow a malicious contract to re-enter and potentially drain ETH from the contract."
+    },
+    {
+        "type": "Unchecked External Call",
+        "location": "(bool success,) = to.call{value:value}(new bytes(0));",
+        "description": "The function uses a low-level call without proper validation of the recipient address. This could lead to ETH being sent to addresses that may not be able to handle it properly, such as contract addresses without a payable fallback function, potentially causing irreversible loss of funds."
+    }
+]
+```

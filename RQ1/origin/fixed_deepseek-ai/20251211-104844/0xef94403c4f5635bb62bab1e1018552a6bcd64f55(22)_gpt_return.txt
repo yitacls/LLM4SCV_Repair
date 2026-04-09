@@ -1,0 +1,45 @@
+```json
+[{
+    "contract_name": "DNT",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No change needed for this variable",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerability by using SafeMath library for arithmetic operations. Added require statement to prevent overflow when adding to recipient's balance. This addresses the issue on line 'balances[_to] += _value'.",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(balances[msg.sender] >= _value);\n    \n    // Use SafeMath operations to prevent arithmetic overflow/underflow\n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    \n    // Check for overflow when adding to recipient's balance\n    require(balances[_to] + _value >= balances[_to]);\n    balances[_to] = balances[_to].add(_value);\n    \n    Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+**Note:** To fully implement this fix, you would need to:
+
+1. Import the SafeMath library at the top of the contract:
+```solidity
+import \"github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol\";
+```
+
+2. Add the library usage in the contract:
+```solidity
+using SafeMath for uint256;
+```
+
+3. Update the balances mapping declaration to include SafeMath operations:
+```solidity
+mapping(address => uint256) public balances;
+```
+
+The corrected code ensures that:
+- All arithmetic operations use SafeMath to prevent overflow/underflow
+- Additional overflow check is added for the recipient's balance
+- The original functionality is preserved while eliminating the arithmetic vulnerability

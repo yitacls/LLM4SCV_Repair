@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Reentrancy",
+    "location": "bool callResult = msg.sender.call.value(oCredit)();",
+    "description": "The withdrawAll() function transfers Ether to msg.sender before updating the credit[msg.sender] state variable to 0. If msg.sender is a malicious contract, it can re-enter the withdrawAll() function in its fallback function, allowing multiple withdrawals while credit[msg.sender] is still > 0, draining the contract's balance. This violates the Checks-Effects-Interactions pattern. In Solidity ^0.4.19, the use of .call.value()() is particularly dangerous as it forwards all remaining gas, making reentrancy easier to exploit."
+}
+```】

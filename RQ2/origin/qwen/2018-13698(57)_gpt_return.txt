@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balances[_investor] +=  promoValue;\n        totalSupply += promoValue;",
+    "description": "The contract is using Solidity version ^0.4.18 which does not have built-in overflow protection. The addition operations on balances[_investor] and totalSupply can overflow, potentially causing unexpected behavior or token minting issues. In older Solidity versions, arithmetic operations do not automatically check for overflows, which can lead to integer overflow vulnerabilities when large values are added."
+}
+```

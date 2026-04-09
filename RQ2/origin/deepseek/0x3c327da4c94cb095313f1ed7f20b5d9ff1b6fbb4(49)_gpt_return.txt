@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The access control check uses `tx.origin` for authorization, which is vulnerable to phishing attacks. `tx.origin` returns the original sender of the transaction chain, not the immediate caller. A malicious contract could trick the real owner into calling it, and then the malicious contract calls `mint()`, making `tx.origin` equal to the owner's address, thereby bypassing the authorization check. This should be replaced with `msg.sender == owner` to properly verify the immediate caller's identity."
+}
+```

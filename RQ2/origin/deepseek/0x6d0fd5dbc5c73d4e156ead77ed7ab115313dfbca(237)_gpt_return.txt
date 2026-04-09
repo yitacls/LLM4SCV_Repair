@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_itemId));",
+    "description": "This function uses `tx.origin` for authorization instead of `msg.sender`. This creates a vulnerability where a malicious contract could trick the legitimate token owner into calling a function that invokes `transfer`, making `tx.origin` equal to the owner's address while `msg.sender` would be the attacker's contract. This bypass of the ownership check allows unauthorized transfers. Additionally, the `onlyERC721()` modifier is referenced but not shown, potentially indicating another access control issue if its implementation is insufficient."
+}
+```

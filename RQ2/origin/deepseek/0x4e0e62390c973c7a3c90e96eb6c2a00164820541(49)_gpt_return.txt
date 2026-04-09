@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The mint function uses `tx.origin` for authorization, making it vulnerable to phishing attacks. A malicious contract could trick the owner into calling a function that subsequently calls `mint()`. Since `tx.origin` returns the original externally-owned account (EOA) that initiated the transaction, the authorization check would pass if the owner's EOA was the original sender, even if the immediate caller (`msg.sender`) was a malicious contract. Furthermore, the `assert(amount >= 0)` statement is redundant as `uint256` values are always non-negative by definition in Solidity ^0.4.11. The combination of these issues allows unauthorized minting if the owner is tricked into interacting with a malicious contract."
+}
+```】

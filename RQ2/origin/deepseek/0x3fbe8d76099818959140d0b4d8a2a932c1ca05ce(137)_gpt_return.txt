@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function destory() { require(tx.origin == owner); ... }",
+    "description": "The function uses tx.origin for authorization instead of msg.sender, which allows for phishing attacks where malicious contracts can trick the owner into interacting with them, making tx.origin equal to the owner's address and bypassing access control. Additionally, the function lacks proper ownership transfer mechanisms and uses a deprecated selfdestruct function, but the primary vulnerability is the improper access control using tx.origin."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "DosOneFunc",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "listAddresses",
+            "fix_info": "Declared as a dynamic array to store addresses",
+            "variable_code": "address[] public listAddresses;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "ifillArray",
+            "fix_info": "Fixed potential DoS vulnerability by limiting loop iterations, preventing excessive gas consumption, and adding gas limit protection",
+            "corrected_code": "function ifillArray() public returns (bool) {\n    require(gasleft() > 100000, \"Insufficient gas\");\n    \n    if (listAddresses.length < 1500) {\n        uint256 remainingCapacity = 1500 - listAddresses.length;\n        uint256 maxIterations = remainingCapacity < 350 ? remainingCapacity : 350;\n        \n        for (uint256 i = 0; i < maxIterations; i++) {\n            listAddresses.push(msg.sender);\n            // Check gas remaining after each push to prevent running out of gas\n            if (gasleft() < 50000) {\n                break;\n            }\n        }\n        return true;\n    } else {\n        listAddresses = new address[](0);\n        return false;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "function refund() public {\n    // <yes> <report> ACCESS_CONTROL\n    msg.sender.transfer(balances[msg.sender]);\n}",
+  "description": "The refund() function is declared public and contains no access control checks or role restriction. As written, any external account can call refund() and cause the contract to transfer the value stored in balances[msg.sender] to the caller. If the intended behavior was to restrict refunds (for example, only the contract owner or an authorized account should trigger refunds to arbitrary recipients), this missing restriction allows unauthorized callers to invoke the action. Additionally, because the function performs an external call (transfer) without first updating state, it increases risk surface for other issues (e.g., reentrancy in different patterns). Recommended fixes: restrict access with a modifier or require (e.g., onlyOwner or an authorization check), and follow the checks-effects-interactions pattern (update balances[msg.sender] = 0 before making external calls) or use a secure withdrawal/pull-payment pattern or ReentrancyGuard."
+}

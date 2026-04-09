@@ -1,0 +1,12 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": 
+    "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100)));\n
+    uint promo1 = msg.value*PROMO_PERCENT1/100;\n
+    uint promo2 = msg.value*PROMO_PERCENT2/100;\n
+    uint tech = msg.value*TECH_PERCENT/100;",
+    "description": "The arithmetic operations in this contract could result in overflows or underflows. Solidity automatically allows overflow without any error. This vulnerability could cause unexpected behavior or allow attackers to manipulate the contract."
+}
+```
+If 'MULTIPLIER', 'PROMO_PERCENT1', 'PROMO_PERCENT2' and 'TECH_PERCENT' are not properly controlled it could result in an overflow vulnerability. Overflow and underflow is a well-known vulnerability in cryptocurrency smart contracts due to the way Solidity (EVM) automatically allows it without any error. If an attacker is able to cause an overflow in the contract, they could possibly manipulate the state of the contract to their own advantage.

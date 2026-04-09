@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+    "description": "The call function is used to interact with another contract. In this case, the contract owner is trying to withdraw token from another contract. However, it's vulnerable because there is no error handling surrounding the call - it's unchecked. Hence, if the token contract has an issue, doesn't contain the 'transfer' method or is maliciously designed, the function call could fail and any state changes in the current contract wouldn't be reverted, this could lead to unpredictable effect on the contract state."
+}
+```

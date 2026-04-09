@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function withdraw() onlyOwner public {",
+            "description": "The withdraw function is not properly restricted to only the owner, allowing any address to withdraw funds from the contract."
+        }
+    ]
+}
+```

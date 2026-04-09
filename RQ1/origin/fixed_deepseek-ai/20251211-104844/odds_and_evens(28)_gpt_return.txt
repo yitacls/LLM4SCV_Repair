@@ -1,0 +1,36 @@
+```json
+{
+  "contract_name": "OddsAndEvens",
+  "contract_version": "^0.4.24",
+  "state_variables": [
+    {
+      "variable_name": "tot",
+      "fix_info": "Changed visibility to private to prevent external manipulation",
+      "variable_code": "uint256 private tot;",
+      "change_type": "modified"
+    },
+    {
+      "variable_name": "players",
+      "fix_info": "Added privacy to player data storage",
+      "variable_code": "Player[] private players;",
+      "change_type": "modified"
+    }
+  ],
+  "modifiers": [
+    {
+      "modifier_name": "onlyUpToTwoPlayers",
+      "fix_info": "Added modifier to limit concurrent play and prevent front-running",
+      "modifier_code": "modifier onlyUpToTwoPlayers() {\n        require(tot < 2, \"Maximum 2 players already registered\");\n        _;\n    }",
+      "change_type": "added"
+    }
+  ],
+  "functions": [
+    {
+      "function_name": "play",
+      "fix_info": "Fixed front-running vulnerability by preventing multiple calls from same block, added proper validation, and updated to modern Solidity syntax",
+      "corrected_code": "function play(uint256 number) external payable {\n        require(msg.value == 1 ether, \"Must send exactly 1 ether\");\n        require(players.length < 2, \"Maximum 2 players already registered\");\n        require(tx.origin != players[0].sender || players.length == 0, \"Same sender cannot register twice\");\n        \n        players.push(Player(msg.sender, number));\n        tot = players.length;\n        \n        if (players.length == 2) {\n            andTheWinnerIs();\n        }\n    }",
+      "change_type": "modified"
+    }
+  ]
+}
+```

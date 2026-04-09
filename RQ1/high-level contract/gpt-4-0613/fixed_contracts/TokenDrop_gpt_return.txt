@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "TokenDrop",
+        "contract_version": ">=0.7.0 <0.8.0",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added onlyOwner modifier to prevent unauthorized Ether withdrawal",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == factory, \"Caller is not the owner\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Added onlyOwner to protect ether withdrawal",
+                "corrected_code": "function initialize(address _measure, address _asset) external onlyOwner { measure = IERC20Upgradeable(_measure); asset = IERC20Upgradeable(_asset); factory = msg.sender; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claim",
+                "fix_info": "Added reentrancy protection",
+                "corrected_code": "function claim(address user) external nonReentrant returns (uint256) { drop(); _captureNewTokensForUser(user); uint256 balance = userStates[user].balance; userStates[user].balance = 0; totalUnclaimed = uint256(totalUnclaimed).sub(balance).toUint112(); asset.transfer(user, balance); emit Claimed(user, balance); return balance; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "cfoAddress.send(balance - subtractFees);",
+    "description": "The low-level call .send() is used to transfer Ether. However, this operation does not throw an exception when the call fails. It returns false instead which means that it has an unchecked outcome. It may fail in case the recipient runs out of gas or its fallback function reverts. If this operation is critical, failure of the transaction might lead to serious vulnerabilities in the smart contract."
+}
+```

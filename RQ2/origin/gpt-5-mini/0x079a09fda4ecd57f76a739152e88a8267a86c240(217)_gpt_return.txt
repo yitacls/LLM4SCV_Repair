@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "require(tx.origin == ownerOf(_itemId));  // fault line (inside function transfer(address _to, uint256 _itemId) )",
+  "description": "The contract uses tx.origin for authorization instead of msg.sender. Relying on tx.origin is unsafe because a malicious contract can induce the token owner (an EOA) to call it, making tx.origin equal to the owner while msg.sender is the malicious contract. The require passes based on tx.origin, but the function then calls _transfer(msg.sender, _to, _itemId), so the authorization is not correctly tied to the immediate caller. This can be exploited by phishing/malicious contracts to trigger unauthorized token transfers or to bypass intended access controls. Recommended fix: use require(msg.sender == ownerOf(_itemId)) or follow the standard ERC-721 transfer/approval patterns and avoid using tx.origin for authorization."
+}

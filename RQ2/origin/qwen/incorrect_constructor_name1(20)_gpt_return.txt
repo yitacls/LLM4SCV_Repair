@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function IamMissing()\n        public\n    {\n        owner = msg.sender;\n    }",
+    "description": "The function IamMissing() is publicly accessible and allows anyone to call it to change the owner of the contract. Since there are no access restrictions or checks to prevent unauthorized calls, a malicious actor could call this function to take ownership of the contract and potentially gain unauthorized control over its functions and assets."
+}
+```

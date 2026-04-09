@@ -1,0 +1,9 @@
+Here is the result in the requested JSON format:
+
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization, which is a security risk. tx.origin should not be used for authorization because it can be easily manipulated by an attacker. An attacker can create a contract that calls this contract, making the tx.origin the attacker's address, not the address that directly called the contract. A safer alternative is to use msg.sender, as it always refers to the direct caller, not the original initiator of the transaction."
+}
+```

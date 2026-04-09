@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "SAFECOVID",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_getCurrentSupply",
+                "fix_info": "Ensured that the function uses safe iteration mechanisms to avoid potential DoS due to extremely large _excluded array.",
+                "corrected_code": "function _getCurrentSupply() private view returns (uint256, uint256) {\n    uint256 rSupply = _rTotal;\n    uint256 tSupply = _tTotal;\n    uint256 maxExcludedLength = 256; // Limit iterations to avoid potential DoS\n\n    for (uint256 i = 0; i < _excluded.length && i < maxExcludedLength; i++) {\n        if (_rOwned[_excluded[i]] > rSupply || _tOwned[_excluded[i]] > tSupply) {\n            return (_rTotal, _tTotal);\n        }\n        rSupply = rSupply.sub(_rOwned[_excluded[i]]);\n        tSupply = tSupply.sub(_tOwned[_excluded[i]]);\n    }\n\n    if (rSupply < _rTotal.div(_tTotal)) {\n        return (_rTotal, _tTotal);\n    }\n\n    return (rSupply, tSupply);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "includeInReward",
+                "fix_info": "Added a check to ensure that the excluded account iteration does not cause a potential DoS when _excluded array is very large.",
+                "corrected_code": "function includeInReward(address account) external onlyOwner() {\n    require(_isExcluded[account], \"Account is not excluded\");\n\n    uint256 maxExcludedLength = 256; // Limit iterations to avoid potential DoS\n    for (uint256 i = 0; i < _excluded.length && i < maxExcludedLength; i++) {\n        if (_excluded[i] == account) {\n            _excluded[i] = _excluded[_excluded.length - 1];\n            _tOwned[account] = 0;\n            _isExcluded[account] = false;\n            _excluded.pop();\n            break;\n        }\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

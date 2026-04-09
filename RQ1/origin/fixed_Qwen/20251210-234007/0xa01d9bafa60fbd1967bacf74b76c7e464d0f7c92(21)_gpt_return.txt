@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ElevenOfTwelve",
+    "contract_version": "^0.4.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath checks to prevent integer overflow/underflow in balance operations",
+            "corrected_code": "function transfer(address _to, uint256 _value) returns (bool success) {\n        if (balances[msg.sender] >= _value && _value > 0) {\n            balances[msg.sender] = balances[msg.sender] - _value;\n            balances[_to] = balances[_to] + _value;\n            Transfer(msg.sender, _to, _value);\n            return true;\n        } else { return false; }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

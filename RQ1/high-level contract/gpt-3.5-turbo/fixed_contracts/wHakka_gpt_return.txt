@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "wHakka",
+        "contract_version": "0.5.17",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "stake",
+                "fix_info": "Fixed reentrancy issue by updating state before transferring tokens.",
+                "corrected_code": "function stake(address to, uint256 amount, uint256 time) public returns (uint256 wAmount) {\n        vault storage v = vaults[to][vaultCount[to]];\n        wAmount = getStakingRate(time).mul(amount).div(1e18);\n        require(wAmount > 0, 'invalid lockup');\n\n        stakedHakka[to] = stakedHakka[to].add(amount);\n        votingPower[to] = votingPower[to].add(wAmount);\n\n        _mint(to, wAmount);\n        Hakka.safeTransferFrom(msg.sender, address(this), amount);\n\n        v.hakkaAmount = amount;\n        v.wAmount = wAmount;\n        v.unlockTime = block.timestamp.add(time);\n        vaultCount[to]++;\n\n        emit Stake(to, msg.sender, amount, wAmount, time);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unstake",
+                "fix_info": "Fixed reentrancy issue by updating state before transferring tokens.",
+                "corrected_code": "function unstake(address to, uint256 index, uint256 wAmount) public returns (uint256 amount) {\n        vault storage v = vaults[msg.sender][index];\n        require(block.timestamp >= v.unlockTime, 'locked');\n        require(wAmount <= v.wAmount, 'exceed locked amount');\n        amount = wAmount.mul(v.hakkaAmount).div(v.wAmount);\n\n        stakedHakka[msg.sender] = stakedHakka[msg.sender].sub(amount);\n        votingPower[msg.sender] = votingPower[msg.sender].sub(wAmount);\n\n        _burn(msg.sender, wAmount);\n        Hakka.safeTransfer(to, amount);\n        v.hakkaAmount = v.hakkaAmount.sub(amount);\n        v.wAmount = v.wAmount.sub(wAmount);\n\n        emit Unstake(msg.sender, to, amount, wAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],v);",
+    "description": "The low-level call operation does not check the return value, which means that if the call fails (e.g., due to insufficient gas, invalid function signature, or reverted transaction), the failure will not be detected and the function will continue execution as if the call succeeded. This can lead to incorrect state changes and loss of funds."
+}
+```

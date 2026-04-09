@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TwoCoinsOneMoonGame",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check and using transfer instead of call.value for fee transfer",
+            "corrected_code": "function withdraw() public {\n        if (balance[feeCollector] != 0) {\n            uint256 fee = balance[feeCollector];\n            balance[feeCollector] = 0;\n            require(feeCollector.call.value(fee)(), \"Fee transfer failed\");\n        }\n        uint256 amount = balance[msg.sender];\n        balance[msg.sender] = 0;\n        msg.sender.transfer(amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

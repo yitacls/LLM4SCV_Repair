@@ -1,0 +1,17 @@
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "mapping(address => bool) public hasAccess;",
+        "description": "The state variable `hasAccess` is declared but never read or written anywhere in the contract. It has no effect on contract behavior, wastes storage, and may indicate incomplete or dead code (leftover from a previous design). Remove it or use it as intended to avoid confusion and unnecessary gas costs."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "ApeAllowanceModule public allowanceModule;",
+        "description": "The state variable `allowanceModule` is declared but never used anywhere in the contract. It has no effect on the contract logic and consumes storage. This likely represents unused/leftover code and should be removed or properly integrated."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function apeWithdrawSimpleToken(uint256 _amount) public {\n\t\tsimpleToken.safeTransfer(msg.sender, _amount);\n\t}",
+        "description": "The function `apeWithdrawSimpleToken` is publicly callable with no access control modifiers. It transfers `simpleToken` from the contract to `msg.sender`, allowing any caller to drain the contract's `simpleToken` balance. Although this withdraws an ERC-20 token (not native Ether), it matches the same dangerous pattern of an unprotected withdrawal function. Restrict this function (for example, with `onlyOwner` or another appropriate role) or remove it to prevent unauthorized draining."
+    }
+]

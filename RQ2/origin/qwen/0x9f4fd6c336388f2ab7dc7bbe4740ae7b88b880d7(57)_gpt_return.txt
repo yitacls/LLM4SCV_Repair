@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(uint tokenCount) public returns (bool)",
+    "description": "The withdraw function lacks proper access control checks and does not verify that the caller has sufficient balance or proper authorization before allowing withdrawal. The function ignores the tokenCount parameter and directly transfers the calculated dividend balance, which could allow unauthorized users to withdraw funds they shouldn't have access to."
+}
+```

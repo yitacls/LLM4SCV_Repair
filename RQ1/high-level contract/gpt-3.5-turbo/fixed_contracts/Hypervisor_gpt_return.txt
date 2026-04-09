@@ -1,0 +1,48 @@
+```json
+[
+    {
+        "contract_name": "Hypervisor",
+        "contract_version": "0.7.6",
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed the vulnerability related to SWC-105-Unprotected Ether Withdrawal by updating transfers and ensuring proper handling of token transfers.",
+                "corrected_code": "function deposit(uint256 deposit0, uint256 deposit1, address to, address from) external override returns (uint256 shares) {\nrequire(deposit0 > 0 || deposit1 > 0, 'deposits must be nonzero');\nrequire(deposit0 <= deposit0Max && deposit1 <= deposit1Max, 'deposits must be less than maximum amounts');\nrequire(to != address(0) && to != address(this), 'to');\nrequire(!whitelisted || list[from], 'must be on the list');\n\n_tokenTransfer(from, deposit0, deposit1);\n\n// Rest of the function logic remains the same\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+```json
+[
+    {
+        "contract_name": "Hypervisor",
+        "contract_version": "0.7.6",
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed the vulnerability related to SWC-107-Reentrancy by ensuring safe token transfers before burning liquidity to avoid reentrancy.",
+                "corrected_code": "function withdraw(uint256 shares, address to, address from) external override returns (uint256 amount0, uint256 amount1) {\nrequire(shares > 0, 'shares');\nrequire(to != address(0), 'to');\n\n// Safely transfer tokens before burning liquidity\n_tokenTransfer(address(this), token0.balanceOf(address(this)).mul(shares).div(totalSupply()), token1.balanceOf(address(this)).mul(shares).div(totalSupply()));\n\n// Rest of the function logic remains the same\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+```json
+[
+    {
+        "contract_name": "Hypervisor",
+        "contract_version": "0.7.6",
+        "functions": [
+            {
+                "function_name": "uniswapV3MintCallback",
+                "fix_info": "Fixed the vulnerability related to SWC-135-Code With No Effects by ensuring relevant token transfers happen within the function.",
+                "corrected_code": "function uniswapV3MintCallback(uint256 amount0, uint256 amount1, bytes calldata data) external override {\nrequire(msg.sender == address(pool));\naddress payer = abi.decode(data, (address));\n\nif (payer == address(this)) {\n    if (amount0 > 0) token0.safeTransfer(msg.sender, amount0);\n    if (amount1 > 0) token1.safeTransfer(msg.sender, amount1);\n} else {\n    if (amount0 > 0) token0.safeTransferFrom(payer, msg.sender, amount0);\n    if (amount1 > 0) token1.safeTransferFrom(payer, msg.sender, amount1);\n}\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

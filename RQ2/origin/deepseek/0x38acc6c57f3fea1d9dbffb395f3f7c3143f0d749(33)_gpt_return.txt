@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "uint256 newVal = freeEther + msg.value;",
+    "description": "In Solidity ^0.4.19, arithmetic operations are unchecked by default, allowing integer overflows. If freeEther + msg.value exceeds 2^256 - 1, newVal will wrap around to a small value, potentially zero. The subsequent check 'if(newVal > freeEther)' will then incorrectly update freeEther to this small value instead of the intended sum, causing loss of recorded ether balance."
+}
+```

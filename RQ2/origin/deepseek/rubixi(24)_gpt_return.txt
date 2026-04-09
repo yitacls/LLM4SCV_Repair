@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function DynamicPyramid() { creator = msg.sender; }",
+    "description": "The constructor function 'DynamicPyramid' is misspelled and does not match the contract name 'Rubixi'. In Solidity versions prior to 0.4.22, constructors were identified solely by having the same name as the contract. This mismatch means the function is not recognized as a constructor and remains publicly callable. Consequently, any user can call DynamicPyramid() after deployment to reassign the 'creator' state variable to themselves, which is a critical access control flaw allowing unauthorized takeover of contract ownership and associated privileges."
+}
+```

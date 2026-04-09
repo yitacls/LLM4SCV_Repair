@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "lottopollo",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "seed",
+            "fix_info": "Added a seed state variable to improve randomness security by making it harder to predict future random values.",
+            "variable_code": "uint256 private seed;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "nonce",
+            "fix_info": "Added a nonce state variable to ensure randomness changes with each call, preventing replay attacks.",
+            "variable_code": "uint256 private nonce;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "randomGen",
+            "fix_info": "Replaced block.timestamp with a more secure randomness generation using keccak256 hash of multiple unpredictable variables including previous seed, block data, and nonce counter. Added nonce increment to ensure each call generates a different result.",
+            "corrected_code": "function randomGen() constant returns (uint256 randomNumber) {\n    // Generate more secure randomness using multiple inputs\n    randomNumber = uint256(keccak256(abi.encodePacked(\n        seed,\n        blockhash(block.number - 1),\n        block.coinbase,\n        block.difficulty,\n        nonce,\n        msg.sender\n    )));\n    \n    // Update seed and nonce for next call\n    seed = randomNumber;\n    nonce++;\n    \n    return randomNumber;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

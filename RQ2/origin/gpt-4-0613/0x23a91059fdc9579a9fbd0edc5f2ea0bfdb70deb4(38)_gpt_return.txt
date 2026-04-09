@@ -1,0 +1,8 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "contract": "PrivateBank",
+    "description": "The function contains a call to an external contract. If the external contract contains malicious code, it can be used to reenter the function, despite it not being completed - hence the 'reentrancy' tag. This violates the checks-effects-interaction pattern, potentially leading to unexpected behaviour. In this case, the reentrancy vulnerability allows the attacker to drain more Ether than they should be able to, because the balance is only updated after the external call."
+}
+```

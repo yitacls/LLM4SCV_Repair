@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses `tx.origin` for authorization instead of `msg.sender`, making it vulnerable to phishing attacks. If the contract owner interacts with a malicious contract, that malicious contract can call `Jotter.setEth()` and pass the authorization check, as `tx.origin` will be the original EOA (owner), not the immediate caller. This allows unauthorized state changes to the `ethToJot` variable. The function should use `require(msg.sender == owner)` for proper access control. Additionally, the use of Solidity ^0.4.25 introduces other risks, as this version does not have important security features found in later versions."
+}
+```

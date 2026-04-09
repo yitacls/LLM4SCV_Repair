@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The .send() method for transferring Ether returns a boolean indicating success or failure, but this return value is not checked. In Solidity ^0.4.24, if the send fails (e.g., if the recipient is a contract that runs out of gas during the fallback execution, or if the call depth is exceeded), it will return false and the transaction will NOT revert. This contract does not verify the return value, so when .send() fails, the state changes (atBlock[msg.sender] = block.number; invested[msg.sender] += msg.value;) will still occur, but the user will not receive their owed amount. This can lead to permanent loss of funds for users and inconsistencies in the contract's accounting. The recommended mitigation is to either use .transfer() (which automatically reverts on failure in versions <0.5.0) or check the return value of .send() and revert on failure."
+}
+```

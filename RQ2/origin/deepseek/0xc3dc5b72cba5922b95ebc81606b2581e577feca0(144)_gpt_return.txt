@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if(tx.origin == _beneficiary) lastActiveTransaction[tx.origin] = now;",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. Since tx.origin returns the original external account that initiated the transaction chain, an attacker could trick a user into interacting with a malicious contract that calls this function, causing the user's address (tx.origin) to be recorded as the beneficiary while the attacker controls the actual parameters. This violates the principle that authorization should be performed using msg.sender to ensure the immediate caller is authenticated. Additionally, the Solidity version 0.4.25 lacks modern security features, increasing risk."
+}
+```

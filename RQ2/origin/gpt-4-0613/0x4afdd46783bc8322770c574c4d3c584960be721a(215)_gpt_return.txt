@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_itemId));",
+    "description": "This contract seems to be vulnerable to the tx.origin check, which opens a potential for abuse in some cases. Contracts should use 'msg.sender' instead of 'tx.origin' for authorization control as it checks the direct caller, whereas 'tx.origin' checks the origin of transaction calls which can be manipulated. This might allow unauthorized actions to be approved, leading to potential asset theft or other unexpected behaviours."
+}
+```

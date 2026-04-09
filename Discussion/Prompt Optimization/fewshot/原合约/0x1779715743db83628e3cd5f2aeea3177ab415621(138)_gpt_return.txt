@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "CardSale",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "addMeByRC",
+                "fix_info": "Ensure only the contract owner can add an address to rc mapping.",
+                "corrected_code": "function addMeByRC() public onlyOwner {
+        rc[msg.sender] = true;
+        NewRC(msg.sender);
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

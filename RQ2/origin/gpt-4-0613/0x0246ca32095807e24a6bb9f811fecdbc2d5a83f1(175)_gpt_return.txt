@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "return oneEther.mul(10**18).div( tokenSaleContract.tokenValueInEther(oneTokenInFiatWei) );",
+    "description": "The code is vulnerable to an arithmetic error. There is no check to prevent a divide by zero exception. If the function 'tokenValueInEther' of the 'tokenSaleContract' returns 0, the code will throw an error due to division by zero. It's recommended to add a condition to secure against division by zero."
+}
+```

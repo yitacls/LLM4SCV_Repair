@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract code has a difference vulnerability where it uses 'tx.origin' for authorization instead of 'msg.sender'. 'msg.sender' is the address where the current (external) function call came from whilst  'tx.origin' is the sender of the transaction. This could allow for a malicious contract to call this contract on the user's behalf and execute functions only the owner should be able to do."
+}
+```

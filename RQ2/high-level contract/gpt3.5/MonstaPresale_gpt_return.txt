@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function reclaimBNB() external onlyOwner { owner.transfer(address(this).balance); }",
+    "description": "This function allows the contract owner to withdraw the entire balance of BNB held by the contract without any restrictions or checks. This can lead to potential loss of funds as the contract balance can be drained by the owner, possibly affecting the normal operation of the contract."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The vulnerability arises from the unchecked addition operation where balances[_to] can potentially overflow if _value is sufficiently large, leading to unexpected behavior or funds loss."
+}
+```

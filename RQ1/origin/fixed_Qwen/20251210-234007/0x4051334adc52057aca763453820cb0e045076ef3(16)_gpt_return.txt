@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "airdrop",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed unchecked low-level call by checking the return value and handling potential failures",
+            "corrected_code": "function transfer(address from,address caddress,address[] _tos,uint v)public returns (bool){\n        require(_tos.length > 0);\n        bytes4 id=bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n        for(uint i=0;i<_tos.length;i++){\n            bool success;\n            bytes memory data;\n            (success, data) = caddress.call(id,from,_tos[i],v);\n            require(success, \"Transfer failed\");\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

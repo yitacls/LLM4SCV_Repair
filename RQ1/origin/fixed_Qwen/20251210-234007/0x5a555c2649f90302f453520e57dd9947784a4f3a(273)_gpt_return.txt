@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "FUTM",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly check if the caller is the owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "changeOwner",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and adding onlyOwner modifier",
+            "corrected_code": "function changeOwner(address _receiver) public onlyOwner\n{\n    owner = _receiver;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

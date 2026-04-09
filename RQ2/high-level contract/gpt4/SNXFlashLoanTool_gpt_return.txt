@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "function burn(...) external override",
+        "description": "The smart contract uses the deprecated 'type(uint256).max' to retrieve the maximum uint256 value. This was deprecated in newer versions of solidity and should be replaced with 'type(uint256).max'"
+    },
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "function transferToken(address token) external onlyOwner",
+        "description": "The contract uses a deprecated method of transferring tokens that does not account for potential token transfer failures. This can result in lost funds if the receipient contract does not properly handle the incoming transfer."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function swap(...) internal returns (uint256)",
+        "description": "The contract uses the .call() method without proper reentrancy protection, opening up potential for reentrancy attacks. To mitigate this risk, the contract should either use a reentrancy guard or restructure its logic to ensure that all modifications to its state occur before calling external contracts."
+    }
+]
+```

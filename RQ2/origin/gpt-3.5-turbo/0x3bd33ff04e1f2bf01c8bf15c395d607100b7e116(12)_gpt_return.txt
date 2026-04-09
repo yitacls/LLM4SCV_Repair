@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "ADDRESS_EIFP2_CONTRACT.call.value(address(this).balance) (fault line)",
+    "description": "The contract is making an unchecked low-level call to a user-specified address with the entire contract balance. This can potentially lead to reentrancy attacks or unexpected behavior if the target address is a contract that does not implement the expected functionality."
+}
+```

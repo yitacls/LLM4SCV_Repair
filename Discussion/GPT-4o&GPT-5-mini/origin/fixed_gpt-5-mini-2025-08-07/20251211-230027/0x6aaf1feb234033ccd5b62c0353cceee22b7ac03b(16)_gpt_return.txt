@@ -1,0 +1,14 @@
+[{
+    "contract_name": "BtsvcToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added input validation to prevent transfers to the zero address and added an explicit overflow check before incrementing the recipient balance to mitigate arithmetic overflow vulnerabilities.",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n        require(to != address(0));\n        require(balanceOf[msg.sender] >= value);\n        // prevent overflow on recipient balance\n        require(balanceOf[to] + value >= balanceOf[to]);\n\n        balanceOf[msg.sender] -= value;\n        balanceOf[to] += value;\n        emit Transfer(msg.sender, to, value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

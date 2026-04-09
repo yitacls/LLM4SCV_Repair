@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Lottery",
+        "contract_version": "^0.4.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "makeBet",
+                "fix_info": "Fixed the BAD_RANDOMNESS vulnerability by using a safer source of randomness.",
+                "corrected_code": "function makeBet() {\n        // Won if block hash modulo 2 is 0\n        bytes32 blockHash = block.blockhash(block.number);\n        require(blockHash != 0, 'Block hash not available');\n        bool won = uint256(blockHash) % 2 == 0;\n\n        // Record the bet with an event\n        bets.push(Bet(msg.value, block.number, won));\n\n        // Payout if the user won, otherwise take their money\n        if(won) {\n            if(!msg.sender.send(msg.value)) {\n                // Return ether to sender\n                revert('Failed to send ether');\n            }\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[to] += tokens;",
+    "description": "The += operator is used without first checking for potential overflow risks. If the total value of balances[to] and tokens exceeds the maximum value that can be stored in the uint data type, it can lead to an arithmetic overflow vulnerability."
+}
+```  

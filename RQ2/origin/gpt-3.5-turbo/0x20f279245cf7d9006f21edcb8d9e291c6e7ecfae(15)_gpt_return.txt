@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "The vulnerability occurs due to the addition of balanceOf[_from] and balanceOf[_to] without ensuring that the result does not exceed the maximum value that can be stored in a uint. This can lead to an integer overflow, potentially allowing an attacker to manipulate the balances."
+}
+```  

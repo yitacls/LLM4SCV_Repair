@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "function borrowFresh(address payable borrower, address payable payee, uint borrowAmount) internal sameBlock",
+            "description": "The `borrowFresh` function allows for the transfer of assets (`doTransferOut`) before updating the borrower's state variables (`accountBorrows` and `totalBorrows`). This reordering of operations may expose the function to reentrancy attacks, as a malicious contract could re-enter the `borrowFresh` function and manipulate state inconsistencies before the storage updates are completed."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "function repayBorrowFresh(address payer, address borrower, uint repayAmount, bool isEnd) internal sameBlock",
+            "description": "The `repayBorrowFresh` function calls `doTransferIn` to transfer tokens from the payer before updating state variables like `accountBorrows` and `totalBorrows`. This sequence can create a vulnerability window where a reentrant contract could manipulate state values by re-entering before storage updates occur."
+        }
+    ]
+}
+```

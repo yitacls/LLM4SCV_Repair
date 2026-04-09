@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "contract_name": "Refunder",
+        "contract_version": "0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "refundAddresses",
+                "fix_info": "No change required",
+                "variable_code": "address[] public refundAddresses;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "refunds",
+                "fix_info": "No change required",
+                "variable_code": "mapping(address => uint256) public refunds;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "refundsPending",
+                "fix_info": "Added to track failed refunds",
+                "variable_code": "mapping(address => bool) public refundsPending;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "refundAll",
+                "fix_info": "Removed require statement that caused DoS vulnerability, added withdrawal pattern to avoid state changes on failed transfers, added refund tracking",
+                "corrected_code": "function refundAll() public {\n        for(uint x = 0; x < refundAddresses.length; x++) {\n            address refundAddress = refundAddresses[x];\n            uint256 amount = refunds[refundAddress];\n            \n            if (amount > 0) {\n                // Reset refund amount before sending to prevent reentrancy\n                refunds[refundAddress] = 0;\n                \n                // Attempt to send, but don't fail the entire function if one fails\n                bool success = refundAddress.send(amount);\n                \n                // Track failed refunds for manual processing\n                if (!success) {\n                    refundsPending[refundAddress] = true;\n                    // Restore the refund amount since transfer failed\n                    refunds[refundAddress] = amount;\n                }\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawRefund",
+                "fix_info": "Added individual withdrawal function for users to claim their refunds manually",
+                "corrected_code": "function withdrawRefund() public {\n        uint256 amount = refunds[msg.sender];\n        require(amount > 0, \"No refund available\");\n        \n        // Reset before transfer to prevent reentrancy\n        refunds[msg.sender] = 0;\n        \n        // Use transfer instead of send for better gas handling\n        msg.sender.transfer(amount);\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "manualRefund",
+                "fix_info": "Added function to manually process failed refunds (owner/admin only)",
+                "corrected_code": "function manualRefund(address _address) public {\n        require(refundsPending[_address], \"No pending refund for this address\");\n        uint256 amount = refunds[_address];\n        require(amount > 0, \"No refund amount available\");\n        \n        // Reset before transfer to prevent reentrancy\n        refunds[_address] = 0;\n        refundsPending[_address] = false;\n        \n        // Use transfer with proper gas handling\n        _address.transfer(amount);\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

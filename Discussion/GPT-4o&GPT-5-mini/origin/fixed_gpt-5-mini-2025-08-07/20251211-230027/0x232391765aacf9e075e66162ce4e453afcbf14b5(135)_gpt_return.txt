@@ -1,0 +1,28 @@
+[{
+    "contract_name": "UniqlyPresale4",
+    "contract_version": "0.8.2",
+    "state_variables": [
+        {
+            "variable_name": "_locked",
+            "fix_info": "Added a reentrancy guard state variable to prevent reentrant calls to functions that perform external calls.",
+            "variable_code": "bool private _locked;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a simple reentrancy guard modifier (Checks-Effects-Interactions) to block nested (reentrant) calls during external transfers.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!_locked, \"ReentrancyGuard: reentrant call\");\n    _locked = true;\n    _;\n    _locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "send",
+            "fix_info": "Applied the nonReentrant modifier to prevent reentrancy during the external ETH transfer while preserving original transfer behavior.",
+            "corrected_code": "function send(address user, uint256 amount) private nonReentrant {\n    (bool success, ) = user.call{value: amount}(\"\");\n    require(success, \"ETH send failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

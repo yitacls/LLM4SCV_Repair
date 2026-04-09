@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(amount);",
+    "description": "The low-level call 'msg.sender.send(amount)' does not check the return value, which can lead to silent failure. In Solidity ^0.4.16, send() returns false if the transfer fails, but this is not handled, potentially causing loss of funds or unexpected behavior."
+}
+```

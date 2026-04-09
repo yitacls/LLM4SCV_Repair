@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _depositAngel(address user, IAngel angel, uint256 amount) internal nonReentrant",
+        "description": "The _depositAngel function calls an external contract (angel.deposit) before updating the state (info.totalBalance). Although marked as nonReentrant, if the ReentrancyGuard is bypassed or improperly implemented, this could allow reentrancy attacks where the attacker re-calls deposit-related functions before the balance is updated."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _withdrawAngel(address user, IAngel angel, uint256 amount) internal nonReentrant",
+        "description": "In _withdrawAngel, the external call to angel.withdraw is made before updating the contract's state (info.totalBalance). This pattern can lead to reentrancy vulnerabilities if the guard fails or is circumvented, allowing an attacker to withdraw more funds than they should be able to."
+    }
+]
+```

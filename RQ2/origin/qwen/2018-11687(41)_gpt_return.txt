@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[owner] -= 2000 * 10**8;",
+    "description": "The contract is vulnerable to integer underflow. When subtracting 2000 * 10**8 from the owner's balance, if the balance is less than this amount, it will cause an underflow resulting in a very large positive number due to unsigned integer wraparound. This could allow the owner to distribute more tokens than they actually possess, potentially minting tokens out of thin air or causing unexpected behavior in the token distribution."
+}
+```

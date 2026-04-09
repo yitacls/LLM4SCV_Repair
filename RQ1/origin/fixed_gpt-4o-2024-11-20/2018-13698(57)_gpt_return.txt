@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "Play2LivePromo",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Ensure safe arithmetic operations to prevent overflow.",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "balances",
+                "fix_info": "Ensure safe balance updates to prevent arithmetic vulnerabilities.",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Enforce that the function can only be executed by the owner.",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintTokens",
+                "fix_info": "Added safe mathematical operations to prevent overflow in totalSupply and balances updates, and changed the event dispatch syntax for version ^0.4.18.",
+                "corrected_code": "function mintTokens(address _investor) external onlyOwner {\n    require(_investor != address(0));\n    uint256 newBalance = balances[_investor] + promoValue;\n    require(newBalance >= balances[_investor]); // Ensure no overflow.\n    balances[_investor] = newBalance;\n\n    uint256 newTotalSupply = totalSupply + promoValue;\n    require(newTotalSupply >= totalSupply); // Ensure no overflow.\n    totalSupply = newTotalSupply;\n\n    emit Transfer(address(0), _investor, promoValue); // Use 'emit' for events in 0.4.18.\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

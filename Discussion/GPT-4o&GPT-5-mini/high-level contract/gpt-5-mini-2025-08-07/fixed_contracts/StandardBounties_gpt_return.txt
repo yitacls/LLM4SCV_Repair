@@ -1,0 +1,60 @@
+[
+  {
+    "contract_name": "StandardBounties",
+    "contract_version": "0.5.0",
+    "state_variables": [
+      {
+        "variable_name": "owner",
+        "fix_info": "Added explicit visibility to avoid default (internal) visibility vulnerability (SWC-108). Kept semantics (deployer remains owner).",
+        "variable_code": "address public owner;",
+        "change_type": "modified"
+      },
+      {
+        "variable_name": "metaTxRelayer",
+        "fix_info": "Added explicit visibility to avoid default (internal) visibility vulnerability (SWC-108).",
+        "variable_code": "address public metaTxRelayer;",
+        "change_type": "modified"
+      }
+    ],
+    "modifiers": [
+      {
+        "modifier_name": "validateIssuerArrayIndex",
+        "fix_info": "Fixed incorrect allowance of index 0 when array is empty; now requires the index to be strictly within range to prevent out-of-bounds access.",
+        "modifier_code": "modifier validateIssuerArrayIndex(\n  uint _bountyId,\n  uint _index)\n{\n  require(_index < bounties[_bountyId].issuers.length, \"Issuer index out of bounds\");\n  _;\n}",
+        "change_type": "modified"
+      },
+      {
+        "modifier_name": "validateApproverArrayIndex",
+        "fix_info": "Fixed incorrect allowance of index 0 when array is empty; now requires the index to be strictly within range to prevent out-of-bounds access.",
+        "modifier_code": "modifier validateApproverArrayIndex(\n  uint _bountyId,\n  uint _index)\n{\n  require(_index < bounties[_bountyId].approvers.length, \"Approver index out of bounds\");\n  _;\n}",
+        "change_type": "modified"
+      }
+    ],
+    "functions": [
+      {
+        "function_name": "contribute",
+        "fix_info": "Reordered checks and added explicit overflow check before modifying bounty balance. Ensures _amount > 0 is validated early and prevents ETH being accidentally locked. Preserves original functionality while preventing integer overflow (SWC-101) and improves safety of ordering.",
+        "corrected_code": "function contribute(\n  address payable _sender,\n  uint _bountyId,\n  uint _amount)\n  public\n  payable\n  senderIsValid(_sender)\n  validateBountyArrayIndex(_bountyId)\n{\n  // Validate input early\n  require(_amount > 0, \"Contribution amount must be greater than 0\");\n\n  // Handle token transfers / ETH consistency first\n  if (bounties[_bountyId].tokenVersion == 0) {\n    require(msg.value == _amount, \"Incorrect ETH amount sent\");\n  } else {\n    require(msg.value == 0, \"Do not send ETH with token contribution\");\n    if (bounties[_bountyId].tokenVersion == 20) {\n      require(ERC20Token(bounties[_bountyId].token).transferFrom(_sender, address(this), _amount));\n    } else if (bounties[_bountyId].tokenVersion == 721) {\n      ERC721BasicToken(bounties[_bountyId].token).transferFrom(_sender, address(this), _amount);\n    } else {\n      revert();\n    }\n  }\n\n  // Prevent overflow when increasing balance\n  require(bounties[_bountyId].balance + _amount >= bounties[_bountyId].balance, \"Balance overflow\");\n\n  // Add contribution and update balance\n  bounties[_bountyId].contributions.push(Contribution(_sender, _amount, false));\n  bounties[_bountyId].balance = bounties[_bountyId].balance + _amount;\n\n  emit ContributionAdded(\n    _bountyId,\n    bounties[_bountyId].contributions.length - 1,\n    _sender,\n    _amount\n  );\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "refundContribution",
+        "fix_info": "Added a balance check to prevent underflow before subtracting contribution amount and preserved refund semantics. Also kept the refunded flag set before transfers to avoid reentrancy edge cases (transfers are external calls).",
+        "corrected_code": "function refundContribution(\n  address _sender,\n  uint _bountyId,\n  uint _contributionId)\n  public\n  senderIsValid(_sender)\n  validateBountyArrayIndex(_bountyId)\n  validateContributionArrayIndex(_bountyId, _contributionId)\n  onlyContributor(_sender, _bountyId, _contributionId)\n  hasNotPaid(_bountyId)\n  hasNotRefunded(_bountyId, _contributionId)\n{\n  require(now > bounties[_bountyId].deadline, \"Deadline has not elapsed\");\n\n  Contribution storage contribution = bounties[_bountyId].contributions[_contributionId];\n\n  // Mark refunded before transferring to prevent double refunds in edge cases\n  contribution.refunded = true;\n\n  // Prevent underflow\n  require(bounties[_bountyId].balance >= contribution.amount, \"Insufficient bounty balance\");\n  bounties[_bountyId].balance = bounties[_bountyId].balance - contribution.amount;\n\n  transferTokens(_bountyId, contribution.contributor, contribution.amount);\n\n  emit ContributionRefunded(_bountyId, _contributionId);\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "acceptFulfillment",
+        "fix_info": "Reworked the balance checks to compute the total payout first (with overflow checks) and then atomically deduct from bounty balance to prevent intermediate underflow/incorrect per-iteration balance checks. Preserves original acceptance & transfer behavior while preventing integer over/underflow (SWC-101).",
+        "corrected_code": "function acceptFulfillment(\n  address _sender,\n  uint _bountyId,\n  uint _fulfillmentId,\n  uint _approverId,\n  uint[] memory _tokenAmounts)\n  public\n  senderIsValid(_sender)\n  validateBountyArrayIndex(_bountyId)\n  validateFulfillmentArrayIndex(_bountyId, _fulfillmentId)\n  isApprover(_sender, _bountyId, _approverId)\n{\n  // now that the bounty has paid out at least once, refunds are no longer possible\n  bounties[_bountyId].hasPaidOut = true;\n\n  Fulfillment storage fulfillment = bounties[_bountyId].fulfillments[_fulfillmentId];\n\n  require(_tokenAmounts.length == fulfillment.fulfillers.length, \"Amounts length mismatch\");\n\n  // Compute total payout with overflow protection\n  uint total = 0;\n  for (uint256 i = 0; i < _tokenAmounts.length; i++) {\n    uint amt = _tokenAmounts[i];\n    require(total + amt >= total, \"Overflow in payout total\");\n    total = total + amt;\n  }\n\n  // Ensure sufficient balance and deduct once to avoid intermediate underflow\n  require(bounties[_bountyId].balance >= total, \"Insufficient bounty balance\");\n  bounties[_bountyId].balance = bounties[_bountyId].balance - total;\n\n  // Perform transfers\n  for (uint256 i = 0; i < fulfillment.fulfillers.length; i++) {\n    if (_tokenAmounts[i] != 0) {\n      transferTokens(_bountyId, fulfillment.fulfillers[i], _tokenAmounts[i]);\n    }\n  }\n\n  emit FulfillmentAccepted(_bountyId, _fulfillmentId, _sender, _tokenAmounts);\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "updateFulfillment",
+        "fix_info": "Fixed an incorrect indexing bug where the fulfillments array was indexed by bountyId instead of fulfillmentId. Now correctly updates the specified fulfillment's fulfillers and emits the update event.",
+        "corrected_code": "function updateFulfillment(\n  address _sender,\n  uint _bountyId,\n  uint _fulfillmentId,\n  address payable [] memory _fulfillers,\n  string memory _data)\n  public\n  senderIsValid(_sender)\n  validateBountyArrayIndex(_bountyId)\n  validateFulfillmentArrayIndex(_bountyId, _fulfillmentId)\n  onlySubmitter(_sender, _bountyId, _fulfillmentId)\n{\n  bounties[_bountyId].fulfillments[_fulfillmentId].fulfillers = _fulfillers;\n  emit FulfillmentUpdated(_bountyId, _fulfillmentId, _fulfillers, _data);\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]

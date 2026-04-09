@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function checkOwner() internal {\n        require(tx.origin == owner);  // fault line\n    }",
+    "description": "This function uses tx.origin for authorization instead of msg.sender. In Solidity 0.4.18, tx.origin returns the original external account that started the transaction chain, not the immediate caller. This creates a critical vulnerability where a malicious contract can trick a user into calling a function that relies on checkOwner() - when the user interacts with the malicious contract, tx.origin will be the user's address (owner), allowing unauthorized access. The proper authentication method should use msg.sender which identifies the immediate caller."
+}
+```

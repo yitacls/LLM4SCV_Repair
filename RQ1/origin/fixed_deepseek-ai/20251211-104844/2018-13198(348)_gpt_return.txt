@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "STE",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "sellPrice",
+                "fix_info": "Used in calculation but unmodified in this function",
+                "variable_code": "uint256 public sellPrice;",
+                "change_type": "unmodified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow vulnerability in ETH amount calculation by using SafeMath library for multiplication and addition. Also improved ether transfer pattern and added proper token balance checks.",
+                "corrected_code": "function sell(uint256 amount) public {\n    if (sellPrice == 0) revert();\n    if (balanceOf[msg.sender] < amount) revert();\n    \n    // Safe multiplication to prevent overflow\n    uint256 ethAmount = safeMul(amount, sellPrice);\n    \n    // Check for contract's ether balance before sending\n    if (address(this).balance < ethAmount) revert();\n    \n    // Update balances safely\n    balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], amount);\n    balanceOf[this] = safeAdd(balanceOf[this], amount);\n    \n    // Ether transfer with reentrancy protection pattern\n    msg.sender.transfer(ethAmount);\n    \n    Transfer(msg.sender, this, amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "safeMul",
+                "fix_info": "Added SafeMath multiplication function to prevent overflow",
+                "corrected_code": "function safeMul(uint256 a, uint256 b) internal pure returns (uint256) {\n    if (a == 0) {\n        return 0;\n    }\n    uint256 c = a * b;\n    require(c / a == b, \"SafeMath: multiplication overflow\");\n    return c;\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "safeSub",
+                "fix_info": "Added SafeMath subtraction function to prevent underflow",
+                "corrected_code": "function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {\n    require(b <= a, \"SafeMath: subtraction overflow\");\n    return a - b;\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "safeAdd",
+                "fix_info": "Added SafeMath addition function to prevent overflow",
+                "corrected_code": "function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {\n    uint256 c = a + b;\n    require(c >= a, \"SafeMath: addition overflow\");\n    return c;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

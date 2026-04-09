@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(weiAmount);// Send money to owner // <LEAKING_VUL>",
+    "description": "The contract lacks proper access control validation before allowing fund transfers to the owner. There are no checks to verify that the owner address is valid or that the transfer is authorized, which could lead to funds being sent to incorrect addresses or unauthorized transfers. Additionally, there's no validation that the owner variable has been properly initialized, potentially allowing funds to be sent to the zero address."
+}
+```

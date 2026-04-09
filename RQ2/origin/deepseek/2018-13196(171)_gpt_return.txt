@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Integer Overflow/Underflow",
+            "location": "balanceOf[this] += amount; and balanceOf[msg.sender] -= amount;",
+            "description": "In Solidity ^0.4.6, arithmetic operations are not safe by default. The statements 'balanceOf[this] += amount' and 'balanceOf[msg.sender] -= amount' are vulnerable to integer overflows and underflows. For example, if balanceOf[msg.sender] is less than 'amount', subtracting could underflow, resulting in an extremely large balance instead of throwing an error as intended. Similarly, adding to balanceOf[this] could overflow. This could allow attackers to manipulate token balances arbitrarily. SafeMath library should be used for all arithmetic operations."
+        },
+        {
+            "type": "Insufficient Gas for Send",
+            "location": "if (!msg.sender.send(amount * sellPrice)) { throw; }",
+            "description": "The .send() function forwards a fixed 2300 gas stipend, which is insufficient for most operations. If the recipient is a contract with a fallback function that requires more than 2300 gas (e.g., to log an event or update state), the send will fail consistently, causing the entire transaction to revert via 'throw'. This could lock funds in the contract. Consider using .transfer() (which also uses 2300 gas) or providing more gas via call.value()."
+        },
+        {
+            "type": "Reentrancy",
+            "location": "if (!msg.sender.send(amount * sellPrice)) { throw; }",
+            "description": "Although the code attempts to prevent reentrancy by doing the send last, the 'throw' on failure creates a different risk. If the send fails (e.g., due to out-of-gas in the recipient's fallback function), the entire transaction is reverted, but the state changes (balance updates) have already occurred. This means the seller's balance is reduced and the contract's balance is increased BEFORE the ether send is attempted. On failure, the 'throw' reverts those changes, but this pattern is still dangerous if .send is replaced with .call.value()() or if gas limits change. Best practice is to use Checks-Effects-Interactions pattern strictly."
+        },
+        {
+            "type": "Price Calculation Overflow",
+            "location": "amount * sellPrice",
+            "description": "The calculation 'amount * sellPrice' is performed before the send and is vulnerable to integer overflow. If 'amount' and 'sellPrice' are large enough such that their product exceeds 2^256 - 1, the result will wrap around, potentially allowing an attacker to receive far less ether than intended, or even zero ether, while still losing their tokens. This should be protected with SafeMath or checked manually."
+        }
+    ]
+}
+```

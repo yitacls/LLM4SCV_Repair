@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256(\"donate()\")))",
+    "description": "The low-level call to 'whale' does not check the return value for success/failure. In Solidity 0.4.x, low-level calls like .call() do not automatically revert on failure and return a boolean result. If the call fails (e.g., out of gas, contract reverts), the code continues executing, incrementing totalDonated and emitting the Lose event even though no funds were successfully transferred. This could lead to incorrect state updates and loss tracking. Recommended to check the return value: require(whale.call.value(amount)(bytes4(keccak256(\"donate()\"))))."
+}
+```

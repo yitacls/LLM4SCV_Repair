@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "Reward",
+        "contract_version": "0.8.11",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyAdmin",
+                "fix_info": "Added missing parameter validation for address(0)",
+                "modifier_code": "modifier onlyAdmin() {\n        require(msg.sender == admin, \"Unauthorized\");\n        _;\n    }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "claimRewardMany",
+                "fix_info": "Added claimRewardBatch function to handle claiming in batches to prevent DoS with block gas limit",
+                "corrected_code": "    function claimRewardMany(uint[] calldata tokenIds, Interval[][] calldata intervals) public returns (uint[] memory rewards) {\n        // Batch size limit to prevent DoS with block gas limit\n        require(tokenIds.length <= 20, \"Too many tokenIds\");\n        \n        rewards = new uint[](tokenIds.length);\n        for (uint i = 0; i < tokenIds.length; i++) {\n            require(tokenIds[i] > 0, \"Invalid tokenId\");\n            require(intervals[i].length <= 10, \"Too many intervals\");\n            rewards[i] = claimRewardInternal(tokenIds[i], intervals[i]);\n        }\n        return rewards;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimReward",
+                "fix_info": "Added separate internal function with proper validation to handle large intervals that could cause DoS",
+                "corrected_code": "    function claimReward(uint tokenId, Interval[] calldata intervals) public returns (uint reward) {\n        require(intervals.length <= 10, \"Too many intervals\");\n        return claimRewardInternal(tokenId, intervals);\n    }\n    \n    function claimRewardInternal(uint tokenId, Interval[] calldata intervals) internal returns (uint reward) {\n        for (uint i = 0; i < intervals.length; i++) {\n            // Validate interval bounds\n            require(intervals[i].endEpoch >= intervals[i].startEpoch, \"Invalid interval\");\n            // Limit interval size to prevent excessive loops\n            require(intervals[i].endEpoch - intervals[i].startEpoch <= 50, \"Interval too large\");\n            reward += claimReward(tokenId, intervals[i].startEpoch, intervals[i].endEpoch);\n        }\n        return reward;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getBlockByTime",
+                "fix_info": "Improved binary search to handle edge cases and prevent failed calls",
+                "corrected_code": "    function getBlockByTime(uint _time) public view returns (uint) {\n        require(point_history.length >= 2, \"Insufficient checkpoints\");\n        \n        // Handle edge cases\n        if (_time <= point_history[0].ts) return point_history[0].blk;\n        if (_time >= point_history[point_history.length - 1].ts) {\n            Point memory lastPoint = point_history[point_history.length - 1];\n            if (point_history.length == 1) return lastPoint.blk;\n            \n            Point memory prevPoint = point_history[point_history.length - 2];\n            uint block_slope = (BlockMultiplier * (lastPoint.blk - prevPoint.blk)) / (lastPoint.ts - prevPoint.ts);\n            uint dblock = (block_slope * (_time - lastPoint.ts)) / BlockMultiplier;\n            return lastPoint.blk + dblock;\n        }\n        \n        // Binary search\n        uint _min = 0;\n        uint _max = point_history.length - 1;\n        \n        for (uint i = 0; i < 128; ++i) {\n            if (_min >= _max) break;\n            uint _mid = (_min + _max + 1) / 2;\n            if (point_history[_mid].ts <= _time) {\n                _min = _mid;\n            } else {\n                if (_mid == 0) break; // Prevent underflow\n                _max = _mid - 1;\n            }\n        }\n\n        require(_min + 1 < point_history.length, \"Invalid binary search result\");\n        \n        Point memory point0 = point_history[_min];\n        Point memory point1 = point_history[_min + 1];\n        \n        // Ensure timestamps are properly ordered to prevent division by zero\n        require(point1.ts > point0.ts, \"Invalid checkpoint order\");\n        \n        uint block_slope = (BlockMultiplier * (point1.blk - point0.blk)) / (point1.ts - point0.ts);\n        uint dblock = (block_slope * (_time - point0.ts)) / BlockMultiplier;\n        return point0.blk + dblock;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "addCheckpoint",
+                "fix_info": "Added check to prevent duplicate checkpoints at same timestamp",
+                "corrected_code": "    function addCheckpoint() internal {\n        // Prevent duplicate checkpoints at same timestamp\n        if (point_history.length == 0 || point_history[point_history.length - 1].ts < block.timestamp) {\n            point_history.push(Point(block.timestamp, block.number));\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

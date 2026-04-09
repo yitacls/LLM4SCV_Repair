@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function initialize(address _measure, address _asset) external",
+        "description": "The 'initialize' function sets the factory to 'msg.sender' without any access control. This could allow unauthorized deployment or alteration of the contract. Use 'require()' with appropriate access controls to restrict the initialization function."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function claim(address user) external returns (uint256)",
+        "description": "The 'claim' function transfers tokens to the 'user' after their balance is set to 0 but does not employ reentrancy guards (e.g., 'nonReentrant' modifier or a variable lock pattern). This exposes the contract to potential reentrancy attacks where an external call could reenter the contract before the state is updated."
+    }
+]
+```

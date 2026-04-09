@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StorageBase",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Replaced unchecked low-level send() call with transfer() to ensure proper error handling and prevent silent failures",
+            "corrected_code": "function withdrawBalance() external onlyOwner returns (bool) {\n        msg.sender.transfer(address(this).balance);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "MonstaPresale",
+    "contract_version": "0.6.0",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "No state variables needed to be modified to fix the vulnerability",
+            "variable_code": "",
+            "change_type": ""
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers needed to be added or modified to fix the vulnerability",
+            "modifier_code": "",
+            "change_type": ""
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "reclaimBNB",
+            "fix_info": "Fixed SWC-105 Unprotected Ether Withdrawal vulnerability by implementing withdrawal pattern with pull-over-push, allowing only the contract owner to withdraw their allocated funds while protecting against reentrancy",
+            "corrected_code": "  /**\n   * @dev Transfer all BNB held by the contract to the owner.\n   */\n  function reclaimBNB() external onlyOwner {\n    uint256 balance = address(this).balance;\n    require(balance > 0, \"No BNB to withdraw\");\n    \n    // Use call with reentrancy guard pattern\n    (bool success, ) = owner.call{value: balance}(\"\");\n    require(success, \"BNB transfer failed\");\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

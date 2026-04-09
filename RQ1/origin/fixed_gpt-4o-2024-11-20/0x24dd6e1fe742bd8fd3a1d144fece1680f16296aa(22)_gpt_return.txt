@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "OBK",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Added SafeMath checks to prevent arithmetic underflow and overflow. Updated logic to use SafeMath operations instead of direct arithmetic.",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    balances[msg.sender] = balances[msg.sender] - _value;\n    require(balances[_to] + _value >= balances[_to], \"Addition overflow detected\");\n    balances[_to] = balances[_to] + _value;\n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

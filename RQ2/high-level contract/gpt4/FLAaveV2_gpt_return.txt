@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function executeOperation",
+    "description": "The method executeOperation in the contract allows a callback to an arbitrary contract, carrying the risk of a potential reentrancy attack due to lack of precautions such as using the Checks-Effects-Interactions pattern or a reentrancy guard. The function first sends the funds and then it decreases the balance. If the recipient contracts are malicious, they could utilize the supplied gas to call back into executeOperation, modify balances, and reenter before the function resolves."
+}
+```

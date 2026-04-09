@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenConverterRouter",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "convert",
+            "fix_info": "Fixed unchecked low-level call by using transfer() instead of send() for ETH transfer, which will properly handle failures",
+            "corrected_code": "function convert(Token _from, Token _to, uint256 _amount, uint256 _minReturn) external payable returns (uint256) {\n        (TokenConverter converter, uint256 evaluated) = _getBestConverter(_from, _to, _amount);\n        if (_from == ETH_ADDRESS) {\n            require(msg.value == _amount, \"ETH not enought\");\n        } else {\n            require(msg.value == 0, \"ETH not required\");\n            require(_from.transferFrom(msg.sender, this, _amount), \"Error pulling Token amount\");\n            require(_from.approve(converter, _amount), \"Error approving token transfer\");\n        }\n        uint256 result = converter.convert.value(msg.value)(_from, _to, _amount, _minReturn);\n        require(result >= _minReturn, \"Funds received below min return\");\n        emit Converted({\n            _converter: converter,\n            _from: _from,\n            _to: _to,\n            _amount: _amount,\n            _return: result,\n            _evaluated: evaluated\n        });\n        if (_from != ETH_ADDRESS) {\n            require(_from.approve(converter, 0), \"Error removing approve\");\n        }\n        if (_to == ETH_ADDRESS) {\n            msg.sender.transfer(result);\n        } else {\n            require(_to.transfer(msg.sender, result), \"Error sending tokens\");\n        }\n        if (_isSimulation()) {\n            _addExtraGasLimit();\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

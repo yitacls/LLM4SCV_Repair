@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "The contract uses tx.origin for authorization, which can be exploited through phishing or intermediate contract calls. In this burnFrom function, any caller can manipulate the _from parameter to burn tokens from another account (provided that account has sufficient balance) as long as the transaction's original sender (tx.origin) is the owner. This could allow malicious contracts or users to burn tokens from arbitrary addresses, violating access control principles. The authorization should use msg.sender or implement a proper allowance-based system instead."
+    },
+    {
+        "type": "access_control",
+        "location": "function burnFrom(address _from, uint256 _value) returns (bool success)",
+        "description": "The function lacks proper allowance/approval mechanism. Typically, burnFrom functions should check that the caller has been approved to burn tokens on behalf of _from (via an allowance mapping), similar to the ERC20 transferFrom pattern. The current implementation only checks the target's balance and tx.origin, allowing unauthorized token burns if tx.origin == owner."
+    }
+]
+```

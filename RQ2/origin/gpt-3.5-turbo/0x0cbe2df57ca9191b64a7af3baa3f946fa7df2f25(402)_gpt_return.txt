@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Unchecked Low Level Calls",
+    "location": "recipient.call(abi.encodeWithSignature(\"tokenFallback(address,uint256,bytes)\", sender, amount, data));",
+    "description": "The contract directly calls the 'call' function on the recipient contract without checking any return value or error handling. This can lead to potential vulnerabilities such as reentrancy attacks or unexpected behavior if the recipient contract's fallback implementation is malicious or malfunctions."
+}
+```

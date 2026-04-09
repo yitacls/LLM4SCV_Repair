@@ -1,0 +1,40 @@
+```json
+[
+    {
+        "contract_name": "ETH033",
+        "contract_version": "^0.4.13",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Type should be explicitly defined and safe operations should be used",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "sellPrice",
+                "fix_info": "Type should be explicitly defined to prevent overflow",
+                "variable_code": "uint256 public sellPrice;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow by using SafeMath library, replaced throw with revert for gas efficiency, made function external, added explicit return types for visibility, used balanceOf[address(this)] instead of balanceOf[this]",
+                "corrected_code": "function sell(uint256 amount) external returns (uint256 revenue) {\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    \n    // Use SafeMath operations to prevent overflow\n    balanceOf[address(this)] = balanceOf[address(this)].add(amount);\n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n    \n    revenue = amount.mul(sellPrice); // Safe multiplication using SafeMath\n    \n    // Check for overflow in revenue calculation\n    require(revenue / amount == sellPrice, \"Multiplication overflow\");\n    \n    // Use transfer instead of send with proper gas handling\n    (bool success, ) = msg.sender.call.value(revenue)(\"\");\n    require(success, \"Failed to send Ether\");\n    \n    // Emit transfer event after successful transfer\n    Transfer(msg.sender, address(this), amount);\n    \n    return revenue;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+Note: The fixes include:
+1. Using SafeMath library for arithmetic operations to prevent overflow
+2. Replacing `throw` with `revert()`/`require()` for gas efficiency and better error messages
+3. Changing function visibility to `external` (recommended for functions not called internally)
+4. Using `balanceOf[address(this)]` instead of `balanceOf[this]` for clarity
+5. Using `.call.value()` with proper error handling instead of `.send()` for better gas handling
+6. Explicit return types for better readability
+7. Moving event emission after successful Ether transfer to match transaction finality

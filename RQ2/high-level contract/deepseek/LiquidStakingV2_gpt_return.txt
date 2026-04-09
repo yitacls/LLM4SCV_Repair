@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Lines 370-404 in withdrawUnstakedTokens() function",
+    "description": "The withdrawUnstakedTokens() function contains an unbounded loop that iterates through all unbonding entries for a user. As users accumulate more unstaking requests over time, the gas cost of this function will increase linearly. Eventually, when a user has too many pending unstaking entries, the gas required to execute this function may exceed the block gas limit, making it impossible for them to withdraw their tokens. This creates a permanent denial-of-service for affected users. The loop at lines 384-403 processes all entries from _withdrawCounters[staker] to _unstakingExpiration[staker].length without any gas limit protection or pagination mechanism."
+}
+```

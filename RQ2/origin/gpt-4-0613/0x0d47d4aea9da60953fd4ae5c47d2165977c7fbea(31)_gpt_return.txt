@@ -1,0 +1,13 @@
+```json
+{
+    "contract": "EtherprisesLLC",
+    "version": "^0.4.11",
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "generalManager.send(this.balance);",
+            "description": "This line is a low-level operation. Low-level operations are not recommended because they bypass Solidity’s type checking and error handling and can potentially fail silently. In this case, 'send()' method only throws an error when the call runs out of gas; it doesn’t give other types of errors even if it fails. If the send operation fails and the failure is not checked or handled, funds could potentially be lost."
+        }
+    ]
+}
+```

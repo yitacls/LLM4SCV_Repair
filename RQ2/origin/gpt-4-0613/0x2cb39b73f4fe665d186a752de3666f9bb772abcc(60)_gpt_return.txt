@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value)", 
+    "description": "The send function in Solidity will quietly fail if the call throws an exception or if the call stack depth is too high. If this occurs, no Ether will be transferred but the rest of the function will continue to execute. This is problematic as it could allow for logic errors to slip through undetected due to the send function failing silently without throwing an error. This is what makes it an unchecked low level call, as no error check is being performed after the send."
+}
+```

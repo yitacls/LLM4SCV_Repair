@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "GetPaid",
+    "contract_version": "^0.4.22",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added require statement to ensure only owner can execute functions",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by properly checking ownership before transfer, removed unnecessary local variable, and used address(this).balance",
+            "corrected_code": "function withdraw() public onlyOwner {\n        uint256 etherBalance = address(this).balance;\n        require(etherBalance > 0, \"No ether to withdraw\");\n        owner.transfer(etherBalance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

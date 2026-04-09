@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "players[currentGamenumber][winner].send(this.balance);",
+        "description": "The 'send' function is used to transfer ether to the winner. However, it does not check whether the call is successful. If the transaction fails, the contract could lose funds or behave unexpectedly since there is no error-handling mechanism in place to manage the failure."
+    }
+]
+```

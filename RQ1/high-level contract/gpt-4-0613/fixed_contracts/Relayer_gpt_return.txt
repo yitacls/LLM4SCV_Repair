@@ -1,0 +1,81 @@
+```json
+[{
+    "contract_name": "Relayer",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyApproved",
+            "fix_info": "No changes have been made to this modifier as it is not vulnerable",
+            "modifier_code": "modifier onlyApproved() {
+                if (owner() != msg.sender) {
+                    require(isApproved(msg.sender), \"Relayer: not approved\");
+                }
+                _;
+            }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "No vulnerabilities were found for this function, so no changes have been made",
+            "corrected_code": "function initialize(address _uln) public proxied initializer {
+                __Ownable_init();
+                uln = ILayerZeroUltraLightNodeV1(_uln);
+                setApprovedAddress(address(this), true);
+            }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "validateTransactionProofV2",
+            "fix_info": "The unsafe external call vulnerability has been fixed by using OpenZeppelin's Address library which provides low level functions for interaction with these addresses",
+            "corrected_code": "function validateTransactionProofV2(uint16 _srcChainId, address _dstAddress, uint _gasLimit, bytes32 _blockHash, bytes calldata _transactionProof, address payable _to) external payable onlyApproved nonReentrant {
+                Address.sendValue(_to, msg.value);
+                uln.validateTransactionProof(_srcChainId, _dstAddress, _gasLimit, _blockHash, _transactionProof);
+            }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getPrices",
+            "fix_info": "Conditions have been added in order to prevent underflows and overflows",
+            "corrected_code": "function _getPrices(uint16 _dstChainId, uint16 _outboundProofType, address, bytes memory _adapterParameters) internal view returns (uint basePrice, uint pricePerByte) {
+                require(_adapterParameters.length == 34 || _adapterParameters.length > 66, \"Relayer: wrong _adapterParameters size\");
+                uint16 txType;
+                uint extraGas;
+                assembly {
+                    txType := mload(add(_adapterParameters, 2))
+                    extraGas := mload(add(_adapterParameters, 34))
+                }
+                require(extraGas > 0, \"Relayer: gas too low\");
+                require(txType == 1 || txType == 2, \"Relayer: unsupported txType\");
+
+                DstPrice storage dstPrice = dstPriceLookup[_dstChainId];
+                DstConfig storage dstConfig = dstConfigLookup[_dstChainId][_outboundProofType];
+
+                uint totalRemoteToken; // = baseGas + extraGas + requiredNativeAmount
+                if (txType == 2) {
+                    uint dstNativeAmt;
+                    assembly {
+                        dstNativeAmt := mload(add(_adapterParameters, 66))
+                    }
+                    require(dstConfig.dstNativeAmtCap >= dstNativeAmt, \"Relayer: dstNativeAmt too large\");
+                    totalRemoteToken = totalRemoteToken.add(dstNativeAmt);
+                }
+                // remoteGasTotal = dstGasPriceInWei * (baseGas + extraGas)
+                uint remoteGasTotal = dstPrice.dstGasPriceInWei.mul(dstConfig.baseGas.add(extraGas));
+
+                totalRemoteToken = totalRemoteToken.add(remoteGasTotal);
+
+                // tokenConversionRate = dstPrice / localPrice
+                // basePrice = totalRemoteToken * tokenConversionRate
+                basePrice = totalRemoteToken.mul(dstPrice.dstPriceRatio).div(10**10);
+
+                // pricePerByte = (dstGasPriceInWei * gasPerBytes) * tokenConversionRate
+                pricePerByte = dstPrice.dstGasPriceInWei.mul(dstConfig.gasPerByte).mul(dstPrice.dstPriceRatio).div(10**10);
+            }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

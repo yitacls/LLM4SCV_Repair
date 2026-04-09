@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SHORT_ADDRESSES",
+    "location": "function sendCoin(address to, uint amount)",
+    "description": "The vulnerability arises from the fact that in versions of Solidity before 0.5.x, the address type is not properly validated for its length. If a shorter than expected address is provided as an input parameter, the EVM will pad the address with zeros. This can lead to tokens being sent to an incorrect or unintended address, particularly when interacting with improperly configured clients or tools. This issue occurs because there is no explicit length checking in the function parameters for the 'to' address."
+}
+```

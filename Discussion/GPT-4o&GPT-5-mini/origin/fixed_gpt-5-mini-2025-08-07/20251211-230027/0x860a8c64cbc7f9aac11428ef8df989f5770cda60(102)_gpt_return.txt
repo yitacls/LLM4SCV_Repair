@@ -1,0 +1,30 @@
+[
+    {
+        "contract_name": "StandardToken",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Ensure a dedicated owner state variable exists so only the authorized owner can invoke privileged functions (added to improve explicit access control). The owner should be set in the contract constructor (not shown here).",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Explicit robust onlyOwner modifier that checks the caller is the owner and provides a clear revert message. Keeps access control explicit and readable.",
+                "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"StandardToken: caller is not the owner\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "destoryContract",
+                "fix_info": "Restrict selfdestruct to a valid, non-zero recipient and require the recipient to be the contract owner to avoid sending remaining funds to an arbitrary address. Keeps original ability for the owner to destroy the contract but prevents leaking funds to arbitrary addresses.",
+                "corrected_code": "function destoryContract(address _recipient) external onlyOwner {\n    require(_recipient != address(0), \"StandardToken: invalid recipient\");\n    // Only allow destroying the contract and sending remaining funds to the owner\n    // prevents owner from accidentally or maliciously sending funds to arbitrary addresses\n    require(_recipient == owner, \"StandardToken: recipient must be owner\");\n    selfdestruct(_recipient);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "l.bal = l.bal + msg.value;",
+    "description": "The addition operation l.bal + msg.value can cause an integer overflow when the result exceeds the maximum value that can be stored in the uint data type. In Solidity ^0.4.19, arithmetic operations are not protected against overflow by default, which could lead to unexpected behavior where large values wrap around to small values, potentially allowing attackers to manipulate balance calculations."
+}
+```

@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "DosNumber",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "array",
+            "fix_info": "No change needed for the state variable",
+            "variable_code": "uint[] public array;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "numElements",
+            "fix_info": "No change needed for the state variable",
+            "variable_code": "uint public numElements;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "insertNnumbers",
+            "fix_info": "Added a reasonable limit to prevent gas exhaustion DoS attack while preserving the original functionality",
+            "corrected_code": "function insertNnumbers(uint value, uint numbers) public {\n        // Prevent gas DOS by limiting the number of iterations\n        require(numbers <= 100, \"Too many numbers, would cause gas exhaustion\");\n        \n        for(uint i=0; i<numbers; i++) {\n            if(numElements == array.length) {\n                array.length += 1;\n            }\n            array[numElements++] = value;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

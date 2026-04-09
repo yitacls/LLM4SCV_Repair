@@ -1,0 +1,8 @@
+```json
+{
+    "type": "Arithmetic",
+    "contract": "Ore",
+    "location": "balanceOf[to] += value;",
+    "description": "This vulnerability arises due to the absence of any checks or validations for arithmetic overflow or underflow. An arithmetic overflow can occur when the value being added to balanceOf[to] is too large and results in the value resetting to zero, possibly causing unexpected behaviors in the smart contract. Always include checks to prevent overflow and underflow in order to avoid these types of vulnerabilities."
+}
+```

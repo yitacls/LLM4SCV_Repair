@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowSingleTransaction",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "No changes needed to state variable declaration",
+            "variable_code": "uint256 count;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "overflowaddtostate",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow and ensure addition operation is safe",
+            "corrected_code": "function overflowaddtostate(uint256 input) public {\n    // Using SafeMath to prevent arithmetic overflow\n    count = count.add(input);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

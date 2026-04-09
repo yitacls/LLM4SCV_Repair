@@ -1,0 +1,19 @@
+```json
+[
+  {
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "approveDomainBid function (lines 92-101)",
+    "description": "The approveDomainBid function does not properly validate or restrict access to critical state changes. Although it uses the authorizedOwner modifier, it doesn't prevent unauthorized users from calling this function due to lack of proper access control checks. Additionally, there's no mechanism to withdraw or manage accumulated tokens, which could lead to fund loss."
+  },
+  {
+    "type": "SWC-122-Lack of Proper Signature Verification",
+    "location": "fulfillDomainBid function (lines 121-153)",
+    "description": "The signature verification in fulfillDomainBid is insufficient. It only verifies that the recovered address matches the recipient, but does not properly validate that the signature corresponds to the actual bid data. The contract fails to verify that the signature was created by the bidder for the specific bid parameters, allowing potential signature replay attacks or unauthorized bid fulfillment."
+  },
+  {
+    "type": "SWC-117-Signature Malleability",
+    "location": "recover function and its usage in fulfillDomainBid (line 135)",
+    "description": "The contract uses ECDSA signature recovery without proper protection against signature malleability. The recover function accepts both valid and invalid signature formats, which could allow an attacker to submit a valid bid with a modified but still valid signature, potentially leading to unauthorized actions or replay attacks."
+  }
+]
+```

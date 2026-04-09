@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.send(_value);",
+    "description": "The `send` function returns a boolean indicating success or failure, but this return value is not checked. If the ETH transfer fails (e.g., due to the receiving contract running out of gas or reverting), the external call will silently fail while the function's state changes (e.g., balance updates, if any) persist. This can lead to inconsistencies where the contract logic assumes the transfer succeeded when it actually failed. In Solidity ^0.4.13, it is essential to always check the return value of low-level calls like `send` or `call.value()`. A recommended mitigation is to use `require(_to.send(_value))` or propagate the failure using a pattern like `if(!_to.send(_value)) { revert(); }`."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Denial of Service (DoS)",
+    "location": "Line: `address payable winnerAddress = address(0x0)` and subsequent loop logic",
+    "description": "The function initializes `winnerAddress` to the zero address, and within the loop, it accesses `bets[winnerAddress].totalBet` for comparison. If the `bets` mapping does not have an entry for the zero address, this will return the default value (0) for `uint256`, which is safe. However, the critical vulnerability is that the function iterates over the entire `players` array, which could grow unbounded. This loop lacks gas limits and can run out of gas if `players.length` becomes too large, causing the function to revert and preventing any caller from successfully retrieving the leader. This is a denial-of-service risk, especially as the contract scales, because the transaction gas cost increases linearly with the number of players, potentially exceeding the block gas limit."
+}
+```

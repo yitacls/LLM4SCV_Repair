@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Lotto",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sendToWinner",
+            "fix_info": "Fixed unchecked low level call vulnerability by checking the return value of send() and using require() to handle failures",
+            "corrected_code": "function sendToWinner() public {\n    require(!payedOut);\n    // Fixed unchecked low level call vulnerability\n    require(winner.send(winAmount));\n    payedOut = true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

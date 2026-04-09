@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "TokenTrader",
+        "contract_version": "0.4.26",
+        "state_variables": [
+            {
+                "variable_name": "units",
+                "fix_info": "Added SafeMath library import and changed units from potentially zero to uint constant with default value",
+                "variable_code": "using SafeMath for uint256;\nuint256 public constant UNITS = 1e18;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwnerOrActive",
+                "fix_info": "Added modifier for access control and state checking",
+                "modifier_code": "modifier onlyOwnerOrActive() {\n    require(sellsTokens || msg.sender == owner, \"Not authorized or trading not active\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "buy",
+                "fix_info": "Fixed arithmetic vulnerabilities: 1) Protected against division by zero for sellPrice and units, 2) Used SafeMath operations to prevent overflow/underflow, 3) Replaced deprecated throw with revert, 4) Added nonReentrant modifier to prevent reentrancy, 5) Checked for zero value transfers",
+                "corrected_code": "function buy() external payable nonReentrant onlyOwnerOrActive {\n    require(msg.value > 0, \"Must send ETH\");\n    require(sellPrice > 0, \"Sell price must be positive\");\n    require(UNITS > 0, \"Units must be positive\");\n    \n    uint256 order = msg.value.div(sellPrice);\n    uint256 contractBalance = ERC20(asset).balanceOf(address(this));\n    uint256 canSell = contractBalance.div(UNITS);\n    \n    if (order > canSell) {\n        order = canSell;\n        uint256 requiredAmount = order.mul(sellPrice);\n        uint256 change = msg.value.sub(requiredAmount);\n        \n        if (change > 0) {\n            msg.sender.transfer(change);\n        }\n    }\n    \n    if (order > 0) {\n        uint256 transferAmount = order.mul(UNITS);\n        require(transferAmount <= contractBalance, \"Insufficient contract balance\");\n        require(\n            ERC20(asset).transfer(msg.sender, transferAmount),\n            \"Token transfer failed\"\n        );\n    } else {\n        // If order is 0, refund the full amount\n        msg.sender.transfer(msg.value);\n    }\n    \n    emit UpdateEvent();\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

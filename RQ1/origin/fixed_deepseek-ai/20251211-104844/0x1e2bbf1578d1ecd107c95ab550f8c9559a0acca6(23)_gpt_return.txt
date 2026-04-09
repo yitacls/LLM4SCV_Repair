@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Tbyc",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or explicit overflow checks. Added explicit overflow check for receiver balance addition.",
+                "corrected_code": "function transfer(address _to, uint256 _value) returns (bool success) {\n    require(balanceOf[msg.sender] >= _value);\n    require(balanceOf[_to] + _value >= balanceOf[_to]); // Overflow check for receiver\n    \n    balanceOf[msg.sender] -= _value;\n    balanceOf[_to] += _value;\n    Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

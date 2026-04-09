@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.6.0;",
+        "description": "The contract uses a floating pragma. Although this is not a security vulnerability on its own, it allows older, possibly vulnerable Solidity versions to compile the contract. To ensure that all security updates are applied to the libraries used in this contract, it is recommended to use the latest version of Solidity and specify that version directly."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) {...}",
+        "description": "This contract has an unbounded loop in the massHarvest() function, potentially causing operations to fail due to exceeding the block gas limit. In Ethereum, every transaction consumes a certain amount of gas, and every block has a gas limit. If a transaction requires more gas than is available in the block, the transaction will fail. To prevent this, it's important to restrict the gas usage of your functions, for example by limiting the number of iterations in loops."
+    }
+]
+```

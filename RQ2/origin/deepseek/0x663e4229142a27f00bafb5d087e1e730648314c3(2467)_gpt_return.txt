@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "cfoAddress.send(balance - subtractFees);",
+    "description": "The low-level call `send()` is used without checking its return value. If the send fails (e.g., if the recipient is a contract that reverts, runs out of gas, or the call stack depth is exceeded), the transaction will not revert, and the contract will proceed as if the transfer succeeded. This could leave funds locked in the contract. In Solidity ^0.4.11, `send()` forwards only 2300 gas, which is insufficient for most state-changing operations, making failures likely when sending to smart contracts. The return value of `send()` should always be checked, and the function should revert on failure, or use a withdrawal pattern where the recipient pulls funds."
+}
+```

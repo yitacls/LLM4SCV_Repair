@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function withdrawCrypto(address payable beneficiary) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() { require(address(this).balance>0,\"No Crypto inside contract\"); (bool success, ) = beneficiary.call{value:address(this).balance}(\"\"); require(success, \"Transfer failed.\"); emit CryptoWithdrawn(beneficiary, address(this).balance); }",
+    "description": "The function `withdrawCrypto` allows the contract's owner to withdraw all Ether stored in the contract to a specified address without requiring additional safeguards. An unprotected Ether withdrawal could lead to unintended fund loss if an unauthorized user gains ownership of the contract or if access control is improperly implemented. Proper security measures should be in place to ensure that only authorized individuals can execute such a critical function."
+}
+```

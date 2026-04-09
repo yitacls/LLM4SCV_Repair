@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin in this line can lead to a serious security vulnerability. In this context, tx.origin generally refers to the original address that initiated the contract call, but an attacker can trick a victim into calling the contract by means of phishing or a malicious dapp. This would allow the attacker, using the victim's address, to gain ownership of the contract. It's recommended to use msg.sender instead of tx.origin for access control, as msg.sender refers to the immediate sender of the message (call), not the origin."
+}
+```

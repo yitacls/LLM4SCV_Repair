@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[msg.sender] += amount;",
+    "description": "The vulnerability arises from directly modifying the balance of the sender without checking for potential overflow or underflow. This can lead to arithmetic overflow vulnerabilities if the total balance exceeds the maximum value allowed for the variable type."
+}
+```

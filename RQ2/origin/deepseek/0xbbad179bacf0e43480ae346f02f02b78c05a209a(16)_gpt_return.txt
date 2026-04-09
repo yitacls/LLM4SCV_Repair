@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "balances[_to] += _value; // fault line",
+    "description": "This contract is vulnerable to integer overflow due to the use of Solidity version ^0.4.25, which does not have built-in overflow protection. When `balances[_to] + _value` exceeds the maximum value representable by uint256 (2^256 - 1), the addition will wrap around, resulting in an incorrect, smaller balance for the recipient. This could be exploited by an attacker to manipulate token balances."
+}
+```

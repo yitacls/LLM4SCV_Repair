@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token_reward.call( beneficiary, token_amount);",
+    "description": "This line of code in the function 'release' represents a vulnerability due to the unchecked nature of the low-level call. In Solidity, low-level calls like '.call()' do not automatically propagate exceptions caused by the called contract, allowing for arbitrary state changes in the called contract. This may result in unexpected behavior if the called contract throws an exception. As such, it is recommended to handle the return value of the call function or use Solidity's 'transfer' or 'send' functions which automatically handle exceptions."
+}
+```

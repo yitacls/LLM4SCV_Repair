@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(fee);",
+    "description": "The send() function is used to transfer Ether to the owner address, but its return value is not checked. In Solidity 0.4.24, send() returns false if the transfer fails (e.g., if the recipient is a contract that rejects the payment), but the code does not handle this case. This could result in silent failure where the fee transfer fails but the transaction continues, potentially leading to loss of funds or unexpected behavior. The return value should be checked and handled appropriately."
+}
+```

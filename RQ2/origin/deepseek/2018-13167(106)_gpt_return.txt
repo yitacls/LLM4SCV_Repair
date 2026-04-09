@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability - Integer Overflow",
+    "location": "balanceOf[target] += _amount; and totalSupply += _amount;",
+    "description": "The mintToken function contains unchecked arithmetic operations that can lead to integer overflow in Solidity versions prior to 0.8.0. When `mintedAmount * 10 ** uint256(decimals)` results in a value exceeding uint256's maximum value (2^256 - 1), or when adding this amount to existing balances causes overflow, the variables will wrap around to small values instead of reverting. This could allow malicious or erroneous minting to create incorrect token balances or total supply. Since decimals is typically 18, minting approximately 1.1579e59 tokens (10^18 * ~1.1579e41) would overflow the multiplication. The vulnerability affects both the `balanceOf[target]` update and `totalSupply` update operations."
+}
+```

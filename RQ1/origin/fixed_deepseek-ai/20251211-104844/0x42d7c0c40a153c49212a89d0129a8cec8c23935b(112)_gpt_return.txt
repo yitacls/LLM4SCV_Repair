@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "OneEther",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "The owner variable is required for the onlyOwner modifier but not explicitly shown in the vulnerable code. Assuming it exists and needs proper visibility setting.",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added to prevent tx.origin vulnerability and ensure proper access control",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner, \"Caller is not the owner\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setNewAdmin",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyOwner modifier for proper access control",
+            "corrected_code": "function setNewAdmin(address _addr) public onlyOwner {\n    require(_addr != address(0), \"Invalid address\");\n    admin = _addr;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

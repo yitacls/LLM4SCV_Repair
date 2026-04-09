@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The access control check based on tx.origin is vulnerable to an exploit called tx.origin attack, where an external contract can call the function and manipulate the ownership verification. It is recommended to use msg.sender for access control instead of tx.origin."
+}
+```

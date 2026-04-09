@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "IdleLiquidityModule",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_calcTick",
+            "fix_info": "Fixed integer overflow/underflow by adding bounds checks and using safer arithmetic operations for tick calculations",
+            "corrected_code": "function _calcTick(uint256 tokenId, uint24 fee) internal view returns (int24, int24) {\n    (, , , , , int24 tickLower, int24 tickUpper, , , , , ) = INonfungiblePositionManager(\n        uniswapAddressHolder.nonfungiblePositionManagerAddress()\n    ).positions(tokenId);\n\n    int24 tickDelta = tickUpper - tickLower;\n\n    IUniswapV3Pool pool = IUniswapV3Pool(\n        UniswapNFTHelper._getPoolFromTokenId(\n            tokenId,\n            INonfungiblePositionManager(uniswapAddressHolder.nonfungiblePositionManagerAddress()),\n            uniswapAddressHolder.uniswapV3FactoryAddress()\n        )\n    );\n\n    (, int24 tick, , , , , ) = pool.slot0();\n    int24 tickSpacing = int24(fee) / 50;\n    \n    // Prevent division by zero\n    require(tickSpacing != 0, \"Invalid tick spacing\");\n    \n    // Safe arithmetic to prevent overflow/underflow\n    int24 lowerTick;\n    int24 upperTick;\n    \n    // Calculate lower tick with bounds checking\n    int256 lowerCalc = (int256(tick) - int256(tickDelta)) / int256(tickSpacing);\n    require(lowerCalc >= type(int24).min / tickSpacing && lowerCalc <= type(int24).max / tickSpacing, \"Lower tick overflow\");\n    lowerTick = int24(lowerCalc * int256(tickSpacing));\n    \n    // Calculate upper tick with bounds checking\n    int256 upperCalc = (int256(tick) + int256(tickDelta)) / int256(tickSpacing);\n    require(upperCalc >= type(int24).min / tickSpacing && upperCalc <= type(int24).max / tickSpacing, \"Upper tick overflow\");\n    upperTick = int24(upperCalc * int256(tickSpacing));\n    \n    return (lowerTick, upperTick);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

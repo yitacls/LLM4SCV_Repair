@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Lines 237-268 in function _swapUniswap()",
+            "description": "The swapExactTokensForTokens() call on line 263 doesn't check the return value. In Solidity < 0.6.0, unsuccessful calls would return false, but in 0.6.0+, failed calls revert. However, using a low-level call with delegatecall in the execute() function could still bypass this. The safer approach is to validate the swap succeeded by checking amounts or using require statements."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Lines 271-288 in function _swapUniswapWithPath()",
+            "description": "The swapExactTokensForTokens() call on line 284 doesn't check the return value. This could lead to silent failures where tokens are approved but not actually swapped, potentially locking funds or causing incorrect balance calculations."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Lines 291-322 in function _swapSushiswap()",
+            "description": "The swapExactTokensForTokens() call on line 315 doesn't check the return value. Similar to the Uniswap functions, this creates a risk that Sushiswap swaps could fail silently, leaving tokens in unintended states or causing financial losses."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Lines 325-342 in function _swapSushiswapWithPath()",
+            "description": "The swapExactTokensForTokens() call on line 339 doesn't check the return value. This completes the pattern of unchecked DEX calls throughout the contract, creating multiple points where swap failures could go undetected during strategy execution."
+        }
+    ]
+}
+```

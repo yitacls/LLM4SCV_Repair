@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "StorageBase",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "withdrawBalance",
+        "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and added explicit success check. Also added better error handling with require() to prevent silent failures.",
+        "corrected_code": "function withdrawBalance() external onlyOwner returns (bool) {\n        uint256 balance = address(this).balance;\n        require(balance > 0, \"No balance to withdraw\");\n        \n        address payable owner = address(uint160(owner()));\n        owner.transfer(balance);\n        \n        return true;\n    }",
+        "change_type": "modified"
+    }]
+}]
+```

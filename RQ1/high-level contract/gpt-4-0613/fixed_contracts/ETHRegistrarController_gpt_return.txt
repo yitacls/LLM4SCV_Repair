@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "ETHRegistrarController",
+    "contract_version": "^0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "commit",
+            "fix_info": "It prevents manipulation of the order of transactions by introducing a time delay.",
+            "corrected_code": "function commit(bytes32 commitment) public { require(commitments[commitment] + MAX_COMMITMENT_AGE < now + 10 minutes); commitments[commitment] = now; }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "register",
+            "fix_info": "The function is fixed by checking the return values of the transfer function. Here, instead of using .transfer(), .call{value: _amount}() is used to send Eth, which does not throw an error. It returns 'false' if the transfer failed, which can then be checked with 'require'.",
+            "corrected_code": "function register(string calldata name, address owner, uint duration, bytes32 secret) external payable { bytes32 commitment = makeCommitment(name, secret); require(commitments[commitment] + MIN_COMMITMENT_AGE <= now); if(commitments[commitment] + MAX_COMMITMENT_AGE < now || !available(name)) { (bool success, ) = msg.sender.call{value: msg.value}(''); require(success, 'Transfer failed'); return; } delete(commitments[commitment]); uint cost = rentPrice(name, duration); require(duration >= MIN_REGISTRATION_DURATION); require(msg.value >= cost); bytes32 label = keccak256(bytes(name)); uint expires = base.register(uint256(label), owner, duration); emit NameRegistered(name, owner, cost, expires); if(msg.value > cost) { (bool success, ) = msg.sender.call{value: msg.value - cost}(''); require(success, 'Transfer failed'); } }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "renew",
+            "fix_info": "The function is fixed by checking the return values of the transfer function. Here, instead of using .transfer(), .call{value: _amount}() is used to send Eth, which does not throw an error. It returns 'false' if the transfer failed, which can then be checked with 'require'.",
+            "corrected_code": "function renew(string calldata name, uint duration) external payable { uint cost = rentPrice(name, duration); require(msg.value >= cost); bytes32 label = keccak256(bytes(name)); uint expires = base.renew(uint256(label), duration); if(msg.value > cost) { (bool success, ) = msg.sender.call{value: msg.value - cost}(''); require(success, 'Transfer failed'); } emit NameRenewed(name, cost, expires); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+Please note that introduced a time delay in the 'commit' function to prevent the transaction order manipulation; and in both 'register' and 'renew' functions, modified the 'transfer' function to 'call'. That can confirm the success of money transfer so as to eliminate the vulnerability of unchecked return value. Meanwhile, preserving their original functionality of the contract.

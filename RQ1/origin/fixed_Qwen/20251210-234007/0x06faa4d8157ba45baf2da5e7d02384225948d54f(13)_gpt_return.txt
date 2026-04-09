@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EasyInvest25",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using require() to check the return value of send() and added explicit function visibility declaration",
+            "corrected_code": "function() external payable {\n        if (invested[msg.sender] != 0){\n        address kashout = msg.sender;\n        uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;\n        require(kashout.send(getout));\n        }\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

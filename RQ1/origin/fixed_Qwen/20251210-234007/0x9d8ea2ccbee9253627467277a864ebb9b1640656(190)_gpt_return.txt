@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed access control vulnerability by adding check for tx.origin authorization when _source == 2. Also added check to ensure profit balance doesn't go negative.",
+            "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount)\n    onlyReserveFundContract\n    public {\n        require(_to != address(0x0), \"User address can not be empty\");\n        require(_deposited > 0, \"Package value must be > 0\");\n        uint totalDeposited = walletStore.getTotalDeposited(_to);\n        uint[] memory deposited = walletStore.getDeposited(_to);\n        uint profitableBalance = walletStore.getProfitableBalance(_to);\n        uint profitSourceBalance = walletStore.getProfitSourceBalance(_to);\n        uint profitBalance = getProfitBalance(_to);\n        bool firstDeposit = deposited.length == 0;\n        walletStore.pushDeposited(_to, _deposited);\n        uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n        uint profitSourceIncreaseAmount = _deposited * 10;\n        walletStore.setTotalDeposited(_to, totalDeposited.add(_deposited));\n        walletStore.setProfitableBalance(_to, profitableBalance.add(profitableIncreaseAmount));\n        walletStore.setProfitSourceBalance(_to, profitSourceBalance.add(profitSourceIncreaseAmount));\n        if (_source == 2) {\n            require(tx.origin == _to || getProfitBalance(tx.origin) >= _deposited, \"Insufficient profit balance\");\n            if (_to == tx.origin) {\n                require(profitBalance >= _deposited, \"Insufficient profit balance\");\n                walletStore.setProfitBalance(_to, profitBalance.sub(_deposited));\n            } else {\n                uint senderProfitBalance = getProfitBalance(tx.origin);\n                require(senderProfitBalance >= _deposited, \"Insufficient profit balance\");\n                walletStore.setProfitBalance(tx.origin, senderProfitBalance.sub(_deposited));\n            }\n            emit ProfitBalanceChanged(tx.origin, _to, int(_deposited) * - 1, 1);\n        }\n        citizen.addF1DepositedToInviter(_to, _deposited);\n        addRewardToInviter(_to, _deposited, _source, _sourceAmount);\n        if (firstDeposit) {\n            citizen.increaseInviterF1HaveJoinedPackage(_to);\n        }\n        if (profitableIncreaseAmount > 0) {\n            emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n            emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

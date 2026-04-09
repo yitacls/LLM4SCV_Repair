@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner());",
+    "description": "This line uses `tx.origin` to authenticate the caller of the function. The use of `tx.origin` is insecure because it can be manipulated in phishing attacks where a malicious contract tricks a user into performing an undesired action. Instead, `msg.sender` should be used for proper access control as it correctly represents the immediate caller of the function."
+}
+```

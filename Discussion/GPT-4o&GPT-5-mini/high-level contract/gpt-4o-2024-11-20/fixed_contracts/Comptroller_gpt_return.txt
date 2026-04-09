@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "Comptroller",
+        "contract_version": "0.8.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "liquidateBorrowAllowed",
+                "fix_info": "Added checks-effects-interactions pattern to prevent reentrancy attacks.",
+                "corrected_code": "function liquidateBorrowAllowed(\n    address cTokenBorrowed,\n    address cTokenCollateral,\n    address liquidator,\n    address borrower,\n    uint repayAmount\n) override external returns (uint) {\n    // Ensure reentrancy protection by following checks-effects-interactions pattern\n\n    // Check that both markets are listed\n    if (!markets[cTokenBorrowed].isListed || !markets[cTokenCollateral].isListed) {\n        return uint(Error.MARKET_NOT_LISTED);\n    }\n\n    // Fetch borrower's borrow balance to avoid multiple external calls\n    uint borrowBalance = CToken(cTokenBorrowed).borrowBalanceStored(borrower);\n\n    /* Allow liquidation if the market is deprecated */\n    if (isDeprecated(CToken(cTokenBorrowed))) {\n        require(borrowBalance >= repayAmount, \"Cannot repay more than borrow balance\");\n    } else {\n        /* Check borrower shortfall to ensure liquidation eligibility */\n        (Error err, , uint shortfall) = getAccountLiquidityInternal(borrower);\n        if (err != Error.NO_ERROR) {\n            return uint(err);\n        }\n        if (shortfall == 0) {\n            return uint(Error.INSUFFICIENT_SHORTFALL);\n        }\n\n        /* Ensure repayAmount does not exceed allowed close amount */\n        uint maxClose = mul_ScalarTruncate(Exp({mantissa: closeFactorMantissa}), borrowBalance);\n        if (repayAmount > maxClose) {\n            return uint(Error.TOO_MUCH_REPAY);\n        }\n    }\n\n    // Return success after all checks\n    return uint(Error.NO_ERROR);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "seizeAllowed",
+                "fix_info": "Added checks-effects-interactions pattern to prevent reentrancy attacks and ensured state changes occur before external calls.",
+                "corrected_code": "function seizeAllowed(\n    address cTokenCollateral,\n    address cTokenBorrowed,\n    address liquidator,\n    address borrower,\n    uint seizeTokens\n) override external returns (uint) {\n    // Ensure reentrancy protection through checks-effects-interactions pattern\n\n    // Check if seizing is paused\n    require(!seizeGuardianPaused, \"seize is paused\");\n\n    // Ensure both markets are listed\n    if (!markets[cTokenCollateral].isListed || !markets[cTokenBorrowed].isListed) {\n        return uint(Error.MARKET_NOT_LISTED);\n    }\n\n    // Verify comptroller equivalency\n    if (CToken(cTokenCollateral).comptroller() != CToken(cTokenBorrowed).comptroller()) {\n        return uint(Error.COMPTROLLER_MISMATCH);\n    }\n\n    // State change: Update COMP supply indexes before making external calls\n    updateCompSupplyIndex(cTokenCollateral);\n    distributeSupplierComp(cTokenCollateral, borrower);\n    distributeSupplierComp(cTokenCollateral, liquidator);\n\n    // Return success after all checks\n    return uint(Error.NO_ERROR);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferAllowed",
+                "fix_info": "Ensured reentrancy protection by using checks-effects-interactions pattern for COMP distribution.",
+                "corrected_code": "function transferAllowed(\n    address cToken,\n    address src,\n    address dst,\n    uint transferTokens\n) override external returns (uint) {\n    // Ensure transfers are not paused\n    require(!transferGuardianPaused, \"transfer is paused\");\n\n    // Check if the source account can redeem the tokens\n    uint allowed = redeemAllowedInternal(cToken, src, transferTokens);\n    if (allowed != uint(Error.NO_ERROR)) {\n        return allowed;\n    }\n\n    // Update COMP supply indexes for source and destination before external calls\n    updateCompSupplyIndex(cToken);\n    distributeSupplierComp(cToken, src);\n    distributeSupplierComp(cToken, dst);\n\n    // Return success\n    return uint(Error.NO_ERROR);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

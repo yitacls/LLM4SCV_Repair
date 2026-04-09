@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Delta",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "tokens_buy",
+            "fix_info": "Fixed unchecked low level calls by adding success check for transferFrom and using safeSend pattern for owner2 payment",
+            "corrected_code": "function tokens_buy() payable returns (bool) {\n        \n        require(active > 0);\n        require(msg.value >= token_price);\n\n        uint tokens_buy = msg.value*10**18/token_price;\n\n        require(tokens_buy > 0);\n\n        bool transferSuccess;\n        bytes memory data = abi.encodeWithSignature(\"transferFrom(address,address,uint256)\", owner, msg.sender, tokens_buy);\n        (transferSuccess,) = c.call(data);\n        require(transferSuccess);\n\n        uint sum2 = msg.value * 3 / 10;\n        require(owner2.send(sum2));\n\n        return true;\n      }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

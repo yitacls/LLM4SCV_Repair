@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "MMEToken",
+    "contract_version": "0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added address owner state variable to store contract owner",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access only to contract owner",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced tx.origin check with msg.sender owner check using onlyOwner modifier to fix access control vulnerability",
+            "corrected_code": "function mint(address to, uint256 value) public onlyOwner returns(bool) {\n    require(to != address(0));\n    _totalSupply += value;\n    balances[to] += value;\n    emit Transfer(address(0), to, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

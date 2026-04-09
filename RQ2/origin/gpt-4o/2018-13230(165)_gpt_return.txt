@@ -1,0 +1,12 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[this] += amount;",
+    "description": "The operation does not account for potential integer overflow. If the sum of balanceOf[this] and amount exceeds the maximum uint256 value, the addition will wrap around to a lower value, causing a misrepresentation of the balance."
+},
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[msg.sender] -= amount;",
+    "description": "The operation does not account for potential underflow. If amount is greater than balanceOf[msg.sender], the subtraction will wrap around to a very large value, allowing the user to exploit the contract by manipulating their balance."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "AMM",
+        "contract_version": "^0.5.2",
+        "functions": [
+            {
+                "function_name": "getAccumulatedFunding",
+                "fix_info": "Fixed the calculation of accumulated funding by properly handling edge cases and ensuring correct calculations.",
+                "corrected_code": "function getAccumulatedFunding(...) internal view returns (int256 vt, int256 acc) {...}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

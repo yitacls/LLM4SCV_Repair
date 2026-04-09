@@ -1,0 +1,71 @@
+Okay, let me analyze this step-by-step. 
+
+**1. Understanding the issue (SWC-101: Integer Overflow/Underflow):**
+The vulnerability is marked at lines 58-64. Looking at the `price()` function:
+```solidity
+uint priceUSD = rentPrices[len - 1].mul(duration);
+// ...
+return priceUSD.mul(1e18).div(ethPrice);
+```
+The vulnerabilities could be:
+1. `duration` could be extremely large, causing overflow in `rentPrices[len - 1].mul(duration)`
+2. `ethPrice` could be zero or very small, causing division by zero or underflow
+3. `len - 1` could underflow if `len == 0` (though `require(len > 0)` prevents this)
+4. Array access `rentPrices[len - 1]` could be out of bounds if `rentPrices` is empty
+
+**2. Additional issues:**
+- The contract uses SafeMath, but doesn't import it for all operations
+- There's no validation that Oracle returns a valid price > 0
+- No validation for maximum duration
+- No upper bound check on price calculations
+
+**3. Fixes needed:**
+1. Add validation for `rentPrices` array not being empty
+2. Add validation for Oracle price > 0
+3. Consider adding maximum duration limit to prevent overflow
+4. Ensure SafeMath protects all arithmetic operations
+
+Here's the corrected code:
+
+```json
+[
+    {
+        "contract_name": "StablePriceOracle",
+        "contract_version": "^0.5.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "price",
+                "fix_info": "Fixed integer overflow/underflow vulnerabilities by adding bounds checking, validating oracle price, and ensuring SafeMath protects all calculations",
+                "corrected_code": "    function price(string calldata name, uint /*expires*/, uint duration) view external returns(uint) {\n        uint len = name.strlen();\n        require(len > 0, \"Name length must be greater than 0\");\n        require(rentPrices.length > 0, \"Rent prices not set\");\n        require(duration <= 31536000 * 10, \"Duration too long\"); // Max 10 years to prevent overflow\n        \n        if(len > rentPrices.length) {\n            len = rentPrices.length;\n        }\n        \n        // Get oracle price with validation\n        bytes32 oracleValue = usdOracle.read();\n        uint ethPrice = uint(oracleValue);\n        require(ethPrice > 0, \"Invalid oracle price\");\n        \n        // Calculate price using SafeMath\n        uint basePrice = rentPrices[len - 1]; // Safe due to length checks above\n        uint priceUSD = basePrice.mul(duration);\n        \n        // Convert USD price to ETH price with 18 decimal precision\n        // priceUSD and ethPrice both have 18 decimals, so multiply numerator by 1e18\n        return priceUSD.mul(1e18).div(ethPrice);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setPrices",
+                "fix_info": "Added validation to prevent empty price array",
+                "corrected_code": "    function setPrices(uint[] memory _rentPrices) public onlyOwner {\n        require(_rentPrices.length > 0, \"Price array cannot be empty\");\n        rentPrices = _rentPrices;\n        emit RentPriceChanged(_rentPrices);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+**Key changes made:**
+1. **Added validations in `price()` function**:
+   - Check that `rentPrices` array is not empty
+   - Added maximum duration limit (10 years) to prevent overflow
+   - Validate that oracle returns a price > 0
+   - Added descriptive error messages
+
+2. **Added validation in `setPrices()`**:
+   - Prevent setting empty price array which would cause underflow in `price()`
+
+3. **Maintained original functionality** while securing against:
+   - Integer overflow in `basePrice.mul(duration)`
+   - Division by zero when oracle returns 0
+   - Array underflow when accessing empty `rentPrices`
+   - Out of bounds array access
+
+The fixes use SafeMath (already imported) for all arithmetic operations and add defensive checks to handle edge cases.

@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "selfdestruct(_recipient);",
+            "description": "The function `destroyContract` calls `selfdestruct`, which transfers all contract balance to the specified address and destroys the contract. Although it is guarded by the `onlyOwner` modifier, if there is a vulnerability or flaw in the `onlyOwner` implementation (e.g., ownership can be transferred to an unintended user), this destructibility can be exploited by an unauthorized user to permanently destroy the contract and steal funds. Always ensure robust ownership control mechanisms are in place."
+        },
+        {
+            "type": "suicidal",
+            "location": "selfdestruct(_recipient);",
+            "description": "Using the `selfdestruct` function makes the contract 'suicidal' because it allows the contract to irreversibly destroy itself and transfer funds. If the `onlyOwner` modifier is bypassed or misused, any malicious actor could trigger the destroy action and potentially harm users relying on the contract. Evaluate whether self-destructibility is essential and implement safeguards to prevent unauthorized calls."
+        },
+        {
+            "type": "leaking",
+            "location": "selfdestruct(_recipient);",
+            "description": "The `selfdestruct` function used here can cause leaking vulnerabilities, where the funds held by the contract might be sent to an unintended or compromised recipient address if the `_recipient` parameter is incorrectly validated. Always validate `_recipient` to prevent accidental or malicious misdirection of funds during the destruction process."
+        }
+    ]
+}
+```

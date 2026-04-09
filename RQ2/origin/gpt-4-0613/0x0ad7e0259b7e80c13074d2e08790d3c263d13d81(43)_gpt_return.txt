@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call{ value: wad }(\"\");",
+    "description": "In this code snippet, a call is made to an external contract which could potentially be a malicious contract, and re-entry into the calling contract could occur before its state (balanceOf[msg.sender]) is securely updated. This can result in the caller being able to withdraw more funds than they should be able to, a vulnerability known as reentrancy attack."
+}
+```

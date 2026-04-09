@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Wallet",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Ensure there is a mapping to track user balances and prevent unauthorized access",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyNonZeroBalance",
+                "fix_info": "Added a modifier to ensure that only users with a balance greater than 0 can call certain functions",
+                "modifier_code": "modifier onlyNonZeroBalance() { require(balances[msg.sender] > 0, \"Insufficient balance\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "refund",
+                "fix_info": "Ensure validation is in place to check for zero balances and prevent reentrancy attacks by updating the balance before transferring funds",
+                "corrected_code": "function refund() public onlyNonZeroBalance { uint256 refundAmount = balances[msg.sender]; balances[msg.sender] = 0; msg.sender.transfer(refundAmount); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

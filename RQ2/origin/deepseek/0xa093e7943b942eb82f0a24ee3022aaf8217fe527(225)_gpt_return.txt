@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic/Send Failure Vulnerability",
+    "location": "msg.sender.send(address(this).balance)",
+    "description": "In Solidity 0.4.24, the send() function only forwards 2300 gas and returns a boolean indicating success/failure. If the send() call fails (e.g., recipient is a contract with a fallback function requiring more gas, or the contract runs out of gas), it returns false but does NOT revert the transaction. This line assumes send() always succeeds, potentially leaving funds stuck if the send fails, and does not handle the failure case. Additionally, it does not update the contract's state before the external call, making it vulnerable to reentrancy attacks despite the limited gas, though the primary arithmetic/control flow issue is the unhandled return value."
+}
+```

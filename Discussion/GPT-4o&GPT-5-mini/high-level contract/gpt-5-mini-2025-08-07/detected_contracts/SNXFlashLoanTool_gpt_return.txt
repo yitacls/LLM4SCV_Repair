@@ -1,0 +1,17 @@
+[
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "function executeOperation(...) in SNXFlashLoanTool:\n    sUSD.transfer(user, amounts[0]);",
+        "description": "The contract calls IERC20.transfer directly rather than using SafeERC20.safeTransfer. Some ERC-20 tokens do not return a boolean value on transfer or implement non-standard behavior; calling transfer directly can lead to silent failures (missing return value handling) or unexpected behavior. Use of the low-level transfer ABI is considered deprecated in favor of SafeERC20 wrappers which handle return-value-less tokens and revert on failure."
+    },
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "function executeOperation(...) in SNXFlashLoanTool:\n    sUSD.safeApprove(msg.sender, amountOwing);",
+        "description": "The contract uses the approve pattern to set an allowance directly for the loan repayment. The approve pattern is known to be vulnerable to the ERC-20 race-condition issue (changing non-zero allowance to another non-zero value). Even though SafeERC20 is used, it's recommended to follow safer allowance update patterns (e.g., set to 0 before setting a new allowance, or use increaseAllowance/decreaseAllowance where available) to avoid potential allowance race conditions when interacting with certain tokens or external contracts."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function swap(...) in SNXFlashLoanTool:\n    snx.safeApprove(exchange, amount);\n    // Security check ...\n    (bool success, ) = exchange.call(data);\n    require(success, \"SNXFlashLoanTool: Swap failed\");",
+        "description": "The contract approves the exchange to spend SNX and immediately performs a low-level external call to the exchange with untrusted calldata. This violates the checks-effects-interactions pattern: an external call is made while the contract still holds state (approved token allowance) that a malicious exchange could exploit by reentering the contract (or interacting with other token flows) to drain assets or manipulate state. There is no reentrancy guard or additional checks to prevent a malicious exchange from reentering and performing unauthorized actions. To mitigate, perform state changes before external calls, remove/unset approvals before calling untrusted contracts, or use a reentrancy guard and tightly restrict and validate allowed exchange targets and calldata."
+    }
+]

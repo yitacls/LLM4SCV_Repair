@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],v[i]);",
+    "description": "Low-level call to external contract does not check return value or handle potential failure. In Solidity 0.4.18, .call() returns a boolean indicating success, but this return value is ignored. This could allow failed token transfers to go unnoticed, potentially causing loss of funds or inconsistent state. The function should check the return value or use a higher-level transfer method with proper error handling."
+}
+```

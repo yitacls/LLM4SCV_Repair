@@ -1,0 +1,28 @@
+[{
+    "contract_name": "ReferralFeeReceiver",
+    "contract_version": "^0.6.0",
+    "state_variables": [
+        {
+            "variable_name": "_status",
+            "fix_info": "Added reentrancy guard status variable to prevent reentrancy when sending ETH (replaces unsafe use of tx.origin.transfer and protects mid-function external calls). Initialized to non-entered state.",
+            "variable_code": "uint8 private _status = 1; // 1 = _NOT_ENTERED, 2 = _ENTERED",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a nonReentrant modifier based on a simple status flag to prevent reentrancy during external/value transfers.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status == 1, \"Reentrant\");\n    _status = 2;\n    _;\n    _status = 1;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "trade",
+            "fix_info": "Replaced unsafe tx.origin.transfer with a safe call to msg.sender and applied nonReentrant modifier. This prevents unprotected Ether withdrawal to tx.origin and mitigates reentrancy risks when sending ETH mid-function.",
+            "corrected_code": "function trade(Mooniswap mooniswap, IERC20[] memory path) external validPath(path) nonReentrant {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;\n    EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];\n    require(firstUnprocessedEpoch.add(1) == token.currentEpoch, \"Prev epoch already finalized\");\n\n    IERC20[] memory tokens = mooniswap.getTokens();\n    uint256 availableBalance;\n    if (path[0] == tokens[0]) {\n        availableBalance = epochBalance.token0Balance;\n    } else if (path[0] == tokens[1]) {\n        availableBalance = epochBalance.token1Balance;\n    } else {\n        revert(\"Invalid first token\");\n    }\n\n    (uint256 amount, uint256 returnAmount) = _maxAmountForSwap(path, availableBalance);\n    if (returnAmount == 0) {\n        // get rid of dust\n        if (availableBalance > 0) {\n            require(availableBalance == amount, \"availableBalance is not dust\");\n            for (uint256 i = 0; i + 1 < path.length; i += 1) {\n                Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);\n                require(_validateSpread(_mooniswap), \"Spread is too high\");\n            }\n            if (path[0].isETH()) {\n                // Use msg.sender and a low-level call (safe for gas changes) protected by nonReentrant\n                (bool success, ) = msg.sender.call{value: availableBalance}(\"\");\n                require(success, \"ETH transfer failed\");\n            } else {\n                path[0].safeTransfer(address(mooniswap), availableBalance);\n            }\n        }\n    } else {\n        uint256 receivedAmount = _swap(path, amount, payable(address(this)));\n        epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);\n    }\n\n    if (path[0] == tokens[0]) {\n        epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);\n    } else {\n        epochBalance.token1Balance = epochBalance.token1Balance.sub(amount);\n    }\n\n    if (epochBalance.token0Balance == 0 && epochBalance.token1Balance == 0) {\n        token.firstUnprocessedEpoch = firstUnprocessedEpoch.add(1);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

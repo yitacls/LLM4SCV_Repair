@@ -1,0 +1,56 @@
+```json
+[
+    {
+        "contract_name": "ERC20Token",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed visibility to private and added setter function to prevent unauthorized access",
+                "variable_code": "address private _owner;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "balances",
+                "fix_info": "Made mapping internal to follow best practices",
+                "variable_code": "mapping(address => uint256) internal balances;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "tt",
+                "fix_info": "Renamed to more descriptive name, removed tx.origin usage",
+                "modifier_code": "modifier onlyValidAddress(address addr) {\n        require(addr != address(0), \"ERC20: transfer from/to zero address\");\n        _;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added onlyOwner modifier for access control",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == _owner, \"ERC20: caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "_transfer",
+                "fix_info": "Fixed access control vulnerability by removing tx.origin check, using onlyOwner modifier for admin functions, and preventing reentrancy",
+                "corrected_code": "function _transfer(address _from, address _to, uint256 _value) internal onlyValidAddress(_from) onlyValidAddress(_to) {\n    require(balances[_from] >= _value, \"ERC20: insufficient balance\");\n    \n    // Prevent reentrancy by updating state before external calls\n    balances[_from] -= _value;\n    balances[_to] += _value;\n    \n    emit Transfer(_from, _to, _value);\n    \n    // Removed privileged tx.origin check to prevent access control vulnerability\n    // The owner check is now handled through onlyOwner modifier on admin functions\n    \n    // If admin actions are needed, they should be separate functions with proper access control\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setOwner",
+                "fix_info": "Added explicit owner setter function with proper access control",
+                "corrected_code": "function setOwner(address newOwner) public onlyOwner {\n    require(newOwner != address(0), \"ERC20: new owner is zero address\");\n    emit OwnershipTransferred(_owner, newOwner);\n    _owner = newOwner;\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "owner",
+                "fix_info": "Added getter for owner address",
+                "corrected_code": "function owner() public view returns (address) {\n    return _owner;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

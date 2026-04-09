@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "LT",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow/underflow vulnerability by using SafeMath library for subtraction and addition operations",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(balances[msg.sender] >= _value);\n    require(_to != address(0));\n    \n    // Prevent overflow in addition\n    require(balances[_to] + _value >= balances[_to]);\n    \n    balances[msg.sender] = balances[msg.sender] - _value;\n    balances[_to] = balances[_to] + _value;\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for access control in the mint function, which is vulnerable to phishing attacks. Since tx.origin returns the original sender of the entire transaction chain (the externally owned account), a malicious contract could trick the owner into calling a function that subsequently calls this mint function. In such a scenario, tx.origin would still equal the owner's address, bypassing the intended access control. Best practice is to replace tx.origin with msg.sender for proper authentication, as msg.sender refers to the immediate caller of the current function call."
+}
+```

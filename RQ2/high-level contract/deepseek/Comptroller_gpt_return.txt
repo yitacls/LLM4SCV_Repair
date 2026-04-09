@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 465-501 in liquidateBorrowAllowed function",
+    "description": "The liquidateBorrowAllowed function lacks reentrancy protection and calls external contracts (CToken.borrowBalanceStored) before performing state updates. Although the function uses `borrowBalanceStored` which is a view function, the pattern of calling external contracts before state changes can be risky if future modifications add state-changing calls. Additionally, the contract uses the checks-effects-interactions pattern inconsistently across other functions, potentially exposing the system to reentrancy attacks when combined with other contract interactions."
+}
+```

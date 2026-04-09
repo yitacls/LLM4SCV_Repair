@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "revenue = amount * sellPrice;",
+    "description": "This multiplication operation is vulnerable to integer overflow. If the product of 'amount' and 'sellPrice' exceeds the maximum value that can be stored in a uint (2^256 - 1), it will wrap around, resulting in an incorrect 'revenue' value being sent to the seller. As this contract is using Solidity ^0.4.23, it does not have built-in SafeMath operations by default. Additionally, the function uses '.send()' which has a gas limit of 2300 and can fail silently, but the primary arithmetic vulnerability is the unchecked multiplication before the ether transfer."
+}
+```

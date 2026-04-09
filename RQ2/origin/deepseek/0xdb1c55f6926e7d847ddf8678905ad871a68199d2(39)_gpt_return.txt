@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data)",
+    "description": "The low-level call to an external address does not check the return value. This can lead to silent failures when the called contract reverts, causing loss of funds or unexpected state changes. Additionally, using the deprecated .call.value()() syntax is unsafe in Solidity 0.4.19. The contract should check the return bool and handle failures appropriately, and consider using transfer() or send() for simple Ether transfers unless arbitrary data calls are required."
+}
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "CRTRC",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Not modified - array already declared",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "safeAdd",
+            "fix_info": "Added safe math modifier to prevent overflow/underflow",
+            "modifier_code": "modifier safeAdd(uint256 a, uint256 b) {\n        require(a + b >= a, \"SafeMath: addition overflow\");\n        _;\n    }\n    \n    modifier safeSub(uint256 a, uint256 b) {\n        require(b <= a, \"SafeMath: subtraction overflow\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding safe math checks",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(balances[msg.sender] >= _value, \"Insufficient balance\");\n        require(_to != address(0), \"Invalid recipient address\");\n        require(_value > 0, \"Transfer value must be positive\");\n        \n        // Use safe math operations\n        balances[msg.sender] = balances[msg.sender] - _value;\n        balances[_to] += _value;\n        \n        // Additional overflow protection for recipient balance\n        require(balances[_to] >= _value, \"Balance overflow detected\");\n        \n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

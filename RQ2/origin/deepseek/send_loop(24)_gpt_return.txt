@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "require(refundAddresses[x].send(refunds[refundAddresses[x]]));",
+    "description": "The refundAll() function iterates through an array of refund addresses and uses require() with the send() method. This creates a Denial-of-Service vulnerability because: 1) If any single send() call fails (due to out-of-gas, receiver contract reverting, or other reasons), the entire refundAll() transaction will revert, preventing all other users from receiving their refunds. 2) The function processes an unbounded array, which could exceed gas limits. 3) Using send() with require() instead of transfer() or handling failures gracefully allows a single malicious or malfunctioning address to block all refunds indefinitely."
+}
+```

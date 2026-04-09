@@ -1,0 +1,23 @@
+```json
+[
+    {
+        "contract_name": "EncryptedToken",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Prevent arithmetic overflow by validating multiplication result.",
+                "corrected_code": "function () payable public {
+        uint amount = msg.value * buyPrice;               // calculates the amount
+        require(amount / buyPrice == msg.value); // Check for overflow
+        _transfer(owner, msg.sender, amount);
+        owner.transfer(msg.value);
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

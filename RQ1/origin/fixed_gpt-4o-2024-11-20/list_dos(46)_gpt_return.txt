@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Government",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "creditorAddresses",
+            "fix_info": "Changed storage layout to mapping to prevent potential storage operations DoS caused by dynamic arrays.",
+            "variable_code": "mapping(uint => address) public creditorAddresses; uint public totalCreditorCount;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "creditorAmounts",
+            "fix_info": "Changed storage layout to mapping to prevent potential storage operations DoS caused by dynamic arrays.",
+            "variable_code": "mapping(uint => uint) public creditorAmounts;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a modifier to prevent reentrancy attacks.",
+            "modifier_code": "modifier nonReentrant() { require(!locked, \"Reentrant call.\"); locked = true; _; locked = false; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "lendGovernmentMoney",
+            "fix_info": "Handled Denial-Of-Service vulnerabilities by using mappings instead of dynamic arrays and replaced 'send' with 'transfer'. Also, added a reentrancy guard mechanism and ensured usage of safe patterns for logic adjustments.",
+            "corrected_code": "function lendGovernmentMoney(address buddy) public payable nonReentrant returns (bool) {\n    uint amount = msg.value;\n\n    if (lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp) {\n        // Reset state and limit expensive state operations\n        uint profitToSend = profitFromCrash;\n        address lastCreditor = creditorAddresses[totalCreditorCount - 1];\n\n        delete profitFromCrash;\n        delete totalCreditorCount;\n        lastTimeOfNewCredit = block.timestamp;\n        round += 1;\n\n        // Safely transfer funds\n        if (amount > 0) {\n            msg.sender.transfer(amount);\n        }\n        lastCreditor.transfer(profitToSend);\n        corruptElite.transfer(address(this).balance);\n\n        return false;\n    }\n\n    if (amount >= 1 ether) {\n        lastTimeOfNewCredit = block.timestamp;\n\n        // Register creditor\n        creditorAddresses[totalCreditorCount] = msg.sender;\n        creditorAmounts[totalCreditorCount] = amount * 110 / 100;\n        totalCreditorCount++;\n\n        // Distribute money\n        corruptElite.transfer(amount * 5 / 100);\n\n        if (profitFromCrash < 10000 * 1 ether) {\n            profitFromCrash += amount * 5 / 100;\n        }\n\n        if (buddies[buddy] >= amount) {\n            buddy.transfer(amount * 5 / 100);\n        }\n\n        buddies[msg.sender] += amount * 110 / 100;\n\n        // Payout old creditors safely\n        while (\n            lastCreditorPayedOut < totalCreditorCount &&\n            creditorAmounts[lastCreditorPayedOut] <= address(this).balance - profitFromCrash\n        ) {\n            uint payout = creditorAmounts[lastCreditorPayedOut];\n            address creditor = creditorAddresses[lastCreditorPayedOut];\n\n            delete creditorAmounts[lastCreditorPayedOut];\n            delete creditorAddresses[lastCreditorPayedOut];\n            lastCreditorPayedOut++;\n\n            creditor.transfer(payout);\n            buddies[creditor] -= payout;\n        }\n\n        return true;\n    } else {\n        msg.sender.transfer(amount);\n        return false;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

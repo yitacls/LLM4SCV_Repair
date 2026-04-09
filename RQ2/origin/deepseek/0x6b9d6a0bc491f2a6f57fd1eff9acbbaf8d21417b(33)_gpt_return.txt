@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses `tx.origin` for authorization in the `clear()` function, which is vulnerable to phishing attacks. Malicious contracts can trick the owner into calling them, and when the owner's transaction originates the call chain, `tx.origin` will still be the owner's address, allowing unauthorized destruction of the contract. Additionally, the lack of modern access control modifiers (like `onlyOwner`) and reliance on legacy authorization patterns increases risk. The function also permanently destroys the contract via `selfdestruct(owner)`, which could be triggered unintentionally due to the flawed authorization check."
+}
+```

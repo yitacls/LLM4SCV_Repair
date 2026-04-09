@@ -1,0 +1,23 @@
+```json
+{
+    "contract_name": "StandardToken",
+    "solidity_version": "^0.4.17",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "selfdestruct(_to);",
+            "description": "The `destroycontract` function allows any caller to trigger the `selfdestruct` function and send the contract's balance to the specified `_to` address. This creates a critical vulnerability as there are no access control modifiers (e.g. `onlyOwner`) to restrict unauthorized access to this function. Any attacker can exploit this to destroy the contract and steal its funds."
+        },
+        {
+            "type": "SUICIDAL_VUL",
+            "location": "selfdestruct(_to);",
+            "description": "The use of `selfdestruct` in the `destroycontract` function introduces a critical vulnerability. If exploited, it allows the permanent deletion of the contract from the blockchain, making it impossible to reverse any malicious actions or recover from the deletion."
+        },
+        {
+            "type": "LEAKING_VUL",
+            "location": "selfdestruct(_to);",
+            "description": "The use of `selfdestruct` in this context results in the transfer of all Ether held by the contract to the specified `_to` address without ensuring the safety or legitimacy of the recipient. This could lead to the leakage of funds if the function is misused or exploited."
+        }
+    ]
+}
+```

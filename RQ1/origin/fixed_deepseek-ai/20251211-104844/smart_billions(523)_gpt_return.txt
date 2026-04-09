@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "betOf",
+        "fix_info": "Fixed BAD_RANDOMNESS vulnerability by replacing potentially manipulable blockhash with commit-reveal pattern using external oracle or verifiable random function (VRF). Added state tracking for revealed random values.",
+        "corrected_code": "function betOf(address _who) constant external returns (uint)  {\n    Bet memory player = bets[_who];\n    \n    if( (player.value==0) ||\n        (player.blockNum<=1) ||\n        (block.number<player.blockNum) ||\n        (block.number>=player.blockNum + (10 * hashesSize))){\n        return(0);\n    }\n    \n    // Check if random value has been revealed for this bet\n    if(randomRevealed[player.blockNum]) {\n        uint256 randomValue = revealedRandoms[player.blockNum];\n        return(betPrize(player, uint24(randomValue)));\n    }\n    \n    // If not revealed yet, return 0 or the original value\n    if(block.number >= player.blockNum + 256) {\n        // Blockhash unavailable after 256 blocks, return funds\n        return(uint(player.value));\n    }\n    \n    return(0);\n}\n\n// Helper function for oracle to reveal random value (only callable by oracle)\nfunction revealRandom(uint256 _blockNum, uint256 _randomValue) external {\n    require(msg.sender == oracleAddress, \"Only oracle can reveal\");\n    require(_blockNum < block.number, \"Cannot reveal for future blocks\");\n    require(block.number <= _blockNum + 256, \"Blockhash unavailable\");\n    require(!randomRevealed[_blockNum], \"Already revealed\");\n    \n    // Verify the random value matches the commitment\n    bytes32 storedCommitment = randomCommitments[_blockNum];\n    require(storedCommitment != bytes32(0), \"No commitment found\");\n    require(keccak256(abi.encodePacked(_randomValue, _blockNum)) == storedCommitment, \"Invalid reveal\");\n    \n    randomRevealed[_blockNum] = true;\n    revealedRandoms[_blockNum] = _randomValue;\n}\n\n// Oracle submits commitment ahead of time\nfunction commitRandom(bytes32 _commitment, uint256 _blockNum) external {\n    require(msg.sender == oracleAddress, \"Only oracle can commit\");\n    require(randomCommitments[_blockNum] == bytes32(0), \"Already committed\");\n    randomCommitments[_blockNum] = _commitment;\n}",
+        "change_type": "modified"
+    }]
+}]
+```

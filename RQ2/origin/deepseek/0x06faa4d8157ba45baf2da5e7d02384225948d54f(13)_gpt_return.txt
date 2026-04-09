@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "kashout.send(getout);",
+    "description": "The contract uses a low-level call 'send()' without checking the return value. In Solidity 0.4.24, 'send()' returns a boolean indicating success, but this return value is ignored. If the call fails (e.g., due to out-of-gas, call depth limit, or recipient revert), the transaction will continue execution without reverting. This means users may not receive their due payments while the contract state (atBlock[msg.sender]) is still updated, leading to loss of funds. Additionally, the call uses a fixed gas stipend of 2300 gas, which may be insufficient if the recipient is a contract requiring more gas for fallback execution."
+}
+```

@@ -1,0 +1,5 @@
+{
+    "type": "TIME_MANIPULATION",
+    "location": "var random = uint(sha3(block.timestamp)) % 2;",
+    "description": "The contract derives all randomness from block.timestamp (sha3(block.timestamp) % 2). Block timestamps can be influenced by miners (they may choose the timestamp within allowed drift relative to the parent block) and by a participant who times or re-submits transactions; because the outcome space is only two values, a miner or a colluding party can trivially force a desired result. Using sha3/keccak256 over a single low-entropy value (the timestamp) provides effectively no unpredictability. An attacker miner can include or exclude the transaction and set the block timestamp to make 'random' evaluate to the value that awards the pot, enabling theft of funds or systematic manipulation of winners. In Solidity 0.4.15 sha3 is an alias for keccak256, but that does not mitigate the low entropy and miner-controllability of block.timestamp. This makes the lottery insecure and easily exploitable."
+}

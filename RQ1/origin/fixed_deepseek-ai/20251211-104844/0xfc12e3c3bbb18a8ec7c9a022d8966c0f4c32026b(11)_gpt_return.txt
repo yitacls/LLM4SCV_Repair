@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Ninja",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "",
+                "fix_info": "No state variables needed for this fallback function fix",
+                "variable_code": "",
+                "change_type": "not_applicable"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "",
+                "fix_info": "No modifiers needed for this fallback function fix",
+                "modifier_code": "",
+                "change_type": "not_applicable"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed unchecked low-level call vulnerability by checking return value, using proper address declaration, and implementing gas limit",
+                "corrected_code": "function() external payable {\n    address hodl = address(0x4a8d3a662e0fd6a8bd39ed0f91e4c1b729c81a38);\n    address from = address(0x1447e5c3f09da83c8f3e3ec88f72d8e07ee69288);\n    bytes memory payload = abi.encodeWithSignature(\"withdrawFor(address,uint256)\", from, 2000000000000000);\n    (bool success, ) = hodl.call.gas(30000)(payload);\n    require(success, \"Low-level call failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

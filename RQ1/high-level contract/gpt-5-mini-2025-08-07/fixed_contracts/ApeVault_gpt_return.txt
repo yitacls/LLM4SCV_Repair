@@ -1,0 +1,34 @@
+[{
+    "contract_name": "ApeVaultWrapperImplementation",
+    "contract_version": "^0.8.2",
+    "state_variables": [
+        {
+            "variable_name": "hasAccess",
+            "fix_info": "Removed unused public mapping to eliminate 'code with no effects' (SWC-135). The mapping was never read or written and exposed unnecessary surface.",
+            "variable_code": "mapping(address => bool) public hasAccess;",
+            "change_type": "deleted"
+        },
+        {
+            "variable_name": "allowanceModule",
+            "fix_info": "Removed unused allowanceModule variable to eliminate 'code with no effects' (SWC-135).",
+            "variable_code": "ApeAllowanceModule public allowanceModule;",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Modifier kept as-is; used to restrict administrative functions. No change required.",
+            "modifier_code": "modifier onlyOwner() {\n        require(owner() == msg.sender, \"Ownable: caller is not the owner\");\n        _;\n    }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "apeWithdrawSimpleToken",
+            "fix_info": "Protected the simple token withdrawal so only the contract owner can withdraw non-yield-bearing tokens (fixes SWC-105). Added basic input validation and explicit recipient (owner()).",
+            "corrected_code": "function apeWithdrawSimpleToken(uint256 _amount) public onlyOwner {\n        require(_amount > 0, \"Amount must be > 0\");\n        uint256 bal = simpleToken.balanceOf(address(this));\n        require(bal >= _amount, \"Insufficient balance\");\n        simpleToken.safeTransfer(owner(), _amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

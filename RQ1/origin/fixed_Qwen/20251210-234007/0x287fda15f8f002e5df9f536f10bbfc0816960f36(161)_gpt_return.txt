@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EncryptedToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to owner-only functions",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier and improved error handling",
+            "corrected_code": "function () payable public onlyOwner {\n    require(owner.send(msg.value));\n    uint amount = msg.value * buyPrice;\n    _transfer(owner, msg.sender, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

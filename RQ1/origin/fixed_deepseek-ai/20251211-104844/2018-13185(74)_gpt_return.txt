@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "appcoins",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library and added zero address validation",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(target != address(0), \"Invalid address: zero address\");\n    require(mintedAmount > 0, \"Amount must be greater than zero\");\n    \n    // Using SafeMath to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    Transfer(0, owner, mintedAmount);\n    Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

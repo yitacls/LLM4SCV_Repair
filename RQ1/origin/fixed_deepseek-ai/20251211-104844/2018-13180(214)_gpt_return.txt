@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "IMMCoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Map of account balances, unmodified but referenced in vulnerability fix",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Total token supply, unmodified but referenced in vulnerability fix",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Modifier unchanged but used in vulnerable function",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using safe math pattern with require statements",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(balanceOf[target] + mintedAmount >= balanceOf[target], 'Balance overflow');\n    require(totalSupply + mintedAmount >= totalSupply, 'Total supply overflow');\n    \n    balanceOf[target] += mintedAmount;\n    totalSupply += mintedAmount;\n    \n    Transfer(0, this, mintedAmount);\n    Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

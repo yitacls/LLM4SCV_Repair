@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "extra[0].call.value(_share).gas(800000)();, extra[1].call.value(_share).gas(800000)();, extra[2].call.value(_share).gas(800000)();, extra[3].call.value(_share).gas(800000)();",
+        "description": "The contract uses low-level .call() methods to transfer Ether without checking the return value. In Solidity < 0.5.0, .call() returns false on failure rather than reverting. This means failed payments to the 'extra' addresses will silently fail without reverting the transaction, potentially leaving the contract in an inconsistent state where the owner has sent Ether but recipients didn't receive it. The contract should either: 1) Check the boolean return value of each call, 2) Use transfer() instead (which reverts on failure), or 3) Implement proper error handling for failed transfers."
+    }
+}
+```

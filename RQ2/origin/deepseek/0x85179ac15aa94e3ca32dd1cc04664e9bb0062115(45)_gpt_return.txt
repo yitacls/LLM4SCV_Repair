@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "The external call `msg.sender.call.value(_am)()` forwards execution control to the recipient's fallback function before updating the contract's internal state (`acc.balance-=_am;`). This allows a malicious contract to recursively call the `Collect` function, repeatedly executing the external call while the sender's balance is still unmodified, potentially draining funds from the contract. The vulnerability is exacerbated by using `call.value()` (which forwards all remaining gas by default) instead of a safer transfer method like `.transfer()` or `.send()`, and by the lack of a reentrancy guard such as checks-effects-interactions pattern."
+}
+```

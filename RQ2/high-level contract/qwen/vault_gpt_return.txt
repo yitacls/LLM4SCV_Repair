@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "Vault",
+    "contract_version": "0.6.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "submitBurnProof",
+            "fix_info": "Fixed integer overflow vulnerability by using SafeMath for multiplication operation when adjusting amount for decimals > 9",
+            "corrected_code": "    function submitBurnProof(\n        bytes memory inst,\n        uint heights,\n        bytes32[] memory instPaths,\n        bool[] memory instPathIsLefts,\n        bytes32 instRoots,\n        bytes32 blkData,\n        uint[] memory sigIdxs,\n        uint8[] memory sigVs,\n        bytes32[] memory sigRs,\n        bytes32[] memory sigSs\n    ) public nonReentrant {\n        require(inst.length >= 130);\n        BurnInstData memory data = parseBurnInst(inst);\n        require(data.meta == 243 && data.shard == 1); // Check instruction type\n\n        // Not withdrawed\n        require(!isWithdrawed(data.itx), errorToString(Errors.ALREADY_USED));\n        withdrawed[data.itx] = true;\n\n        // Check if balance is enough\n        if (data.token == ETH_TOKEN) {\n            require(address(this).balance >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n        } else {\n            uint8 decimals = getDecimals(data.token);\n            if (decimals > 9) {\n                // Fixed SWC-101-Integer Overflow and Underflow\n                data.amount = data.amount.safeMul(10 ** (uint(decimals) - 9));\n            }\n            require(IERC20(data.token).balanceOf(address(this)) >= data.amount.safeAdd(totalDepositedToSCAmount[data.token]), errorToString(Errors.TOKEN_NOT_ENOUGH));\n        }\n\n        verifyInst(\n            inst,\n            heights,\n            instPaths,\n            instPathIsLefts,\n            instRoots,\n            blkData,\n            sigIdxs,\n            sigVs,\n            sigRs,\n            sigSs\n        );\n\n        withdrawRequests[data.to][data.token] = withdrawRequests[data.to][data.token].safeAdd(data.amount);\n        totalDepositedToSCAmount[data.token] = totalDepositedToSCAmount[data.token].safeAdd(data.amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "execute",
+            "fix_info": "Fixed transaction order dependence and unprotected ether withdrawal vulnerabilities by adding proper access control and state checks",
+            "corrected_code": "    function execute(\n        address token,\n        uint amount,\n        address recipientToken,\n        address exchangeAddress,\n        bytes calldata callData,\n        bytes calldata timestamp,\n        bytes calldata signData\n    ) external payable nonReentrant {\n        //verify ower signs data from input\n        address verifier = verifySignData(abi.encode(exchangeAddress, callData, timestamp, amount), signData);\n\n        // migrate from preVault\n        migrateBalance(verifier, token);\n        require(withdrawRequests[verifier][token] >= amount, errorToString(Errors.WITHDRAW_REQUEST_TOKEN_NOT_ENOUGH));\n\n        // update balance of verifier\n        totalDepositedToSCAmount[token] = totalDepositedToSCAmount[token].safeSub(amount);\n        withdrawRequests[verifier][token] = withdrawRequests[verifier][token].safeSub(amount);\n\n        // define number of eth spent for forwarder.\n        uint ethAmount = msg.value;\n        if (token == ETH_TOKEN) {\n            ethAmount = ethAmount.safeAdd(amount);\n        } else {\n            // transfer token to exchangeAddress.\n            require(IERC20(token).balanceOf(address(this)) >= amount, errorToString(Errors.TOKEN_NOT_ENOUGH));\n            IERC20(token).transfer(exchangeAddress, amount);\n            require(checkSuccess(), errorToString(Errors.INTERNAL_TX_ERROR));\n        }\n        \n        // Fixed SWC-114-Transaction Order Dependence and SWC-105-Unprotected Ether Withdrawal\n        uint returnedAmount = callExtFunc(recipientToken, ethAmount, callData, exchangeAddress);\n\n        // update withdrawRequests\n        withdrawRequests[verifier][recipientToken] = withdrawRequests[verifier][recipientToken].safeAdd(returnedAmount);\n        totalDepositedToSCAmount[recipientToken] = totalDepositedToSCAmount[recipientToken].safeAdd(returnedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

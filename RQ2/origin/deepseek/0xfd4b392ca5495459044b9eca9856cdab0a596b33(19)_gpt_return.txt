@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){ acc.balance-=_am; ... }",
+    "description": "The contract uses the low-level 'call.value()' method without implementing checks-effects-interactions pattern. This allows a malicious contract to re-enter the Collect() function multiple times before 'acc.balance' is updated, potentially draining funds from the contract. The attacker's fallback function could recursively call Collect() while their recorded balance still shows the original amount. The vulnerability is exacerbated by the lack of reentrancy guard or gas limit on the external call in Solidity 0.4.25."
+}
+```

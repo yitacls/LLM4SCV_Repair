@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(this.balance);",
+    "description": "The low-level `send()` function returns a boolean value indicating success or failure. In Solidity versions prior to 0.8.x, this return value is not checked. If the `send()` call fails (e.g., if the recipient is a contract with a fallback function that rejects payments), the transaction will continue execution without reverting. This could create inconsistent state where the contract's balance has been marked as transferred but the funds remain locked in the contract. The `onlyOwner` modifier prevents arbitrary withdrawal, but the failure of the critical transfer is silently ignored."
+}
+```

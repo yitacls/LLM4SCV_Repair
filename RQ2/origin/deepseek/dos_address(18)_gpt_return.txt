@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "function emptyCreditors() public { if(creditorAddresses.length>1500) { creditorAddresses = new address[](0); win = true; } }",
+    "description": "This function contains a gas-based denial-of-service vulnerability. When the creditorAddresses array length exceeds 1500, the function resets it to an empty array. However, in Solidity 0.4.25, resetting a large array to a new empty array (`creditorAddresses = new address[](0)`) requires iterating through all existing elements to delete them, which consumes gas proportional to the array size. An attacker can repeatedly call this function while the array is large, causing it to consume excessive gas (potentially exceeding block gas limits) and making the contract unusable, effectively denying service to legitimate users."
+}
+```

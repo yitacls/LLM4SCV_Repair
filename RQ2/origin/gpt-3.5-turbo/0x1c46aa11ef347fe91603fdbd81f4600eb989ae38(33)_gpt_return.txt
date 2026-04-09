@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This code snippet is vulnerable to the access control issue. Using tx.origin for access control can lead to potential security vulnerabilities. It is generally considered safer to use msg.sender for access control checks in contracts. tx.origin represents the original sender of a transaction and can be manipulated in certain scenarios, posing a risk to the contract's security."
+}
+```

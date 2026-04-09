@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The send() function is a low-level call that returns a boolean value indicating success or failure, but this return value is not checked. In Solidity 0.4.23, if the send() call fails (e.g., recipient is a contract with a fallback function that consumes too much gas, or the recipient refuses the transfer), the function will continue execution without handling the failure. This can lead to silent failures where Ether transfers fail but the contract continues execution as if they succeeded. The return value of send() should be checked and handled appropriately, or consider using transfer() which automatically reverts on failure."
+}
+```

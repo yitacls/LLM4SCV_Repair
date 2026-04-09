@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "CollateralizationOracle",
+        "contract_version": "^0.8.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "pcvStats",
+                "fix_info": "Added SafeMath-style checks to prevent integer overflow/underflow vulnerabilities when performing arithmetic operations. Used built-in Solidity operators for overflow-safe arithmetic (e.g., `+`, `-`, and `*`) available in v0.8.0 and above.",
+                "corrected_code": "function pcvStats() public override view returns (\n    uint256 protocolControlledValue,\n    uint256 userCirculatingFei,\n    int256 protocolEquity,\n    bool validityStatus\n) {\n    uint256 _protocolControlledFei = 0;\n    validityStatus = !paused();\n\n    // For each token...\n    for (uint256 i = 0; i < tokensInPcv.length(); i++) {\n        address _token = tokensInPcv.at(i);\n        uint256 _totalTokenBalance = 0;\n\n        // For each deposit...\n        for (uint256 j = 0; j < tokenToDeposits[_token].length(); j++) {\n            address _deposit = tokenToDeposits[_token].at(j);\n\n            // Ignore deposits that are excluded by the Guardian\n            if (!excludedDeposits[_deposit]) {\n                // Read the deposit, and increment token balance/protocol FEI using overflow-safe arithmetic\n                (uint256 _depositBalance, uint256 _depositFei) = IPCVDepositBalances(_deposit).resistantBalanceAndFei();\n\n                _totalTokenBalance = _totalTokenBalance + _depositBalance;\n                _protocolControlledFei = _protocolControlledFei + _depositFei;\n            }\n        }\n\n        // If the protocol holds a non-zero balance of tokens, fetch the oracle price to\n        // increment PCV by _totalTokenBalance * oracle price USD.\n        if (_totalTokenBalance != 0) {\n            (Decimal.D256 memory _oraclePrice, bool _oracleValid) = IOracle(tokenToOracle[_token]).read();\n            if (!_oracleValid) {\n                validityStatus = false;\n            }\n            // Safely multiply and increment protocolControlledValue\n            protocolControlledValue = protocolControlledValue + _oraclePrice.mul(_totalTokenBalance).asUint256();\n        }\n    }\n\n    // Overflow-safe subtraction for calculating user circulating FEI\n    userCirculatingFei = fei().totalSupply() - _protocolControlledFei;\n\n    // Ensure protocol equity is safely calculated\n    protocolEquity = int256(protocolControlledValue) - int256(userCirculatingFei);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "read",
+                "fix_info": "Added overflow-safe arithmetic for collateralRatio calculation using Solidity 0.8.0 built-in checks.",
+                "corrected_code": "function read() public override view returns (Decimal.D256 memory collateralRatio, bool validityStatus) {\n    // Fetch PCV stats\n    (\n        uint256 _protocolControlledValue,\n        uint256 _userCirculatingFei,\n        , // We don't need protocol equity\n        bool _valid\n    ) = pcvStats();\n\n    // The protocol collateralization ratio is defined as the total USD\n    // value of assets held in the PCV, divided by the circulating FEI.\n    require(_userCirculatingFei > 0, \"CollateralizationOracle: Division by zero\"); // Prevent division by zero\n    collateralRatio = Decimal.ratio(_protocolControlledValue, _userCirculatingFei);\n    validityStatus = _valid;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

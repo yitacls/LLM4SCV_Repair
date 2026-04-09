@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "In the given smart contract, there is an unchecked send() call which can potentially fail due to the call stack depth limit or due to the execution running out of gas. If the send() call fails, no exception is thrown and execution continues. In this case, if failure is not handled the contract will proceed as if the operation was successful which could lead to serious problems such as funds being stuck in the contract. In the specific line of code highlighted, if the send() function fails to send the specified amount to the purchaser's address, the contract will proceed as if the funds were sent successfully, leading to inconsistencies in the contract balance and the amount actually received by the purchaser."
+}
+```

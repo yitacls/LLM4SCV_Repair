@@ -1,0 +1,16 @@
+```json
+{
+    "contract_name": "VaultManager",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "isValidCDP",
+            "fix_info": "Fixed the potential integer overflow issue in the calculation by adjusting the comparison logic.",
+            "corrected_code": "function isValidCDP(address collateral_, address debt_, uint256 cAmount_, uint256 dAmount_) public view override returns (bool) {\n        (uint256 collateralValueTimes100Point00000, uint256 debtValue) = _calculateValues(collateral_, debt_, cAmount_, dAmount_);\n\n        uint mcr = getMCR(collateral_);\n        uint cDecimals = IERC20Minimal(collateral_).decimals();\n\n        uint256 debtValueAdjusted = debtValue / (10 ** cDecimals);\n\n        // if the debt become obsolete\n        return debtValueAdjusted == 0 || collateralValueTimes100Point00000 >= debtValueAdjusted * mcr;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "STQDistribution",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly handle access control instead of using tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "batchSend",
+            "fix_info": "Replaced vulnerable tx.origin check with proper msg.sender check using onlyOwner modifier",
+            "corrected_code": "function batchSend (Token _token, uint160 _lotSize, uint256[] _transfers) public onlyOwner {\n    MintableToken token = MintableToken(mintableTokenAddress);\n    uint256 count = _transfers.length;\n    for (uint256 i = 0; i < count; i++) {\n      uint256 transfer = _transfers[i];\n      uint256 value = (transfer >> 160) * _lotSize;\n      address to = address(transfer & 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);\n      token.mint(to, value);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

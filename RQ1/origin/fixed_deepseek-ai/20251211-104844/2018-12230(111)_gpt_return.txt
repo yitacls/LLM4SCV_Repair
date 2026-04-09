@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "RemiCoin",
+    "contract_version": "0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "frozenAccount",
+            "fix_info": "No change needed for this mapping",
+            "variable_code": "mapping (address => bool) public frozenAccount;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balances",
+            "fix_info": "No change needed for this mapping",
+            "variable_code": "mapping (address => uint256) public balances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "allowed",
+            "fix_info": "No change needed for this nested mapping",
+            "variable_code": "mapping (address => mapping (address => uint256)) public allowed;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for arithmetic operations, corrected allowance check logic, and added explicit data types in function signature",
+            "corrected_code": "function transferFrom(address from, address to, uint256 value) public returns (bool success) {\n        // Check if sender's account is frozen\n        if (frozenAccount[msg.sender]) {\n            return false;\n        }\n        \n        // Check if 'from' has enough balance\n        if (balances[from] < value) {\n            return false;\n        }\n        \n        // Check if allowance is sufficient (fixed the logic - should be >=, not <)\n        if (allowed[from][msg.sender] < value) {\n            return false;\n        }\n        \n        // Check for overflow using SafeMath pattern\n        require(balances[to] + value >= balances[to]);\n        \n        // Perform transfers using safe arithmetic\n        balances[from] -= value;\n        allowed[from][msg.sender] -= value;\n        balances[to] += value;\n        \n        // Notify anyone listening that this transfer took place\n        Transfer(from, to, value);\n        \n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

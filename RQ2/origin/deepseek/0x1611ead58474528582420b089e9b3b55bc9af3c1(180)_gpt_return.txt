@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(target.call.value(value)());",
+        "description": "The function sendEthValue() allows any external caller to send an arbitrary amount of Ether (value) to any arbitrary address (target) without any access control checks. This represents a severe access control vulnerability because: 1) There is no ownership or role-based restriction on who can call this function. 2) The contract's Ether balance can be completely drained by repeatedly calling this function. 3) Funds can be redirected to malicious addresses. In Solidity 0.4.x, `.value()` is deprecated and should be replaced with proper access control modifiers and safe transfer patterns."
+    }
+}
+```

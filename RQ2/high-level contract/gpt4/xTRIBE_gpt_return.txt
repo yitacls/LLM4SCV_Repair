@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function emitVotingBalances(address[] calldata accounts) external",
+    "description": "This function allows to emit an event for 'DelegateVotesChanged', it contains a loop through the accounts array, but there seems to be no restrictions or protective measures at the start of the function making it vulnerable. Anyone can execute this function, causing depletion of gas or unintended behavior."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.call.value(1 wei)()",
+    "description": "This low-level call transfers 1 wei to the contract owner but does not check the return value of the call. In Solidity versions before 0.4.24, the call() function returns only a boolean success indicator. If this call fails (e.g., if the owner is a contract with a fallback function that reverts), the transaction will not revert and the contract will continue execution as if the transfer succeeded, potentially leading to inconsistent state. Additionally, using call.value() without specifying gas makes the contract susceptible to reentrancy attacks when interacting with untrusted contracts, although in this specific case the recipient is the owner."
+}
+```

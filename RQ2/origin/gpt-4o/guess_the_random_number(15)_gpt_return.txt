@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "answer = uint8(keccak256(block.blockhash(block.number - 1), now));",
+    "description": "The contract attempts to generate randomness using block.blockhash and current timestamp (now). However, these sources are predictable and can be manipulated to a degree by miners, making the randomness weak and exploitable. This allows attackers to predict the outcome, leading to security vulnerabilities in the contract."
+}
+```

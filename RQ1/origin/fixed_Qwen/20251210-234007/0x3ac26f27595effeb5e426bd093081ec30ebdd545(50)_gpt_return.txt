@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BirthdayPuzzle",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "solvePuzzle",
+            "fix_info": "Fixed unchecked low-level call by checking the return value of send() and handling failure cases",
+            "corrected_code": "function solvePuzzle(uint256 solution) public\n    {\n        if (solved) throw;\n        uint256 a = 50540984125924;\n        uint256 b = 50540984125915;\n        uint256 c = 1981;\n        uint256 d = 2017;\n        uint256 e;\n        e = powerWithModulus(1234567890, solution, 4 * a + c);\n        if (powerWithModulus(e, d, 4 * b + d) == 1234567890) {\n            Solved(msg.sender);\n            solved = true;\n            if (!msg.sender.send(balance)) {\n                throw;\n            }\n        } else {\n            UnsuccessfulAttempt(msg.sender);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

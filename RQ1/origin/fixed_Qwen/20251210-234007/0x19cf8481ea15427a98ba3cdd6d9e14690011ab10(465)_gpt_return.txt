@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "daoPOLSKAtokens",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "finalize",
+            "fix_info": "Fixed unchecked low level call by adding return value check and using safer transfer method",
+            "corrected_code": "function finalize() external {\n        if (block.number <= fundingEndBlock+8*oneweek) throw;\n        // Switch to Operational state. This is the only place this can happen.\n        funding = false;\t\n\t\trefundstate=!refundstate;\n        // Transfer ETH to theDAO Polska Token network Storage address.\n        if (msg.sender==owner) {\n        // <yes> <report> UNCHECKED_LL_CALLS - FIXED\n        require(owner.send(this.balance));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

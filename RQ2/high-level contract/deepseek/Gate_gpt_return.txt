@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "Line 175-190 in the multiFill function",
+    "description": "The contract contains a DoS vulnerability due to loop gas limit exhaustion in the multiFill function. When calling multiFill with a large array of order IDs, the execution may run out of gas before completing all iterations, causing the entire transaction to fail and revert. This vulnerability is exacerbated because each iteration performs multiple external calls (transfers) and state updates (deleting orders), consuming significant gas. An attacker could create many small orders to fill up the orders array, making it impossible for the admin to process them in batches without hitting gas limits, effectively denying service to legitimate order processing."
+}
+```

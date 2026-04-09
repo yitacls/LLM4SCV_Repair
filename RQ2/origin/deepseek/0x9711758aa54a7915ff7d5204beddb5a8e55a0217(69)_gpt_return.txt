@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.call.value(value)()",
+    "description": "The low-level call on line 'msg.sender.call.value(value)()' does not check its return value. In Solidity versions before 0.4.24, the .call() function returns a boolean success value that must be verified to ensure the Ether transfer succeeded. If the call fails (e.g., the recipient contract reverts), this function will ignore the failure, causing the contract's state (tokens[token][msg.sender] and totalDeposited[token] already decremented) to be out of sync with the actual Ether balance, permanently locking user funds."
+}
+```

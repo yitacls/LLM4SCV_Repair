@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "TokenBase",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "destruct",
+        "fix_info": "Removed selfdestruct functionality and replaced with proper ownership transfer pattern. This eliminates both suicidal and leaking vulnerabilities while maintaining contract control by owner.",
+        "corrected_code": "function transferOwnership(address newOwner) isOwner public {\n    require(newOwner != address(0), \"New owner cannot be zero address\");\n    owner = newOwner;\n}\n\nfunction renounceOwnership() isOwner public {\n    owner = address(0);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

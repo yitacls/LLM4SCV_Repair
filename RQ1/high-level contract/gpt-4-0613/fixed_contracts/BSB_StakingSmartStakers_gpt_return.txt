@@ -1,0 +1,28 @@
+【```json
+[{
+    "contract_name": "BSB_StakingSmartStakers",
+    "contract_version": ">=0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "holders",
+            "fix_info": "EnumerableSet library is used which exposes a potential DoS vulnerability due to unbounded loops in its functions.",
+            "variable_code": "EnumerableSet.AddressSet private holders;",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "end",
+            "fix_info": "Replaced the unbounded loop with a capped loop to prevent potential DoS attack.",
+            "corrected_code": "function end() public onlyOwner returns (bool){\n    require(!ended, 'Staking already ended');\n    uint256 amount = holders.length() > 256 ? 256 : holders.length();\n    address _aux;\n    for(uint i = 0; i < amount; i = i.add(1)){\n        ... \n    }\n ... \n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getRewardsLeft",
+            "fix_info": "Replaced the unbounded loop with a capped one to prevent potential DoS attack.",
+            "corrected_code": "function getRewardsLeft() public view returns (uint256){\n ... \n    if(!ended){\n        uint256 totalPending;\n        uint256 amount = holders.length() > 256 ? 256 : holders.length();\n        for(uint256 i = 0; i < amount; i = i.add(1)){\n            ... \n        }\n    }\n ... \n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

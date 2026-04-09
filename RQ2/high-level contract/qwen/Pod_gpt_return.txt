@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "Pod",
+        "contract_version": ">=0.7.0 <0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "depositTo",
+                "fix_info": "Fixed SWC-107-Reentrancy by moving the token transfer before share minting and SWC-104-Unchecked Call Return Value by checking the return value of transferFrom",
+                "corrected_code": "    function depositTo(address to, uint256 tokenAmount)\n        external\n        override\n        returns (uint256)\n    {\n        require(tokenAmount > 0, \"Pod:invalid-amount\");\n\n        // Transfer Token Transfer Message Sender\n        // Fix SWC-104: Check return value of transferFrom\n        bool transferSuccess = IERC20Upgradeable(token).transferFrom(\n            msg.sender,\n            address(this),\n            tokenAmount\n        );\n        require(transferSuccess, \"Pod: token transfer failed\");\n\n        // Allocate Shares from Deposit To Amount\n        // Fix SWC-107: Moved after token transfer to prevent reentrancy\n        uint256 shares = _deposit(to, tokenAmount);\n\n        // Emit Deposited\n        emit Deposited(to, tokenAmount, shares);\n\n        // Return Shares Minted\n        return shares;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_burnShares",
+                "fix_info": "Fixed SWC-107-Reentrancy by moving the token transfer after all state changes and external calls",
+                "corrected_code": "    function _burnShares(uint256 shares) internal returns (uint256) {\n        // Calculate Percentage Returned from Burned Shares\n        uint256 amount = (balance().mul(shares)).div(totalSupply());\n\n        // Burn Shares\n        _burn(msg.sender, shares);\n\n        // Check balance\n        IERC20Upgradeable _token = IERC20Upgradeable(token);\n        uint256 currentBalance = _token.balanceOf(address(this));\n\n        uint256 exitFeePaid = 0;\n        // Withdrawl Exceeds Current Token Balance\n        if (amount > currentBalance) {\n            // Calculate Withdrawl Amount\n            uint256 _withdraw = amount.sub(currentBalance);\n\n            // Withdraw from Prize Pool\n            exitFeePaid = _withdrawFromPool(_withdraw);\n\n            // Add Exit Fee to Withdrawl Amount\n            amount = amount.sub(exitFeePaid);\n        }\n\n        // Transfer Deposit Token to Message Sender\n        // Fix SWC-107: Moved after all state changes and external calls\n        bool transferSuccess = _token.transfer(msg.sender, amount);\n        require(transferSuccess, \"Pod: token transfer failed\");\n\n        // Return Token Withdrawl Amount\n        return amount;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

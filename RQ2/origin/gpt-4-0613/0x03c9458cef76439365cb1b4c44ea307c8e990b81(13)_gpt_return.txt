@@ -1,0 +1,11 @@
+```json
+{
+    "contract": "Wallet",
+    "version": "^0.4.25",
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "This code is checking if the origin of the transaction is the owner of the contract. However, unlike msg.sender, tx.origin refers to the original external account that started the transaction. This can pose a serious security threat where a malicious contract acting as a middleman can pass through this check if originally initiated by the owner of the contract."
+    }
+}
+```

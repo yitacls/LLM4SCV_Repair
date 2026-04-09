@@ -1,0 +1,9 @@
+Below is the vulnerability in JSON format:
+
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "owner.transfer(address(this).balance);",
+    "description": "The contract function 'reclaimBNB' sends all the contract's Ether balance to the address of its owner. This might make the contract's Ether balance available to attackers if, for instance, the ownership of the contract is not carefully managed and falls into malicious hands."
+}
+```

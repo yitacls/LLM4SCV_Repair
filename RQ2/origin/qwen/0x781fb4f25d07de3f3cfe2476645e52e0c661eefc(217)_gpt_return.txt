@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(etherBalance);",
+    "description": "The withdraw() function uses owner.transfer() which is vulnerable in Solidity ^0.4.22. The transfer() function only forwards 2300 gas stipend and can fail silently if the owner address is a contract with a non-trivial fallback function. Additionally, there's no explicit check for successful transfer, making it susceptible to access control issues where the owner might not actually receive the funds. The function should use send() with proper error handling or call() with specified gas limits."
+}
+```

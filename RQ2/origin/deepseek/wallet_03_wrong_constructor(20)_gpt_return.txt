@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function initWallet() public",
+    "description": "The `initWallet` function lacks any access control modifiers, allowing any user to call it and set themselves as the `creator`. In Solidity 0.4.24, the absence of a constructor (or using `function <ContractName>` for constructor definition) means this function is likely intended to initialize critical contract state (like ownership). Without restrictions such as `onlyOwner`, `onlyCreator`, or ensuring it can only be called once, a malicious actor can call it after deployment to hijack ownership or administrative privileges."
+}
+```

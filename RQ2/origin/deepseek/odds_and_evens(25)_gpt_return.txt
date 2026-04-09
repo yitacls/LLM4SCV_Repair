@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "players[tot] = Player(msg.sender, number); tot++; if (tot==2) andTheWinnerIs();",
+    "description": "The contract's `play()` function has a race condition vulnerability. When the first player submits a transaction, a malicious second player can monitor the mempool, see the first player's `number` choice, and submit a transaction with a calculated winning `number` with a higher gas price to ensure their transaction is mined first. This allows the attacker to always become the second player with knowledge of the first player's move, guaranteeing they can win the game by front-running the original transaction."
+}
+```

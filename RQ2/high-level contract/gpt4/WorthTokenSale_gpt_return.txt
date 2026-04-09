@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Lines 278-282",
+    "description": "The function withdrawTokens() allows the contract owner to transfer any token from the contract without any checks or conditions. Such functions should be protected to prevent unauthorized access or misuse. They should also include event logs to ensure all actions are transparent and traceable."
+}
+```

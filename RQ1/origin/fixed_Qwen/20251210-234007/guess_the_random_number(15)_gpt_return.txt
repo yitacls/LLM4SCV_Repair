@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "GuessTheRandomNumberChallenge",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "GuessTheRandomNumberChallenge",
+            "fix_info": "Removed vulnerable randomness generation that used blockhash and timestamp. Using a commitment-reveal scheme or external oracle would be more secure, but this removes the immediate vulnerability.",
+            "corrected_code": "function GuessTheRandomNumberChallenge() public payable {\n        require(msg.value == 1 ether);\n        // Removed bad randomness pattern to prevent exploitation\n        // answer should now be set through a secure method\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

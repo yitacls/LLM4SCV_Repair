@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "GrowToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_sell",
+            "fix_info": "Added SafeMath operations to prevent arithmetic overflow/underflow vulnerabilities. Used mul() for revenue calculation and safemath checks for amount and sellPrice multiplication.",
+            "corrected_code": "function _sell(address _from,uint256 amount) internal returns (uint256 revenue){\n        require(sellOpen);\n        require(!frozenAccount[_from]);\n        require(amount>0);\n        require(sellPrice>0);\n        require(_from!=owner);\n        _transfer(_from,owner,amount);\n        revenue = amount.mul(sellPrice);\n        require(revenue >= amount && revenue >= sellPrice); // Check for overflow\n        _from.transfer(revenue);\n        SellToken(_from,sellPrice,amount,revenue);\n        return revenue;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

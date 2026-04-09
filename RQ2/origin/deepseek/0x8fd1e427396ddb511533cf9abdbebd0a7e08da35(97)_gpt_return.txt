@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "The return value of the low-level call is not checked. If the call to '_addr' fails (e.g., due to insufficient gas, revert in fallback function, or address being a contract without payable fallback), the transaction will not revert, and the state change 'Holders[_addr]-=_wei;' will still be executed, leading to an inconsistent state where the holder's balance is deducted but they never received the funds. This vulnerability can be exploited by malicious contracts that intentionally fail in their fallback function. In Solidity 0.4.18, use require(_addr.call.value(_wei)()) to check the success of the call or implement proper error handling."
+}
+```

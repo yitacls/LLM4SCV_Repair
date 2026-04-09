@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Ethernity",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawFrom",
+            "fix_info": "Fixed unchecked low-level call vulnerability by explicitly checking the return value of send() and reverting on failure",
+            "corrected_code": "function withdrawFrom(address _addr) internal returns(bool) {\n    bool result = _addr.send(balanceToWithdraw());\n    require(result, \"Transfer failed\");\n    lastDate[_addr] = now;\n    return result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "VaultManager",
+        "contract_version": "0.8.12",
+        "functions": [
+            {
+                "function_name": "_accrue",
+                "fix_info": "Added error handling for unchecked return value",
+                "corrected_code": "function _accrue() internal returns (uint256 newInterestAccumulator) {\n        newInterestAccumulator = _calculateCurrentInterestAccumulator();\n        uint256 interestAccrued = (totalNormalizedDebt * (newInterestAccumulator - interestAccumulator)) /\n            BASE_INTEREST;\n        surplus += interestAccrued;\n        interestAccumulator = newInterestAccumulator;\n        lastInterestAccumulatorUpdated = block.timestamp;\n        emit InterestAccumulatorUpdated(newInterestAccumulator, block.timestamp);\n        return newInterestAccumulator;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

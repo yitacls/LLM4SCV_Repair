@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "ALEX",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow/underflow vulnerabilities",
+            "variable_code": "using SafeMath for uint256;\n    mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Protected with SafeMath operations to prevent overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added require statement to validate owner address",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath, added input validation, and corrected event emissions",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid target address\");\n        require(mintedAmount > 0, \"Mint amount must be positive\");\n        \n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        \n        emit Transfer(address(0), owner, mintedAmount);\n        emit Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

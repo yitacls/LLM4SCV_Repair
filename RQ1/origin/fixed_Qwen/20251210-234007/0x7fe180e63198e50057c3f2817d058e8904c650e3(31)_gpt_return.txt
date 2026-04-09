@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Conference",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "refundTicket",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and using require() for proper error handling",
+            "corrected_code": "function refundTicket(address recipient, uint amount) public {\n\t\tif (msg.sender != organizer) { return; }\n\t\tif (registrantsPaid[recipient] == amount) { \n\t\t\taddress myAddress = this;\n\t\t\tif (myAddress.balance >= amount) { \n\t\t\t\trequire(recipient.send(amount));\n\t\t\t\tRefund(recipient, amount);\n\t\t\t\tregistrantsPaid[recipient] = 0;\n\t\t\t\tnumRegistrants--;\n\t\t\t}\n\t\t}\n\t\treturn;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

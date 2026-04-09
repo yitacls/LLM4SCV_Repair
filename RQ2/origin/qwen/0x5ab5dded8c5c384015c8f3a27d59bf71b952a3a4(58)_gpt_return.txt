@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 partnerShare = (this.balance / 100) * share;\n        director.transfer(this.balance - partnerShare);",
+    "description": "The vulnerability occurs due to incorrect order of arithmetic operations. The calculation (this.balance / 100) * share performs integer division first, which truncates any decimal values, leading to precision loss. Additionally, the subsequent transfer of this.balance - partnerShare may result in incorrect fund distribution due to the miscalculated partnerShare value. In Solidity 0.4.18, this can lead to unexpected behavior in fund allocation between director and partner."
+}
+```

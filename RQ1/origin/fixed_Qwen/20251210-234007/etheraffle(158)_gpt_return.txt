@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "endRaffle",
+            "fix_info": "Removed bad randomness pattern by eliminating the block.number assignment which was being used for random number generation. The function maintains its original refund and reset functionality without the vulnerable random number generation.",
+            "corrected_code": "function endRaffle() public {\n        if (msg.sender == feeAddress) {\n            paused = true;\n\n            for (uint i = 0; i < totalTickets; i++) {\n                if (raffleId == contestants[i].raffleId) {\n                    TicketRefund(raffleId, contestants[i].addr, i);\n                    contestants[i].addr.transfer(pricePerTicket);\n                }\n            }\n\n            RaffleResult(raffleId, totalTickets, address(0), address(0), address(0), 0, 0);\n            raffleId++;\n            nextTicket = 0;\n            gaps.length = 0;\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

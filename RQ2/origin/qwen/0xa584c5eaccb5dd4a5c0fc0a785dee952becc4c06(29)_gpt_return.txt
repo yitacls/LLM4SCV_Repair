@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "owner.send(amount);",
+    "description": "The contract uses Solidity version ^0.4.25 where arithmetic operations are not checked for overflow/underflow by default. The amount variable could potentially overflow when calculating or handling large balances, leading to unexpected behavior in the withdrawal functionality. Additionally, the send() function has a gas stipend limitation which may cause the transaction to fail silently if the owner's fallback function requires more gas."
+}
+```

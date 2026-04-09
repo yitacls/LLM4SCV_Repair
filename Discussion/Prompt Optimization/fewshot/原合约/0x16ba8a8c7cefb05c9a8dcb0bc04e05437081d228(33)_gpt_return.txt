@@ -1,0 +1,20 @@
+```json
+[
+    {
+        "contract_name": "multifund",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "clear",
+                "fix_info": "Add onlyOwner modifier to restrict access to owner.",
+                "corrected_code": "function clear() public onlyOwner {
+    selfdestruct(owner);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

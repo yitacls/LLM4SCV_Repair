@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The use of a low-level .send() function with unchecked return value in the smart contract can lead to potential vulnerabilities. If the recipient contract does not implement a fallback function or if it has limited gas stipend, this operation may fail, leaving the contract in an inconsistent state. Consider using a safer approach like .transfer() or handle the potential failure of the external call."
+}
+```

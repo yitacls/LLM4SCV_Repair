@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "The statement `balanceOf[to] += value;` is vulnerable to an arithmetic overflow. In Solidity versions prior to 0.8.0, integer overflows and underflows are not checked by default, allowing the value to wrap around unexpectedly, which could lead to unintended behavior or exploits if the value added causes the total to exceed the maximum uint256 limit. This could be exploited if attackers manipulate the values to cause an overflow."
+}
+```

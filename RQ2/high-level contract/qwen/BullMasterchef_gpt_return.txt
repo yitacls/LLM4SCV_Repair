@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MasterChef",
+    "contract_version": "0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_massUpdatePools",
+            "fix_info": "Fixed DoS vulnerability by implementing a gas-efficient batch update mechanism with a maximum iteration limit to prevent block gas limit exceedance",
+            "corrected_code": "    /// @dev Update reward variables for all pools. Be careful of gas spending!\n    function _massUpdatePools() private {\n        uint256 length = poolInfo.length;\n        // Limit iterations to prevent gas exhaustion\n        uint256 maxIterations = 50;\n        if (length > maxIterations) {\n            length = maxIterations;\n        }\n        for (uint256 pid = 0; pid < length; ++pid) {\n            _updatePool(pid);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

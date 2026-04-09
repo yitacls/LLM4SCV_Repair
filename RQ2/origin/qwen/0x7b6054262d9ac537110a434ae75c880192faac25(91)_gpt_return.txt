@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "balances[_recipient] += _value;",
+    "description": "The addition operation on balances[_recipient] += _value is vulnerable to integer overflow. In Solidity version ^0.4.16, arithmetic operations are not protected against overflow/underflow by default. If the _value is large enough, it could cause the balance to exceed the maximum value of uint256, resulting in unexpected behavior and potential loss of tokens. The same vulnerability exists in totalSupply += _value; where totalSupply could also overflow."
+}
+```

@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "TravelZediToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Explicitly defined as mapping to prevent shadowing and improve clarity",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Explicitly defined with visibility to prevent shadowing",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Explicitly defined with visibility for clarity",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added require statement with proper error handling",
+            "modifier_code": "modifier onlyOwner {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath pattern, added input validation, and improved event emissions",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Minted amount must be greater than 0\");\n    \n    // Using SafeMath pattern to prevent overflow\n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Addition overflow detected\");\n    \n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Total supply overflow detected\");\n    \n    balanceOf[target] = newBalance;\n    totalSupply = newTotalSupply;\n    \n    // Emitting proper events (Transfer event from address(0) to owner doesn't make logical sense)\n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

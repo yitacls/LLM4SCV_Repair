@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (cbAddresses[tx.origin] != 0)",
+    "description": "The contract uses tx.origin for authorization, which can lead to serious security issues. It may be manipulated and is highly susceptible to attacks, as a malicious contract can force the victim to make a transaction, and this would inadvertently change the 'tx.origin' implementation of the contract."
+}
+```

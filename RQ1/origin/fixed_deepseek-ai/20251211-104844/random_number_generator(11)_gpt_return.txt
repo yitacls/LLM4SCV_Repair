@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "RandomNumberGenerator",
+        "contract_version": "0.8.17",
+        "state_variables": [
+            {
+                "variable_name": "salt",
+                "fix_info": "Changed from using block.timestamp (predictable) to using a more secure approach with block.prevrandao (EIP-4399) and other entropy sources. Salt is now incremented to prevent reuse of the same randomness.",
+                "variable_code": "uint256 private salt;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "generateRandomNumber",
+                "fix_info": "Replaced vulnerable random generation using block.timestamp with a more secure approach that combines multiple entropy sources: block.prevrandao, blockhash, block.coinbase, and a salt counter. The function is now payable to receive msg.value as additional entropy and includes reentrancy protection.",
+                "corrected_code": "function generateRandomNumber(uint256 max) external payable returns (uint256) {\n        require(max > 0, \"Max value must be greater than 0\");\n        \n        // Combine multiple entropy sources\n        uint256 entropy = uint256(keccak256(abi.encodePacked(\n            block.prevrandao,            // Post-merge randomness\n            blockhash(block.number - 1), // Previous block hash\n            block.coinbase,              // Miner/validator address\n            msg.sender,                  // Caller address\n            msg.value,                   // Transaction value\n            salt++,                      // Incrementing salt\n            block.timestamp              // Still included but not relied upon\n        )));\n        \n        // Return random number within range\n        return entropy % max;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

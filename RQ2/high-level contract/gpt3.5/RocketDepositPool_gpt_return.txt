@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Contract function assignDeposits()",
+    "description": "The for loop in the assignDeposits() function can potentially cause a Denial of Service (DoS) attack if the loop runs for a large number of iterations, exceeding the block gas limit. This can prevent other critical functions from being executed, leading to a block getting stuck."
+}
+```

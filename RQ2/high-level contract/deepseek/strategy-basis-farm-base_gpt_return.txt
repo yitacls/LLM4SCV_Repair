@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Lines 78-152 in the harvest() function",
+    "description": "The contract does not check the return values of multiple external calls, including IStakingRewards(pool).claimReward(poolId), UniswapRouterV2(univ2Router2).addLiquidity(), and IERC20.transfer() calls. In Solidity 0.6.7, these calls can fail silently if the called contracts revert, leading to unexpected state changes and potential loss of funds. Specifically: 1) claimReward() might fail without reverting the transaction, 2) addLiquidity() could fail due to slippage or liquidity issues, and 3) transfer() calls (which use the non-safe version on line 146) may fail without detection in Solidity <0.8.0. This violates the checks-effects-interactions pattern and may allow partially executed transactions to leave the contract in an inconsistent state."
+}
+```

@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IERC20(lp).safeApprove(pool, 0); IERC20(lp).safeApprove(pool, _lp);",
+        "description": "The return value of the `safeApprove` calls to the `pool` contract is not checked, which can result in potential bugs or failures being missed. If the operation fails or the token does not support safe approval, it might lead to unexpected behavior."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IStakingRewards(pool).deposit(poolId, _lp);",
+        "description": "The return value of the `deposit` call to the `pool` contract is not checked. This could result in a failed deposit going unnoticed and leaving funds unutilized."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IStakingRewards(pool).withdraw(poolId, _amount);",
+        "description": "The return value of the `withdraw` call to the `pool` contract is not checked, which may result in unexpected behavior if the call fails."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IStakingRewards(pool).claimReward(poolId);",
+        "description": "The return value of the `claimReward` call to the `pool` contract is not checked. If the rewards cannot be claimed successfully, it might result in a missed opportunity to harvest rewards."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(univ2Router2).addLiquidity(token1, token2, _token1, _token2, 0, 0, address(this), now + 60);",
+        "description": "The return value of the `addLiquidity` call to the `UniswapRouterV2` contract is not checked. If the operation fails, liquidity might not be added to the pool as intended."
+    }
+]
+```

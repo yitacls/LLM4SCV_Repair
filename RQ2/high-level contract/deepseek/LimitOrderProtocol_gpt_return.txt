@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 328-346 in fillOrderTo function",
+            "description": "The contract performs external calls (InteractiveMaker.notifyFillOrder) before updating state and completing the asset transfer. This creates a reentrancy vulnerability where the maker could call back into the contract before the remaining amount storage update and final asset transfer are completed, potentially allowing multiple fills of the same order."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 339-344 in fillOrderTo function",
+            "description": "The InteractiveMaker.notifyFillOrder call is made without gas limits, which could allow a malicious maker to execute expensive operations or infinite loops during the callback, potentially causing the transaction to exceed block gas limits and fail. This could be used to block order fills or create denial-of-service conditions."
+        }
+    ]
+}
+```

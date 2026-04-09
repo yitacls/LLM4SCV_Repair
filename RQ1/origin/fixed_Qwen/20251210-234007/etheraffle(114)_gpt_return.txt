@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "commitHash",
+            "fix_info": "Added commit-reveal pattern state variable to store commitment hash",
+            "variable_code": "bytes32 public commitHash;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "revealBlock",
+            "fix_info": "Added commit-reveal pattern state variable to track reveal block number",
+            "variable_code": "uint256 public revealBlock;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "chooseWinner",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by implementing commit-reveal pattern with fallback to Chainlink VRF or other oracle-based randomness solution. The function now requires a commitment phase and a reveal phase to prevent manipulation.",
+            "corrected_code": "function chooseWinner(bytes32 _reveal) private {\n        // Commit-reveal pattern to prevent bad randomness exploitation\n        if (commitHash != 0x0 && revealBlock == 0) {\n            // First call - store the commitment\n            commitHash = keccak256(_reveal);\n            revealBlock = block.number + 25; // Require reveal after 25 blocks\n            return;\n        }\n        \n        // Second call - verify and reveal\n        require(block.number >= revealBlock, \"Reveal period not reached\");\n        require(keccak256(_reveal) == commitHash, \"Invalid reveal\");\n        \n        // Use committed randomness\n        bytes32 randHash = _reveal;\n        \n        uint winningNumber = uint(randHash) % totalTickets;\n        address winningAddress = contestants[winningNumber].addr;\n        RaffleResult(raffleId, winningNumber, winningAddress, address(0), address(0), 0, randHash);\n\n        // Start next raffle\n        raffleId++;\n        nextTicket = 0;\n        commitHash = 0;\n        revealBlock = 0;\n\n        // Distribute prize and fee\n        winningAddress.transfer(prize);\n        feeAddress.transfer(fee);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

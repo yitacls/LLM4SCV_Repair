@@ -1,0 +1,5 @@
+{
+  "type": "Arithmetic",
+  "location": "balanceOf[target] += mintedAmount; // <IO_VUL>\ntotalSupply += mintedAmount;",
+  "description": "The function performs unchecked additions on uint256 values: balanceOf[target] += mintedAmount; and totalSupply += mintedAmount;. In Solidity ^0.4.16 integer arithmetic does not revert on overflow/underflow, so an addition that exceeds the uint256 maximum will wrap around modulo 2^256. Although mintToken is restricted by onlyOwner, a malicious or compromised owner can supply a crafted mintedAmount to trigger an overflow/underflow, causing balances or totalSupply to wrap to incorrect values (e.g., near-zero or extremely large numbers), breaking accounting and enabling token creation, theft, or loss. Recommended mitigation: use SafeMath.add (or equivalent) for all arithmetic, or add explicit checks such as require(balanceOf[target] + mintedAmount >= balanceOf[target]) and require(totalSupply + mintedAmount >= totalSupply). Alternatively, upgrade to Solidity >=0.8.0 where arithmetic is checked by default."
+}

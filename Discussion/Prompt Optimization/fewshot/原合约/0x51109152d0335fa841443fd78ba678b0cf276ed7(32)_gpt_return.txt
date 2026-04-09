@@ -1,0 +1,27 @@
+```json
+[
+    {
+        "contract_name": "Crowdsale",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "function () payable",
+                "fix_info": "Add checks for low-level calls and ensure proper handling of Ether transfers.",
+                "corrected_code": "function () payable {
+        require(!crowdsaleClosed);
+        uint amount = msg.value;
+        balanceOf[msg.sender] += amount;
+        amountRaised += amount;
+        tokenReward.transfer(msg.sender, amount / price);    
+        require(beneficiary.send(amountRaised), 'Transfer failed');  
+        amountRaised = 0;
+        FundTransfer(msg.sender, amount, true);
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,55 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [
+            {
+                "variable_name": "randomSeed",
+                "fix_info": "Added state variable to store randomness seed from commit-reveal scheme",
+                "variable_code": "uint256 private randomSeed;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "commitment",
+                "fix_info": "Added state variable to store user's hash commitment for commit-reveal scheme",
+                "variable_code": "bytes32 private commitment;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "commitBlockNumber",
+                "fix_info": "Added state variable to track the block number when commitment was made",
+                "variable_code": "uint32 private commitBlockNumber;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced vulnerable blockhash-based randomness with secure commit-reveal random seed, preserving original bitwise operations for randomness extraction",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) private view returns (uint) {\n        require(randomSeed != 0, \"Random seed not initialized\");\n        require(commitBlockNumber > 0 && block.number > commitBlockNumber, \"Commit-reveal not ready\");\n        \n        // Use the stored random seed instead of vulnerable block hashes\n        // The seed is combined with _delta and other parameters to generate unique values\n        uint256 baseSeed = uint256(keccak256(abi.encodePacked(randomSeed, _lastb, _delta, blockhash(commitBlockNumber))));\n        \n        // Generate 10 different 24-bit values from the secure seed using slicing\n        uint256 result = 0;\n        for (uint8 i = 0; i < 10; i++) {\n            uint24 value = uint24((baseSeed >> (i * 24)) & 0xFFFFFF);\n            result |= uint256(value) << (i * 24);\n        }\n        \n        // Include the delta component in the highest bits as in original\n        result |= (uint256(_delta) / hashesSize) << 240;\n        \n        return result;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "commitRandomness",
+                "fix_info": "Added new function for users to commit to random value (first phase of commit-reveal)",
+                "corrected_code": "function commitRandomness(bytes32 _hashCommitment) external {\n        require(commitment == 0, \"Commitment already made\");\n        commitment = _hashCommitment;\n        commitBlockNumber = uint32(block.number);\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "revealRandomness",
+                "fix_info": "Added new function for users to reveal random value (second phase of commit-reveal)",
+                "corrected_code": "function revealRandomness(uint256 _randomValue, bytes32 _salt) external {\n        require(commitment != 0, \"No commitment to reveal\");\n        require(block.number > commitBlockNumber, \"Minimum wait time not met\");\n        \n        // Verify the commitment matches the revealed value\n        require(keccak256(abi.encodePacked(_randomValue, _salt)) == commitment, \n                \"Invalid commitment verification\");\n        \n        // Store the random seed for future use\n        randomSeed = keccak256(abi.encodePacked(_randomValue, blockhash(commitBlockNumber)));\n        \n        // Reset commitment for next round\n        commitment = 0;\n        commitBlockNumber = 0;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "getRandomSeed",
+                "fix_info": "Added view function to check current random seed status",
+                "corrected_code": "function getRandomSeed() external view returns (uint256) {\n        return randomSeed;\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

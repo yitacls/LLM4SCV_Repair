@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "The contract is vulnerable to arithmetic overflow because it uses Solidity version ^0.4.16 which does not have built-in overflow protection. The addition operation on balanceOf[target] and totalSupply can overflow if mintedAmount is large enough, leading to unexpected behavior and potential token manipulation."
+}
+```

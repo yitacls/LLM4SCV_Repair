@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The smart contract uses 'tx.origin' for authorization control, which is a security vulnerability. 'tx.origin' always returns the address of the original sender, not the contract caller, and thus can lead to serious security risks in a contract chain. An attacker could trick a contract owner into calling the malicious contract, and then gain control of the target contract. To ensure secure coding, use 'msg.sender' instead of 'tx.origin', as it refers to the immediate sender of the message, not the origin."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "Endpoint",
+        "contract_version": "0.7.6",
+        "functions": [
+            {
+                "function_name": "newVersion",
+                "fix_info": "Ensure safe increment of latestVersion to prevent integer overflow.",
+                "corrected_code": "function newVersion(address _newLayerZeroLibraryAddress) external onlyOwner {\n        require(_newLayerZeroLibraryAddress != address(0x0), 'LayerZero: new version cannot be zero address');\n        require(latestVersion < 65535, 'LayerZero: can not add new messaging library');\n        latestVersion++;\n        libraryLookup[latestVersion] = ILayerZeroMessagingLibrary(_newLayerZeroLibraryAddress); \n        emit NewLibraryVersionAdded(latestVersion); \n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

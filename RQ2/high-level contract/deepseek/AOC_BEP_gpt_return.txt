@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner payable",
+            "description": "The withdrawBNBFromContract function does not validate the recipient address properly and uses .transfer() which can fail silently due to gas limitations. Additionally, the function is marked as payable but doesn't need to be, potentially confusing users who might send BNB mistakenly. The function should include proper access control (already has onlyOwner) but could benefit from additional safety checks like a reentrancy guard and using call() instead of transfer() with proper gas handling."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 362: function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner payable",
+            "description": "The withdrawBNBFromContract function is marked as 'payable' but there is no code that actually uses or processes the msg.value sent with the transaction. This could mislead users into thinking they need to send BNB with the transaction, when in fact the function withdraws BNB from the contract's balance. The 'payable' modifier should be removed since this function doesn't handle incoming BNB."
+        }
+    ]
+}
+```

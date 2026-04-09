@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This access control check uses 'tx.origin' for authorization instead of 'msg.sender'. This creates a phishing vulnerability where malicious contracts can exploit intermediate calls to bypass ownership checks. The 'owner' address can be tricked into calling a malicious contract, which then calls the ERC20Standard contract - making 'tx.origin' equal to the owner's address while 'msg.sender' is the malicious contract, allowing unauthorized minting. Additionally, the 'assert(amount >= 0)' is redundant since uint256 values cannot be negative in Solidity 0.4.x."
+}
+```

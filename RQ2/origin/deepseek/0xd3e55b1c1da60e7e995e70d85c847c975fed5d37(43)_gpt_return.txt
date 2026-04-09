@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Integer Overflow",
+    "location": "bounty += msg.value;",
+    "description": "In Solidity version ^0.4.11, integer arithmetic operations do not have built-in overflow/underflow protection. The statement 'bounty += msg.value;' can overflow if the sum of bounty and msg.value exceeds the maximum value of the uint type (2^256 - 1). An attacker, potentially even the developer, could intentionally cause an overflow to set bounty to a much smaller value, effectively stealing the contract's funds. This vulnerability should be mitigated by using SafeMath library or upgrading to Solidity 0.8.x or higher which has built-in overflow checks."
+}
+```

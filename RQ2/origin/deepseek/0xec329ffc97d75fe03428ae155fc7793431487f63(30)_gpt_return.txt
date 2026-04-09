@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "UNCHECKED_LL_CALLS",
+        "location": "_dst.call.value(_value)(_data);",
+        "description": "The low-level call's return value is not checked, which means failures during the external call execution (e.g., out of gas, reverts) will not be detected. This can result in silent failures where transactions appear to succeed despite the called contract reverting or failing. The recommended mitigation is to check the return value: require(_dst.call.value(_value)(_data), \"Call failed\");"
+    }
+}
+```

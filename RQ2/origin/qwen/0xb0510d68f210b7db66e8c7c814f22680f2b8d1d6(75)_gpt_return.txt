@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "extra[0].call.value(_share).gas(800000)();\nextra[1].call.value(_share).gas(800000)();\nextra[2].call.value(_share).gas(800000)();\nextra[3].call.value(_share).gas(800000)();",
+    "description": "The contract uses unchecked low-level call() functions to send Ether to external addresses. These calls do not check the return value, which means if the external calls fail (e.g., due to out of gas, contract execution reverted, or the recipient contract intentionally fails), the contract will not be aware of the failure and will continue execution as if the transfer was successful. This can lead to loss of funds as the contract assumes the transfers completed when they actually failed. In Solidity ^0.4.23, these low-level calls should be properly checked for success or failure."
+}
+```

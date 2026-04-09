@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "require(this.balance >= amount * sellPrice);",
+    "description": "In Solidity ^0.4.16, arithmetic operations are not protected against overflow/underflow by default. The multiplication 'amount * sellPrice' can overflow, leading to incorrect calculations. This could allow an attacker to bypass the balance check or cause unexpected behavior. The contract should use SafeMath library or manual overflow checks to prevent this vulnerability."
+}
+```

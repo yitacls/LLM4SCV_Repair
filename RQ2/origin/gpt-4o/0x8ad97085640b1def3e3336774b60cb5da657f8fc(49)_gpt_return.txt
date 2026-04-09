@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of `tx.origin` for access control is insecure because it is vulnerable to phishing attacks. An attacker can manipulate another user's transaction using a malicious smart contract, causing `tx.origin` to point to the user while the attacker benefits. This can lead to unauthorized minting of tokens. Instead, use `msg.sender` to verify the direct caller of the function."
+}
+```

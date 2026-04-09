@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);  // fault line",
+    "description": "The vulnerability arises from using tx.origin for access control, which can lead to potential security risks. The use of tx.origin for access control can be exploited by a malicious contract that mimics a legitimate user externally and calls the function to bypass access controls. It is recommended to use msg.sender for access control in order to ensure the security and integrity of the contract."
+}
+```

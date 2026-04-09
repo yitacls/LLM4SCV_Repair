@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "amount * sellPrice",
+            "description": "Integer overflow vulnerability in multiplication 'amount * sellPrice'. In Solidity <0.8.0, arithmetic operations wrap around on overflow/underflow without checks. If 'amount' and 'sellPrice' are sufficiently large, their product could exceed 2^256-1, causing the multiplication to wrap around and result in a much smaller (or zero) value than intended. This could allow attackers to receive significantly less ETH than they should for selling tokens, or potentially receive ETH without proper token deduction if the result wraps to zero."
+        }
+    ]
+}
+```

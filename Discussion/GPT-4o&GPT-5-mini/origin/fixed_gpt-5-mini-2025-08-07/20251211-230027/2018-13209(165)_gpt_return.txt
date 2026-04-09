@@ -1,0 +1,27 @@
+[{
+    "contract_name": "NectarCoin",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Context variable used by sell; ensure mapping uses uint256 and remains accessible. No semantic change to its purpose; included for completeness.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Ensure sellPrice is an unsigned integer (uint256) used to compute Ether to send. No semantic change; included for completeness.",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Added explicit arithmetic overflow/underflow checks when computing revenue and updating balances. Use address.transfer to send Ether (reverts on failure). Preserve original ordering of state updates before external call.",
+            "corrected_code": "function sell(uint256 amount) {\n    // ensure seller has enough tokens\n    if (balanceOf[msg.sender] < amount) throw;\n\n    // compute revenue safely and check for multiplication overflow\n    uint256 revenue = amount * sellPrice;\n    if (amount != 0 && revenue / amount != sellPrice) throw; // overflow detected\n\n    // ensure contract has enough Ether to cover the sale\n    if (this.balance < revenue) throw;\n\n    // update balances with overflow check for addition\n    uint256 newContractBalance = balanceOf[this] + amount;\n    if (newContractBalance < balanceOf[this]) throw; // overflow detected\n\n    balanceOf[this] = newContractBalance;\n\n    // subtraction already guarded by initial check (underflow cannot occur)\n    balanceOf[msg.sender] -= amount;\n\n    // transfer Ether to seller; transfer throws on failure and prevents reentrancy with limited gas\n    msg.sender.transfer(revenue);\n\n    // emit transfer event\n    Transfer(msg.sender, this, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

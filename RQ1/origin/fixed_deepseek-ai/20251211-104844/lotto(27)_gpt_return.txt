@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Lotto",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "payedOut",
+                "fix_info": "Added a boolean state variable to track payout status (assuming it wasn't declared in the partial code)",
+                "variable_code": "bool public payedOut;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdrawLeftOver",
+                "fix_info": "Replaced deprecated 'send' with 'transfer' which automatically reverts on failure, preventing loss of funds from silent failures",
+                "corrected_code": "function withdrawLeftOver() public {\n    require(payedOut, \"Payout not yet authorized\");\n    uint256 balance = address(this).balance;\n    require(balance > 0, \"No balance to withdraw\");\n    msg.sender.transfer(balance);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

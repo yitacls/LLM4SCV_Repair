@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Private_Bank",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes required. Confirmed balances are appropriately used for validations in this context.",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "CashOut",
+            "fix_info": "Resolved reentrancy vulnerability by following the Checks-Effects-Interactions pattern and using `transfer` instead of `call.value` for safer ETH transfers.",
+            "corrected_code": "function CashOut(uint _am) public payable {\n    require(_am <= balances[msg.sender], \"Insufficient balance\");\n\n    // Effects\n    balances[msg.sender] -= _am;\n\n    // Interactions\n    msg.sender.transfer(_am);\n\n    // Logging the transfer\n    TransferLog.AddMessage(msg.sender, _am, \"CashOut\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

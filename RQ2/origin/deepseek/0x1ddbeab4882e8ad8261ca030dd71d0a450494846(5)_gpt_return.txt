@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The send() function returns a boolean value indicating success or failure, but this return value is not checked. In Solidity versions prior to 0.5.0, send() forwards 2,300 gas to the recipient, which may be insufficient for complex fallback functions, potentially causing the transfer to fail silently. If wallet is a contract address and its fallback function requires more than 2,300 gas or reverts, the ether transfer will fail without the caller being notified, leaving funds trapped in the contract. This vulnerability should be fixed by checking the return value and either reverting on failure (using require(wallet.send(msg.value))) or implementing proper error handling logic."
+}
+```

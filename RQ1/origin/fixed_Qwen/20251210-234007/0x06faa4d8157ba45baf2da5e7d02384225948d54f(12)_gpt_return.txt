@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EasyInvest25",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and improved ether transfer security by using transfer() instead of send()",
+            "corrected_code": "function() external payable {\n        if (invested[msg.sender] != 0){\n            address kashout = msg.sender;\n            uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;\n            kashout.transfer(getout);  // Fixed: using transfer() instead of send() for better security\n        }\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

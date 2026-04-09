@@ -1,0 +1,54 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+1))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+2))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+3))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+4))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+5))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+6))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+7))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+8))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint(block.blockhash(_lastb+9))",
+        "description": "The use of block.blockhash() for generating randomness is insecure because it can be manipulated by miners and is predictable within a certain range of blocks. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, making it unreliable for secure random number generation."
+    }
+]
+```

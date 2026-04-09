@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "calcHashes function uses block.blockhash() for randomness generation",
+    "description": "The function calcHashes relies on historical block hashes (block.blockhash()) to generate pseudo-random values. This is vulnerable to miner manipulation as miners can influence block hash generation by including/excluding transactions or reordering them. Since the contract uses multiple consecutive block hashes (_lastb through _lastb+9), miners could potentially predict or influence the resulting hash value. The vulnerability is exacerbated by: 1) Using only 24 bits (0xFFFFFF mask) from each block hash, reducing entropy; 2) Combining predictable historical data; 3) The '_delta' parameter being derived from predictable external inputs. In Solidity 0.4.13, block.blockhash() returns 0 for any block older than 256 blocks, creating additional predictability windows."
+}
+```

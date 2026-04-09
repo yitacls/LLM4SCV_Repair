@@ -1,0 +1,26 @@
+[{
+    "contract_name": "BNum",
+    "contract_version": "0.5.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bmul",
+            "fix_info": "Added explicit pre-multiplication overflow check using uint(-1) to prevent wrapped multiplication before computing c0. Preserves original rounding behavior and returns 0 early for zero operands to avoid unnecessary operations.",
+            "corrected_code": "function bmul(uint a, uint b)\n    internal pure\n    returns (uint)\n{\n    // if either is zero return early (keeps behavior and avoids unnecessary work)\n    if (a == 0 || b == 0) {\n        return 0;\n    }\n\n    // prevent multiplication overflow: ensure a * b won't wrap\n    require(a <= uint(-1) / b, \"ERR_MUL_OVERFLOW\");\n\n    uint c0 = a * b;\n    // rounding\n    uint c1 = c0 + (BONE / 2);\n    require(c1 >= c0, \"ERR_MUL_OVERFLOW\");\n    uint c2 = c1 / BONE;\n    return c2;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "bdiv",
+            "fix_info": "Added explicit check to prevent overflow when computing a * BONE and return early for a == 0. Preserves original rounding behavior and division-by-zero check for 'b'.",
+            "corrected_code": "function bdiv(uint a, uint b)\n    internal pure\n    returns (uint)\n{\n    require(b != 0, \"ERR_DIV_ZERO\");\n\n    // if numerator is zero the result is zero\n    if (a == 0) {\n        return 0;\n    }\n\n    // prevent overflow when computing a * BONE\n    require(a <= uint(-1) / BONE, \"ERR_DIV_INTERNAL\");\n\n    uint c0 = a * BONE;\n    uint c1 = c0 + (b / 2);\n    require(c1 >= c0, \"ERR_DIV_INTERNAL\");\n    uint c2 = c1 / b;\n    return c2;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "bpowApprox",
+            "fix_info": "Added a check to prevent overflow when computing bigK = i * BONE inside the loop and refactored intermediate multiplications for clarity while preserving original algorithm and behavior.",
+            "corrected_code": "function bpowApprox(uint base, uint exp, uint precision)\n    internal pure\n    returns (uint)\n{\n    // term 0:\n    uint a     = exp;\n    (uint x, bool xneg)  = bsubSign(base, BONE);\n    uint term = BONE;\n    uint sum   = term;\n    bool negative = false;\n\n    // term(k) = numer / denom \n    //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)\n    // each iteration, multiply previous term by (a-(k-1)) * x / k\n    // continue until term is less than precision\n    for (uint i = 1; term >= precision; i++) {\n        // prevent overflow when computing bigK = i * BONE\n        require(i <= uint(-1) / BONE, \"ERR_BIGK_OVERFLOW\");\n        uint bigK = i * BONE;\n\n        (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));\n\n        // compute product = c * x in fixed-point safely via bmul\n        uint product = bmul(c, x);\n        // update term: term = term * product / bigK\n        term = bmul(term, product);\n        term = bdiv(term, bigK);\n\n        if (term == 0) break;\n\n        if (xneg) negative = !negative;\n        if (cneg) negative = !negative;\n        if (negative) {\n            sum = bsub(sum, term);\n        } else {\n            sum = badd(sum, term);\n        }\n    }\n\n    return sum;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

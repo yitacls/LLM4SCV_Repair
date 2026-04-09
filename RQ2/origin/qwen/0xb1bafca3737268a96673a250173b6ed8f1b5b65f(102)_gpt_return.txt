@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "The function uses msg.sender for access control but does not properly validate that the impl address is set to a legitimate controller address. In Solidity ^0.4.25, if impl is not properly initialized or can be manipulated, this could allow unauthorized access to the transferOrigin function. The contract relies on msg.sender being equal to impl for authorization, but there's no validation shown that impl is a trusted address or properly set during contract deployment."
+}
+```

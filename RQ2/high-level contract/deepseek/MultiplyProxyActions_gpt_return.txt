@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Line 172: gem.deposit{value: msg.value}();",
+        "description": "The call to gem.deposit() is a low-level call to WETH contract without checking if it succeeded. If the call fails (e.g., due to out of gas or revert in WETH), the contract will continue execution with unexpected state, potentially leading to loss of funds or incorrect accounting."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Line 119: wad = amt.mul(10**(18 - IJoin(gemJoin).dec()));",
+        "description": "This calculation is vulnerable to integer underflow if IJoin(gemJoin).dec() returns a value greater than 18. Since dec() typically returns values between 0-18 for ERC20 tokens, but if a malicious or misconfigured gemJoin returns a value > 18, the subtraction (18 - IJoin(gemJoin).dec()) will underflow, causing unexpected behavior in the convertTo18 function."
+    }
+]
+```

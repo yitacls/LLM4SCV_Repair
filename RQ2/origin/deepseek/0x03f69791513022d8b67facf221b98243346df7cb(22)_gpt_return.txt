@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "uint128(msg.value * multiplier/100) in queue.push() statement",
+    "description": "The multiplication 'msg.value * multiplier' can overflow before division by 100 occurs, causing unexpected truncation or wrap-around when casting to uint128. In Solidity 0.4.25, there is no built-in overflow protection (SafeMath is not used). If msg.value * multiplier exceeds 2^256 - 1, it will overflow and wrap around to a small value, which after division yields incorrect deposit amounts. Additionally, casting the potentially overflowed intermediate result to uint128 can lead to further data loss. This vulnerability can be exploited to manipulate deposit accounting."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 156-178 in _swapsCall_internal function",
+    "description": "The contract uses Solidity 0.5.17 which does not have built-in overflow/underflow protection. While there are SafeMath operations elsewhere in the code (as seen with .sub() and .add() methods), the _swapsCall_internal function performs arithmetic operations without SafeMath: 'sourceTokenAmountUsed = sourceTokenAmountUsed + tradingFee' (line 171) and 'destTokenAmountReceived = destTokenAmountReceived - tradingFee' (line 178). These operations are vulnerable to integer overflow/underflow when tradingFee is added to sourceTokenAmountUsed or subtracted from destTokenAmountReceived, potentially allowing malicious users to manipulate token amounts."
+}
+```

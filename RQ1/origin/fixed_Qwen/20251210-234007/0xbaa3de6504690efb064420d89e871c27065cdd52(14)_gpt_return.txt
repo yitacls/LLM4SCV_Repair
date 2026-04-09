@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Proxy",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "proxy",
+            "fix_info": "Added return value check for low-level call to prevent unchecked return values",
+            "corrected_code": "function proxy(address target, bytes data) public payable {\n        // Check return value to prevent unchecked low-level calls\n        require(target.call.value(msg.value)(data));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

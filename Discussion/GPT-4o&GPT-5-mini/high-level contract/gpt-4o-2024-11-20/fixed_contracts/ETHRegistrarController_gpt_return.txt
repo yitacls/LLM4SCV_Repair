@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "ETHRegistrarController",
+        "contract_version": "0.5.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "commit",
+                "fix_info": "Added stricter conditions to prevent transaction order dependence and ensure time checks are robust using 'now'. Also improved readability by making comparison logic more explicit.",
+                "corrected_code": "function commit(bytes32 commitment) public {\n    require(commitments[commitment] == 0 || now > commitments[commitment] + MAX_COMMITMENT_AGE, \"Commitment is still active\");\n    commitments[commitment] = now;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "register",
+                "fix_info": "Added checks for successful call to `msg.sender.transfer()` to mitigate unchecked return vulnerability. Refactored logic to ensure funds transfer does not fail silently.",
+                "corrected_code": "function register(string calldata name, address owner, uint duration, bytes32 secret) external payable {\n    bytes32 commitment = makeCommitment(name, secret);\n    require(commitments[commitment] + MIN_COMMITMENT_AGE <= now, \"Commitment too young\");\n    require(commitments[commitment] + MAX_COMMITMENT_AGE >= now, \"Commitment expired\");\n    require(available(name), \"Name is not available\");\n\n    delete commitments[commitment];\n\n    uint cost = rentPrice(name, duration);\n    require(duration >= MIN_REGISTRATION_DURATION, \"Registration duration too short\");\n    require(msg.value >= cost, \"Insufficient ETH sent\");\n\n    bytes32 label = keccak256(bytes(name));\n    uint expires = base.register(uint256(label), owner, duration);\n    emit NameRegistered(name, owner, cost, expires);\n\n    if (msg.value > cost) {\n        (bool refundSuccess, ) = msg.sender.call.value(msg.value - cost)(\"\");\n        require(refundSuccess, \"Refund failed\");\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "renew",
+                "fix_info": "Ensured that `msg.sender.transfer()` checks for success to address the unchecked call vulnerability.",
+                "corrected_code": "function renew(string calldata name, uint duration) external payable {\n    uint cost = rentPrice(name, duration);\n    require(msg.value >= cost, \"Insufficient ETH sent\");\n\n    bytes32 label = keccak256(bytes(name));\n    uint expires = base.renew(uint256(label), duration);\n\n    emit NameRenewed(name, cost, expires);\n\n    if (msg.value > cost) {\n        (bool refundSuccess, ) = msg.sender.call.value(msg.value - cost)(\"\");\n        require(refundSuccess, \"Refund failed\");\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; and totalSupply += mintedAmount;",
+    "description": "The mintToken function performs unchecked arithmetic operations when incrementing balanceOf[target] and totalSupply. In Solidity ^0.4.16, integer overflow/underflow vulnerabilities exist as there are no built-in overflow checks. An attacker with owner privileges could intentionally overflow balanceOf or totalSupply by minting an extremely large amount (e.g., type(uint256).max), causing the values to wrap around to zero or small numbers, disrupting token economics and potentially allowing unauthorized token creation or balance manipulation."
+}
+```

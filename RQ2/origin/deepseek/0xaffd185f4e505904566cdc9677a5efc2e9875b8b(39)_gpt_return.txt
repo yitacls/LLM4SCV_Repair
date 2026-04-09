@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountToSend);",
+    "description": "The 'send()' method in Solidity versions prior to 0.4.19 does not throw an exception on failure but returns a boolean. This return value is not checked, meaning the contract will continue execution even if the transfer fails (e.g., due to gas limits or a fallback function reverting). This could result in locked funds where 'currentBalance' is set to 0 but the beneficiary never receives the ether. The code should either check the return value and handle failures, use 'transfer()' (which automatically reverts on failure in more recent Solidity versions), or implement a withdrawal pattern."
+}
+```

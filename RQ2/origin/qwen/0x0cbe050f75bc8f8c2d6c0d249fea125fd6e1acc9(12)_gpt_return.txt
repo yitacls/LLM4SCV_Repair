@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "a.call();",
+    "description": "The low-level call() function is used without checking its return value. In Solidity 0.4.10, call() returns a boolean indicating success or failure, but this return value is ignored. This can lead to unexpected behavior if the call fails, as the contract will not handle the failure appropriately. The caller contract should check the return value and handle failures accordingly."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(amount)(\"\");",
+    "description": "The smart contract contains a potential reentrancy vulnerability where an external contract could be called before the internal state of the smart contract is finalized. In this case, value is transferred to msg.sender before the internal state 'pendingWithdrawals[msg.sender]' is set to 0. This would allow a malicious contract to continuously recall the 'withdraw()' function before the first call is finished, draining the contract of its funds."
+}
+```

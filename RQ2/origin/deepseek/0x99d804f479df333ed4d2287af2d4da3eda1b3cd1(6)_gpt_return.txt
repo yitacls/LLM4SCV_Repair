@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to[i].send(_val);",
+    "description": "The contract uses 'send()' without checking the return value. In Solidity versions prior to 0.4.17, 'send()' returns a boolean indicating success or failure, but failure does not revert the entire transaction. This can cause silent failures where some recipients may not receive their share of Ether, but the transaction continues execution. The remainder of Ether is then returned to the sender, creating an imbalance in the intended distribution."
+}
+```

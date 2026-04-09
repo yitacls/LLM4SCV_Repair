@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "if(balances[to] + value < balances[to]) return false;",
+    "description": "This overflow check uses integer addition in the condition itself, which will revert in Solidity ^0.4.2 due to built-in overflow protection in that version range. However, the more critical issue is that the overflow protection occurs in the conditional statement where the addition `balances[to] + value` could overflow BEFORE being compared. In Solidity 0.4.x, this would cause a silent overflow during the check, potentially allowing transactions that should be rejected. The proper approach is to use SafeMath library or perform the check differently to prevent the overflow in the condition evaluation itself."
+}
+```

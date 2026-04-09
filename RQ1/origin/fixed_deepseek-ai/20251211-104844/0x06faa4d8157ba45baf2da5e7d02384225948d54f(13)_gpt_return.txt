@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EasyInvest25",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed vulnerability by replacing unsafe low-level send() with proper SafeMath operations and using transfer() instead. Added require statement to check send operation success and prevent reentrancy. Added overflow protection for calculation.",
+            "corrected_code": "function() external payable {\n    if (invested[msg.sender] != 0) {\n        address kashout = msg.sender;\n        // Safe calculation with overflow protection\n        uint256 blockDiff = block.number - atBlock[msg.sender];\n        uint256 getout = invested[msg.sender] * 25 / 100 * blockDiff / 5900;\n        \n        // Reset state before external call to prevent reentrancy\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n        \n        // Use transfer instead of send with explicit check\n        require(kashout.send(getout), \"Transfer failed\");\n    } else {\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "CryptoRoses",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed from implicit public visibility to explicit internal/private visibility with appropriate access control",
+                "variable_code": "address private owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to check caller is contract owner using msg.sender instead of tx.origin",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "addAddWhitelist",
+                "fix_info": "Replaced tx.origin check with msg.sender and added onlyOwner modifier; fixed function name; updated Solidity version to 0.8.x with better security features",
+                "corrected_code": "function addToWhitelist(address s) public onlyOwner {\n    require(s != address(0), \"Invalid address\");\n    addrWhitelist[s] = true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

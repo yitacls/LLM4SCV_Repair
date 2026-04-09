@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.call(_value);",
+    "description": "The low-level 'call' method is used without checking its return value. In Solidity versions prior to 0.4.13 (and beyond, unless properly handled), the 'call' method returns a boolean indicating success (true) or failure (false). If this return value is not checked, failed transactions (e.g., due to insufficient gas, a revert in the recipient's fallback function, or the recipient being a non-contract address) will go unnoticed, potentially leaving the contract in an inconsistent state. Additionally, the code does not follow the checks-effects-interactions pattern, as state changes (like updating balances) are not performed before the external call, increasing reentrancy risk. The function also lacks proper access control (only checks owner) and does not deduct '_value' from any internal balance tracking before sending."
+}
+```

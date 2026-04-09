@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "return( ( uint(block.blockhash(_lastb  )) & 0xFFFFFF )\n            | ( ( uint(block.blockhash(_lastb+1)) & 0xFFFFFF ) << 24 )\n            | ( ( uint(block.blockhash(_lastb+2)) & 0xFFFFFF ) << 48 )\n            | ( ( uint(block.blockhash(_lastb+3)) & 0xFFFFFF ) << 72 )\n            | ( ( uint(block.blockhash(_lastb+4)) & 0xFFFFFF ) << 96 )\n            | ( ( uint(block.blockhash(_lastb+5)) & 0xFFFFFF ) << 120 )\n            | ( ( uint(block.blockhash(_lastb+6)) & 0xFFFFFF ) << 144 )\n            | ( ( uint(block.blockhash(_lastb+7)) & 0xFFFFFF ) << 168 )\n            | ( ( uint(block.blockhash(_lastb+8)) & 0xFFFFFF ) << 192 )\n            | ( ( uint(block.blockhash(_lastb+9)) & 0xFFFFFF ) << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));",
+    "description": "The function 'calcHashes' utilizes 'block.blockhash()' to generate pseudo-random numbers. However, block hashes can be influenced or predicted by miners, making this method insecure for generating randomness. In Solidity ^0.4.13, 'block.blockhash()' is deprecated and replaced by 'blockhash()', but the fundamental issue remains: miners can manipulate or predict these values, leading to exploitable randomness. This makes the contract vulnerable to attacks where malicious actors can influence the outcome of the randomness-dependent logic."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EasyInvest",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and using safer transfer method",
+            "corrected_code": "function () external payable {\n        if (invested[msg.sender] != 0) {\n            uint256 amount = invested[msg.sender] * 4 / 100 * (block.number - atBlock[msg.sender]) / 5900;\n            address sender = msg.sender;\n            require(sender.send(amount));\n        }\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

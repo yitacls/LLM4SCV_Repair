@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "BtsvcToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed from potentially unsafe uint type to handle arithmetic overflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "safeAdd",
+            "fix_info": "Added safe arithmetic function to prevent overflow/underflow",
+            "modifier_code": "function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a, \"Addition overflow\");\n        return c;\n    }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "safeSub",
+            "fix_info": "Added safe arithmetic function to prevent overflow/underflow",
+            "modifier_code": "function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a, \"Subtraction underflow\");\n        uint256 c = a - b;\n        return c;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using safe arithmetic functions and added zero address check",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n        require(to != address(0), \"Invalid recipient address\");\n        require(balanceOf[msg.sender] >= value, \"Insufficient balance\");\n        \n        balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], value);\n        balanceOf[to] = safeAdd(balanceOf[to], value);\n        \n        emit Transfer(msg.sender, to, value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

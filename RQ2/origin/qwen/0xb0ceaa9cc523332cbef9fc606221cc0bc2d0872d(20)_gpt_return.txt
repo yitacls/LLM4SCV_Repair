@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool isSuccess = whale.send(stake);",
+    "description": "The result of the send() call is stored in isSuccess variable but is never checked or used to handle failure cases. In Solidity 0.4.25, send() returns false if the transfer fails, but the contract does not verify this result before proceeding. This could lead to the contract continuing execution even when the Ether transfer to 'whale' fails, potentially causing loss of funds or incorrect contract state."
+}
+```

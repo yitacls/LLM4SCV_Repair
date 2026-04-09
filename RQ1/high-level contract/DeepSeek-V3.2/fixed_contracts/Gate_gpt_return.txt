@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Gate",
+    "contract_version": "0.5.11",
+    "state_variables": [
+        {
+            "variable_name": "orders",
+            "fix_info": "No changes needed",
+            "variable_code": "Order[] public orders;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAdmin",
+            "fix_info": "No changes needed",
+            "modifier_code": "modifier onlyAdmin() {\n        require(admin == msg.sender, \"You have no access\");\n        _;\n    }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "multiFill",
+            "fix_info": "Fixed SWC-113 DoS with Failed Call vulnerability by ensuring all state changes happen before external calls and using low-level transfer with proper error handling",
+            "corrected_code": "/// @dev Fills Orders by ids array.\n    function multiFill(uint256[] calldata _ids) external onlyAdmin() payable {\n        emit Funded(msg.value);\n        \n        // Store balances and addresses in memory arrays before making any transfers\n        address payable[] memory owners = new address payable[](_ids.length);\n        uint256[] memory tmvs = new uint256[](_ids.length);\n        uint256[] memory eths = new uint256[](_ids.length);\n        \n        // First pass: validate all orders and calculate required data\n        for (uint256 i = 0; i < _ids.length; i++) {\n            uint256 id = _ids[i];\n            require(orders[id].owner != address(0), \"Order doesn't exist\");\n            \n            uint256 tmv = orders[id].amount;\n            uint256 eth = tmv2eth(tmv);\n            require(address(this).balance >= eth, \"Not enough funds\");\n            \n            owners[i] = orders[id].owner;\n            tmvs[i] = tmv;\n            eths[i] = eth;\n            \n            // Mark order as filled by setting owner to address(0) immediately\n            delete orders[id];\n        }\n        \n        // Second pass: execute all transfers\n        for (uint256 i = 0; i < _ids.length; i++) {\n            // Transfer TMV to timviWallet\n            IToken(settings.tmvAddress()).transfer(timviWallet, tmvs[i]);\n            \n            // Transfer ETH using safe transfer pattern\n            (bool success, ) = owners[i].call.value(eths[i])(\"\");\n            require(success, \"ETH transfer failed\");\n            \n            emit OrderFilledPool(_ids[i], owners[i], tmvs[i], eths[i]);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

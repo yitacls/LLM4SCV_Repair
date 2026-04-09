@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "require(msg.sender.call.value(_weiToWithdraw)());\nbalances[msg.sender] -= _weiToWithdraw;\nlastWithdrawTime[msg.sender] = now;",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the contract's state. An attacker can create a malicious contract that calls back into the withdrawFunds function before the balance is decremented, allowing them to withdraw more funds than they should be able to. The balance update and lastWithdrawTime update should occur before the external call to prevent reentrant calls from exploiting the contract's state."
+}
+```

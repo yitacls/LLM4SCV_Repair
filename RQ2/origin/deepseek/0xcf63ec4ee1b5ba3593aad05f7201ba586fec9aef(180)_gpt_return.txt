@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "{ value: selectedCommission.bid }(\"\")",
+    "description": "The function rescindCommission performs an external call to selectedCommission.recipient before updating the commission status. This violates the checks-effects-interactions pattern and allows the recipient to re-enter the contract (e.g., through a fallback/receive function) while selectedCommission.status is still CommissionStatus.queued. An attacker could potentially call this function multiple times before the status update, leading to repeated fund transfers even though the contract state doesn't reflect the completed refund."
+}
+```

@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "frozenAccount[msg.sender] += _value;",
+    "description": "In Solidity version ^0.4.15, integer arithmetic operations do not automatically check for overflows or underflows. The line `frozenAccount[msg.sender] += _value;` can overflow if adding `_value` to the existing `frozenAccount[msg.sender]` balance exceeds the maximum value of `uint256` (2^256 - 1). This could result in the frozen balance wrapping around to a small number, potentially allowing unauthorized token access or causing logical inconsistencies in the contract's accounting. The same vulnerability exists in the subtraction operation `balanceOf[msg.sender] -= _value;`, which could underflow if `balanceOf[msg.sender]` is less than `_value`. The contract should use SafeMath library or implement explicit checks to prevent these arithmetic issues."
+}
+```】

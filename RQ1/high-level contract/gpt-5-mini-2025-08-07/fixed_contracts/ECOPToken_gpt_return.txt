@@ -1,0 +1,22 @@
+[
+    {
+        "contract_name": "ECOPToken",
+        "contract_version": ">=0.5.0 <0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "pwr",
+                "fix_info": "Replaced naive repeated multiplication loop with an exponentiation-by-squaring implementation that uses SafeMath.mul to avoid unchecked arithmetic and gas/execution issues for large exponents. Preserves original semantics: returns 0 if x == 0, returns 1 if y == 0, otherwise returns x**y with overflow-checked multiplications.",
+                "corrected_code": "function pwr(uint256 x, uint256 y)\ninternal\npure\nreturns(uint256) {\n    // Preserve original behavior for edge cases\n    if (x == 0) return 0;\n    if (y == 0) return 1;\n\n    uint256 result = 1;\n    uint256 base = x;\n    uint256 exp = y;\n\n    // Exponentiation by squaring: O(log y) multiplications instead of O(y).\n    while (exp > 0) {\n        if ((exp & 1) == 1) {\n            result = mul(result, base);\n        }\n        exp = exp >> 1;\n        if (exp > 0) {\n            base = mul(base, base);\n        }\n    }\n\n    return result;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferOwnership",
+                "fix_info": "Changed conditional assignment to an explicit require check to fail early and clearly when a zero address is provided, preventing accidental transfer to the zero address and following best-practice error handling in Solidity >=0.5.0.",
+                "corrected_code": "function transferOwnership(address newOwner) onlyOwner public {\n    require(newOwner != address(0), \"owned: new owner is the zero address\");\n    owner = newOwner;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

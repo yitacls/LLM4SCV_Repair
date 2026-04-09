@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(token.asmTransfer(tx.origin, amount));",
+    "description": "The function lacks proper access control modifiers, allowing any external caller to execute the transfer. Since tx.origin refers to the original external caller, any user can trigger this function to transfer tokens to their own address, potentially draining the contract's token balance. The function should include appropriate access control modifiers like 'onlyOwner' to restrict execution to authorized parties."
+}
+```

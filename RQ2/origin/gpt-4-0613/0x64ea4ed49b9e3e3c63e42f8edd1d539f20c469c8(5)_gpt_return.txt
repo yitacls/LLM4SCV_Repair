@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contract": "CYBRPurchaseAddress",
+    "location": "wallet.send(msg.value);",
+    "description": "In this contract, the low-level call 'send' is used without checking the result. This is potentially unsafe, as it could lead to loss of funds or other unexpected behavior. It's recommended to always check the result of 'send', 'call' and similar functions to properly handle any errors that may occur."
+}
+```

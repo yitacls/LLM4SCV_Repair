@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "require(balanceOf[_to] + _value > balanceOf[_to])",
+    "description": "This line of code contains an arithmetic underflow/overflow vulnerability, where balanceOf[_to] + _value could potentially exceed the maximum limit of a uint data type. This can lead to an erroneous state in the contract."
+}
+```

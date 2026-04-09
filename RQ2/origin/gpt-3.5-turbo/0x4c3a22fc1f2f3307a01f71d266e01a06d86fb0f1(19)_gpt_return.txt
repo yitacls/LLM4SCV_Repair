@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "amountRaised += amount;  // fault line",
+            "description": "The addition operation 'amountRaised += amount' can potentially cause an arithmetic overflow if the total value exceeds the maximum value that can be stored in the variable 'amountRaised'. This can lead to unexpected behavior and vulnerabilities in the contract."
+        }
+    ]
+}
+```

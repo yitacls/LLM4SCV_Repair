@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "Function 'admin' at line where selfdestruct is called",
+        "description": "The 'admin' function is callable by any external account (no access control modifiers), allowing anyone to trigger contract self-destruction. A malicious actor can permanently destroy the contract by calling this function, sending all contract funds to the hardcoded address 0x6b1FC9a08F1ED0e2d4f33D769510f0a0a345772c. This lacks proper authentication (e.g., owner-only restriction) and poses a centralization risk."
+    }
+}
+```

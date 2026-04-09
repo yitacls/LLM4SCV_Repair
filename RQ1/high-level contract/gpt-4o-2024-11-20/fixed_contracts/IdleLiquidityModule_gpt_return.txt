@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "IdleLiquidityModule",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_checkDistanceFromRange",
+                "fix_info": "Added checks to prevent integer underflow/overflow when computing distances.",
+                "corrected_code": "function _checkDistanceFromRange(uint256 tokenId) internal view returns (uint24) {\n    (\n        ,\n        ,\n        address token0,\n        address token1,\n        uint24 fee,\n        int24 tickLower,\n        int24 tickUpper,\n        ,\n        ,\n        ,\n        ,\n\n    ) = INonfungiblePositionManager(uniswapAddressHolder.nonfungiblePositionManagerAddress()).positions(tokenId);\n\n    IUniswapV3Pool pool = IUniswapV3Pool(\n        UniswapNFTHelper._getPool(uniswapAddressHolder.uniswapV3FactoryAddress(), token0, token1, fee)\n    );\n    (, int24 tick, , , , , ) = pool.slot0();\n\n    if (tick > tickUpper) {\n        require(tick - tickUpper >= 0, \"Overflow detected\");\n        return uint24(uint256(int256(tick - tickUpper)));\n    } else if (tick < tickLower) {\n        require(tickLower - tick >= 0, \"Underflow detected\");\n        return uint24(uint256(int256(tickLower - tick)));\n    } else {\n        return 0;\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_calcTick",
+                "fix_info": "Added checks to handle overflow/underflow when calculating tick values and ensured proper bounds.",
+                "corrected_code": "function _calcTick(uint256 tokenId, uint24 fee) internal view returns (int24, int24) {\n    (\n        ,\n        ,\n        ,\n        ,\n        ,\n        int24 tickLower,\n        int24 tickUpper,\n        ,\n        ,\n        ,\n        ,\n    ) = INonfungiblePositionManager(\n        uniswapAddressHolder.nonfungiblePositionManagerAddress()\n    ).positions(tokenId);\n\n    int24 tickDelta = tickUpper - tickLower;\n    require(tickDelta >= 0, \"Underflow detected in tickDelta calculation\");\n\n    IUniswapV3Pool pool = IUniswapV3Pool(\n        UniswapNFTHelper._getPoolFromTokenId(\n            tokenId,\n            INonfungiblePositionManager(uniswapAddressHolder.nonfungiblePositionManagerAddress()),\n            uniswapAddressHolder.uniswapV3FactoryAddress()\n        )\n    );\n\n    (, int24 tick, , , , , ) = pool.slot0();\n    int24 tickSpacing = int24(fee) / 50;\n    require(tickSpacing > 0, \"Tick spacing must be greater than zero\");\n\n    int24 adjustedLower = ((tick - tickDelta) / tickSpacing) * tickSpacing;\n    int24 adjustedUpper = ((tick + tickDelta) / tickSpacing) * tickSpacing;\n\n    require(adjustedLower < adjustedUpper, \"Invalid tick bounds\");\n\n    return (adjustedLower, adjustedUpper);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

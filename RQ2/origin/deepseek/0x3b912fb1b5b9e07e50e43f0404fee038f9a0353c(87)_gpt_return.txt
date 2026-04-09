@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. tx.origin returns the original sender of the transaction chain, so if the owner interacts with a malicious contract that calls CountryCoin.withdraw(), the malicious contract can bypass the authorization check and drain funds. This violates security best practices which recommend using msg.sender for access control as it identifies the immediate caller. Additionally, the contract uses transfer() with this.balance, which can be manipulated via self-destruct or coinbase transactions in older Solidity versions."
+}
+```

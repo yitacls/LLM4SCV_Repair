@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256('donate()')));",
+    "description": "This code snippet invokes a low-level call without checking the return value. In Solidity, a failed call throws an exception, but this does not occur for low-level calls such as call, send, and delegatecall. Instead, it returns a boolean indicating success or failure. Without checking this return value, the contract cannot handle call failures. This could let the function continue its execution even when the call fails which can result in unexpected behaviors."
+}
+```

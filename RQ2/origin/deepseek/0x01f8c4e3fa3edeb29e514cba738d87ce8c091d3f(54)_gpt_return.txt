@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "REENTRANCY",
+            "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; ... }",
+            "description": "This contract contains a classic reentrancy vulnerability. The external call to `msg.sender` via `call.value()` is executed before updating the sender's balance (`balances[msg.sender] -= _am`). If `msg.sender` is a malicious contract, its fallback function can recursively call the `Collect` function again before the balance is deducted, allowing the attacker to withdraw funds multiple times while their balance check (`balances[msg.sender] >= _am`) still passes. This can drain the contract's Ether. The issue is compounded by using Solidity 0.4.19, which lacks built-in reentrancy guards. Recommended fixes: (1) Use the Checks-Effects-Interactions pattern by updating state before external calls, (2) Implement a reentrancy guard, or (3) Use `transfer()` instead of `call.value()` (though it has gas limitations)."
+        }
+    ]
+}
+```

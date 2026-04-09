@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "mstore(0xB00, UNISWAP_PAIR_RESERVES_CALL_SELECTOR_32)\nif iszero(staticcall(gas(), pair, 0xB00, 0x4, 0xC00, 0x40)) {\n    bubbleRevert()\n}",
+        "description": "The contract makes a staticcall to an external Uniswap pair contract to get reserves. If the pair contract is malicious or compromised, it could potentially execute reentrant calls back into the current contract before the state is properly updated, leading to unexpected behavior or loss of funds during the swap process."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "if iszero(call(gas(), pair, 0, 0xB00, 0xA4, 0, 0)) {\n    bubbleRevert()\n}",
+        "description": "The contract performs a call to the Uniswap pair's swap function. This external call can potentially lead to reentrancy if the pair contract is malicious and makes a callback to the current contract before the state variables are updated, possibly allowing multiple withdrawals or other unintended side effects."
+    }
+]
+```

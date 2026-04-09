@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract is using 'tx.origin' for authentication, which is a potential security risk. 'tx.origin' will always be the address that originated the transaction and is not affected by contract calls. So, if another contract that's trusted by the user calls into your contract, then 'tx.origin' will be the user's address, not the trusted contract's address. Therefore, using 'tx.origin' for authentication leaves your contract open to potentially being manipulated by another contract. It is better to use 'msg.sender' for authentication."
+}
+```

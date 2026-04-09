@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Rubixi",
+        "contract_version": "^0.4.15",
+        "state_variables": [
+            {
+                "variable_name": "creator",
+                "fix_info": "Made private to prevent unauthorized access",
+                "variable_code": "address private creator;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyCreator",
+                "fix_info": "Added modifier to restrict access to creator only",
+                "modifier_code": "modifier onlyCreator() {\n        require(msg.sender == creator, \"Only creator can call this\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "DynamicPyramid",
+                "fix_info": "Changed constructor to set creator only on contract deployment (now called Rubixi constructor), made it internal to prevent reinitialization",
+                "corrected_code": "function Rubixi() internal {\n        creator = msg.sender;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

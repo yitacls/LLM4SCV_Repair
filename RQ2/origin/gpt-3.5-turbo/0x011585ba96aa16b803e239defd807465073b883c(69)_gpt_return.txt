@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The direct use of send() can lead to unexpected behavior. If the gas stipend provided is not enough, the transfer fails but the function continues execution, allowing re-entrancy attacks. Consider using transfer() or implementing more secure withdrawal patterns to protect against re-entrancy."
+}
+```

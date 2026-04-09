@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic Overflow/Underflow",
+            "location": "uint256 ethAmount = amount * sellPrice;",
+            "description": "In Solidity 0.4.18, arithmetic operations default to unchecked integer math, making them vulnerable to overflow/underflow. The multiplication 'amount * sellPrice' could overflow if the product exceeds 2^256 - 1, causing 'ethAmount' to wrap around to a small value. An attacker could supply a large 'amount' (or 'sellPrice' could be set high) to make the product overflow, resulting in a much smaller 'ethAmount' being sent via 'send()' than intended, while still transferring the full token 'amount' from the seller's balance to the contract."
+        }
+    ]
+}
+```

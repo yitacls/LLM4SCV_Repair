@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PwnFoMo3D",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "gotake",
+            "fix_info": "Added check for return value of low-level call to prevent unchecked call vulnerability",
+            "corrected_code": "function gotake() public  {\n    if (fomo3d.getTimeLeft() > 50) {\n      revert();\n    }\n    require(address(fomo3d).call.value( fomo3d.getBuyPrice() *2 )());\n    fomo3d.withdraw();\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

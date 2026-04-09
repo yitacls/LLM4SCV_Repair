@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Lotto",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawLeftOver",
+            "fix_info": "Fixed unchecked low level call vulnerability by checking the return value of send() and using transfer() for automatic gas stipend",
+            "corrected_code": "function withdrawLeftOver() public {\n    require(payedOut);\n    msg.sender.transfer(this.balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

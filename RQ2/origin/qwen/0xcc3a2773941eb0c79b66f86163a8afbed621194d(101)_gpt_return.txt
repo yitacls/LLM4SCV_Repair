@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "devWallet.send(msg.value);",
+    "description": "The send() function is used to transfer Ether to devWallet, but its return value is not checked. In Solidity 0.4.24, send() returns false if the transfer fails (e.g., due to gas limitations or recipient contract rejecting the transfer), but the contract does not handle this failure case. This could result in the contract's state being updated (tokens transferred from devWallet to msg.sender) even when the Ether transfer to devWallet fails, leading to potential loss of funds or inconsistent state."
+}
+```

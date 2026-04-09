@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) {\n                balances[msg.sender]-=_am;\n                Log.AddMessage(msg.sender,_am,\"Collect\");\n            }",
+    "description": "The function `Collect` makes an external call using `msg.sender.call.value(_am)()` before updating the internal state (`balances[msg.sender]-=_am`). This allows a malicious contract to re-enter the `Collect` function through its fallback function before the balance is deducted, potentially draining funds if the contract's balance is sufficient. The use of Solidity ^0.4.19, which lacks built-in reentrancy guards, exacerbates this issue. The vulnerability should be mitigated by performing state updates before external calls (following the Checks-Effects-Interactions pattern), using a reentrancy guard, or upgrading to a newer Solidity version with appropriate protections."
+}
+```

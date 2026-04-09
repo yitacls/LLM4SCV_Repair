@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract is vulnerable to a reentrancy attack because it sends Ether to an external address (msg.sender) using a low-level call without updating the contract's state beforehand. Specifically, the balances[msg.sender] variable is only updated after the external call is made, allowing an attacker to execute the function recursively and drain funds from the contract before the balance is correctly updated."
+}
+```

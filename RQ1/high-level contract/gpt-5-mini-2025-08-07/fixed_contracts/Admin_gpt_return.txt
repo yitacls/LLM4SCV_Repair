@@ -1,0 +1,14 @@
+[{
+    "contract_name": "Admin",
+    "contract_version": "0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "removeAdmin",
+            "fix_info": "Fix out-of-bounds access in the search loop that could revert and cause DoS. Use a bounded for-loop to locate the admin index safely, check bounds, and then remove by swapping with the last element (if needed) and popping. Preserve original functionality.",
+            "corrected_code": "function removeAdmin(\n        address _adminAddress\n    )\n    external\n    onlyAdmin\n    {\n        // Ensure the address is currently an admin\n        require(isAdmin[_adminAddress] == true, \"Passed admin address does not exist\");\n\n        uint256 len = admins.length;\n        uint256 index = len; // sentinel indicating 'not found'\n\n        // Safely search for the admin index without risking out-of-bounds access\n        for (uint256 i = 0; i < len; i++) {\n            if (admins[i] == _adminAddress) {\n                index = i;\n                break;\n            }\n        }\n\n        require(index < len, \"Passed admin address does not exist\");\n\n        // If the found admin is not the last element, replace it with the last\n        if (index != len - 1) {\n            admins[index] = admins[len - 1];\n        }\n\n        // Update mapping and remove the last element\n        isAdmin[_adminAddress] = false;\n        admins.pop();\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

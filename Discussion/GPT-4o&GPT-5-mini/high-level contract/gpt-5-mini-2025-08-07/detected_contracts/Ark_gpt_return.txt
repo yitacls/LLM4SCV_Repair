@@ -1,0 +1,12 @@
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity 0.6.9;",
+        "description": "The contract pins the compiler to an outdated Solidity version (0.6.9). Older compiler releases may contain bug fixes, security improvements, and breaking changes that were introduced in later versions. Using an outdated compiler increases the risk of known vulnerabilities or subtle compilation issues remaining in the deployed bytecode. Recommendation: update to a maintained, recent compiler release (for example a recent 0.6.x patch if staying on 0.6, or preferably move to Solidity 0.8.x if compatible) and re-run full audits and tests. Also update imports to matching, audited library versions."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \"insufficient funds\");\n...\n_transfer(_quoteToken, _msgSender(), _amount);",
+        "description": "The contract calls external token-related functions (_balanceOf and _transfer) on an ERC20 token without guarding against tokens that revert, return false, or otherwise behave non-standard. If the token's balanceOf or transfer implementation reverts or consumes excessive gas, the withdrawForLoss call will revert and the insuranceFund (or any caller) can be prevented from withdrawing funds (denial-of-service). Additionally, some ERC20 implementations return false on failure instead of reverting; without using a safe wrapper that checks return values, failures may be mishandled.\n\nAttack scenario: a malicious or non-standard ERC20 token is supplied as _quoteToken such that balanceOf or transfer always reverts or returns a failure value. The function will revert or fail, causing legitimate withdrawals to be blocked.\n\nMitigation: use well-audited safe token transfer utilities (e.g., OpenZeppelin's SafeERC20.safeTransfer / safeTransferFrom) which handle non-standard ERC20s and check return values, or perform low-level calls and check success explicitly. Consider whitelisting/trusting accepted token contracts or using try/catch (or low-level call checks) around external token calls to avoid a single token's misbehavior causing a DoS for the entire contract."
+    }
+]

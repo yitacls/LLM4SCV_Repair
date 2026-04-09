@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(weiLeftOver);",
+    "description": "The low-level call 'send' does not throw an exception if it fails, which can lead to silent failure and unexpected behavior. The return value of the call should be checked to ensure the transfer was successful. In Solidity ^0.4.10, 'send' returns false on failure, but this is not being handled, potentially causing loss of funds or incorrect state updates."
+}
+```

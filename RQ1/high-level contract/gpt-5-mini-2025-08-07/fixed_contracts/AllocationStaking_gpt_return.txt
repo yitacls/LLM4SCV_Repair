@@ -1,0 +1,26 @@
+[{
+    "contract_name": "AllocationStaking",
+    "contract_version": "0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fund",
+            "fix_info": "Prevent division by zero and use SafeMath for endTimestamp update; ensure fund amount extends farm by at least 1 second.",
+            "corrected_code": "function fund(uint256 _amount) public {\n    require(block.timestamp < endTimestamp, \"fund: too late, the farm is closed\");\n    // Prevent division by zero in case rewardPerSecond was not initialized or set to 0\n    require(rewardPerSecond > 0, \"fund: rewardPerSecond must be > 0\");\n\n    // Transfer tokens first (will revert on failure)\n    erc20.safeTransferFrom(msg.sender, address(this), _amount);\n\n    // Calculate how many seconds to extend the farm. Use SafeMath to avoid overflows.\n    uint256 secondsToAdd = _amount.div(rewardPerSecond);\n    require(secondsToAdd > 0, \"fund: amount too small to extend farm\");\n\n    endTimestamp = endTimestamp.add(secondsToAdd);\n    totalRewards = totalRewards.add(_amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "totalPending",
+            "fix_info": "Use SafeMath for timestamp arithmetic and guard against underflow when paidOut exceeds computed total rewards (return 0 instead of underflow).",
+            "corrected_code": "function totalPending() external view returns (uint256) {\n    if (block.timestamp <= startTimestamp) {\n        return 0;\n    }\n\n    uint256 lastTimestamp = block.timestamp < endTimestamp ? block.timestamp : endTimestamp;\n    // Use SafeMath for subtraction and multiplication to avoid over/underflows\n    uint256 total = rewardPerSecond.mul(lastTimestamp.sub(startTimestamp));\n    if (total <= paidOut) {\n        return 0;\n    }\n    return total.sub(paidOut);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "erc20Transfer",
+            "fix_info": "Use SafeERC20.safeTransfer to ensure transfer semantics and SafeMath when updating paidOut; handle zero amounts gracefully.",
+            "corrected_code": "function erc20Transfer(address _to, uint256 _amount) internal {\n    if (_amount == 0) {\n        return;\n    }\n    // Use SafeERC20 safeTransfer which reverts on failure\n    erc20.safeTransfer(_to, _amount);\n    // Use SafeMath to avoid overflow when increasing paidOut\n    paidOut = paidOut.add(_amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

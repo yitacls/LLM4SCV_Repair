@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HumansOnlyNetworkETHpreICO",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Partial8Send",
+            "fix_info": "Fixed unchecked low level call vulnerability by checking the return value of send() and using require() for better error handling",
+            "corrected_code": "function Partial8Send() external {\n    if (msg.sender != hon1ninja) throw;\n    require(hon1ninja.send(this.balance - 1 ether), \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

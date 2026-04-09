@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Denial of Service (DoS) - Unbounded Gas Consumption / Out-of-Gas Attack",
+    "location": "function addMultipleRecords(uint[] zz) public {\n    for (uint i; i < zz.length; i++) {  // fault line\n        addRecord(zz[i]);\n    }\n}",
+    "description": "The addMultipleRecords function takes an unbounded array as input and processes all elements in a single transaction. Since there is no limit on the array length, an attacker can submit a very large array that causes the transaction to consume all available gas and revert, effectively denying service. In Solidity 0.4.x, there is no built-in protection against gas exhaustion, and this pattern can make the contract unusable when array lengths exceed gas limits. The vulnerability is particularly critical because the function is public, allowing anyone to call it with arbitrary input sizes."
+}
+```

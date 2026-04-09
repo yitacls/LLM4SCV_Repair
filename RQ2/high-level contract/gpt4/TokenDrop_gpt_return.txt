@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function initialize(address _measure, address _asset) external",
+        "description": "In the initialize function, the factory variable is set to the address of whoever calls the function, this provides the potential for an unauthorized account to control the factory."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function claim(address user) external returns (uint256)",
+        "description": "In the claim function, the state of the contract (totalUnclaimed) is updated after calling an external contract (asset.transfer), potentially allowing for reentrancy attacks."
+    }
+]
+```

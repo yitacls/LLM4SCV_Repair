@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "This contract contains a dangerous low-level call that lacks a check for its return value. If the call fails, this will silently swallow the error and allow the contract to continue execution. This vulnerability can lead to unexpected behaviour, including ether being permanently locked in the contract or even sent to an unintended recipient."
+}
+```

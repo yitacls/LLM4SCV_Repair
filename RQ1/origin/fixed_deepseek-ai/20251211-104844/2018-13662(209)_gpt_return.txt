@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "WorldOpctionChain",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed - mapping is already declared",
+            "variable_code": "mapping (address => uint256) public balanceOf;",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed - variable is already declared",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes to modifier structure",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath library to prevent overflows",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0));\n    \n    // Using SafeMath to prevent overflow vulnerabilities\n    balanceOf[target] = SafeMath.add(balanceOf[target], mintedAmount);\n    totalSupply = SafeMath.add(totalSupply, mintedAmount);\n    \n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

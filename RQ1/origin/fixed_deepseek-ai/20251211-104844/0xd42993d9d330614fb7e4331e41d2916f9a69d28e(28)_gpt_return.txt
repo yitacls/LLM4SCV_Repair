@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "PresalerVoting",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "VOTING_START_BLOCKNR",
+                "fix_info": "Modified to prevent time manipulation - changed to private to prevent unauthorized access",
+                "variable_code": "uint private VOTING_START_BLOCKNR;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "VOTING_END_TIME",
+                "fix_info": "Modified to prevent time manipulation - changed to private to prevent unauthorized access and added proper validation",
+                "variable_code": "uint private VOTING_END_TIME;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "MIN_DURATION_HOURS",
+                "fix_info": "Added constant for minimum voting duration to prevent manipulation",
+                "variable_code": "uint private constant MIN_DURATION_HOURS = 1;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added validation to prevent re-entering voting period",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "startVoting",
+                "fix_info": "Fixed time manipulation vulnerability by using block.timestamp instead of now, added proper duration validation, and prevented voting period overlap",
+                "corrected_code": "function startVoting(uint startBlockNr, uint durationHrs) onlyOwner {\n        // Prevent re-starting voting if already active\n        require(block.timestamp >= VOTING_END_TIME || VOTING_START_BLOCKNR == 0, \"Voting already in progress\");\n        \n        // Ensure minimum duration\n        uint safeDurationHrs = durationHrs;\n        if (safeDurationHrs < MIN_DURATION_HOURS) {\n            safeDurationHrs = MIN_DURATION_HOURS;\n        }\n        \n        // Set voting start - ensure it's not in the past\n        if (startBlockNr <= block.number) {\n            VOTING_START_BLOCKNR = block.number;\n        } else {\n            VOTING_START_BLOCKNR = startBlockNr;\n        }\n        \n        // Use block.timestamp instead of now for clear intent\n        // Ensure no overflow in calculation\n        uint durationSeconds = safeDurationHrs * 1 hours;\n        require(durationSeconds / 1 hours == safeDurationHrs, \"Duration overflow\");\n        \n        VOTING_END_TIME = block.timestamp + durationSeconds;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

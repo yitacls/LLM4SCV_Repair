@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[msg.sender] += msg.value;",
+    "description": "The contract is using Solidity version ^0.4.25 which does not have built-in overflow protection. The addition operation on balanceOf[msg.sender] += msg.value; can result in integer overflow if the resulting value exceeds the maximum value that can be stored in the uint type, leading to unexpected behavior and potential loss of funds."
+}
+```

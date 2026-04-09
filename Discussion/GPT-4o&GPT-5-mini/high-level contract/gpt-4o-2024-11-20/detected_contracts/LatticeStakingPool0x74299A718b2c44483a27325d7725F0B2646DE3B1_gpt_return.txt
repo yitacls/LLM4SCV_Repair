@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "whitelistAddresses function, for loop (L1795)",
+            "description": "The `whitelistAddresses` function accepts an array of addresses as input and iterates over them using a `for` loop. If the array size is large, it can consume an excessive amount of gas, potentially reaching the block gas limit and causing the transaction to fail. Additionally, this could allow attackers to exploit the function by sending a very large array and causing a denial of service."
+        }
+    ]
+}
+```

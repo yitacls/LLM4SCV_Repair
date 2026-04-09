@@ -1,0 +1,38 @@
+```json
+[{
+    "contract_name": "DelegationRequestManager",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "createRequest",
+            "fix_info": "Fixed integer overflow and underflow issue by using SafeMath library.",
+            "corrected_code": "
+                using SafeMath for uint;
+                ...
+                function createRequest(
+                    address holder,
+                    uint validatorId,
+                    uint amount,
+                    uint delegationPeriod,
+                    string calldata info
+                )
+                    external
+                    allow(\"DelegationService\")
+                    returns (uint delegationId)
+                {
+                    ...
+                    uint holderBalance = SkaleToken(contractManager.getContract(\"SkaleToken\")).balanceOf(holder);
+                    uint lockedToDelegate = tokenState.getLockedCount(holder);
+                    lockedToDelegate = lockedToDelegate.sub(tokenState.getPurchasedAmount(holder));
+                    require(holderBalance >= amount.add(lockedToDelegate), \"Delegator hasn't enough tokens to delegate\");
+
+                    ...
+                }
+            ",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

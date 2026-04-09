@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "return totalSupply_;",
+    "description": "The totalSupply_ variable is returned directly without proper access control checks. In Solidity ^0.4.18, this could lead to unauthorized access to sensitive token supply information if the variable is not properly protected. The function should ensure only authorized parties can access this information, but the current implementation provides unrestricted public access to the total supply data."
+}
+```

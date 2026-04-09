@@ -1,0 +1,20 @@
+[{
+    "contract_name": "CompHelper",
+    "contract_version": "^0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "enterMarket",
+            "fix_info": "Checks Comptroller.enterMarkets return values and reverts on non-zero error codes to avoid unchecked call return value vulnerability (SWC-104).",
+            "corrected_code": "function enterMarket(address _cTokenAddr) public {\n    address[] memory markets = new address[](1);\n    markets[0] = _cTokenAddr;\n\n    uint[] memory results = IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);\n    // enterMarkets returns an array of error codes (0 == NO_ERROR). Since we pass a single market, check results[0].\n    require(results.length == 1, \"enterMarkets: unexpected return length\");\n    require(results[0] == 0, \"enterMarkets failed\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "exitMarket",
+            "fix_info": "Checks the return value of Comptroller.exitMarket and reverts on non-zero to prevent unchecked call return value vulnerability (SWC-104).",
+            "corrected_code": "function exitMarket(address _cTokenAddr) public {\n    uint result = IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);\n    require(result == 0, \"exitMarket failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

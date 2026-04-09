@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Krown",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Implicitly referenced - using SafeMath for arithmetic operations",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Implicitly referenced - using SafeMath for arithmetic operations",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Implicitly referenced - ensures only owner can call the function",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintlvlToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and ensured proper event emission",
+            "corrected_code": "function mintlvlToken(address target, uint256 mintedAmount) public onlyOwner {\n        require(target != address(0), \"Invalid target address\");\n        require(mintedAmount > 0, \"Mint amount must be positive\");\n        \n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        \n        emit Transfer(address(0), this, mintedAmount);\n        emit Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

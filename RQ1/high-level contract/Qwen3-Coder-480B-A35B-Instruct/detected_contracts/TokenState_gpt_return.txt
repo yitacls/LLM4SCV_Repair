@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint i = 0; i < delegationIds.length; ++i) {",
+        "description": "The loop iterates over all delegation IDs of a holder, which can grow indefinitely. This may cause the transaction to run out of gas, leading to a DoS."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "if (_isPurchased[delegationId]) {\n            address holder = delegation.holder;\n            _totalDelegated[holder] += delegation.amount;\n            if (_totalDelegated[holder] >= _purchased[holder]) {\n                purchasedToUnlocked(holder);\n            }\n        }",
+        "description": "There is no check verifying that the holder has actually purchased the tokens before adjusting the _totalDelegated and _purchased values. This could allow manipulation of balances."
+    }
+]
+```

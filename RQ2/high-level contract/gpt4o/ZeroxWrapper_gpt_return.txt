@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 42-50 (specifically the calculation involving `tokensSwaped`) - `tokensSwaped = _exData.destAddr.getBalance(address(this)) - tokensBefore;`",
+    "description": "The calculation `tokensSwaped = _exData.destAddr.getBalance(address(this)) - tokensBefore;` is potentially vulnerable to an integer underflow/overflow attack. In cases where `tokensBefore` is greater than `_exData.destAddr.getBalance(address(this))`, this subtraction operation can result in unintended behaviors due to underflow. While Solidity 0.7.x introduced safe arithmetic by default, it is important to confirm that this behavior is safeguarded either by the Solidity version's safety features or explicit checks in logic."
+}
+```

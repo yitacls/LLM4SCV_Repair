@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "ZeroBTCWorldCup",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "playerRegistered",
+            "fix_info": "Added comment to document purpose - tracks registration status of addresses",
+            "variable_code": "mapping(address => bool) public playerRegistered;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "admin",
+            "fix_info": "Added admin state variable for proper access control",
+            "variable_code": "address public admin;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAdmin",
+            "fix_info": "Added admin-only access control modifier",
+            "modifier_code": "modifier onlyAdmin() {\n        require(msg.sender == admin, \"Only admin can call this\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "register",
+            "fix_info": "Fixed access control vulnerability by removing tx.origin check and adding reentrancy guard pattern",
+            "corrected_code": "function register() public {\n        address _customerAddress = msg.sender;\n        require(!playerRegistered[_customerAddress], \"Address already registered\");\n        require(BTCTKN.transferFrom(_customerAddress, address(this), entryFee), \"Transfer failed\");\n        \n        registeredPlayers = SafeMath.add(registeredPlayers, 1);\n        playerRegistered[_customerAddress] = true;\n        playerGamesScored[_customerAddress] = 0;\n        playerList.push(_customerAddress);\n        \n        prizePool = prizePool.add(ninetyPercent);\n        givethPool = givethPool.add(fivePercent);\n        adminPool = adminPool.add(fivePercent);\n        \n        emit Registration(_customerAddress);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set admin during contract deployment",
+            "corrected_code": "constructor() public {\n        admin = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

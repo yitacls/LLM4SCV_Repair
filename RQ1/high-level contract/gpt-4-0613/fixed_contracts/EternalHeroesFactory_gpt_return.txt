@@ -1,0 +1,64 @@
+【```json
+[
+    {
+        "contract_name": "EternalHeroesFactory",
+        "contract_version": "^0.5.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_buy",
+                "fix_info": "The function _buy is vulnerable to a re-entrancy attack. The issue is fixed by using the Checks-Effects-Interactions pattern. The transfer of Arcadeum Coins is moved to the end of the function after all state changes and other logic is processed to avoid external function calls in the middle of the function.",
+                "corrected_code": "
+                function _buy(
+                  uint256[] memory _ids,
+                  uint256[] memory _amounts,
+                  uint256[] memory _expectedTiers,
+                  uint256 _arcAmount,
+                  address _recipient)
+                  internal
+                {
+                  uint256 nTokens = _ids.length;
+
+                  uint256[] memory current_supplies = factoryManager.getCurrentSupplies(_ids);
+
+                  uint256 total_cost = 0;
+                  uint256[] memory amounts_to_mint = new uint256[](nTokens);
+
+                  for (uint256 i = 0; i < nTokens; i++) {
+                    require(isPurchasable[_ids[i]], 'EternalHeroesFactory#_buy: ID_NOT_PURCHASABLE');
+                    if (i > 0) {
+                      require(_ids[i-1] < _ids[i], 'EternalHeroesFactory#_buy: UNSORTED_OR_DUPLICATE_TOKEN_IDS');
+                    }
+
+                    uint256 current_tier = current_supplies[i].div(tierSize);
+                    if (_expectedTiers[i] != current_tier) {
+                      amounts_to_mint[i] = 0;
+                      continue;
+                    }
+
+                    uint256 current_price = floorPrice.add(current_tier.mul(priceIncrement));
+
+                    uint256 amount_left = tierSize.sub(current_supplies[i].mod(tierSize));
+
+                    amounts_to_mint[i] = _amounts[i] < amount_left ? _amounts[i] : amount_left;
+
+                    total_cost = total_cost.add(amounts_to_mint[i].mul(current_price));
+                  }
+
+                  uint256 refundAmount = _arcAmount.sub(total_cost);
+
+                  factoryManager.batchMint(_recipient, _ids, amounts_to_mint, '');
+
+                  emit AssetsPurchased(_recipient, _ids, amounts_to_mint, total_cost);
+
+                  if (refundAmount > 0) {
+                    arcadeumCoin.safeTransferFrom(address(this), _recipient, arcadeumCoinID, refundAmount, '');
+                  }
+                }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```】

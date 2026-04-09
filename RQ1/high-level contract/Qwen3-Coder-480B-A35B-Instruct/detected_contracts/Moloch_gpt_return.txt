@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "function sponsorProposal(uint256 proposalId) public nonReentrant onlyDelegate { ... }",
+        "description": "The sponsorProposal function is vulnerable to transaction order dependence because the order in which proposals are sponsored affects their startingPeriod. An attacker could potentially manipulate the order of transactions to influence the voting period start time, leading to unfair advantages in proposal processing."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "if (!emergencyProcessing) { require(proposal.tributeToken.transfer(proposal.proposer, proposal.tributeOffered), \"failing vote token transfer failed\"); }",
+        "description": "In the processProposal function, when a proposal fails, the tribute tokens are returned to the proposer. However, if the tributeToken is ETH (or a token that can fail silently), this could lead to unprotected ether withdrawal vulnerabilities where the transfer might fail but the contract state is not properly rolled back, potentially allowing attackers to drain contract funds."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function max(uint256 x, uint256 y) internal pure returns (uint256) { return x >= y ? x : y; }",
+        "description": "The max function itself is not vulnerable, but the contract lacks proper SafeMath protection in several places where arithmetic operations are performed without explicit overflow/underflow checks. For example, in various calculations involving shares, loot, and proposal counts, unchecked arithmetic operations could lead to unexpected behavior. While SafeMath is imported and used in some places, not all arithmetic operations are protected."
+    }
+]
+```

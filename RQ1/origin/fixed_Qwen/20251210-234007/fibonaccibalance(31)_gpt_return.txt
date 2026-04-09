@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "FibonacciBalance",
+    "contract_version": "1.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to prevent unauthorized access to withdraw function",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier and improved error handling",
+            "corrected_code": "function withdraw() public onlyOwner {\n    withdrawalCounter += 1;\n    // calculate the fibonacci number for the current withdrawal user\n    // this sets calculatedFibNumber\n    bool success = fibonacciLibrary.delegatecall(abi.encodeWithSignature(\"setFibonacci(uint256)\", withdrawalCounter));\n    require(success, \"Delegatecall failed\");\n    require(address(this).balance >= calculatedFibNumber * 1 ether, \"Insufficient contract balance\");\n    msg.sender.transfer(calculatedFibNumber * 1 ether);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

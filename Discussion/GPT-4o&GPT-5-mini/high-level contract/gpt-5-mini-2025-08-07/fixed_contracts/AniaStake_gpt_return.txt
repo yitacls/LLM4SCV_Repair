@@ -1,0 +1,58 @@
+[{
+    "contract_name": "AniaStake",
+    "contract_version": "0.8.20",
+    "state_variables": [
+        {
+            "variable_name": "MAX_REDISTRIBUTE_BATCH",
+            "fix_info": "Added an explicit maximum batch size to mitigate DoS by limiting gas usage for redistribution loops.",
+            "variable_code": "uint256 public constant MAX_REDISTRIBUTE_BATCH = 200;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_NOT_ENTERED/_ENTERED/_status (ReentrancyGuard)",
+            "fix_info": "Added a simple Reentrancy Guard to protect sensitive functions performing external calls (token transfers).",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;\nuint256 private constant _ENTERED = 2;\nuint256 private _status = _NOT_ENTERED;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Replaced repeated require(msg.sender == owner, ...) with a reusable modifier for clarity and consistency.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only contract creator\");\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a nonReentrant modifier (ReentrancyGuard) to prevent reentrancy during external token transfers.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "stakeTokens",
+            "fix_info": "Fixed totalStaked accounting to only increase by the newly provided amount plus any calculated reward (delta), added nonReentrant protection and require checks on token transfer; preserved original behavior otherwise.",
+            "corrected_code": "function stakeTokens(uint256 _amount) public nonReentrant {\n    require(_amount > 0, \"amount cannot be 0\");\n\n    uint256 index = stakes[msg.sender];\n    uint256 timestamp = block.timestamp;\n    uint256 reward = 0;\n\n    if (index == 0) {\n        // first time staker\n        index = _addStaker(msg.sender);\n    } else {\n        reward = calculateStakeReward(stakers[index].address_stake);\n    }\n\n    uint256 oldAmount = stakers[index].address_stake.amount;\n    // Only the newly provided amount + reward should be added to the contract totals\n    uint256 delta = _amount + reward;\n    uint256 newStake = oldAmount + delta;\n\n    // Effects\n    stakers[index].address_stake = Stake(msg.sender, newStake, timestamp);\n    totalStaked += delta;\n\n    // Interaction (external call) protected by nonReentrant\n    require(aniaToken.transferFrom(msg.sender, address(this), _amount), \"transferFrom failed\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "unstakeTokens",
+            "fix_info": "Added nonReentrant protection, stricter existence check for staker, simplified and corrected totalStaked accounting to reflect actual tokens leaving the contract, and preserved reward calculation logic.",
+            "corrected_code": "function unstakeTokens(uint256 _amount) public nonReentrant {\n    uint256 index = stakes[msg.sender];\n    require(stakers[index].user == msg.sender, \"no stakes for user\");\n\n    uint256 userStakes = stakers[index].address_stake.amount;\n    require(userStakes > 0, \"amount has to be more than 0\");\n\n    uint256 reward = calculateStakeReward(stakers[index].address_stake);\n    uint256 stakedWithRewards = userStakes + reward;\n\n    require(_amount <= stakedWithRewards, \"amount has to be less or equal than current stakes with rewards\");\n\n    // Update stake (effects) before external transfer\n    uint256 newStakeAmount = stakedWithRewards - _amount;\n    stakers[index].address_stake = Stake(msg.sender, newStakeAmount, block.timestamp);\n\n    // Update contract total staked tokens to reflect actual tokens leaving the contract\n    if (_amount >= totalStaked) {\n        // avoid underflow, set to zero if requested amount exceeds tracked total\n        totalStaked = 0;\n    } else {\n        totalStaked -= _amount;\n    }\n\n    // Interaction (external call) protected by nonReentrant\n    require(aniaToken.transfer(msg.sender, _amount), \"transfer failed\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "redistributeRewards",
+            "fix_info": "Mitigated DoS risk by limiting batch size, added owner-only and nonReentrant protections, and added defensive checks to skip invalid entries. Keeps behavior of crediting rewards into stakers' stakes and updating totalStaked.",
+            "corrected_code": "function redistributeRewards(address[] calldata users) external onlyOwner nonReentrant {\n    require(users.length <= MAX_REDISTRIBUTE_BATCH, \"batch too large\");\n\n    for (uint256 i = 0; i < users.length; i++) {\n        uint256 index = stakes[users[i]];\n        // skip non-existing entries\n        if (index == 0) {\n            continue;\n        }\n        if (stakers[index].user != users[i]) {\n            continue;\n        }\n\n        uint256 reward = calculateStakeReward(stakers[index].address_stake);\n        if (reward == 0) {\n            continue;\n        }\n\n        stakers[index].address_stake = Stake(stakers[index].user, stakers[index].address_stake.amount + reward, block.timestamp);\n        totalStaked += reward;\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "changeAPY",
+            "fix_info": "Separated APY update from redistribution to avoid an implicit potentially unbounded loop. Owner can now change APY quickly; if redistribution is desired the owner should call redistributeRewards separately with a bounded batch.",
+            "corrected_code": "function changeAPY(uint256 _value) external onlyOwner {\n    require(_value > 0, \"APY value has to be more than 0\");\n    apy = _value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

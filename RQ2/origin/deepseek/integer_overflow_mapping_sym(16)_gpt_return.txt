@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "map[k] -= v;",
+    "description": "In Solidity version ^0.4.11, arithmetic operations do not have built-in overflow/underflow checks. The statement 'map[k] -= v;' can underflow if 'v' is greater than the current value stored in 'map[k]', resulting in an unexpected high value due to wrap-around behavior. This vulnerability can be exploited to manipulate contract state, potentially leading to unauthorized balance increases or logical errors. Use SafeMath libraries or upgrade to Solidity 0.8.x+ for automatic overflow/underflow protection."
+}
+```】

@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(univ2Router2).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60));",
+        "description": "The Uniswap `swapExactTokensForTokens` is called without checking if the operation succeeded. This could lead to potential issues if the call fails silently."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(univ2Router2).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60));",
+        "description": "The Uniswap `swapExactTokensForTokens` is called in `_swapUniswapWithPath` without verifying success, which can lead to failed operations being unnoticed."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(sushiRouter).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60));",
+        "description": "The Sushiswap `swapExactTokensForTokens` is called in `_swapSushiswap` without ensuring the returned result confirms success, which can result in silent failures."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(sushiRouter).swapExactTokensForTokens(_amount, 0, path, address(this), now.add(60));",
+        "description": "The Sushiswap `swapExactTokensForTokens` is called in `_swapSushiswapWithPath` without checking if the operation was successful, potentially leading to silent failures in the logic."
+    }
+]
+```

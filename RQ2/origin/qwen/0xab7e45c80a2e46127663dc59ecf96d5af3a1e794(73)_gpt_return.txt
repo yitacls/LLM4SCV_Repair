@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Division Truncation",
+    "location": "uint order   = msg.value / sellPrice;",
+    "description": "In Solidity 0.4.11, integer division truncates towards zero, which can lead to precision loss. When calculating the order amount by dividing msg.value by sellPrice, any remainder is discarded, potentially causing users to receive fewer tokens than expected. This can result in unfair token distribution and potential financial loss for buyers."
+}
+```

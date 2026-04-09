@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "0.6.0",
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Prevent potential Denial-of-Service (DoS) attack by limiting the loop iteration",
+                "corrected_code": "function massHarvest() external returns (uint){\n        uint totalDistributedValue;\n        uint epochId = _getEpochId().sub(1); // fails in epoch 0\n        // force max number of epochs\n        if (epochId > NR_OF_EPOCHS) {\n            epochId = NR_OF_EPOCHS;\n        }\n\n        uint128 i = lastEpochIdHarvested[msg.sender] + 1;\n        uint endIndex = uint128(epochId);\n        if (endIndex > NR_OF_EPOCHS) {\n            endIndex = NR_OF_EPOCHS;\n        }\n\n        for (; i <= endIndex; i++) {\n            // i = epochId\n            // compute distributed Value and do one single transfer at the end\n            totalDistributedValue += _harvest(i);\n        }\n\n        emit MassHarvest(msg.sender, endIndex.sub(lastEpochIdHarvested[msg.sender]), totalDistributedValue);\n\n        if (totalDistributedValue > 0) {\n            _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n        }\n\n        lastEpochIdHarvested[msg.sender] = endIndex;\n\n        return totalDistributedValue;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

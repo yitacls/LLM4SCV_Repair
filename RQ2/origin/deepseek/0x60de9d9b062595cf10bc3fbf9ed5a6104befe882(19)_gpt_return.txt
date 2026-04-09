@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "This contract uses the low-level `call.value()` function to send Ether before updating the account's internal balance (`acc.balance-=_am`). This violates the Checks-Effects-Interactions pattern, allowing a malicious contract to re-enter the `Collect` function via a fallback function. Since the balance is only reduced after the external call, an attacker can repeatedly call `Collect` (while `acc.balance>=_am` is still true) and drain funds from the contract before the state is updated."
+}
+```

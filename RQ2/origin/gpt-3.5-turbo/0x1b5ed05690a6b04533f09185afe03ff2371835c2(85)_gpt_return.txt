@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 tokensIssued = (msg.value * 1000) + nextBonusPayout;",
+    "description": "The multiplication operation (msg.value * 1000) may result in an overflow vulnerability if the value of msg.value is large enough. This can lead to unexpected behavior and potential security risks."
+}
+```

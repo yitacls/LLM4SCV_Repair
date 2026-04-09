@@ -1,0 +1,14 @@
+[{
+    "contract_name": "TravelZediToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added explicit overflow checks for balanceOf[target] and totalSupply and a zero-address check for target to prevent arithmetic vulnerabilities. Uses throw to revert on failure (compatible with ^0.4.2).",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n        // Prevent minting to the zero address\n        if (target == 0) throw;\n        // Check for overflow on balance update\n        if (balanceOf[target] + mintedAmount < balanceOf[target]) throw;\n        // Check for overflow on totalSupply update\n        if (totalSupply + mintedAmount < totalSupply) throw;\n\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n\n        Transfer(0, owner, mintedAmount);\n        Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "DosNumber",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "array",
+            "fix_info": "Added to complete the contract context for the fixed function",
+            "variable_code": "uint256[] public array;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "numElements",
+            "fix_info": "Added to complete the contract context for the fixed function",
+            "variable_code": "uint256 public numElements;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "insertNnumbers",
+            "fix_info": "Fixed DoS vulnerability by replacing dynamic array expansion in loop with single pre-allocation, added input validation, and limited max batch size",
+            "corrected_code": "function insertNnumbers(uint256 value, uint256 numbers) public {\n    require(numbers > 0, \"Numbers must be greater than 0\");\n    require(numbers <= 100, \"Batch size too large (max: 100)\");\n    \n    // Pre-allocate memory if needed\n    uint256 newTotal = numElements + numbers;\n    if (newTotal > array.length) {\n        array.length = newTotal;\n    }\n    \n    // Fill the array with values\n    for (uint256 i = 0; i < numbers; i++) {\n        array[numElements + i] = value;\n    }\n    \n    // Update element count once\n    numElements = newTotal;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

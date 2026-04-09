@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "feeCollector.call.value(fee)();",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to feeCollector before updating the contract's state. The feeCollector can be a malicious contract that calls back into the withdraw() function before the balance[feeCollector] is set to 0, allowing it to withdraw the same fee multiple times. This is a classic reentrancy vulnerability where external calls should be made after all state updates."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LuckyDoubler",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "rand",
+            "fix_info": "Replaced block.blockhash with keccak256(block.number-1) for better randomness and added checks for max value to prevent division by zero",
+            "corrected_code": "function rand(uint max) constant private returns (uint256 result){\n        if (max == 0) return 0;\n        uint256 factor = FACTOR * 100 / max;\n        if (factor == 0) factor = 1;\n        uint256 lastBlockNumber = block.number - 1;\n        uint256 hashVal = uint256(keccak256(block.number-1));\n\n        return uint256((uint256(hashVal) / factor)) % max;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

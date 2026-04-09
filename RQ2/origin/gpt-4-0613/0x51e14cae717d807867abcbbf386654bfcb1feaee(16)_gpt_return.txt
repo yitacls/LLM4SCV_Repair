@@ -1,0 +1,8 @@
+```json
+{
+	"type": "Arithmetic",
+	"contract": "RUSS_PFXXXVIII_III_883",
+	"location": "balanceOf[to] += value",
+	"description": "There is potential for an underflow/overflow in the arithmetic operations here. If the value is higher than the balance of the sender, the subtraction operation will underflow, making the balance a very large number. If the sum of the balance of the receiver and the value results in a value larger than the maximum value of the uint256, an overflow will occur, which will make the final balance much smaller."
+}
+```

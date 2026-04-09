@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "TTCoin",
+    "contract_version": "^0.4.12",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Using SafeMath for uint256 to prevent arithmetic overflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Using SafeMath for uint256 to prevent arithmetic overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Replaced arithmetic operations with SafeMath functions to prevent overflow vulnerabilities, added explicit event emissions, and used safer address comparisons",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0));\n    require(mintedAmount > 0);\n    \n    // Using SafeMath to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Emit Transfer events\n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

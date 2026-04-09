@@ -1,0 +1,27 @@
+[{
+    "contract_name": "dgame",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "pendingWithdrawals",
+            "fix_info": "Added a mapping to implement the pull-payment pattern to avoid unchecked low-level send/call. Winners' funds are recorded for withdrawal instead of using send() directly.",
+            "variable_code": "mapping(address => uint) public pendingWithdrawals;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback (anonymous payable)",
+            "fix_info": "Replaced direct low-level send with the pull-payment pattern: record the winner's prize in pendingWithdrawals instead of calling send(). Replaced throws with require for clearer checks. Preserves original registration and game-start/winner-selection logic but defers transfer to a withdraw() function.",
+            "corrected_code": "function() payable {\n    if (endRegisterTime == 0) {\n        endRegisterTime = now + registerDuration;\n        require(msg.value > 0);\n        StartedGame(msg.sender, endRegisterTime, msg.value, gameNumber);\n    } else if (now > endRegisterTime && numPlayers > 0) {\n        uint winner = uint(block.blockhash(block.number - 1)) % numPlayers;\n        uint currentGamenumber = gameNumber;\n        address winnerAddress = players[currentGamenumber][winner];\n        FoundWinner(winnerAddress, currentGamenumber);\n\n        // Reset game state before assigning winnings\n        endRegisterTime = 0;\n        numPlayers = 0;\n        gameNumber++;\n\n        // Use pull-payment pattern: credit the winner instead of sending Ether directly\n        pendingWithdrawals[winnerAddress] += this.balance;\n    } else {\n        require(!registered[gameNumber][msg.sender]);\n        registered[gameNumber][msg.sender] = true;\n        players[gameNumber][numPlayers] = msg.sender;\n        numPlayers++;\n        RegisteredPlayer(msg.sender, gameNumber);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Added a withdraw function so winners can safely pull their accumulated winnings. This avoids low-level unchecked calls and allows failures to revert only the withdraw call, not the whole game flow.",
+            "corrected_code": "function withdraw() public {\n    uint amount = pendingWithdrawals[msg.sender];\n    require(amount > 0);\n\n    // Effects\n    pendingWithdrawals[msg.sender] = 0;\n\n    // Interaction\n    msg.sender.transfer(amount);\n}",
+            "change_type": "added"
+        }
+    ]
+}]

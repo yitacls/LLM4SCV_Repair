@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner8.call(ethersum8);",
+    "description": "The low-level call to owner8 does not check the return value, which can lead to silent failures. In Solidity 0.4.24, low-level calls like call() return false on failure but do not revert the transaction. This means if the call fails, the transaction will continue executing, potentially leading to unexpected behavior or loss of funds. The contract should check the return value and handle failures appropriately."
+}
+```

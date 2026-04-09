@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "FLAaveV2",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "executeOperation",
+                "fix_info": "Added reentrancy guard to prevent potential reentrancy attacks by using a mutex. This ensures that the function cannot be re-entered during its execution.",
+                "corrected_code": "function executeOperation(\n    address[] memory _assets,\n    uint256[] memory _amounts,\n    uint256[] memory _fees,\n    address _initiator,\n    bytes memory _params\n) \n    public\n    nonReentrant\n    returns (bool) \n{\n    require(msg.sender == AAVE_LENDING_POOL, ERR_ONLY_AAVE_CALLER);\n    require(_initiator == address(this), ERR_SAME_CALLER);\n\n    (Task memory currTask, address proxy) = abi.decode(_params, (Task, address));\n\n    // Send FL amounts to user proxy\n    for (uint256 i = 0; i < _assets.length; ++i) {\n        _assets[i].withdrawTokens(proxy, _amounts[i]);\n    }\n\n    address payable taskExecutor = payable(registry.getAddr(TASK_EXECUTOR_ID));\n\n    // call Action execution\n    IDSProxy(proxy).execute{value: address(this).balance}(\n        taskExecutor,\n        abi.encodeWithSelector(CALLBACK_SELECTOR, currTask, bytes32(_amounts[0] + _fees[0]))\n    );\n\n    // return FL\n    for (uint256 i = 0; i < _assets.length; i++) {\n        _assets[i].approveToken(address(AAVE_LENDING_POOL), _amounts[i] + _fees[i]);\n    }\n\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

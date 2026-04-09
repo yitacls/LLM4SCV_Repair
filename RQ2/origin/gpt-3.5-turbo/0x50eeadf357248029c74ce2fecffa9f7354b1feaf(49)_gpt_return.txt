@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin for authorization checks is a security vulnerability. tx.origin can be manipulated in certain scenarios, leading to potential attacker exploitation such as phishing attacks. It is recommended to use msg.sender for authentication and authorization purposes in Solidity contracts."
+}
+```  

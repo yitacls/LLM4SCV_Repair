@@ -1,0 +1,20 @@
+[{
+    "contract_name": "WorthTokenSale",
+    "contract_version": "0.8.10",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawTokens",
+            "fix_info": "Added non-zero checks for both beneficiary and token address, added nonReentrant protection, used checks-effects-interactions pattern, validated token balance before transfer and emitted correct beneficiary and amount in the event.",
+            "corrected_code": "function withdrawTokens(address beneficiary, address _tokenAddr) external nonZeroAddress(beneficiary) nonZeroAddress(_tokenAddr) onlyOwner _contractUp() _saleEnded() nonReentrant {\n    // Get token balance first (checks)\n    uint256 bal = Token(_tokenAddr).balanceOf(address(this));\n    require(bal > 0, \"No tokens inside contract\");\n\n    // Interaction: transfer full balance to beneficiary\n    require(Token(_tokenAddr).transfer(beneficiary, bal), \"Token transfer failed\");\n\n    // Emit the correct beneficiary and amount\n    emit TokenWithdrawn(beneficiary, bal);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawCrypto",
+            "fix_info": "Added non-zero check for beneficiary, added nonReentrant protection, captured contract balance before transfer (checks-effects-interactions), ensured proper error messages and emitted the actual withdrawn amount.",
+            "corrected_code": "function withdrawCrypto(address payable beneficiary) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() nonReentrant {\n    // Capture balance (checks)\n    uint256 bal = address(this).balance;\n    require(bal > 0, \"No Crypto inside contract\");\n\n    // Interaction: perform call with the captured amount\n    (bool success, ) = beneficiary.call{value: bal}(\"\");\n    require(success, \"Transfer failed.\");\n\n    // Emit the actual withdrawn amount\n    emit CryptoWithdrawn(beneficiary, bal);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

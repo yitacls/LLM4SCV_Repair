@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "access_control",
+        "location": "function destruct() isOwner public { selfdestruct(owner); }",
+        "description": "The 'destruct' function allows the contract owner to invoke 'selfdestruct(owner)', which destroys the contract and sends any remaining Ether to the owner. This introduces a central point of failure and violates the principle of contract immutability. While protected by the 'isOwner' modifier, this is a suicidal vulnerability that can be exploited if the owner's private key is compromised, or if ownership is transferred to a malicious address. Once executed, the contract and all associated data/funds are irrecoverably destroyed, posing significant risks to users who depend on the contract's persistent availability."
+    }
+]
+```

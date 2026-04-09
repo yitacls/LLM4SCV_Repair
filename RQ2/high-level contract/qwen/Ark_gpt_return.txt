@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Ark",
+    "contract_version": "0.6.9",
+    "state_variables": [
+        {
+            "variable_name": "pragma solidity",
+            "fix_info": "Upgrade compiler version from 0.6.9 to >=0.8.0 to address SWC-102",
+            "variable_code": "pragma solidity ^0.8.0;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawForLoss",
+            "fix_info": "Added try-catch block around external call to prevent DoS (SWC-113) and updated error handling",
+            "corrected_code": "function withdrawForLoss(Decimal.decimal memory _amount, IERC20 _quoteToken) public override {\n        require(insuranceFund == _msgSender(), \"only insuranceFund\");\n\n        if (_getTokenDecimals(address(_quoteToken)) < 18) {\n            // the smallest expression in terms of decimals of the token is\n            // added to _amount because the _transfer method of DecimalERC20\n            // rounds down when token decimals are less than 18\n            _amount = _amount.addD(_toDecimal(_quoteToken, 1));\n        }\n        require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \"insufficient funds\");\n\n        // stores timestamp and cumulative amount of withdrawn token\n        Decimal.decimal memory cumulativeAmount;\n        uint256 len = withdrawnTokenHistory[_quoteToken].length;\n        if (len == 0) {\n            cumulativeAmount = _amount;\n        } else {\n            cumulativeAmount = withdrawnTokenHistory[_quoteToken][len - 1].cumulativeAmount.addD(_amount);\n        }\n        // store the withdrawal history\n        withdrawnTokenHistory[_quoteToken].push(\n            WithdrawnToken({ timestamp: _blockTimestamp(), cumulativeAmount: cumulativeAmount })\n        );\n\n        // Use try-catch to prevent DoS from failed external calls\n        try this.safeTransfer(_quoteToken, _msgSender(), _amount) {\n            emit WithdrawnForLoss(_msgSender(), _amount.toUint(), address(_quoteToken));\n        } catch {\n            // Revert state changes if transfer fails\n            revert(\"Transfer failed\");\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "safeTransfer",
+            "fix_info": "Added helper function to safely execute token transfers with proper error handling",
+            "corrected_code": "function safeTransfer(IERC20 token, address to, Decimal.decimal memory amount) external {\n        require(msg.sender == address(this), \"Only internal calls allowed\");\n        _transfer(token, to, amount);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

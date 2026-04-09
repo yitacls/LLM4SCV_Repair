@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _burn(address operator, address from, uint256 amount, bytes memory data, bytes memory operatorData)",
+        "description": "The _burn function makes an external call via _callTokensToSend before updating the contract's state (_totalSupply and _balances). This can allow a malicious contract to reenter the function and manipulate the state before the balance is updated, potentially leading to double spending or other unexpected behavior."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _send(address operator, address from, address to, uint256 amount, bytes memory userData, bytes memory operatorData, bool requireReceptionAck)",
+        "description": "The _send function calls _callTokensToSend and _callTokensReceived before updating the contract's state. If either of these functions makes a call to a malicious contract, it could lead to reentrancy attacks where the malicious contract reenters the function and manipulates the state before the balance is updated."
+    }
+]
+```

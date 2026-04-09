@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The Collect function is vulnerable to reentrancy due to the use of msg.sender.call.value(_am)(), allowing for an external contract call to re-enter and potentially manipulate the contract state before the current function completes execution."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(address(this).balance);",
+    "description": "The use of 'send' in this context can lead to potential reentrancy attacks where the recipient contract can call back into the withdrawing contract before the state is updated, potentially causing unexpected behavior. It is recommended to use 'transfer' or 'call.value' instead for secure fund transfers."
+}
+```

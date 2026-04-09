@@ -1,0 +1,34 @@
+[{
+    "contract_name": "JavaSwapTest",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Declaration unchanged. Overflow checks for updates to this mapping were added in mintToken.",
+            "variable_code": "mapping (address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Declaration unchanged. Overflow checks for updates to this variable were added in mintToken.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Assumed existing owner-only modifier. Unchanged in this patch.",
+            "modifier_code": "modifier onlyOwner() { _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added input validation and explicit overflow guards before performing arithmetic to prevent arithmetic overflow vulnerabilities while preserving original behavior and events.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    // Validate inputs\n    require(target != address(0));\n    require(mintedAmount > 0);\n\n    // Explicit overflow checks\n    require(balanceOf[target] + mintedAmount >= balanceOf[target]);\n    require(totalSupply + mintedAmount >= totalSupply);\n\n    // Perform state updates\n    balanceOf[target] += mintedAmount;\n    totalSupply += mintedAmount;\n\n    // Preserve original events/behavior\n    Transfer(0, this, mintedAmount);\n    Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,28 @@
+[{
+    "contract_name": "CT",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Ensure owner is stored as an address and used for authorization via msg.sender rather than tx.origin. Owner should be set in the constructor (not shown here).",
+            "variable_code": "address owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added an onlyOwner modifier that checks msg.sender for ownership, avoiding tx.origin usage.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawEther",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier and added a balance check to prevent overdrawing the contract.",
+            "corrected_code": "function withdrawEther(uint256 amount) public onlyOwner {\n    require(amount <= address(this).balance);\n    owner.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

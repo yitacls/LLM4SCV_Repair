@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "HRWtoken",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change needed for overflow protection as SafeMath will be applied to operations",
+            "variable_code": "mapping(address => uint256) balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to uint256 type to be compatible with SafeMath operations",
+            "variable_code": "uint256 totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed, but ensure owner is properly defined",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow vulnerability using SafeMath library for addition operations. Added comments for clarity and improved event emission.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n        // Add SafeMath operations to prevent overflow\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        // Emit transfer events\n        Transfer(0, address(this), mintedAmount);\n        Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "Added SafeMath Library",
+            "fix_info": "Added SafeMath library import and using directive to prevent arithmetic overflows",
+            "corrected_code": "library SafeMath {\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a, \"SafeMath: addition overflow\");\n        return c;\n    }\n}\n\ncontract HRWtoken {\n    using SafeMath for uint256;",
+            "change_type": "added"
+        }
+    ]
+}]
+```

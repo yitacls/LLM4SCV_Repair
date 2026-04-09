@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 42-50: uint srcAmount = wdiv(_exData.destAmount, _exData.offchainData.price) + 1;",
+    "description": "The calculation of srcAmount uses division with potential rounding issues followed by addition. In Solidity <0.8.0, arithmetic operations don't have built-in overflow/underflow protection. If wdiv() underflows to near maximum uint256 value, adding 1 will overflow back to 0, causing the contract to approve 0 tokens to the allowance target instead of the intended amount. This could lead to failed trades or unexpected behavior when _exData.offchainData.price is very large relative to _exData.destAmount."
+}
+```

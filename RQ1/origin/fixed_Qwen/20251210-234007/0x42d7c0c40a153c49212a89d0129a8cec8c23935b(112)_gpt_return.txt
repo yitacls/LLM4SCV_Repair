@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "OneEther",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setNewAdmin",
+            "fix_info": "Replaced insecure tx.origin check with secure msg.sender check using onlyOwner modifier",
+            "corrected_code": "function setNewAdmin(address _addr)\n    public\n    onlyOwner\n    {\n        admin = _addr;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

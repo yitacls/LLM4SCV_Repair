@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed from uint to uint256 mapping to prevent overflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "amountRaised",
+            "fix_info": "Changed from uint to uint256 to prevent overflow",
+            "variable_code": "uint256 public amountRaised;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities, added safe math using SafeMath library for 0.4.x, added ether unit validation, and improved payment handling",
+            "corrected_code": "function() external payable {\n    require(block.timestamp >= start && block.timestamp <= deadline, \"Crowdsale not active\");\n    require(amountRaised < (6000 ether), \"Funding cap reached\");\n    \n    uint256 amount = msg.value;\n    require(amount > 0, \"Zero ether not allowed\");\n    \n    // Safe addition with overflow check\n    uint256 newBalance = balanceOf[msg.sender] + amount;\n    require(newBalance >= balanceOf[msg.sender], \"Addition overflow\");\n    balanceOf[msg.sender] = newBalance;\n    \n    // Safe addition for amountRaised\n    uint256 newAmountRaised = amountRaised + amount;\n    require(newAmountRaised >= amountRaised, \"Addition overflow\");\n    require(newAmountRaised <= (6000 ether), \"Will exceed funding cap\");\n    amountRaised = newAmountRaised;\n    \n    emit FundTransfer(msg.sender, amount, true);\n    \n    // Use call.value()() pattern for safer ether transfer with gas stipend\n    bool success = beneficiary.call.value(amount)(\"\");\n    require(success, \"Transfer to beneficiary failed\");\n    emit FundTransfer(beneficiary, amount, false);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

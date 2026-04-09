@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout)",
+    "description": "In the code snippet provided, a low level call 'send' is used. send returns false in case of execution failure but it is not handled in the code. If the call fails for any reason, the contract will not be alerted and will continue execution as if the call were successful. This can result in unpredictable behavior of the contracts and funds may be lost. Therefore, the use of a low-level call poses a security risk. Low-level calls should be replaced with higher-level transfer functions and return values from calls should always be checked."
+}
+```

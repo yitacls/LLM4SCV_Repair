@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Base",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "WithdrawToken",
+            "fix_info": "Added check for low-level call return value to prevent unchecked call vulnerability",
+            "corrected_code": "function WithdrawToken(address token, uint256 amount)\n    public \n    {\n        if(msg.sender==creator)\n        {\n            require(token.call(bytes4(sha3(\"transfer(address,uint256)\")),creator,amount));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

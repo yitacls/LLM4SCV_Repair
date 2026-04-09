@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_recipient] += _value;",
+    "description": "The addition operation on balances[_recipient] += _value; is vulnerable to arithmetic overflow in Solidity ^0.4.11 which does not have built-in overflow protection. An attacker could potentially manipulate the _value parameter to cause an integer overflow, resulting in incorrect balance calculations. Similarly, the subtraction operation balances[msg.sender] -= _value; could be vulnerable to underflow if not properly checked. This could allow malicious users to create tokens out of thin air or manipulate balance calculations."
+}
+```

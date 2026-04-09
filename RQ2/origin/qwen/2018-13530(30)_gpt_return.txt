@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += amount;",
+    "description": "The addition operation balanceOf[target] += amount can cause an arithmetic overflow in Solidity version ^0.4.13, as there are no built-in overflow checks. This could allow an attacker to mint an excessive amount of tokens, causing the balance to wrap around to a small value or zero, potentially leading to unexpected behavior or exploitation."
+}
+```

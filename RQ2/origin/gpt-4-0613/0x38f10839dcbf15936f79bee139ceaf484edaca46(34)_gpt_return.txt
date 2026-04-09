@@ -1,0 +1,11 @@
+The vulnerability in the contract lies in the arithmetic calculation where the amount is transferred from the sender's balance to the recipient's balance. This piece of code is vulnerable to an underflow or overflow attack.
+
+Here's how to describe this vulnerability in JSON format:
+
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[msg.sender] -= _value; \n balances[_to] += _value;",
+    "description": "The arithmetic operations (substraction and addition) in this contract are vulnerable to underflow and overflow attacks. Underflow happens when the substractor's value is higher than the minuend. Overflow happens when the result of an addition operation exceeds the maximum size that can be stored in the variable type. It can lead to erroneous results and unexpected behaviors, which could be exploited by attackers."
+}
+```

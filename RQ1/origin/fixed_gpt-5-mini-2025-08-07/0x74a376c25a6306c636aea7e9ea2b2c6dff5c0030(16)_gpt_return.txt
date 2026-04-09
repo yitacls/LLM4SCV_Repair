@@ -1,0 +1,14 @@
+[{
+    "contract_name": "SEAPORT_Portfolio_VI_883",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added an explicit overflow check on the recipient balance before performing the addition to prevent arithmetic overflow (uint256). Preserves original behavior otherwise.",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n    require(balanceOf[msg.sender] >= value);\n    // Prevent overflow on recipient balance\n    require(balanceOf[to] + value >= balanceOf[to]);\n\n    balanceOf[msg.sender] -= value;\n    balanceOf[to] += value;\n\n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

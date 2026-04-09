@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.send( balanceToWithdraw() )",
+    "description": "This vulnerability lies in the low-level function .send(). This function returns 'false' on failure instead of throwing an exception. The caller must handle this (by including a 'require' statement to force it to revert if false is returned). The 'send()' function is not checked for its return value in the 'withdrawFrom()' function, meaning that if the 'send()' function fails, the contract will continue execution, leaving the contract in a potentially incorrect state."
+}
+```

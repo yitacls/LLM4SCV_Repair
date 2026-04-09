@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization in the private transfer() function, which is insecure. The private visibility prevents external calls, but if any other function exposes this method, tx.origin is vulnerable to phishing attacks where a malicious contract could trick the owner into calling a function that indirectly invokes transfer(). Additionally, tx.origin returns the original sender of the transaction, not the immediate caller, allowing intermediate contracts to bypass intended access controls. In Solidity ^0.4.25, this pattern risks unauthorized ownership transfer if combined with other exploitable functions."
+}
+```

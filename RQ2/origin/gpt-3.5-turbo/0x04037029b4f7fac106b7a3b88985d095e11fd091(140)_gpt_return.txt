@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "modifier onlyOwner() {...}",
+    "description": "The modifier onlyOwner() uses tx.origin to check ownership, which is a potential security risk as tx.origin can be manipulated in certain scenarios. It's recommended to use msg.sender instead of tx.origin for checking ownership."
+}
+```

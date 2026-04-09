@@ -1,0 +1,21 @@
+[{
+    "contract_name": "Withdrawal",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Ensure explicit uint256 type for balances to avoid ambiguity and to match overflow checks in functions.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback (payable)",
+            "fix_info": "Prevent arithmetic overflow when increasing the sender's balance by checking the sum before assignment.",
+            "corrected_code": "function () payable {\n        // calculate new balance and guard against overflow\n        uint256 newBalance = balanceOf[msg.sender] + msg.value;\n        require(newBalance >= balanceOf[msg.sender]);\n        balanceOf[msg.sender] = newBalance;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

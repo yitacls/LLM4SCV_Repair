@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "HunterCoin",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for addition operations.",
+                "corrected_code": "function mintToken(address target, uint256 amount) returns (uint256 mintedAmount) {\n      balanceOf[target] = balanceOf[target].add(amount);\n      totalSupply = totalSupply.add(amount);\n      Transfer(owner, target, amount);\n      return amount;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

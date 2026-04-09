@@ -1,0 +1,14 @@
+[{
+    "contract_name": "MP3Coin",
+    "contract_version": "^0.4.8",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "distribute",
+            "fix_info": "Added explicit arithmetic overflow checks when calculating the total amount and when crediting recipients to prevent integer overflow/underflow vulnerabilities while preserving original functionality.",
+            "corrected_code": "function distribute(address[] _addresses, uint[] _amounts) public returns (bool success) {\n        // Checkout input data\n        require(_addresses.length < 256 && _addresses.length == _amounts.length);\n\n        // Calculate total amount with overflow protection\n        uint totalAmount = 0;\n        for (uint a = 0; a < _amounts.length; a++) {\n            // Prevent overflow when accumulating\n            require(totalAmount + _amounts[a] >= totalAmount);\n            totalAmount += _amounts[a];\n        }\n\n        // Checkout account balance\n        require(totalAmount > 0 && balances[msg.sender] >= totalAmount);\n\n        // Deduct amount from sender\n        balances[msg.sender] -= totalAmount;\n\n        // Transfer amounts to receivers with overflow checks\n        for (uint b = 0; b < _addresses.length; b++) {\n            uint amount = _amounts[b];\n            if (amount > 0) {\n                // Prevent overflow when crediting recipient\n                require(balances[_addresses[b]] + amount >= balances[_addresses[b]]);\n                balances[_addresses[b]] += amount;\n                Transfer(msg.sender, _addresses[b], amount);\n            }\n        }\n\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

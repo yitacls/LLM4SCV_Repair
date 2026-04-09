@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.transfer(balance);",
+    "description": "The contract uses the outdated transfer() method, which forwards only 2300 gas. While this typically mitigates reentrancy, it's coupled with a state update pattern that is vulnerable in versions prior to 0.8.0. The contract updates `payouts[msg.sender]` and `totalPayouts` only after calculating the balance via the external call `dividends(msg.sender)`. If `dividends(msg.sender)` depends on state variables that could be altered by a reentrant call (e.g., if it reads from a storage variable that a fallback function could change), or if the recipient is a contract with a fallback function that uses more than 2300 gas (causing the transfer to throw in Solidity ^0.4.19), the entire transaction could revert, but the state changes (`payouts` and `totalPayouts`) have already been applied. This violates the checks-effects-interactions pattern. The correct fix is to follow CEI: calculate the balance, update all state variables, and then perform the external transfer."
+}
+```

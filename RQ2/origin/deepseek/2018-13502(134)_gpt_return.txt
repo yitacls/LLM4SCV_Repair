@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Arithmetic",
+        "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+        "description": "The contract uses the += operator without overflow protection. In Solidity versions prior to 0.8.0, integer arithmetic operations wrap around on overflow/underflow, which can lead to incorrect token balances and total supply calculations. An attacker could potentially exploit this to mint excessive tokens or create incorrect accounting states. This should be replaced with SafeMath library operations or the contract should be upgraded to Solidity 0.8.0+ which has built-in overflow checks."
+    }
+]
+```

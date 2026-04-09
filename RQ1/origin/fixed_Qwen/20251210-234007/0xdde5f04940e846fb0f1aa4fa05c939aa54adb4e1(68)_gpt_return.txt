@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "VLCToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() for ether transfer, which will properly revert on failure",
+            "corrected_code": "function() payable{\n        totalEthInWei = totalEthInWei + msg.value;\n        uint256 amount = msg.value * unitsOneEthCanBuy;\n        require(balances[fundsWallet] >= amount);\n        balances[fundsWallet] = balances[fundsWallet] - amount;\n        balances[msg.sender] = balances[msg.sender] + amount;\n        Transfer(fundsWallet, msg.sender, amount); \n        fundsWallet.transfer(msg.value);  // Fixed: using transfer() instead of send() for proper error handling\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

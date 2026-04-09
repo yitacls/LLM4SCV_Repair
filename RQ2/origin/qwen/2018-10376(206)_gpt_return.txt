@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] + _value < balances[_to]",
+    "description": "The addition operation balances[_to] + _value can overflow, leading to incorrect validation. In Solidity ^0.4.15, arithmetic operations are not protected against overflow/underflow by default. An attacker could potentially craft a transaction where the sum overflows, causing the validation to pass incorrectly when it should fail."
+}
+```

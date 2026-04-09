@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "Line: `ico += msg.value;`",
+    "description": "In Solidity version ^0.4.13, integer arithmetic operations on `uint` types do not automatically check for overflow or underflow. The operation `ico += msg.value;` could overflow if `ico` and `msg.value` sum exceeds the maximum value of the `uint` type (typically `2^256 - 1`). An attacker could exploit this by sending a large `msg.value`, causing `ico` to wrap around to a small or zero value, potentially manipulating contract state. The vulnerability should be mitigated by using SafeMath library or upgrading to Solidity ^0.8.0 which has built-in overflow checks."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "if(balances[to] + value < balances[to]) return false;",
+    "description": "This overflow check is incorrect for Solidity < 0.8.0. The condition 'balances[to] + value < balances[to]' attempts to detect overflow, but due to how Solidity handles arithmetic in versions prior to 0.8.0, this check is ineffective and may fail to prevent actual integer overflow. In versions before 0.8.0, arithmetic operations wrap around on overflow without reverting. The proper fix is to use SafeMath library or upgrade to Solidity 0.8.0+. Additionally, there is another vulnerability: the allowance check condition is reversed - it should be 'allowed[from][msg.sender] < value' to return false when insufficient allowance, not '>= value'."
+}
+```

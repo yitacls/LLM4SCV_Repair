@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) {",
+    "description": "The contract uses the deprecated and insecure low-level function call.value()() which forwards all remaining gas by default. This allows the caller (msg.sender) to be a malicious contract that implements a fallback function. When the contract sends Ether using call.value()() before updating the internal state (acc.balance-=_am), the malicious contract's fallback function can recursively call the Collect function again. Since the acc.balance hasn't been reduced yet, the condition acc.balance>=_am will still pass, allowing repeated withdrawals until the gas is exhausted or the contract's balance is drained. The use of the now-deprecated var keyword also indicates an older, more vulnerable Solidity version where best practices weren't enforced."
+}
+```

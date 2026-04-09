@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of 'tx.origin' for authorization purposes is dangerous. In this contract, the function 'withdrawEther' can be invoked by anyone if the transaction originates from the address of the owner. This leaves the contract susceptible to phishing attacks in which an unsuspecting owner can invoke a function of a malicious contract, which then calls the 'withdrawEther' function of this contract. A safer approach would be to use 'msg.sender' for authorization, which only checks the immediate sender of the call."
+}
+```

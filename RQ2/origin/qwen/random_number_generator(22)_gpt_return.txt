@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 x = salt * 100 / max;",
+        "description": "The variable 'x' is derived from predictable values (salt and max) and does not provide true randomness. Miners can manipulate these values to influence the outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 y = salt * block.number / (salt % 5);",
+        "description": "The variable 'y' uses block.number which is predictable and can be manipulated by miners. This makes the random number generation vulnerable to exploitation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 seed = block.number / 3 + (salt % 300) + y;",
+        "description": "The seed calculation relies heavily on block.number and other predictable values (salt, y). Since miners can influence block.number and know other parameters, they can predict and manipulate the random outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint256 h = uint256(blockhash(seed));",
+        "description": "Using blockhash with a seed derived from predictable values makes the hash predictable. Additionally, blockhash only works for the most recent 256 blocks, limiting its effectiveness and making it vulnerable to manipulation."
+    }
+]
+```

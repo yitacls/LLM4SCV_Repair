@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "amount * sellPrice in the line: if (!msg.sender.send(amount * sellPrice)) {",
+    "description": "The multiplication `amount * sellPrice` is susceptible to integer overflow. Since Solidity ^0.4.2 does not have built-in overflow protection (SafeMath was not standard), an attacker could call `sell` with a large `amount` value such that `amount * sellPrice` exceeds the maximum value of a uint256 (2^256 - 1). This would cause the multiplication to wrap around, resulting in a much smaller value (or zero) being sent to `msg.sender.send()`. Consequently, the seller would receive far fewer wei than intended, while the contract still deducts the full `amount` of RiptideCoin tokens from their balance, leading to a significant loss of funds."
+}
+```

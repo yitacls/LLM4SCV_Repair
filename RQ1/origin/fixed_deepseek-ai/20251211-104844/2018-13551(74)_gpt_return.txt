@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Bgamecoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Explicit mapping to track balances with SafeMath protections",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to use SafeMath operations to prevent overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added ownership modifier to restrict minting",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow vulnerabilities by using SafeMath for all arithmetic operations, added event emission, and input validation",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    // Safe arithmetic operations to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Emit Transfer events following best practices\n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

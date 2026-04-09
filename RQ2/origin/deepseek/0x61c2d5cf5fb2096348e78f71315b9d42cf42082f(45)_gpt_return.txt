@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_tokenId));",
+    "description": "This function uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. A malicious contract could trick the token owner into calling a function that then calls this approve() function, making tx.origin equal to the owner's address while msg.sender is the malicious contract address. This allows the attacker to get approval for any tokenId without being the actual owner. Additionally, the function doesn't verify that _tokenId exists or check that the owner actually intends to approve the specified tokenId to msg.sender."
+}
+```

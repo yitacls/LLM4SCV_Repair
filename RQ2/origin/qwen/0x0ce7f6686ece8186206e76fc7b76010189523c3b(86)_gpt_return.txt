@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "return (winnerAddress, bets[winnerAddress].totalBet);",
+    "description": "The function attempts to access bets[winnerAddress].totalBet where winnerAddress is initialized as address(0x0). If no players have placed bets or if the mapping does not have a valid entry for the zero address, this could lead to unexpected behavior or denial of service. The zero address is used as an initial placeholder but may not have a corresponding entry in the bets mapping, potentially causing the function to revert or return invalid data."
+}
+```

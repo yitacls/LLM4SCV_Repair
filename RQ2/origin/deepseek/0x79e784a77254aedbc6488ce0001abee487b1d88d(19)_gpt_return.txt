@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) {",
+    "description": "The Collect function uses a low-level call.value to send ETH to the caller before updating the acc.balance state variable. This creates a classic reentrancy vulnerability where a malicious contract (fallback or receive function) can recursively call Collect() multiple times before the balance is deducted, potentially draining the contract's funds. The use of Solidity 0.4.x (without Checks-Effects-Interactions pattern enforcement) and .call()'s forward-all-gas behavior exacerbates the risk."
+}
+```

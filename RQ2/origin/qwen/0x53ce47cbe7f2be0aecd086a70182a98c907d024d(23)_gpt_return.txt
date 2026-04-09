@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] += _value;",
+    "description": "The addition operation on balances[_to] += _value; can cause an integer overflow if the resulting balance exceeds the maximum value of uint256. Similarly, the subtraction operations balances[_from] -= _value; and allowed[_from][msg.sender] -= _value; can cause underflow if the resulting values go below zero. In Solidity ^0.4.13, these arithmetic operations are not protected against overflow/underflow by default, which could lead to unexpected behavior and potential exploitation."
+}
+```

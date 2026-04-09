@@ -1,0 +1,52 @@
+```json
+[
+    {
+        "contract_name": "DelegationService",
+        "contract_version": "^0.5.3",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "distributeBounty",
+                "fix_info": "Introduced check for number of delegations allowed inside a block time to mitigate the risk of DoS With Block Gas Limit vulnerability. Now, if the number of delegations exceed the limit, transaction will be reverted with a relevant message.",
+                "corrected_code": "
+                function distributeBounty(uint amount, uint validatorId) internal {
+                    ValidatorService validatorService = ValidatorService(contractManager.getContract(\"ValidatorService\"));
+
+                    SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));
+                    Distributor distributor = Distributor(contractManager.getContract(\"Distributor\"));
+                    SkaleBalances skaleBalances = SkaleBalances(contractManager.getContract(\"SkaleBalances\"));
+                    TimeHelpers timeHelpers = TimeHelpers(contractManager.getContract(\"TimeHelpers\"));
+                    DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));
+
+                    Distributor.Share[] memory shares;
+                    uint fee;
+                    (shares, fee) = distributor.distributeBounty(validatorId, amount);
+
+                    address validatorAddress = validatorService.getValidator(validatorId).validatorAddress;
+                    skaleToken.send(address(skaleBalances), fee, abi.encode(validatorAddress));
+                    skaleBalances.lockBounty(validatorAddress, timeHelpers.addMonths(_launchTimestamp, 3));
+                    // Check added to prevent DoS With Block Gas Limit
+                    require(shares.length <= 25, \"Too many delegations inside a single transaction\");
+
+                    for (uint i = 0; i < shares.length; ++i) {
+                        skaleToken.send(address(skaleBalances), shares[i].amount, abi.encode(shares[i].holder));
+
+                        uint created = delegationController.getDelegation(shares[i].delegationId).created;
+                        uint delegationStarted = timeHelpers.getNextMonthStartFromDate(created);
+                        skaleBalances.lockBounty(shares[i].holder, timeHelpers.addMonths(delegationStarted, 3));
+                    }
+                }
+                ",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getAllDelegationRequests",
+                "fix_info": "Removed function 'getAllDelegationRequests' which has no actual code and can cause confusion.",
+                "corrected_code": "",
+                "change_type": "deleted"
+            }
+        ]
+    }
+]
+```

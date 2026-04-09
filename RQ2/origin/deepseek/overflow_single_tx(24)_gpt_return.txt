@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "count *= input;",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. The multiplication 'count *= input;' can result in an integer overflow when the product exceeds type(uint256).max (2^256 - 1), causing the value to wrap around. This vulnerability could be exploited to manipulate the 'count' variable to unexpected values. The vulnerability is particularly dangerous because it occurs in a single transaction without any overflow checks. It's recommended to use SafeMath library or upgrade to Solidity ≥0.8.0 which has built-in overflow checks."
+}
+```

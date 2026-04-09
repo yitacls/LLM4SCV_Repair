@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenFallbackCaller",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "callTokenFallbackIfNeeded",
+            "fix_info": "Added check for low-level call success to prevent unchecked return values",
+            "corrected_code": "function callTokenFallbackIfNeeded(address sender, address recipient, uint amount, bytes data)\n        internal\n        preventReentrancy\n    {\n        uint length;\n        assembly {\n            length := extcodesize(recipient)\n        }\n        if (length > 0) {\n            require(recipient.call(abi.encodeWithSignature(\"tokenFallback(address,uint256,bytes)\", sender, amount, data)));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

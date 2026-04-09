@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "Arithmetic",
+            "location": "if (balances[_to] + _amount < balances[_to]) throw;",
+            "description": "This overflow check uses the deprecated 'throw' statement and is less secure than using 'require()'. More critically, in Solidity ^0.4.11, arithmetic operations for uint256 are unchecked by default, making this explicit check necessary but implemented with outdated error handling. The 'throw' statement consumes all gas and is obsolete. Additionally, the state variable 'supply' is incremented without an explicit overflow check, though it may be implicitly protected by the same addition logic."
+        },
+        {
+            "type": "Arithmetic",
+            "location": "supply += _amount; and balances[_to] += _amount;",
+            "description": "These addition operations are susceptible to overflow in Solidity versions prior to 0.8.0, as arithmetic is unchecked by default. While a check exists for balances[_to] overflow, there is no explicit overflow check for 'supply += _amount'. An overflow in 'supply' could corrupt the total supply tracking."
+        }
+    ]
+}
+```

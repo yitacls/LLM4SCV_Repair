@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "isSuccess = investorsAddress[i].send(paymentAmount);",
+    "description": "The low-level call '.send()' returns a boolean indicating success/failure but the code fails to check this return value. If '.send()' fails (returns false), the contract continues execution without handling the failure, resulting in lost transfers where investorsEarned[i] is already set to 0 but the investor never received their payment. Additionally, in Solidity 0.4.24, '.send()' forwards only 2300 gas which may be insufficient for receiving contracts with fallback functions, increasing failure risk."
+}
+```

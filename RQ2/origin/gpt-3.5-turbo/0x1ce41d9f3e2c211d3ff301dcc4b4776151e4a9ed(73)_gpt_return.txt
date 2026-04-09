@@ -1,0 +1,24 @@
+```json
+{
+    "result": {
+        "function": "tokenOf",
+        "visibility": "public",
+        "parameters": [
+            {
+                "name": "_user",
+                "type": "address"
+            }
+        ],
+        "returns": {
+            "type": "uint256",
+            "name": "_result"
+        },
+        "code": "DonQuixoteToken.balanceOf(_user);",
+        "vulnerability": {
+            "type": "access_control",
+            "location": "fout line",
+            "description": "This code allows any user to access the balance of any other user without any access control check or authorization mechanism."
+        }
+    }
+}
+```

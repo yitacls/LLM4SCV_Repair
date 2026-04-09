@@ -1,0 +1,26 @@
+The identified vulnerability is SWC-104-Unchecked Call Return Value found in the pwr() function of the SafeMath library. The pwr() function in the SafeMath library does not check the return value of the mul() function which can lead to hard to catch bugs. 
+
+In Solidity, it's a good idea to always check for function return values and handle any false return values properly. 
+
+We can fix the pwr() function by adding require check after mul() function to ensure it returns only when successful. 
+
+The corrected function is returned in JSON format below:
+
+```json
+[{
+    "contract_name": "SafeMath",
+    "contract_version": ">=0.5.0 <0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "pwr",
+            "fix_info": "Added checks to ensure the mul function was successfully completed.",
+            "corrected_code": "function pwr(uint256 x, uint256 y) internal pure returns(uint256) { \n    if (x == 0)\n      return (0);\n    else if (y == 0)\n      return (1);\n    else {\n      uint256 z = x;\n      for (uint256 i = 1; i < y; i++) {\n        z = mul(z, x);\n        require(z != 0, 'multiplication failed');\n      }\n      return (z); \n    }\n}",
+            "change_type": "modified"
+        }
+    ],
+}]
+``` 
+
+In the corrected function, a require statement is added after the mul() operation. This will trigger a revert and the transaction will stop if mul() doesn't execute as expected.

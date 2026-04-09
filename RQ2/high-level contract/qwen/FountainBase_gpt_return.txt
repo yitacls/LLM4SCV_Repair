@@ -1,0 +1,48 @@
+```json
+[
+    {
+        "contract_name": "FountainBase",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Applied reentrancy guard by moving state changes before external calls to prevent potential reentrancy attacks.",
+                "corrected_code": "function deposit(uint256 amount) external nonReentrant {\n    // Mint token\n    _mint(_msgSender(), amount);\n\n    // Transfer user staking token\n    stakingToken.safeTransferFrom(_msgSender(), address(this), amount);\n\n    emit Deposit(_msgSender(), amount, _msgSender());\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "depositTo",
+                "fix_info": "Applied reentrancy guard by moving state changes before external calls to prevent potential reentrancy attacks.",
+                "corrected_code": "function depositTo(uint256 amount, address to) external nonReentrant {\n    // Mint token\n    _mint(to, amount);\n\n    // Transfer user staking token\n    stakingToken.safeTransferFrom(_msgSender(), address(this), amount);\n    emit Deposit(_msgSender(), amount, to);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Applied reentrancy guard by moving state changes before external calls to prevent potential reentrancy attacks.",
+                "corrected_code": "function withdraw(uint256 amount) external nonReentrant {\n    // Withdraw entire balance if amount == UINT256_MAX\n    amount = amount == type(uint256).max ? balanceOf(_msgSender()) : amount;\n\n    // Burn token\n    _burn(_msgSender(), amount);\n\n    // Transfer user staking token\n    stakingToken.safeTransfer(_msgSender(), amount);\n    emit Withdraw(_msgSender(), amount, _msgSender());\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawTo",
+                "fix_info": "Applied reentrancy guard by moving state changes before external calls to prevent potential reentrancy attacks.",
+                "corrected_code": "function withdrawTo(uint256 amount, address to) external nonReentrant {\n    // Withdraw entire balance if amount == UINT256_MAX\n    amount = amount == type(uint256).max ? balanceOf(_msgSender()) : amount;\n\n    // Burn token\n    _burn(_msgSender(), amount);\n\n    // Transfer user staking token\n    stakingToken.safeTransfer(to, amount);\n    emit Withdraw(_msgSender(), amount, to);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "emergencyWithdraw",
+                "fix_info": "Applied reentrancy guard by moving state changes before external calls to prevent potential reentrancy attacks.",
+                "corrected_code": "function emergencyWithdraw() external nonReentrant {\n    uint256 amount = balanceOf(_msgSender());\n\n    // Burn token\n    _burn(_msgSender(), type(uint256).max);\n\n    // Transfer user staking token\n    stakingToken.safeTransfer(_msgSender(), amount);\n    emit EmergencyWithdraw(_msgSender(), amount, _msgSender());\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_joinAngel",
+                "fix_info": "Applied reentrancy guard by adding nonReentrant modifier to prevent potential reentrancy attacks during angel joining process.",
+                "corrected_code": "function _joinAngel(IAngel angel, address user) internal nonReentrant {\n    IAngel[] storage angels = _joinedAngels[user];\n    for (uint256 i = 0; i < angels.length; i++) {\n        _requireMsg(angels[i] != angel, \"_joinAngel\", \"Angel joined\");\n    }\n    angels.push(angel);\n\n    emit Join(user, address(angel));\n\n    // Update user info at angel\n    _depositAngel(user, angel, balanceOf(user));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint c0 = a * b;\nrequire(a == 0 || c0 / a == b, \"ERR_MUL_OVERFLOW\");",
+        "description": "The multiplication `a * b` may cause an integer overflow before the check `c0 / a == b`. Although there is a check, it's placed after the multiplication, which means the overflow could occur prior to detection. In Solidity 0.5.12, there is no automatic overflow protection, so this can lead to unintended behavior or incorrect results."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint c0 = a * BONE;\nrequire(a == 0 || c0 / a == BONE, \"ERR_DIV_INTERNAL\");",
+        "description": "Multiplication of `a * BONE` may result in an overflow before the check `c0 / a == BONE`. Similar to the previous case, the check happens post-operation and does not prevent the initial overflow from occurring, which might be exploited depending on the usage context."
+    }
+]
+```

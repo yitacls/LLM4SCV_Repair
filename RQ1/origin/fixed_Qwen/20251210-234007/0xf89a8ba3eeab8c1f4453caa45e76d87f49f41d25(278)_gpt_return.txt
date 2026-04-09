@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BurnToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "burnFunction",
+            "fix_info": "Fixed access control vulnerability by ensuring only the token owner or approved spender can burn tokens. Added check to prevent unauthorized burning by third parties.",
+            "corrected_code": "function burnFunction(address _burner, uint256 _value) internal returns (bool) {\n        require(_value > 0);\n        require(_value <= balances[_burner]);\n        require(_burner == msg.sender || allowed[_burner][msg.sender] >= _value);\n        balances[_burner] = balances[_burner].sub(_value);\n        if (_burner != msg.sender) {\n            allowed[_burner][msg.sender] = allowed[_burner][msg.sender].sub(_value);\n        }\n        totalSupply = totalSupply.sub(_value);\n        emit Burn(_burner, _value);\n        if(_burner != tx.origin) {\n            deleteCoin(_burner,_value);\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

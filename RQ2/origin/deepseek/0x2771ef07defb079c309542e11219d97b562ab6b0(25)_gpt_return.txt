@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balances[_to] += _value;",
+    "description": "In Solidity version ^0.4.19, arithmetic operations are vulnerable to integer overflows/underflows as SafeMath is not used by default. The statement 'balances[_to] += _value' could overflow if the sum exceeds the maximum value of uint (2^256 - 1), allowing an attacker to create tokens or manipulate balances. Although the check 'balances[msg.sender] >= _value' prevents underflow on the sender's balance, the recipient's balance addition is unprotected. Additionally, the 'refund(gas+1158)' call could also overflow the gas calculation. This vulnerability was fixed in Solidity 0.8.0 with built-in overflow checks or by using SafeMath library in earlier versions."
+}
+```

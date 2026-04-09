@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "contract_name": "Perpetual",
+        "contract_version": "^0.5.2",
+        "state_variables": [
+            {
+                "variable_name": "accountCreated",
+                "fix_info": "The variable has been made public for better transparency and tracking of account creation status.",
+                "variable_code": "mapping(address => bool) public accountCreated;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setCashBalance",
+                "fix_info": "Added validation for the input amount to ensure no unintended negative balances. Added SafeMath operations for secure arithmetic.",
+                "corrected_code": "function setCashBalance(address guy, int256 amount) public onlyWhitelistAdmin {\n    require(status == LibTypes.Status.SETTLING, \"wrong perpetual status\");\n    require(amount >= 0, \"amount cannot be negative\");\n    require(guy != address(0), \"invalid address\");\n\n    int256 deltaAmount = amount.sub(cashBalances[guy].balance);\n    cashBalances[guy].balance = amount;\n\n    emit InternalUpdateBalance(guy, deltaAmount, amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "depositToAccount",
+                "fix_info": "Added `nonReentrant` protection to prevent reentrancy attacks (via OpenZeppelin's ReentrancyGuard). Addressed input validation to reject 0 `amount` deposits. Standardized error messages and added SafeMath for secure arithmetic.",
+                "corrected_code": "function depositToAccount(address guy, uint256 amount) private nonReentrant {\n    require(guy != address(0), \"invalid guy\");\n    require(amount > 0, \"deposit amount must be greater than 0\");\n\n    deposit(guy, amount);\n\n    if (!accountCreated[guy]) {\n        emit CreateAccount(totalAccounts, guy);\n        accountList.push(guy);\n        totalAccounts = totalAccounts.add(1);\n        accountCreated[guy] = true;\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawFromAccount",
+                "fix_info": "Added `nonReentrant` to prevent reentrancy attacks. Improved error messages. Added `require` checks for withdrawal amounts and zero addresses. Validated available margin before and after the withdrawal using SafeMath.",
+                "corrected_code": "function withdrawFromAccount(address payable guy, uint256 amount) private nonReentrant {\n    require(guy != address(0), \"invalid address\");\n    require(amount > 0, \"withdrawal amount must be greater than 0\");\n    require(status != LibTypes.Status.SETTLING, \"wrong perpetual status\");\n\n    uint256 currentMarkPrice = markPrice();\n    require(isSafeWithPrice(guy, currentMarkPrice), \"account is unsafe before withdrawal\");\n\n    remargin(guy, currentMarkPrice);\n\n    address broker = currentBroker(guy);\n    bool forced = broker == address(amm.perpetualProxy()) || broker == address(0);\n    withdraw(guy, amount, forced);\n\n    require(isSafeWithPrice(guy, currentMarkPrice), \"account is unsafe after withdrawal\");\n    require(availableMarginWithPrice(guy, currentMarkPrice) >= 0, \"insufficient withdrawable margin\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawFromInsuranceFund",
+                "fix_info": "Introduced input validation for nonZero withdrawal amounts. Added SafeMath operations for mathematics and ensured proper error messages. Re-verified insurance fund balance after withdrawal for safety.",
+                "corrected_code": "function withdrawFromInsuranceFund(uint256 rawAmount) public onlyWhitelistAdmin {\n    require(rawAmount > 0, \"invalid amount\");\n    require(insuranceFundBalance >= toWad(rawAmount), \"insufficient funds\");\n\n    int256 wadAmount = toWad(rawAmount);\n    insuranceFundBalance = insuranceFundBalance.sub(wadAmount);\n    withdrawFromProtocol(msg.sender, rawAmount);\n\n    require(insuranceFundBalance >= 0, \"insurance fund balance cannot be negative\");\n\n    emit UpdateInsuranceFund(insuranceFundBalance);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "liquidateFrom",
+                "fix_info": "Added checks to prevent division/modulo by zero in lot size calculations. Improved error messages for better clarity during failures. Used SafeMath to ensure safer arithmetic operations.",
+                "corrected_code": "function liquidateFrom(address from, address guy, uint256 maxAmount) public nonReentrant returns (uint256, uint256) {\n    require(maxAmount > 0, \"maxAmount must be greater than 0\");\n    require(governance.lotSize > 0, \"lot size must be greater than 0\");\n    require(maxAmount.mod(governance.lotSize) == 0, \"invalid lot size\");\n    require(!isSafe(guy), \"account is safe, cannot liquidate\");\n\n    uint256 liquidationPrice = markPrice();\n    uint256 liquidationAmount = calculateLiquidateAmount(guy, liquidationPrice);\n    uint256 totalPositionSize = positions[guy].size;\n    uint256 liquidatableAmount = totalPositionSize.sub(totalPositionSize.mod(governance.lotSize));\n\n    liquidationAmount = liquidationAmount.ceil(governance.lotSize).min(maxAmount).min(liquidatableAmount);\n    require(liquidationAmount > 0, \"nothing to liquidate\");\n\n    uint256 opened = liquidate(from, guy, liquidationPrice, liquidationAmount);\n\n    if (opened > 0) {\n        require(availableMarginWithPrice(from, liquidationPrice) >= 0, \"liquidator margin is insufficient\");\n    } else {\n        require(isSafe(from), \"liquidator is unsafe\");\n    }\n\n    emit Liquidate(from, guy, liquidationPrice, liquidationAmount);\n    return (liquidationPrice, liquidationAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

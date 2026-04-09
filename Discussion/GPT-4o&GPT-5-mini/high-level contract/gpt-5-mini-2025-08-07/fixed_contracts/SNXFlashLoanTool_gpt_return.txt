@@ -1,0 +1,46 @@
+[{
+    "contract_name": "SNXFlashLoanTool",
+    "contract_version": "^0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "_NOT_ENTERED, _ENTERED, _status",
+            "fix_info": "Added a reentrancy guard using a status flag to prevent reentrant calls to critical functions.",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;\nuint256 private constant _ENTERED = 2;\nuint256 private _status = _NOT_ENTERED;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a nonReentrant modifier to prevent reentrancy on functions that perform external calls and state changes.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "burn",
+            "fix_info": "Avoid implicit string to bytes32 conversion when calling synthetix.debtBalanceOf; keep original functionality.",
+            "corrected_code": "function burn(\n    uint256 sUSDAmount,\n    uint256 snxAmount,\n    address exchange,\n    bytes calldata exchangeData\n) external override {\n    address[] memory assets = new address[](1);\n    assets[0] = address(sUSD);\n\n    uint256[] memory amounts = new uint256[](1);\n    // Use explicit bytes32 currency key to avoid implicit/deprecated conversions\n    bytes32 sUSDKey = bytes32(\"sUSD\");\n    amounts[0] = sUSDAmount == type(uint256).max ? synthetix.debtBalanceOf(msg.sender, sUSDKey) : sUSDAmount;\n\n    uint256[] memory modes = new uint256[](1);\n    // Mode is set to 0 so the flash loan doesn't incur any debt\n    modes[0] = 0;\n\n    // Initiate flash loan\n    LENDING_POOL.flashLoan(\n        address(this),\n        assets,\n        amounts,\n        modes,\n        address(this),\n        abi.encode(snxAmount, msg.sender, exchange, exchangeData),\n        referralCode\n    );\n\n    emit Burn(msg.sender, amounts[0], snxAmount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "executeOperation",
+            "fix_info": "Applied nonReentrant guard, replaced unsafe ERC20.transfer with SafeERC20.safeTransfer, added checks for sufficient swapped sUSD, and used safe approve pattern (zero then set) for Aave repayment approval.",
+            "corrected_code": "function executeOperation(\n    address[] calldata assets,\n    uint256[] calldata amounts,\n    uint256[] calldata premiums,\n    address initiator,\n    bytes calldata params\n) external override nonReentrant returns (bool) {\n    require(msg.sender == address(LENDING_POOL), \"SNXFlashLoanTool: Invalid msg.sender\");\n    require(initiator == address(this), \"SNXFlashLoanTool: Invalid initiator\");\n\n    (uint256 snxAmount, address user, address exchange, bytes memory exchangeData) = abi.decode(\n        params,\n        (uint256, address, address, bytes)\n    );\n\n    // Send flash-borrowed sUSD to user so they can burn\n    sUSD.safeTransfer(user, amounts[0]);\n\n    // Burn sUSD with flash loaned amount on behalf of the user\n    synthetix.burnSynthsOnBehalf(user, amounts[0]);\n\n    // Transfer specified SNX amount from user for swap\n    snx.safeTransferFrom(user, address(this), snxAmount);\n\n    // Swap SNX to sUSD on the specified DEX\n    uint256 receivedSUSD = swap(snxAmount, exchange, exchangeData);\n\n    // Approve owed sUSD amount to Aave (amount + premium)\n    uint256 amountOwing = amounts[0].add(premiums[0]);\n\n    require(receivedSUSD >= amountOwing, \"SNXFlashLoanTool: Insufficient sUSD to repay\");\n\n    // Use safe approve pattern: set allowance to 0 first if needed, then set desired amount\n    uint256 currentAllowance = sUSD.allowance(address(this), address(LENDING_POOL));\n    if (currentAllowance != 0) {\n        sUSD.safeApprove(address(LENDING_POOL), 0);\n    }\n    sUSD.safeApprove(address(LENDING_POOL), amountOwing);\n\n    // Transfer leftover sUSD on this contract to the user\n    if (receivedSUSD > amountOwing) {\n        sUSD.safeTransfer(user, receivedSUSD.sub(amountOwing));\n    }\n\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "swap",
+            "fix_info": "Applied safe approve pattern (zero then set) to mitigate approval-race issues; moved the authorization check before approvals; reset allowance to zero after swap to minimize risk; preserved original swap behavior while protecting against reentrancy via the nonReentrant guard on executeOperation.",
+            "corrected_code": "function swap(\n    uint256 amount,\n    address exchange,\n    bytes memory data\n) internal returns (uint256) {\n    // Security check to prevent unauthorized addresses\n    require(\n        exchange != address(LENDING_POOL) && exchange != address(synthetix) && exchange != address(snx),\n        \"SNXFlashLoanTool: Unauthorized address\"\n    );\n\n    // Perform safe approval (set to 0 first if required by token implementations)\n    uint256 currentAllowance = snx.allowance(address(this), exchange);\n    if (currentAllowance < amount) {\n        if (currentAllowance != 0) {\n            snx.safeApprove(exchange, 0);\n        }\n        snx.safeApprove(exchange, amount);\n    }\n\n    // External call to the exchange\n    (bool success, ) = exchange.call(data);\n    require(success, \"SNXFlashLoanTool: Swap failed\");\n\n    // Reset any remaining allowance to 0 to reduce risk of token pull by exchange\n    uint256 postAllowance = snx.allowance(address(this), exchange);\n    if (postAllowance != 0) {\n        snx.safeApprove(exchange, 0);\n    }\n\n    return sUSD.balanceOf(address(this));\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferToken",
+            "fix_info": "Minor safety: cache token and balance locally and only attempt transfer if balance > 0; preserves onlyOwner access control.",
+            "corrected_code": "function transferToken(address token) external onlyOwner {\n    IERC20 t = IERC20(token);\n    uint256 bal = t.balanceOf(address(this));\n    if (bal > 0) {\n        t.safeTransfer(msg.sender, bal);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

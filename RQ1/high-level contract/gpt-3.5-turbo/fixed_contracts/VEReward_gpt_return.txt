@@ -1,0 +1,22 @@
+```json
+{
+    "contract_name": "Reward",
+    "contract_version": "0.8.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getBlockByTime",
+            "fix_info": "Fixed the potential DoS vulnerability by limiting the number of iterations in the binary search loop.",
+            "corrected_code": "function getBlockByTime(uint _time) public view returns (uint) {\n        uint _min = 0;\n        uint _max = point_history.length - 1;\n        for (uint i = 0; i < 128 && _min < _max; ++i) {\n            uint _mid = (_min + _max + 1) / 2;\n            if (point_history[_mid].ts <= _time) {\n                _min = _mid;\n            } else {\n                _max = _mid - 1;\n            }\n        }\n\n        Point memory point0 = point_history[_min];\n        Point memory point1 = point_history[_min + 1];\n        uint block_slope = (BlockMultiplier * (point1.blk - point0.blk)) / (point1.ts - point0.ts);\n        uint dblock = (block_slope * (_time - point0.ts)) / BlockMultiplier;\n        return point0.blk + dblock;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimRewardMany",
+            "fix_info": "Prevented possible DoS With Block Gas Limit by limiting the number of tokenIds processed in each transaction.",
+            "corrected_code": "function claimRewardMany(uint[] calldata tokenIds, Interval[][] calldata intervals) public returns (uint[] memory rewards) {\n        require(tokenIds.length <= 10, 'Exceeds maximum allowed tokenIds in one transaction');\n        rewards = new uint[](tokenIds.length);\n        for (uint i = 0; i < tokenIds.length; i++) {\n            rewards[i] = claimReward(tokenIds[i], intervals[i]);\n        }\n        return rewards;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}
+```

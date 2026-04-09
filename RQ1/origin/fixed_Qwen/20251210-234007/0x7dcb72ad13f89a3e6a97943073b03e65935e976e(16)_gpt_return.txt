@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WhiteList",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "addPack",
+            "fix_info": "Fixed arithmetic overflow vulnerability in controlSum calculation by adding overflow check before addition",
+            "corrected_code": "function addPack(address[] addrs, uint16 _chunkNr)\n    setupOnly\n    adminOnly\n    external {\n        require ( chunkNr++ == _chunkNr);\n        for(uint16 i=0; i<addrs.length; ++i){\n            contains[addrs[i]] = true;\n            require(controlSum + uint160(addrs[i]) >= controlSum); // Check for overflow\n            controlSum += uint160(addrs[i]);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

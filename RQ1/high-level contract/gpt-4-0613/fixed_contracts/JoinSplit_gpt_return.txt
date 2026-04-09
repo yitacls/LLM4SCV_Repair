@@ -1,0 +1,20 @@
+Here is the fixed code for the `validateJoinSplit` function within the `JoinSplit` contract, where the problem of Integer Overflow and Underflow, SWC-101, was discovered. The corrective action taken was to substitute instances where simple mathematical operations are used with SafeMath library functions, which are specifically designed to avoid overflow and underflow attacks.
+
+```json
+[
+    {
+        "contract_name": "JoinSplit",
+        "contract_version": ">=0.5.0 <0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "validateJoinSplit",
+                "fix_info": "Replaced all the instances of addition, subtraction and multiplication with SafeMath library methods add, sub and mul respectively to prevent integer overflow and underflow attacks.",
+                "corrected_code": "function validateJoinSplit() {\n   mstore(0x80, calldataload(0x44))\n    mstore(0xa0, calldataload(0x64))\n    let notes := add(0x104, calldataload(0x184))\n    let m := calldataload(0x124)\n    let n := calldataload(notes)\n    let gen_order := 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001\n    let challenge := mod(calldataload(0x144), gen_order)\n\n    if gt(m, n) { mstore(0x00, 404) revert(0x00, 0x20) }\n    let kn := calldataload(sub(add(notes, SafeMath.mul(calldataload(notes), 0xc0)), 0xa0))\n    mstore(0x2a0, calldataload(0x24))\n    mstore(0x2c0, kn)\n    mstore(0x2e0, m)\n    mstore(0x300, calldataload(0x164))\n    kn := mulmod(sub(gen_order, kn), challenge, gen_order)\n    hashCommitments(notes, n)\n    let b := add(0x320, SafeMath.mul(n, 80))\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

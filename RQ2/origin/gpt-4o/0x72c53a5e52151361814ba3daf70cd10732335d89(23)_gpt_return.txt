@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "allInvestments -= investments[msg.sender].amount;",
+    "description": "The arithmetic operation `allInvestments -= investments[msg.sender].amount;` is vulnerable to underflow errors in Solidity versions prior to 0.8.0. If `investments[msg.sender].amount` exceeds `allInvestments`, the subtraction leads to an unintended large value, causing incorrect functionality in the contract."
+}
+```

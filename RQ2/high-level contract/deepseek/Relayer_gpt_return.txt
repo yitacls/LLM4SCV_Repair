@@ -1,0 +1,19 @@
+【```json
+[
+    {
+        "type": "SWC-102: Outdated Compiler Version",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The contract uses Solidity version 0.7.6, which is outdated. This version lacks critical security features and bug fixes present in later versions (0.8.x and above), including built-in overflow/underflow protection, improved error handling, and other security enhancements. Using outdated compilers increases the risk of undetected vulnerabilities."
+    },
+    {
+        "type": "SWC-103: Floating Pragma",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The floating pragma '^0.7.6' allows compilation with any Solidity version from 0.7.6 to 0.8.0 (excluding 0.8.0). This can lead to deployment with different compiler versions across environments, potentially introducing inconsistencies, unexpected behaviors, or undiscovered vulnerabilities. Contracts should use a fixed pragma (e.g., 'pragma solidity 0.7.6;') for reproducible builds."
+    },
+    {
+        "type": "SWC-101: Integer Overflow and Underflow",
+        "location": "Lines 21-23: using SafeMath for uint; using SafeMath for uint128; using SafeMath for uint64;",
+        "description": "While SafeMath is imported and used for uint, uint128, and uint64 types, the contract is compiled with Solidity 0.7.6. SafeMath is redundant and not automatically applied in arithmetic operations in version 0.7.6 (unlike 0.8.x where overflow/underflow protection is built-in). Arithmetic operations (e.g., in _getPrices() function) must explicitly use SafeMath functions (like .add(), .mul(), .div()) to prevent overflows/underflows. However, the contract does use SafeMath operations in _getPrices(), but any unprotected arithmetic elsewhere could still be vulnerable. The reliance on SafeMath in version 0.7.6 requires careful manual application to all operations."
+    }
+]
+```】

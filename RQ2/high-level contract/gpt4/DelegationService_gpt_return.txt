@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Line 152-158: function getAllDelegationRequests()...",
+        "description": "This function does not have any effect, since it is simply set up to always revert. It seems to be a placeholder for possible future implementation, but currently it is just consuming gas without providing any return value or having any effect on the state. This could cause unnecessary loss of gas for the caller."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Line 310-316: for (uint i = 0; i < shares.length; ...",
+        "description": "This function iterates over the 'shares' array with a loop. If the size of this array is very large, the operations inside the loop could consume all available gas and cause the transaction to fail. This can be exploited by an attacker to cause the contract to consume all its gas and prevent other operations from completing, resulting in a Denial of Service."
+    }
+]
+```

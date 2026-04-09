@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "function addAddWhitelist(address s) public {\n      require(tx.origin == owner);  // fault line\n      addrWhitelist[s] = true;\n  }",
+  "description": "The function uses tx.origin for access control (require(tx.origin == owner)). Relying on tx.origin is insecure because it allows a phishing-style attack: an attacker can deploy a malicious contract that causes the contract owner (an EOA) to call the malicious contract, which then calls addAddWhitelist. In that call tx.origin is the owner's EOA, so the require check passes even though msg.sender is the attacker's contract, enabling the attacker to add arbitrary addresses to the whitelist. This breaks proper access control and contract composability. Mitigation: use msg.sender for caller identity checks (e.g., require(msg.sender == owner)) or, better, adopt a standard ownership pattern (Ownable) and an onlyOwner modifier to restrict access. Also consider making the function external and emitting events for whitelist changes."
+}

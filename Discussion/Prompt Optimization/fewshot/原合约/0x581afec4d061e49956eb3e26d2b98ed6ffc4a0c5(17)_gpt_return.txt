@@ -1,0 +1,26 @@
+```json
+[
+    {
+        "contract_name": "EasyInvestss",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Use transfer() instead of send() to handle low-level calls.",
+                "corrected_code": "function () external payable {
+        if (invested[msg.sender] != 0) {
+            uint256 amount = invested[msg.sender] * 4 / 100 * (block.number - atBlock[msg.sender]) / 5900;
+            address sender = msg.sender;
+            sender.transfer(amount);  
+        }
+        atBlock[msg.sender] = block.number;
+        invested[msg.sender] += msg.value;
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

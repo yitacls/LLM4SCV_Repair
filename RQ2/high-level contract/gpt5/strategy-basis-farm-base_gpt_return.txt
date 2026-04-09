@@ -1,0 +1,12 @@
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IERC20(token1).transfer(\n                IController(controller).treasury(),\n                IERC20(token1).balanceOf(address(this))\n            );",
+        "description": "The contract calls ERC20.transfer(...) directly and ignores the returned boolean value. Many ERC20 implementations return a boolean indicating success; if the token's transfer returns false (or reverts), the contract will not detect the failure. This can cause funds to remain in the contract when the code assumes they were sent to the treasury, potentially breaking accounting or leaving dust tokens stuck. Recommended fix: use OpenZeppelin's SafeERC20.safeTransfer(...) which checks return values and reverts on failure, or explicitly check the returned bool and revert on false."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "UniswapRouterV2(univ2Router2).addLiquidity(\n                token1,\n                token2,\n                _token1,\n                _token2,\n                0,\n                0,\n                address(this),\n                now + 60\n            );",
+        "description": "addLiquidity(...) returns (uint amountA, uint amountB, uint liquidity) but the contract ignores these return values and does not check whether the call succeeded as expected. Although addLiquidity will generally revert on failure, relying on ignored return values may hide unexpected behavior (e.g., receiving zero liquidity if slippage parameters or approvals are incorrect). Recommended fix: capture the returned values and validate them (for example ensure `liquidity > 0`), and handle or revert on unexpected results. If using a router that may not revert, wrap the call with checks or use try/catch where appropriate."
+    }
+]

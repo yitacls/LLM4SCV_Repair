@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 323: protocolControlledValue += _oraclePrice.mul(_totalTokenBalance).asUint256();",
+    "description": "The multiplication of _oraclePrice and _totalTokenBalance could potentially overflow before being converted to uint256. While Solidity 0.8.x has built-in overflow checks for arithmetic operations, this calculation occurs within the Decimal library's mul() function (not shown in the provided code). If the Decimal library doesn't implement proper overflow checks or safe math operations, an overflow could occur when multiplying large token balances by high oracle prices, leading to incorrect protocolControlledValue calculations and potentially affecting the collateralization ratio."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "lockTime[msg.sender] += _secondsToIncrease;",
+    "description": "The addition operation is vulnerable to integer overflow. In Solidity version ^0.4.0, arithmetic operations do not have built-in overflow protection. When _secondsToIncrease is added to lockTime[msg.sender], if the result exceeds the maximum value that can be stored in the integer type, it will wrap around to a smaller value, potentially allowing an attacker to manipulate the lock time in unexpected ways. This could lead to security vulnerabilities where lock times are shorter than intended."
+}
+```

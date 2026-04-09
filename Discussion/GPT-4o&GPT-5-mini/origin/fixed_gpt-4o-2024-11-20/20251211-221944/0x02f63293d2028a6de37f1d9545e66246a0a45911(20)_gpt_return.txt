@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Burner",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "DragonsBurned",
+                "fix_info": "Added SafeMath to prevent integer overflow/underflow when updating DragonsBurned.",
+                "variable_code": "using SafeMath for uint256;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyDragon",
+                "fix_info": "No change made as it is not part of the vulnerability described.",
+                "modifier_code": "modifier onlyDragon {...}",
+                "change_type": "unchanged"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "dragonHandler",
+                "fix_info": "Added SafeMath to handle arithmetic operation on DragonsBurned, preventing overflow/underflow. Preserved the original functionality.",
+                "corrected_code": "function dragonHandler(uint256 _amount) onlyDragon {\n    Dragon drag = Dragon(dragon);\n    drag.burnDragons(_amount);\n    DragonsBurned = DragonsBurned.add(_amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

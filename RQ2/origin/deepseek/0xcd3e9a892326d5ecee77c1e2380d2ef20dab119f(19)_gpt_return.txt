@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){ // fault line",
+    "description": "The vulnerability is a classic reentrancy attack. The contract uses the low-level 'call.value()' method to send Ether to msg.sender before updating the internal state (specifically, before 'acc.balance-=_am'). An attacker can create a malicious contract with a fallback function that recursively calls the 'Collect' function. Since the balance check ('acc.balance>=_am') passes on the initial call and the state update occurs after the transfer, the attacker can drain the contract's funds in a single transaction because subsequent recursive calls will still see the original, unmodified balance."
+}
+```

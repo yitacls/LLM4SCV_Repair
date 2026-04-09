@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity 0.8.11;",
+        "description": "The pragma specifies a fixed version (0.8.11) instead of a floating version (^0.8.0). Using a fixed version can lead to compatibility issues if the contract is deployed on a network using a different compiler version."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "function _approve(address owner, address spender, uint256 amount) private {...}",
+        "description": "The use of variable name 'owner' within the function shadows the state variable '_owner'. This can lead to confusion and unintentional bugs during contract execution."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function setCharges(...) {...} Lines L555 - L587",
+        "description": "The function allows for setting surcharge and ecosystem fee parameters, but no validation or effective changes in the internal logic occur, making it appear as if the code has no significant operational effect."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function _getCurrentSupply() private view returns (uint256, uint256) {...} Lines L775 - L782",
+        "description": "The loop iterates over the _excluded array, which can grow indefinitely. This can result in a denial-of-service (DoS) attack if the array becomes too large, exceeding the block gas limit."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function takeCharges(...) {...} Lines L788 - L832",
+        "description": "Critical parts of the `takeCharges` function depend on external balances (_ecoSysWallet and others) without checking if changes are effectively recorded, resulting in code having no meaningful or observable effects in some cases."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function _tokenTransfer(...) {...} Lines L978 - L980",
+        "description": "The else clause executes '_transferStandard(sender, recipient, amount)' even though it's expected to satisfy no condition, potentially causing redundancy with no effective impact."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "function unlock(address target_) {...} Line L1009-L1010",
+        "description": "The line `(uint256(timePassed) + (uint256(30 days) - 1)) / uint256(30 days)` could potentially result in unintended overflows/underflows with large values of 'timePassed'. Since Solidity 0.8 has built-in overflow/underflow checks, this would result in a runtime exception."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function transferWithLock(...) {...} Lines L1043 - L1046",
+        "description": "The condition locks[recipient].lockedToken == 0 appears redundant or ineffective, as it does not alter the state nor add meaningful constraints in the current logic."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function _transferFromExcluded(...) {...} Lines L1060 - L1070",
+        "description": "Code redundancy is observed during token transfers. For instance, `_doTransfer(mvalues, sender, recipient)` is repeated unnecessarily across different private transfer functions."
+    }
+]
+```

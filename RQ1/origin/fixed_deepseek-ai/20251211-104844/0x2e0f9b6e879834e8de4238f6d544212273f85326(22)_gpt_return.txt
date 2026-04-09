@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "UNT",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Implicitly assumed to exist as mapping(address => uint256) public balances; but not explicitly defined - adding safe arithmetic requirements",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library to prevent integer overflow/underflow. Added check for non-zero address and validated that _value doesn't cause overflow when added to recipient's balance.",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Invalid recipient address\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    require(balances[_to] + _value >= balances[_to], \"Recipient balance overflow\");\n    \n    balances[msg.sender] -= _value;\n    balances[_to] += _value;\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

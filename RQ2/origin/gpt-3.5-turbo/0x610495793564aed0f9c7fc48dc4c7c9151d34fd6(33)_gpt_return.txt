@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "function sendMoney(address _target, uint _value, bytes _data) public onlyOwner {",
+            "description": "The 'call' function is used to make low-level calls which can bypass checks and may lead to unexpected behavior. It allows sending Ether and executing code on arbitrary contracts."
+        }
+    ]
+}
+```

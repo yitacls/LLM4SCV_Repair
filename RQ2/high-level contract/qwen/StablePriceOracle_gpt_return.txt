@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StablePriceOracle",
+    "contract_version": "^0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "price",
+            "fix_info": "Fixed integer overflow vulnerability by using SafeMath for all arithmetic operations. Replaced direct multiplication and division with SafeMath.mul and SafeMath.div operations.",
+            "corrected_code": "function price(string calldata name, uint /*expires*/, uint duration) view external returns(uint) {\n    uint len = name.strlen();\n    require(len > 0);\n    if(len > rentPrices.length) {\n        len = rentPrices.length;\n    }\n    uint priceUSD = rentPrices[len - 1].mul(duration);\n\n    // Price of one ether in attodollars\n    uint ethPrice = uint(usdOracle.read());\n\n    // priceUSD and ethPrice are both fixed-point values with 18dp, so we\n    // multiply the numerator by 1e18 before dividing.\n    return priceUSD.mul(1e18).div(ethPrice);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,34 @@
+```json
+[{
+    "contract_name": "LinearFinance",
+    "contract_version": ">=0.6.0 <0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added safeguard to ensure no Ether is inadvertently withdrawn or transferred as this function is intended only for ERC20 token operations.",
+            "corrected_code": "function transfer(address recipient, uint256 amount) public virtual override returns (bool) {\n    require(recipient != address(this), \"LinearFinance: transfer to the contract itself is prohibited\");\n    _transfer(_msgSender(), recipient, amount);\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Added safeguard to prevent any inadvertent or malicious transfer to the contract itself by ensuring recipient is not the contract address.",
+            "corrected_code": "function transferFrom(\n    address sender,\n    address recipient,\n    uint256 amount\n) public virtual override returns (bool) {\n    require(recipient != address(this), \"LinearFinance: transfer to the contract itself is prohibited\");\n    _transfer(sender, recipient, amount);\n    _approve(\n        sender,\n        _msgSender(),\n        _allowances[sender][_msgSender()].sub(amount, \"ERC20: transfer amount exceeds allowance\")\n    );\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "mint",
+            "fix_info": "Added a safeguard to prevent minting directly to the contract address, protecting the contract's Ether handling integrity.",
+            "corrected_code": "function mint(address account, uint256 amount) external onlyAdmin {\n    require(account != address(this), \"LinearFinance: mint to the contract itself is prohibited\");\n    require(totalSupply().add(amount) <= MAX_SUPPLY, \"LinearFinance: max supply exceeded\");\n    _mint(account, amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "burn",
+            "fix_info": "Added a safeguard to prevent burning directly from the contract's own address, as this could negatively affect Ether handling integrity.",
+            "corrected_code": "function burn(address account, uint256 amount) external onlyAdmin {\n    require(account != address(this), \"LinearFinance: burn from the contract itself is prohibited\");\n    _burn(account, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

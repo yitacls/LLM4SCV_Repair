@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "Lines 43-68 in removeAdmin function",
+        "description": "The removeAdmin function contains a denial-of-service vulnerability due to the while loop implementation. The loop searches for the admin address in the admins array by iterating through each element. If the target address is not found (which shouldn't happen due to the require check, but could in edge cases), the loop will iterate through the entire array and potentially exceed array bounds when i == admins.length. Additionally, this gas-intensive loop can become prohibitively expensive as the admins array grows, making the function fail due to out-of-gas errors when called. The function also has inconsistent error handling - using revert with a string in the loop but require without a message earlier. A more gas-efficient approach would be to maintain the last index of each admin or use a different data structure."
+    }
+]
+```

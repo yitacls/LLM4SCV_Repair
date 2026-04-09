@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "contract_name": "Endpoint",
+        "contract_version": "0.7.6",
+        "state_variables": [
+            {
+                "variable_name": "latestVersion",
+                "fix_info": "Replaced the increment operation with SafeMath to prevent integer overflow.",
+                "variable_code": "using SafeMath for uint16;\nuint16 public latestVersion;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "outboundNonce",
+                "fix_info": "Replaced the increment operation with SafeMath to ensure no overflow during increment.",
+                "variable_code": "mapping(uint16 => mapping(address => uint64)) public outboundNonce;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "inboundNonce",
+                "fix_info": "Replaced the increment operation with SafeMath to ensure no overflow during increment.",
+                "variable_code": "mapping(uint16 => mapping(bytes => uint64)) public inboundNonce;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "newVersion",
+                "fix_info": "Added SafeMath to increment `latestVersion` to prevent integer overflow.",
+                "corrected_code": "function newVersion(address _newLayerZeroLibraryAddress) external onlyOwner {\n    require(_newLayerZeroLibraryAddress != address(0x0), \"LayerZero: new version cannot be zero address\");\n    require(latestVersion < 65535, \"LayerZero: cannot add new messaging library\");\n    latestVersion = latestVersion.add(1); // Using SafeMath to prevent overflow\n    libraryLookup[latestVersion] = ILayerZeroMessagingLibrary(_newLayerZeroLibraryAddress);\n    emit NewLibraryVersionAdded(latestVersion);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "send",
+                "fix_info": "Replaced the increment operation for `outboundNonce` with SafeMath to prevent overflow issues.",
+                "corrected_code": "function send(uint16 _dstChainId, bytes calldata _destination, bytes calldata _payload, address payable _refundAddress, address _zroPaymentAddress, bytes calldata _adapterParams) external payable override sendNonReentrant {\n    LibraryConfig storage uaConfig = uaConfigLookup[msg.sender];\n    outboundNonce[_dstChainId][msg.sender] = outboundNonce[_dstChainId][msg.sender].add(1); // Using SafeMath to prevent overflow\n    uint64 nonce = outboundNonce[_dstChainId][msg.sender];\n    _getSendLibrary(uaConfig).send{value: msg.value}(msg.sender, nonce, _dstChainId, _destination, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "receivePayload",
+                "fix_info": "Replaced the increment operation for `inboundNonce` with SafeMath to prevent overflow issues.",
+                "corrected_code": "function receivePayload(uint16 _srcChainId, bytes calldata _srcAddress, address _dstAddress, uint64 _nonce, uint _gasLimit, bytes calldata _payload) external override receiveNonReentrant {\n    require(_nonce == inboundNonce[_srcChainId][_srcAddress].add(1), \"LayerZero: wrong nonce\"); // Using SafeMath to ensure safe increment\n    inboundNonce[_srcChainId][_srcAddress] = _nonce;\n\n    LibraryConfig storage uaConfig = uaConfigLookup[_dstAddress];\n\n    if (uaConfig.receiveVersion == DEFAULT_VERSION) {\n        require(defaultReceiveLibraryAddress == msg.sender, \"LayerZero: invalid default library\");\n    } else {\n        require(uaConfig.receiveLibraryAddress == msg.sender, \"LayerZero: invalid library\");\n    }\n\n    StoredPayload storage sp = storedPayload[_srcChainId][_srcAddress];\n    require(sp.payloadHash == bytes32(0), \"LayerZero: in message blocking\");\n\n    try ILayerZeroReceiver(_dstAddress).lzReceive{gas: _gasLimit}(_srcChainId, _srcAddress, _nonce, _payload) {\n        // success, do nothing, end of the message delivery\n    } catch (bytes memory reason) {\n        storedPayload[_srcChainId][_srcAddress] = StoredPayload(uint64(_payload.length), _dstAddress, keccak256(_payload));\n        emit PayloadStored(_srcChainId, _srcAddress, _dstAddress, _nonce, _payload, reason);\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

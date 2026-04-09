@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "AKC",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Fixed unchecked low-level call vulnerability and added additional checks.",
+                "corrected_code": "function transferFrom(address _from, address _to, uint256 _amount, bytes _data) public returns (bool success) { require(super.transferFrom(_from, _to, _amount)); if (isContract(controller)) { if (!TokenController(controller).onTransfer(_from, _to, _amount)) revert(); } if (isContract(_to)) { if(_to == address(this)) revert(); ERC223ReceivingContract receiver = ERC223ReceivingContract(_to); receiver.tokenFallback(msg.sender, _amount, _data); } emit ERC223Transfer(_from, _to, _amount, _data); return true; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

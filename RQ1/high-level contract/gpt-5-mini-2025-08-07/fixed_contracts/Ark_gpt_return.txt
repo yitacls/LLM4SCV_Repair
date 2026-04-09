@@ -1,0 +1,20 @@
+[{
+    "contract_name": "Ark",
+    "contract_version": "v0.6.9 (functions updated)",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawForLoss",
+            "fix_info": "Removed the direct balanceOf pre-check (which could cause DoS if a token's balanceOf reverts) and moved state updates after the external transfer. Added nonReentrant to prevent reentrancy and ensure history is only recorded after a successful transfer.",
+            "corrected_code": "function withdrawForLoss(Decimal.decimal memory _amount, IERC20 _quoteToken) public override nonReentrant {\n    require(insuranceFund == _msgSender(), \"only insuranceFund\");\n\n    if (_getTokenDecimals(address(_quoteToken)) < 18) {\n        // the smallest expression in terms of decimals of the token is\n        // added to _amount because the _transfer method of DecimalERC20\n        // rounds down when token decimals are less than 18\n        _amount = _amount.addD(_toDecimal(_quoteToken, 1));\n    }\n\n    // Perform the token transfer first. This avoids calling balanceOf() before\n    // the transfer (some tokens may revert in balanceOf and cause a DoS).\n    // If the transfer fails, it will revert and no history will be recorded.\n    _transfer(_quoteToken, _msgSender(), _amount);\n\n    // stores timestamp and cumulative amount of withdrawn token after successful transfer\n    Decimal.decimal memory cumulativeAmount;\n    uint256 len = withdrawnTokenHistory[_quoteToken].length;\n    if (len == 0) {\n        cumulativeAmount = _amount;\n    } else {\n        cumulativeAmount = withdrawnTokenHistory[_quoteToken][len - 1].cumulativeAmount.addD(_amount);\n    }\n\n    // store the withdrawal history\n    withdrawnTokenHistory[_quoteToken].push(\n        WithdrawnToken({ timestamp: _blockTimestamp(), cumulativeAmount: cumulativeAmount })\n    );\n\n    emit WithdrawnForLoss(_msgSender(), _amount.toUint(), address(_quoteToken));\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimTokens",
+            "fix_info": "Replaced the use of transfer(...) for ETH with a call(...) pattern to avoid DoS due to gas stipend. Added nonReentrant and explicit checks for the ETH transfer result. Kept token withdrawal path but protected with nonReentrant.",
+            "corrected_code": "function claimTokens(address payable _to, IERC20 _token) external onlyOwner nonReentrant {\n    require(_to != address(0), \"to address is required\");\n    if (_token == IERC20(0)) {\n        uint256 amount = address(this).balance;\n        if (amount == 0) {\n            return;\n        }\n        (bool success, ) = _to.call{ value: amount }(\"\");\n        require(success, \"eth transfer failed\");\n    } else {\n        // Withdraw all of the specified token using the internal transfer helper.\n        _transfer(_token, _to, _balanceOf(_token, address(this)));\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

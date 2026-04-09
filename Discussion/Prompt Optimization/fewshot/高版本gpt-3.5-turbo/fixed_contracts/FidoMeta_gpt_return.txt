@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "Fidometa",
+        "contract_version": "0.8.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_approve",
+                "fix_info": "Avoid shadowing state variables to comply with SWC-119",
+                "corrected_code": "function _approve(address owner, address spender, uint256 amount) private {\n        require(owner != address(0), 'BEP20: approve from the zero address');\n        require(spender != address(0), 'BEP20: approve to the zero address');\n        _allowances[owner][spender] = amount;\n        emit Approval(owner, spender, amount);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "takeCharges",
+                "fix_info": "Remove code with no effects to comply with SWC-135",
+                "corrected_code": "function takeCharges(uint256 tEcoSys, uint256 tSurcharge1, uint256 tSurcharge2, uint256 tSurcharge3) private {\n        uint256 currentRate = _getRate();\n        uint256 rEcosys = tEcoSys.mul(currentRate);\n        _rOwned[_ecoSysWallet] = _rOwned[_ecoSysWallet].add(rEcosys);\n        if (_isExcludedFromEcoSysFee[_ecoSysWallet])\n            _tOwned[_ecoSysWallet] = _tOwned[_ecoSysWallet].add(tEcoSys);\n        uint256 rSurcharge1 = tSurcharge1.mul(currentRate);\n        _rOwned[_surcharge_1_Wallet] = _rOwned[_surcharge_1_Wallet].add(rSurcharge1);\n        if (_isExcludedFromSurcharge1[_surcharge_1_Wallet])\n            _tOwned[_surcharge_1_Wallet] = _tOwned[_surcharge_1_Wallet].add(tSurcharge1);\n        uint256 rSurcharge2 = tSurcharge2.mul(currentRate);\n        _rOwned[_surcharge_2_Wallet] = _rOwned[_surcharge_2_Wallet].add(rSurcharge2);\n        if (_isExcludedFromSurcharge1[_surcharge_2_Wallet])\n            _tOwned[_surcharge_2_Wallet] = _tOwned[_surcharge_2_Wallet].add(tSurcharge2);\n        uint256 rSurcharge3 = tSurcharge3.mul(currentRate);\n        _rOwned[_surcharge_3_Wallet] = _rOwned[_surcharge_3_Wallet].add(rSurcharge3);\n        if (_isExcludedFromSurcharge3[_surcharge_3_Wallet])\n            _tOwned[_surcharge_3_Wallet] = _tOwned[_surcharge_3_Wallet].add(tSurcharge3);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unlock",
+                "fix_info": "Update code to ensure only the target address can call this function",
+                "corrected_code": "function unlock(address target_) external {\n        require(target_ != address(0), 'Invalid target');\n        require(_msgSender() == target_, 'Invalid target');\n        // Existing unlock logic...\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

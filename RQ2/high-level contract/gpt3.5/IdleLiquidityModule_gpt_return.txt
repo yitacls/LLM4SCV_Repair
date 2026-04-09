@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "return (((tick - tickDelta) / tickSpacing) * tickSpacing, ((tick + tickDelta) / tickSpacing) * tickSpacing);",
+    "description": "The expression ((tick - tickDelta) / tickSpacing) may result in an integer underflow if tick is less than tickDelta. Similarly, ((tick + tickDelta) / tickSpacing) may result in an integer overflow if tick is close to the maximum range. This can lead to unexpected behavior and potential security vulnerabilities."
+}
+```

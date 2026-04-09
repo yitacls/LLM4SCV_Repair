@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Bitotal",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintTokens",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow in balance and total supply calculations",
+            "corrected_code": "function mintTokens(address _to, uint256 _amount) private {\n    require((totalSupply + _amount) <= maxSupply);\n    balances[_to] = balances[_to].add(_amount);\n    totalSupply = totalSupply.add(_amount);\n    emit Transfer(0x0, _to, _amount);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

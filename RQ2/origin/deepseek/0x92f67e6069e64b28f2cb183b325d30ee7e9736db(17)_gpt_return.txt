@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "devAcct.send(fee);",
+    "description": "The low-level call `devAcct.send(fee)` does not check the return value. In Solidity 0.4.20, the `send()` function returns a boolean indicating success (true) or failure (false). If the ether transfer to `devAcct` fails (e.g., due to out-of-gas, call depth limit, or the recipient contract rejecting the transfer), execution will continue without any handling of the failure. This can lead to loss of funds, as the subsequent transfer to `potAcct` will still execute, but the fee intended for `devAcct` may not have been delivered. The vulnerability is exacerbated because the contract uses `transfer()` for `potAcct` (which reverts on failure) but `send()` for `devAcct` (which does not revert). Always check the return value of `send()` or use `transfer()` consistently."
+}
+```

@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "DosAuction",
+    "contract_version": "^0.4.15",
+    "state_variables": [
+        {
+            "variable_name": "pendingReturns",
+            "fix_info": "Added mapping to track pending refunds for each address to prevent DoS attacks",
+            "variable_code": "mapping(address => uint) pendingReturns;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bid",
+            "fix_info": "Fixed DoS vulnerability by using pull payment pattern instead of push. Refunds are now tracked in a mapping and can be claimed by users, preventing malicious users from blocking the auction with failing fallback functions.",
+            "corrected_code": "function bid() payable {\n    require(msg.value > currentBid);\n\n    // Track the refund for the previous frontrunner instead of sending immediately\n    if (currentFrontrunner != 0) {\n        pendingReturns[currentFrontrunner] += currentBid;\n    }\n\n    currentFrontrunner = msg.sender;\n    currentBid         = msg.value;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawRefund",
+            "fix_info": "Added new function to allow users to withdraw their pending refunds, implementing the pull payment pattern",
+            "corrected_code": "function withdrawRefund() {\n    uint amount = pendingReturns[msg.sender];\n    require(amount > 0);\n    pendingReturns[msg.sender] = 0;\n    msg.sender.transfer(amount);\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

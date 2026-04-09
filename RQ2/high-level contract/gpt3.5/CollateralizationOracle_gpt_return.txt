@@ -1,0 +1,14 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "L323",
+    "description": "Possible integer overflow vulnerability due to multiplication operation potentially leading to an overflow condition on the `protocolControlledValue` variable."
+}
+```
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "L327",
+    "description": "Potential integer overflow vulnerability as subtraction operation could lead to an underflow condition when calculating `userCirculatingFei` which directly affects the `protocolEquity`."
+}
+```

@@ -1,0 +1,21 @@
+Below are the vulnerabilities detected in the contract:
+
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function fillOrderTo",
+        "description": "In the function 'fillOrderTo', after calling '_permit(order.permit)' there is a direct external call and no checks if the order has already been permitted. If re-entrancy happens through this function the '_remaining[orderHash]' could be set to 0, hence reentrancy vulnerability exists. Avoid state changes after external calls for reentrance prevention."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function fillOrderTo",
+        "description": "In the function 'fillOrderTo', '_callMakerAssetTransferFrom(order.makerAsset, order.makerAssetData, target, makingAmount)' and '_callTakerAssetTransferFrom(order.takerAsset, order.takerAssetData, takingAmount)' represent Reentrancy risks because they lead to external call without a check before state changes or after state changes."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function fillOrderTo",
+        "description": "In the function 'fillOrderTo', InteractiveMaker(order.makerAssetData.decodeAddress(_FROM_INDEX)).notifyFillOrder invokes external contract which could potentially consume all available gas, resulting to DoS With Block Gas Limit vulnerability."
+    }
+]
+```

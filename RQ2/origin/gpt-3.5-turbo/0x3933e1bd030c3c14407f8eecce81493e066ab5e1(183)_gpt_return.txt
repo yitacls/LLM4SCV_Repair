@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "selfdestruct(owner)",
+            "description": "The `destruct` function in the TokenBase contract does not include any access control checks, allowing anyone to call this function and trigger the selfdestruct operation. This poses a serious security risk as it enables unauthorized parties to destroy the contract and potentially cause the loss of all funds and data stored in the contract."
+        }
+    ]
+}
+```  

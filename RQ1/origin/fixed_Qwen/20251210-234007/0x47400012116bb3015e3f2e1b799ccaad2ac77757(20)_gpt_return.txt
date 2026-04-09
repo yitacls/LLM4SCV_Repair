@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations for balance calculations",
+            "corrected_code": "function transfer(address _recipient, uint _value) onlyPayloadSize(2*32) {\n\t\trequire(balances[msg.sender] >= _value && _value > 0);\n\t    balances[msg.sender] = balances[msg.sender].sub(_value);\n\t    balances[_recipient] = balances[_recipient].add(_value);\n\t    Transfer(msg.sender, _recipient, _value);        \n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

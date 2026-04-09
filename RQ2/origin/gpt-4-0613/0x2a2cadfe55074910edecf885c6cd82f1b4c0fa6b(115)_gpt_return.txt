@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The contract ENT, written in Solidity version ^0.4.11, contains a vulnerability of type unchecked_low_level_calls. The function payable public fails to check the return value of low-level send call, indicated by 'owner.send(msg.value);', this can lead to failed payments failing silently which is a serious security problem. A recommended solution would be to either check the return value of the send method or use transfer() instead, which will throw an exception if the send fails."
+}
+```

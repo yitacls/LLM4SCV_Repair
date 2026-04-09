@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "rand(uint max) function",
+    "description": "The pseudorandom number generation uses blockhash(block.number - 1), which is predictable and can be manipulated by miners. When a miner mines a block, they can choose to discard a block if the generated random number doesn't benefit them, or they can withhold the blockhash. Additionally, if no block is mined within 256 blocks, blockhash returns zero for historical blocks beyond that range. This makes the random number generation insecure for any application involving value (like gambling or lotteries)."
+}
+```

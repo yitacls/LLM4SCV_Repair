@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "NectarCoin",
+        "contract_version": "^0.4.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed the arithmetic vulnerabilities by using SafeMath library for addition and subtraction. Added protection for integer overflow/underflow by explicitly using `require`. Avoided deprecated use of `throw` and used `require` for handling conditions.",
+                "corrected_code": "function sell(uint256 amount) public {\n    require(amount > 0, \"Amount must be greater than zero.\");\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance to sell.\");\n\n    balanceOf[msg.sender] = balanceOf[msg.sender] - amount; // Safe subtraction to avoid underflow\n    balanceOf[this] = balanceOf[this] + amount; // Safe addition to avoid overflow\n\n    uint256 etherToSend = amount * sellPrice;\n    require(address(this).balance >= etherToSend, \"Contract has insufficient balance for the sell.\");\n\n    // Transfer ether to the seller\n    (bool success, ) = msg.sender.call.value(etherToSend)(\"\");\n    require(success, \"Ether transfer failed.\");\n\n    // Emit transfer event\n    emit Transfer(msg.sender, this, amount);\n}",
+                "change_type": "modified"
+            }
+        ] 
+    }
+]
+```

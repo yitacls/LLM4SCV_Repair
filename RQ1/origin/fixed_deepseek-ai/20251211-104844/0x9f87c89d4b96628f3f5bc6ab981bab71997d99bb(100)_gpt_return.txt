@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CryptoThreeKingdoms",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict function access to token owner instead of using tx.origin",
+            "modifier_code": "modifier onlyOwner(uint256 _tokenId) {\n        require(msg.sender == ownerOf(_tokenId));\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin check with msg.sender check via modifier, preventing phishing attacks",
+            "corrected_code": "function transfer(address _to, uint256 _tokenId) public onlyOwner(_tokenId) {\n    _transfer(msg.sender, _to, _tokenId);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

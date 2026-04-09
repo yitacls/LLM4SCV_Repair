@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-131-Presence of unused variables",
+        "location": "uint256 private constant ONE_WAD_U = 10**18;",
+        "description": "The constant variable 'ONE_WAD_U' is declared but never used within the contract, which may lead to confusion or indicate incomplete implementation."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "shareToken.mint(guy, amount);",
+        "description": "The return value of the 'mint' function call on 'shareToken' is not checked, which could lead to unnoticed failures in token minting operations."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "shareToken.burn(guy, amount);",
+        "description": "The return value of the 'burn' function call on 'shareToken' is not checked, which could lead to unnoticed failures in token burning operations."
+    }
+]
+```

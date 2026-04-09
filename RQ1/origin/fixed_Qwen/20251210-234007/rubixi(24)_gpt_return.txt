@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Rubixi",
+    "contract_version": "^0.4.15",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyCreator",
+            "fix_info": "Added modifier to restrict access to creator only",
+            "modifier_code": "modifier onlyCreator() {\n    require(msg.sender == creator);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "DynamicPyramid",
+            "fix_info": "Added access control to prevent anyone from calling this function",
+            "corrected_code": "function DynamicPyramid() onlyCreator {\n    creator = msg.sender;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

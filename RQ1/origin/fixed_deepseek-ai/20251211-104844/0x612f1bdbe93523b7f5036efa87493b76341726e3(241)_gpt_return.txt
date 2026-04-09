@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "HOTTO",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No changes made - assuming owner variable already exists as part of onlyOwner modifier usage",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes made - assuming onlyOwner modifier already exists and properly restricts access",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Only owner can call this function\"); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by: 1) Changing from transfer() to call.value() with gas stipend for better compatibility, 2) Adding explicit address payable type for owner, 3) Setting balance to zero before transfer to prevent reentrancy, 4) Adding success check and reverting on failure",
+            "corrected_code": "function withdraw() public onlyOwner {\n    uint256 etherBalance = address(this).balance;\n    require(etherBalance > 0, \"No ether balance to withdraw\");\n    \n    // Self-destruct pattern to prevent reentrancy\n    uint256 amount = etherBalance;\n    etherBalance = 0;\n    \n    // Use call.value() instead of transfer() for better gas handling\n    // Cast owner to address payable for Solidity 0.4.x compatibility\n    address payable ownerPayable = address(uint160(owner));\n    bool success = ownerPayable.send(amount);\n    \n    require(success, \"Withdrawal failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy Vulnerability",
+    "location": "to.call{value:value}(new bytes(0))",
+    "description": "This function performs an external call to address 'to' before updating any state or implementing reentrancy guards. While ETH transfers typically only forward 2300 gas (making complex reentrancy attacks difficult), the use of 'call' with empty bytes could allow a fallback function in a malicious contract to re-enter the calling contract if the calling contract has not followed the checks-effects-interactions pattern. This is especially dangerous if this function is called from another function that has state changes after this call. The vulnerability is marked as <RE_ENT> and <RE_VUL> in the code comments."
+}
+```

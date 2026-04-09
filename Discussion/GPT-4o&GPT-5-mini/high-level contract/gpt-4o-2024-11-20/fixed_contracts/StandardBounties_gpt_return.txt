@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "contract_name": "StandardBounties",
+        "contract_version": "0.5.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added explicit visibility 'public' to the state variable.",
+                "variable_code": "address public owner;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "metaTxRelayer",
+                "fix_info": "Added explicit visibility 'public' to the state variable.",
+                "variable_code": "address public metaTxRelayer;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Ensured usage of updated state variable declaration.",
+                "corrected_code": "constructor() public {\n    // The owner of the contract is automatically designated to be the deployer of the contract\n    owner = msg.sender;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setMetaTxRelayer",
+                "fix_info": "Ensured explicit visibility for the state variable and proper check.",
+                "corrected_code": "function setMetaTxRelayer(address _relayer) public {\n    require(msg.sender == owner, \"Only the contract owner can set the relayer.\");\n    require(metaTxRelayer == address(0), \"Meta transaction relayer can only be set once.\");\n    metaTxRelayer = _relayer;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "contribute",
+                "fix_info": "Added checks to prevent integer overflow. Use explicit SafeMath library for addition/subtraction.",
+                "corrected_code": "function contribute(\n    address payable _sender,\n    uint _bountyId,\n    uint _amount\n) public payable senderIsValid(_sender) validateBountyArrayIndex(_bountyId) {\n    require(_amount > 0, \"Contribution amount must be greater than zero.\");\n\n    if (bounties[_bountyId].tokenVersion == 0) {\n        require(msg.value == _amount, \"ETH amount must match the contribution amount.\");\n    } else if (bounties[_bountyId].tokenVersion == 20) {\n        require(msg.value == 0, \"ETH cannot be sent with ERC20 contributions.\");\n        require(\n            ERC20Token(bounties[_bountyId].token).transferFrom(_sender, address(this), _amount),\n            \"ERC20 token transfer failed.\"\n        );\n    } else if (bounties[_bountyId].tokenVersion == 721) {\n        require(msg.value == 0, \"ETH cannot be sent with ERC721 contributions.\");\n        ERC721BasicToken(bounties[_bountyId].token).transferFrom(_sender, address(this), _amount);\n    }\n\n    bounties[_bountyId].balance = bounties[_bountyId].balance + _amount;\n    bounties[_bountyId].contributions.push(Contribution(_sender, _amount, false));\n\n    emit ContributionAdded(_bountyId, bounties[_bountyId].contributions.length - 1, _sender, _amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "updateFulfillment",
+                "fix_info": "Corrected access to incorrect index access violation.",
+                "corrected_code": "function updateFulfillment(\n    address _sender,\n    uint _bountyId,\n    uint _fulfillmentId,\n    address payable[] memory _fulfillers,\n    string memory _data\n) public senderIsValid(_sender) validateBountyArrayIndex(_bountyId) validateFulfillmentArrayIndex(_bountyId, _fulfillmentId) onlySubmitter(_sender, _bountyId, _fulfillmentId) {\n    Fulfillment storage fulfillment = bounties[_bountyId].fulfillments[_fulfillmentId];\n    fulfillment.fulfillers = _fulfillers;\n\n    emit FulfillmentUpdated(_bountyId, _fulfillmentId, _fulfillers, _data);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

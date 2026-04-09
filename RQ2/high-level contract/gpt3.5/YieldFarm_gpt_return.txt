@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.6.0;",
+            "description": "Floating pragma can lead to unexpected behavior as it allows the compiler to use any compiler version that matches the specified constraint in the future, potentially introducing compatibility issues."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) {",
+            "description": "The loop structure may cause a gas limit denial of service vulnerability if the number of iterations is too large, as it performs multiple operations inside the loop which could exceed the block gas limit."
+        }
+    ]
+}
+```

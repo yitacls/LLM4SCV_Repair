@@ -1,0 +1,47 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "vulnerabilities": [
+        {
+            "location": "uint(block.blockhash(_lastb)) & 0xFFFFFF",
+            "description": "The `block.blockhash` function is used here to generate randomness. However, `block.blockhash` can only access hashes from the last 256 blocks, and it is predictable. This makes it unsuitable for producing secure random values as miners can manipulate block hashes."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+1)) & 0xFFFFFF",
+            "description": "This statement also uses `block.blockhash` to generate pseudo-randomness. Since the block hash can be influenced by miners or other parties, the output is not truly random and can lead to vulnerabilities or exploits in this contract."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+2)) & 0xFFFFFF",
+            "description": "Similarly, `block.blockhash` here is being used for randomness. The function is predictable and can be exploited, particularly by block producers with significant control over the mining process."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+3)) & 0xFFFFFF",
+            "description": "Again, using `block.blockhash` as a source of randomness is not secure because block hashes can be manipulated or predicted by miners, compromising the integrity of the randomness."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+4)) & 0xFFFFFF",
+            "description": "`block.blockhash` continues to be used for deriving randomness, which creates the same vulnerability as mentioned earlier — predictability and lack of true randomness."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+5)) & 0xFFFFFF",
+            "description": "This statement inherits the same risk of `BAD_RANDOMNESS` due to the use of the predictable and manipulable `block.blockhash` function."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+6)) & 0xFFFFFF",
+            "description": "`block.blockhash` is consistently used to extract randomness, which is exploitable due to its predictable nature, thus compromising the security of the randomness."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+7)) & 0xFFFFFF",
+            "description": "The use of `block.blockhash` here is predictable and unsuitable for secure randomness, leaving the contract vulnerable to exploitation by miners or determined attackers."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+8)) & 0xFFFFFF",
+            "description": "Using `block.blockhash` in this way is insecure as it can be influenced or predicted, enabling potential attackers to manipulate outcomes basing on the hash value."
+        },
+        {
+            "location": "uint(block.blockhash(_lastb+9)) & 0xFFFFFF",
+            "description": "`block.blockhash` continues to be used here for pseudo-randomness, which poses the same security risk due to its predictability and susceptibility to miner manipulation."
+        }
+    ]
+}
+``` 

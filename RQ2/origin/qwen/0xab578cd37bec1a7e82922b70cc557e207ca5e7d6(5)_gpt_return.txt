@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The low-level send() call is not checked for success. In Solidity 0.4.23, send() returns false if the transfer fails, but this return value is not being verified. This could lead to silent failures where the ether transfer fails but the contract execution continues, potentially causing unexpected behavior or loss of funds."
+}
+```

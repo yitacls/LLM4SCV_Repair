@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "The low-level `send()` call's return value is assigned to a variable `res` but is never checked in Solidity version ^0.4.19. In this version, `send()` returns `false` if the call runs out of gas (is limited to 2300 gas) or fails, rather than reverting. This can lead to silent failures where the ether transfer fails but execution continues, giving users the false impression that the withdrawal succeeded. Additionally, the contract allows the NFT contract itself to withdraw all funds, potentially enabling malicious behavior if that contract is compromised or misconfigured."
+}
+```

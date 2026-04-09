@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "SECToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Added SafeMath library for arithmetic operations to prevent overflow/underflow",
+            "variable_code": "uint256 public sellPrice; // Using SafeMath for arithmetic operations",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath for multiplication, added reentrancy guard, and updated deprecated syntax",
+            "corrected_code": "function sell(uint256 amount) public {\n        require(address(this).balance >= amount.mul(sellPrice), \"Insufficient contract balance\");\n        require(balanceOf[msg.sender] >= amount, \"Insufficient sender balance\");\n        \n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n        totalSupply = totalSupply.sub(amount);\n        \n        uint256 etherAmount = amount.mul(sellPrice);\n        msg.sender.transfer(etherAmount);\n        \n        emit Transfer(msg.sender, address(0), amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

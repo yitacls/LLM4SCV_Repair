@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "improper_access_control",
+        "location": "`require(tx.origin == owner);` in the `clear()` function",
+        "description": "The `clear()` function uses `tx.origin` for access control instead of `msg.sender`. This vulnerability can be exploited through phishing attacks, where a malicious contract calls `clear()` and passes the authorization check when the owner unknowingly interacts with the attacker's contract. If exploited, it allows unauthorized invocation of `selfdestruct(owner)`, permanently destroying the contract and sending any remaining ETH to the contract owner's address, potentially disrupting expected protocol functionality."
+    }
+}
+```

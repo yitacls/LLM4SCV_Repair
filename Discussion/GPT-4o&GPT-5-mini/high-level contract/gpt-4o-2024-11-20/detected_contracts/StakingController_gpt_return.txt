@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "approveDomainBid function, lines 92-101",
+        "description": "The function approveDomainBid indirectly affects the state by updating the approvedBids mapping without providing proper checks to prevent re-entrancy attacks, or validating unexpected withdrawals. It lacks sufficient security guards such as OpenZeppelin’s ReentrancyGuard."
+    },
+    {
+        "type": "SWC-122-Lack of Proper Signature Verification",
+        "location": "fulfillDomainBid function, lines 121-153",
+        "description": "The function fulfillDomainBid does not adequately verify the authenticity of the signature provided. This could potentially allow attackers to misuse signatures without verifying ownership effectively."
+    },
+    {
+        "type": "SWC-117-Signature Malleability",
+        "location": "fulfillDomainBid function, line 135",
+        "description": "The function fulfillDomainBid performs signature confirmation using the ECDSA recover function, which is susceptible to signature malleability attacks. An attacker can craft multiple valid signatures from the same original unsigned message, thus bypassing signature checks."
+    }
+]
+```

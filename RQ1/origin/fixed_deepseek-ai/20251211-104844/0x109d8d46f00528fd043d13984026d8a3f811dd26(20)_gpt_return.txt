@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "VernamWhiteListDeposit",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "fallback",
+        "fix_info": "Replaced vulnerable low-level send() call with transfer() to avoid unchecked call vulnerabilities. Added check for max participants before processing. Added reentrancy protection by following checks-effects-interactions pattern.",
+        "corrected_code": "function() public payable {\n    require(participants.length < maxWiteList, \"Max participants reached\");\n    require(block.timestamp <= deadLine, \"Deadline has passed\");\n    require(msg.value >= depositAmount, \"Insufficient deposit amount\");\n    require(!isWhiteList[msg.sender], \"Already in whitelist\");\n    \n    // Following checks-effects-interactions pattern\n    isWhiteList[msg.sender] = true;\n    participants.push(msg.sender);\n    \n    // Using transfer() instead of send() for safer Ether transfer\n    benecifiary.transfer(msg.value);\n    \n    emit WhiteListSuccess(msg.sender, msg.value);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

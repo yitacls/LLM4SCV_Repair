@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EtherGet",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getTokens",
+            "fix_info": "Added check for successful low-level call execution to prevent unchecked return values",
+            "corrected_code": "function getTokens(uint num, address addr) public {\n        for(uint i = 0; i < num; i++){\n            // Fix: Check return value of low-level call\n            bool success;\n            bytes memory data;\n            (success, data) = addr.call.value(0 wei)();\n            require(success, \"Low-level call failed\");\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

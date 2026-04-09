@@ -1,0 +1,5 @@
+{
+  "type": "Arithmetic",
+  "location": "balances[_to] += _value;  // fault line",
+  "description": "The addition balances[_to] += _value can overflow because Solidity ^0.4.21 does not perform automatic overflow checks. Although the contract checks balances[msg.sender] >= _value to prevent sender underflow, there is no check that balances[_to] + _value <= UINT256_MAX. A sufficiently large _value (or a pre-existing large balances[_to]) can cause wrap-around, allowing an attacker to corrupt token accounting (e.g., increase their own balance by causing an overflow elsewhere) or break invariants. Recommended fixes: use a safe math library (e.g., OpenZeppelin SafeMath) and replace the addition with a checked operation (balances[_to] = balances[_to].add(_value)), or upgrade to Solidity >=0.8.0 where arithmetic is checked by default."
+}

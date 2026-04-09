@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 53-54: uint256 amountInTo0 = (amountIn * 1e18) / (SwapHelper.getRatioFromRange(tickPool, tickLower, tickUpper) + 1e18);\nuint256 amountInTo1 = amountIn - amountInTo0;",
+    "description": "The vulnerability arises because the contract fails to perform safe mathematical operations. Basic arithmetic operations in Solidity or EVM do not throw an error on overflow or underflow. So when such operations are used without any overflow or underflow checks, an integer overflow or underflow can occur which can consequently lead to unexpected results."
+}
+```

@@ -1,0 +1,101 @@
+file,path,line,come,vul,vultype,version,fix_time,token_usage
+Endpoint.sol,contracts/Endpoint.sol,313,,152,SWC-101-Integer Overflow and Underflow,0.7.6,0.0,191.0
+Relayer.sol,contracts/Relayer.sol,156,,4|4|21-23,SWC-102-Outdated Compiler Version|SWC-103-Floating Pragma|SWC-101-Integer Overflow and Underflow,^0.7.6,0.0,292.0
+ApeVault.sol,contracts/ApeVault.sol,288,,64|71|133-135,SWC-135-Code With No Effects|SWC-135-Code With No Effects|SWC-105-Unprotected Ether Withdrawal,^0.8.2,0.0,464.0
+ImpossibleWrappedToken.sol,contracts/ImpossibleWrappedToken.sol,818,,53-61|65-73|65-73,SWC-107-Reentrancy|SWC-107-Reentrancy|SWC-114-Transaction Order Dependence,=0.7.6,0.0,286.0
+ve.sol,contracts/ve.sol,1343,,491-493|675-697|1097-1104,SWC-112-Delegatecall to Untrusted Callee|SWC-104-Unchecked Call Return Value|SWC-107-Reentrancy,0.8.11,0.0,705.0
+VEReward.sol,contracts/VEReward.sol,481,,119-134|269-275,SWC-113-DoS with Failed Call|SWC-128-DoS With Block Gas Limit,0.8.11,0.0,486.0
+Liquidator.sol,contracts/Liquidator.sol,37,,35,SWC-105-Unprotected Ether Withdrawal,^0.8.0,0.0,233.0
+VaultManager.sol,contracts/VaultManager.sol,202,,156-166,SWC-101-Integer Overflow and Underflow,^0.8.0,0.0,248.0
+ZapIn.sol,contracts/ZapIn.sol,165,,53-54,SWC-101-Integer Overflow and Underflow,0.7.6,0.0,598.0
+SwapHelper.sol,contracts/SwapHelper.sol,74,,11-74,SWC-101-Integer Overflow and Underflow,0.7.6,0.0,511.0
+IdleLiquidityModule.sol,contracts/IdleLiquidityModule.sol,133,,131,SWC-101-Integer Overflow and Underflow,0.7.6,0.0,241.0
+BSCSCAN-2ae9952c1038dA3DafebA026B96053F24CBc03b3.sol,contracts/BSCSCAN-2ae9952c1038dA3DafebA026B96053F24CBc03b3.sol,732,,454- 457,SWC-105-Unprotected Ether Withdrawal,>=0.6.0 <0.8.0,0.0,212.0
+MonstaPresale.sol,contracts/MonstaPresale.sol,97,,94 - 96,SWC-105-Unprotected Ether Withdrawal,0.6.0,0.0,138.0
+wildfire.sol,contracts/wildfire.sol,1114,,809 - 817|898 - 902,SWC-113-DoS with Failed Call|SWC-113-DoS with Failed Call,^0.6.12,0.0,222.0
+WorthTokenSale.sol,contracts/WorthTokenSale.sol,311,,279 - 282,SWC-105-Unprotected Ether Withdrawal,0.8.10,0.0,184.0
+VaultManager_1.sol,contracts/VaultManager_1.sol,925,,692,SWC-104-Unchecked Call Return Value,0.8.12,0.0,215.0
+Comptroller.sol,contracts/Comptroller.sol,1358,,465-501,SWC-107-Reentrancy,^0.8.6,0.0,374.0
+CToken.sol,contracts/CToken.sol,1201,,930-947,SWC-107-Reentrancy,^0.8.6,0.0,419.0
+MultiplyProxyActions.sol,contracts/MultiplyProxyActions.sol,816,,119|172,SWC-101-Integer Overflow and Underflow|SWC-104-Unchecked Call Return Value,>=0.7.6,0.0,325.0
+ReferralFeeReceiver.sol,contracts/ReferralFeeReceiver.sol,211,,11,SWC-107-Reentrancy,^0.6.0,0.0,258.0
+yield.sol,contracts/yield.sol,676,,2|532 - 541|640 - 644,SWC-103-Floating Pragma|SWC-108-State Variable Default Visibility|SWC-128-DoS With Block Gas Limit,^0.5.12,0.0,416.0
+FountainBase.sol,contracts/FountainBase.sol,351,,290-291|295-308,SWC-107-Reentrancy|SWC-107-Reentrancy,0.6.12,0.0,672.0
+YieldFarm.sol,contracts/YieldFarm.sol,173,,3|76,SWC-103-Floating Pragma|SWC-128-DoS With Block Gas Limit,^0.6.0,0.0,317.0
+CommunityVault.sol,contracts/CommunityVault.sol,23,,2|19,SWC-103-Floating Pragma|SWC-107-Reentrancy,^0.6.0,0.0,176.0
+YieldFarm_1.sol,contracts/YieldFarm_1.sol,173,,3|73 - 77,SWC-103-Floating Pragma|SWC-128-DoS With Block Gas Limit,^0.6.0,0.0,364.0
+YieldFarm_2.sol,contracts/YieldFarm_2.sol,173,,3|73 - 77,SWC-103-Floating Pragma|SWC-128-DoS With Block Gas Limit,^0.6.0,0.0,125.0
+YieldFarmLP.sol,contracts/YieldFarmLP.sol,160,,3|62 - 66,SWC-103-Floating Pragma|SWC-128-DoS With Block Gas Limit,^0.6.0,0.0,233.0
+wHakka.sol,contracts/wHakka.sol,601,,509|556 - 573|576 - 592|580,SWC-116-Block values as a proxy for time|SWC-107-Reentrancy|SWC-107-Reentrancy|SWC-116-Block values as a proxy for time,0.5.17,0.0,535.0
+MasterChef.sol,contracts/MasterChef.sol,390,,105 - 127|131 - 143|227 - 266|247 - 251|272 - 306|310 - 329|333 - 340|378 - 381|384 - 389,SWC-107-Reentrancy|SWC-107-Reentrancy|SWC-107-Reentrancy|SWC-107-Reentrancy|SWC-107-Reentrancy|SWC-107-Reentrancy|SWC-104-Unchecked Call Return Value|SWC-107-Reentrancy|SWC-104-Unchecked Call Return Value,0.6.7,0.0,1203.0
+strategy-base.sol,contracts/strategy-base.sol,363,,237 - 268|271 - 288|291 - 322|325 - 342,SWC-104-Unchecked Call Return Value|SWC-104-Unchecked Call Return Value|SWC-104-Unchecked Call Return Value|SWC-104-Unchecked Call Return Value,^0.6.7,0.0,1044.0
+strategy-basis-farm-base.sol,contracts/strategy-basis-farm-base.sol,153,,78 - 152,SWC-104-Unchecked Call Return Value,^0.6.7,0.0,590.0
+SpaceMonkey.sol,contracts/SpaceMonkey.sol,686,,53 - 64|67|194,SWC-107-Reentrancy|SWC-119-Shadowing State Variables|SWC-119-Shadowing State Variables,^0.8.4,0.0,267.0
+AllocationStaking.sol,contracts/AllocationStaking.sol,577,,129-134|207-214|472-475,SWC-101-Integer Overflow and Underflow|SWC-101-Integer Overflow and Underflow|SWC-101-Integer Overflow and Underflow,0.6.12,0.0,489.0
+Admin.sol,contracts/Admin.sol,79,,43-68,SWC-113-DoS with Failed Call,0.6.12,0.0,161.0
+AvalaunchSale.sol,contracts/AvalaunchSale.sol,588,,294|346,SWC-113-DoS with Failed Call|SWC-113-DoS with Failed Call,0.6.12,0.0,113.0
+Ark.sol,contracts/Ark.sol,87,,3|55,SWC-102-Outdated Compiler Version|SWC-113-DoS with Failed Call,0.6.9,0.0,371.0
+Vesting.sol,contracts/Vesting.sol,213,,139-199|172-180,SWC-113-DoS with Failed Call|SWC-101-Integer Overflow and Underflow,0.8.10,0.0,224.0
+Gate.sol,contracts/Gate.sol,250,,175-190,SWC-113-DoS with Failed Call,0.5.11,0.0,295.0
+woonklyPOS.sol,contracts/woonklyPOS.sol,1017,,743 - 769|874 - 886,SWC-107-Reentrancy|SWC-113-DoS with Failed Call,^0.6.6,0.0,228.0
+vault.sol,contracts/vault.sol,699,,409|513 - 548|513 - 548,SWC-101-Integer Overflow and Underflow|SWC-114-Transaction Order Dependence|SWC-105-Unprotected Ether Withdrawal,0.6.6,0.0,255.0
+BorrowerOperations.sol,contracts/BorrowerOperations.sol,666,,321 - 351,SWC-105-Unprotected Ether Withdrawal,0.6.11,0.0,185.0
+TempusController.sol,contracts/TempusController.sol,520,,352-386|395-436,SWC-107-Reentrancy|SWC-107-Reentrancy,0.8.6,0.0,424.0
+MetaTransactionsFeature.sol,contracts/MetaTransactionsFeature.sol,552,,100-107,SWC-107-Reentrancy,^0.6.5,0.0,117.0
+UniswapFeature.sol,contracts/UniswapFeature.sol,472,,203-206,SWC-107-Reentrancy,^0.6.5,0.0,304.0
+LibFixedMath.sol,contracts/LibFixedMath.sol,378,,361-378,SWC-101-Integer Overflow and Underflow,^0.5.9,0.0,513.0
+Mooniswap.sol,contracts/Mooniswap.sol,341,,331-341,SWC-105-Unprotected Ether Withdrawal,^0.6.0,,
+ReferralFeeReceiver_1.sol,contracts/ReferralFeeReceiver_1.sol,211,,38-50,SWC-105-Unprotected Ether Withdrawal,^0.6.0,0.0,248.0
+LendingPool.sol,contracts/LendingPool.sol,1033,,92-119|579,SWC-107-Reentrancy|SWC-104-Unchecked Call Return Value,^0.6.8,0.0,471.0
+JoinSplit.sol,contracts/JoinSplit.sol,397,,75-78,SWC-101-Integer Overflow and Underflow,>=0.5.0 <0.6.0,0.0,124.0
+BNum.sol,contracts/BNum.sol,164,,68-69,SWC-101-Integer Overflow and Underflow,0.5.12,0.0,219.0
+StandardBounties.sol,contracts/StandardBounties.sol,725,,2-725|3|48-49|246-265|249,SWC-108-State Variable Default Visibility|SWC-103-Floating Pragma|SWC-108-State Variable Default Visibility|SWC-108-State Variable Default Visibility|SWC-101-Integer Overflow and Underflow,0.5.0,0.0,112.0
+Accounts.sol,contracts/Accounts.sol,515,,387,SWC-128-DoS With Block Gas Limit,0.5.14,0.0,259.0
+CompHelper.sol,contracts/CompHelper.sol,39,,27-138,SWC-104-Unchecked Call Return Value,^0.7.0,0.0,370.0
+FLAaveV2.sol,contracts/FLAaveV2.sol,154,,106-137,SWC-107-Reentrancy,^0.7.0,0.0,319.0
+ZeroxWrapper.sol,contracts/ZeroxWrapper.sol,60,,42-50,SWC-101-Integer Overflow and Underflow,^0.7.0,0.0,386.0
+KyberWrapperV3.sol,contracts/KyberWrapperV3.sol,144,,101-109,SWC-101-Integer Overflow and Underflow,^0.7.0,0.0,214.0
+ETHRegistrarController.sol,contracts/ETHRegistrarController.sol,103,,46-49|56-65,SWC-114-Transaction Order Dependence|SWC-104-Unchecked Call Return Value,^0.5.0,0.0,415.0
+SimplePriceOracle.sol,contracts/SimplePriceOracle.sol,30,,27-29,SWC-101-Integer Overflow and Underflow,^0.5.0,0.0,143.0
+StablePriceOracle.sol,contracts/StablePriceOracle.sol,73,,58-64,SWC-101-Integer Overflow and Underflow,^0.5.0,0.0,226.0
+xTRIBE.sol,contracts/xTRIBE.sol,141,,90-100,SWC-105-Unprotected Ether Withdrawal,^0.8.0,0.0,169.0
+CollateralizationOracle.sol,contracts/CollateralizationOracle.sol,341,,323|327,SWC-101-Integer Overflow and Underflow|SWC-101-Integer Overflow and Underflow,^0.8.4,0.0,466.0
+BalancerLBPSwapper.sol,contracts/BalancerLBPSwapper.sol,365,,108-118|174-258,SWC-114-Transaction Order Dependence|SWC-105-Unprotected Ether Withdrawal,^0.8.0,0.0,421.0
+Hypervisor.sol,contracts/Hypervisor.sol,587,,81-142|175-216|415,SWC-105-Unprotected Ether Withdrawal|SWC-107-Reentrancy|SWC-135-Code With No Effects,0.7.6,0.0,707.0
+IdleCDO.sol,contracts/IdleCDO.sol,757,,242-258,SWC-107-Reentrancy,0.8.4,0.0,586.0
+AMM.sol,contracts/AMM.sol,782,,17|500-502,SWC-131-Presence of unused variables|SWC-104-Unchecked Call Return Value,^0.5.2,0.0,116.0
+ChainlinkAdapter.sol,contracts/ChainlinkAdapter.sol,21,,18,SWC-101-Integer Overflow and Underflow,^0.5.2,0.0,177.0
+Perpetual.sol,contracts/Perpetual.sol,317,,4-5|34-41|270-289,SWC-135-Code With No Effects|SWC-119-Shadowing State Variables|SWC-105-Unprotected Ether Withdrawal,^0.5.2,0.0,702.0
+Pod.sol,contracts/Pod.sol,669,,275-282|279,SWC-107-Reentrancy|SWC-104-Unchecked Call Return Value,>=0.7.0 <0.8.0,0.0,658.0
+TokenDrop.sol,contracts/TokenDrop.sol,236,,82-88|141-155,SWC-105-Unprotected Ether Withdrawal|SWC-107-Reentrancy,>=0.7.0 <0.8.0,0.0,586.0
+LiquidStakingV2.sol,contracts/LiquidStakingV2.sol,499,,370-404,SWC-128-DoS With Block Gas Limit,>=0.7.0,0.0,222.0
+STokensV2.sol,contracts/STokensV2.sol,621,,125-140,SWC-128-DoS With Block Gas Limit,>=0.7.0,0.0,187.0
+ReversibleICO.sol,contracts/ReversibleICO.sol,1170,,230-299|948,SWC-113-DoS with Failed Call|SWC-119-Shadowing State Variables,^0.5.0,0.0,214.0
+RocketDepositPool.sol,contracts/RocketDepositPool.sol,147,,116-129,SWC-128-DoS With Block Gas Limit,0.7.6,0.0,394.0
+RocketNodeStaking.sol,contracts/RocketNodeStaking.sol,203,,150|166,SWC-104-Unchecked Call Return Value|SWC-114-Transaction Order Dependence,0.7.6,0.0,195.0
+DelegationRequestManager.sol,contracts/DelegationRequestManager.sol,128,,74-76,SWC-101-Integer Overflow and Underflow,^0.5.3,0.0,266.0
+DelegationService.sol,contracts/DelegationService.sol,318,,152-158|310-316,SWC-135-Code With No Effects|SWC-128-DoS With Block Gas Limit,^0.5.3,0.0,186.0
+SkaleBalances.sol,contracts/SkaleBalances.sol,91,,55-68,SWC-107-Reentrancy,^0.5.3,0.0,243.0
+TokenState.sol,contracts/TokenState.sol,281,,65|259-265,SWC-128-DoS With Block Gas Limit|SWC-105-Unprotected Ether Withdrawal,^0.5.3,0.0,443.0
+LockableERC777.sol,contracts/LockableERC777.sol,517,,399-422,SWC-107-Reentrancy,^0.5.3,0.0,240.0
+EternalHeroesFactory.sol,contracts/EternalHeroesFactory.sol,420,,279-285,SWC-107-Reentrancy,^0.5.16,0.0,262.0
+KeepRandomBeaconOperator.sol,contracts/KeepRandomBeaconOperator.sol,757,,452-494,SWC-120-Weak Sources of Randomness from Chain Attributes,^0.5.4,0.0,184.0
+Moloch.sol,contracts/Moloch.sol,682,,266-305|408-413|638-640,SWC-114-Transaction Order Dependence|SWC-105-Unprotected Ether Withdrawal|SWC-101-Integer Overflow and Underflow,0.5.3,0.0,470.0
+StakingController.sol,contracts/StakingController.sol,185,,92-101|121-153|135,SWC-105-Unprotected Ether Withdrawal|SWC-122-Lack of Proper Signature Verification|SWC-117-Signature Malleability,^0.7.3,0.0,215.0
+AOC_BEP.sol,contracts/AOC_BEP.sol,492,,115 - 126|362|362,SWC-118-Incorrect Constructor Name|SWC-135-Code With No Effects|SWC-105-Unprotected Ether Withdrawal,0.8.9,0.0,414.0
+AniaLottery.sol,contracts/AniaLottery.sol,438,,4|4|119 - 121,SWC-102-Outdated Compiler Version|SWC-103-Floating Pragma|SWC-105-Unprotected Ether Withdrawal,^0.8.2,0.0,136.0
+AniaStake.sol,contracts/AniaStake.sol,208,,4|4|185 - 194,SWC-102-Outdated Compiler Version|SWC-103-Floating Pragma|SWC-128-DoS With Block Gas Limit,^0.8.2,0.0,363.0
+BSB_StakingSmartStakers.sol,contracts/BSB_StakingSmartStakers.sol,819,,393 - 401|416 - 418,SWC-128-DoS With Block Gas Limit|SWC-128-DoS With Block Gas Limit,>=0.8.0,0.0,466.0
+BullMasterchef.sol,contracts/BullMasterchef.sol,457,,196-201,SWC-128-DoS With Block Gas Limit,0.8.4,0.0,552.0
+CENNZnetBridge.sol,contracts/CENNZnetBridge.sol,159,,99-120,SWC-105-Unprotected Ether Withdrawal,^0.8.0,0.0,250.0
+LatticeStakingPool0x74299A718b2c44483a27325d7725F0B2646DE3B1.sol,contracts/LatticeStakingPool0x74299A718b2c44483a27325d7725F0B2646DE3B1.sol,2097,,1795,SWC-128-DoS With Block Gas Limit,^0.8.0,0.0,281.0
+FidoMeta.sol,contracts/FidoMeta.sol,1121,,2|512 - 521|555 - 587|775 - 782|788 - 832|978 - 980|1009-1010|1043 - 1046|1060 - 1070,SWC-103-Floating Pragma|SWC-119-Shadowing State Variables|SWC-135-Code With No Effects|SWC-128-DoS With Block Gas Limit|SWC-135-Code With No Effects|SWC-135-Code With No Effects|SWC-101-Integer Overflow and Underflow|SWC-135-Code With No Effects|SWC-135-Code With No Effects,0.8.11,0.0,688.0
+FidoMeta_1.sol,contracts/FidoMeta_1.sol,1121,,2|513 - 515|555 - 587|775 - 782|789 - 832|978 - 980|1009 - 1010|1047 - 1050|1062 - 1071,SWC-103-Floating Pragma|SWC-119-Shadowing State Variables|SWC-135-Code With No Effects|SWC-128-DoS With Block Gas Limit|SWC-135-Code With No Effects|SWC-135-Code With No Effects|SWC-101-Integer Overflow and Underflow|SWC-135-Code With No Effects|SWC-135-Code With No Effects,0.8.11,0.0,484.0
+EpochVotingPowerStrategy.sol,contracts/EpochVotingPowerStrategy.sol,168,,66-79|100-112,SWC-126-Insufficient Gas Griefing|SWC-128-DoS With Block Gas Limit,0.7.6,0.0,488.0
+SwapsUser.sol,contracts/SwapsUser.sol,226,,156-178,SWC-101-Integer Overflow and Underflow,0.5.17,0.0,679.0
+ECOPToken.sol,contracts/ECOPToken.sol,315,,196 - 210,SWC-104-Unchecked Call Return Value,>=0.5.0 <0.7.0,0.0,215.0
+SportsIconPrivateVesting.sol,contracts/SportsIconPrivateVesting.sol,82,,60,SWC-104-Unchecked Call Return Value,^0.7.5,0.0,173.0
+SNXFlashLoanTool.sol,contracts/SNXFlashLoanTool.sol,147,,54|122|143,SWC-111-Use of Deprecated Solidity Functions|SWC-111-Use of Deprecated Solidity Functions|SWC-107-Reentrancy,^0.7.6,0.0,338.0
+NoteERC20.sol,contracts/NoteERC20.sol,407,,135,SWC-101-Integer Overflow and Underflow,^0.7.0,0.0,360.0
+LPool.sol,contracts/LPool.sol,1025,,845-885,SWC-107-Reentrancy,0.7.6,0.0,281.0
+LimitOrderProtocol.sol,contracts/LimitOrderProtocol.sol,462,,28 - 346|339,SWC-107-Reentrancy|SWC-128-DoS With Block Gas Limit,^0.7.6,0.0,711.0

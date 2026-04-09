@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "Pod",
+        "contract_version": ">=0.7.0 <0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "depositTo",
+                "fix_info": "Fixed reentrancy vulnerability by moving token transfer before state changes (minting shares) and added return value check for transferFrom",
+                "corrected_code": "    function depositTo(address to, uint256 tokenAmount)\n        external\n        override\n        returns (uint256)\n    {\n        require(tokenAmount > 0, \"Pod:invalid-amount\");\n\n        // Transfer Token from Message Sender first to prevent reentrancy\n        bool success = IERC20Upgradeable(token).transferFrom(\n            msg.sender,\n            address(this),\n            tokenAmount\n        );\n        require(success, \"Pod:token-transfer-failed\");\n\n        // Allocate Shares from Deposit To Amount\n        uint256 shares = _deposit(to, tokenAmount);\n\n        // Emit Deposited\n        emit Deposited(to, tokenAmount, shares);\n\n        // Return Shares Minted\n        return shares;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawERC20",
+                "fix_info": "Added return value check for ERC20 transfer",
+                "corrected_code": "    function withdrawERC20(IERC20Upgradeable _target, uint256 amount)\n        external\n        override\n        onlyManager\n        returns (bool)\n    {\n        // Lock token/ticket/pool ERC20 transfers\n        require(\n            address(_target) != address(token) &&\n                address(_target) != address(ticket) &&\n                address(_target) != address(pool),\n            \"Pod:invalid-target-token\"\n        );\n\n        // Transfer Token with return value check\n        bool success = _target.transfer(msg.sender, amount);\n        require(success, \"Pod:erc20-transfer-failed\");\n\n        emit ERC20Withdrawn(address(_target), amount);\n\n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_burnShares",
+                "fix_info": "Added return value check for ERC20 transfer and reordered operations to follow checks-effects-interactions pattern",
+                "corrected_code": "    function _burnShares(uint256 shares) internal returns (uint256) {\n        // Calculate Percentage Returned from Burned Shares\n        uint256 amount = (balance().mul(shares)).div(totalSupply());\n\n        // Burn Shares (state change)\n        _burn(msg.sender, shares);\n\n        IERC20Upgradeable _token = IERC20Upgradeable(token);\n        uint256 currentBalance = _token.balanceOf(address(this));\n\n        // Withdrawl Exceeds Current Token Balance\n        if (amount > currentBalance) {\n            // Calculate Withdrawl Amount\n            uint256 _withdraw = amount.sub(currentBalance);\n\n            // Withdraw from Prize Pool\n            uint256 exitFee = _withdrawFromPool(_withdraw);\n\n            // Add Exit Fee to Withdrawl Amount\n            amount = amount.sub(exitFee);\n        }\n\n        // Transfer Deposit Token to Message Sender with return value check\n        bool success = _token.transfer(msg.sender, amount);\n        require(success, \"Pod:token-transfer-failed\");\n\n        // Return Token Withdrawl Amount\n        return amount;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

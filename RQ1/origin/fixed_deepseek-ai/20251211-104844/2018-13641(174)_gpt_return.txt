@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MVGcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed to variable declaration",
+            "variable_code": "",
+            "change_type": ""
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed to variable declaration",
+            "variable_code": "",
+            "change_type": ""
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "",
+            "change_type": ""
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow by using SafeMath library for addition operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    \n    // Prevent minting 0 tokens\n    require(mintedAmount > 0, \"Minted amount must be greater than 0\");\n    \n    // Using SafeMath to prevent integer overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Using require to validate that overflow didn't occur\n    require(balanceOf[target] >= mintedAmount, \"Overflow check for balance\");\n    \n    Transfer(0, this, mintedAmount);\n    Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

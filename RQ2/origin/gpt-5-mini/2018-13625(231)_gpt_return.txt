@@ -1,0 +1,5 @@
+{
+    "type": "Arithmetic",
+    "location": "function mintlvlToken(address target, uint256 mintedAmount) onlyOwner {\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+    "description": "The function performs unchecked arithmetic on uint256 values (balanceOf[target] and totalSupply) using the += operator. In Solidity ^0.4.13 arithmetic operations do not revert on overflow or underflow; they wrap modulo 2^256. An attacker with the owner role (or a compromised owner key) can pass a crafted mintedAmount that causes balanceOf[target] or totalSupply to overflow and wrap to a much smaller value, corrupting token accounting. For example, if totalSupply is TS, supplying mintedAmount = 2^256 - TS + X will make totalSupply wrap to X. There are no bounds checks (e.g., mintedAmount > 0) or SafeMath usage, so both accidental and malicious overflows are possible. This breaks invariants and can be used to create inconsistent or exploitable token states."
+}

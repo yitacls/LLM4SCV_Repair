@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses `tx.origin` for authorization instead of `msg.sender`, making it vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract, which then calls `setVars()`. When the owner is the transaction origin, the malicious contract's call will pass the `require()` check, allowing the attacker to change the `factory` and `owner` state variables. This breaks the intended access control and can lead to loss of contract ownership and control."
+}
+```

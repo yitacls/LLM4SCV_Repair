@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function depositTo(address to, uint256 tokenAmount)",
+        "description": "The function calls _deposit() which mints shares before transferring tokens from the user. If the token contract has a malicious fallback function, it could reenter the contract before shares are minted, potentially manipulating share calculations or draining funds."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IERC20Upgradeable(token).transferFrom(msg.sender, address(this), tokenAmount)",
+        "description": "The return value of the transferFrom call is not checked. If the transfer fails (e.g., due to insufficient allowance or balance), the function will continue execution without handling the failure, which could lead to incorrect share minting without actual token transfer."
+    }
+]
+```

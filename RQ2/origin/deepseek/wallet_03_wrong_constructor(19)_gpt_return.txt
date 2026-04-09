@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function initWallet() public { creator = msg.sender; }",
+    "description": "The initWallet() function lacks access control modifiers, allowing any caller to set themselves as the creator. In Solidity 0.4.24, this function is vulnerable to front-running or malicious calls, potentially enabling unauthorized takeover of privileged roles. It should include a check (like `require(creator == address(0))`) to ensure it can only be called once on contract initialization."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "players[tot] = Player(msg.sender, number);\ntot++;",
+    "description": "The contract is vulnerable to front-running attacks because the player's number choice is visible on the blockchain before the game concludes. A malicious player can monitor pending transactions and submit a transaction with a winning number after seeing their opponent's choice, but before their transaction is mined. This allows them to guarantee a win by always choosing the optimal response to their opponent's visible number."
+}
+```

@@ -1,0 +1,48 @@
+```json
+[
+    {
+        "contract_name": "LiquidStakingV2",
+        "contract_version": "v2",
+        "state_variables": [
+            {
+                "variable_name": "_unstakingExpiration",
+                "fix_info": "Changed from a mapping of array to a mapping of a more efficient data structure using Struct for indexed expiration and amount.",
+                "variable_code": "mapping(address => mapping(uint256 => UnstakingInfo)) private _unstakingInfo;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "UnstakingInfo",
+                "fix_info": "Introduced a struct to efficiently manage expiration data and avoid gas-intensive loops.",
+                "variable_code": "struct UnstakingInfo { uint256 expirationTime; uint256 amount; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "withdrawUnstakedTokens",
+                "fix_info": "Replaced gas-intensive loop with sequential processing using a Struct, added indexed data deletion, and improved the gas cost efficiency by avoiding an unbounded loop.",
+                "corrected_code": "function withdrawUnstakedTokens(address staker) public virtual override whenNotPaused { require(staker == _msgSender(), \"LQ20\"); uint256 _withdrawBalance; uint256 _counter = _withdrawCounters[staker]; uint256 nextIndex; while (true) { UnstakingInfo memory info = _unstakingInfo[staker][_counter]; if (info.expirationTime == 0) { break; } (uint256 _getUnstakeTime, , ) = getUnstakeTime(info.expirationTime); if (block.timestamp >= _getUnstakeTime) { _withdrawBalance = _withdrawBalance.add(info.amount); delete _unstakingInfo[staker][_counter]; nextIndex = _counter.add(1); } else { break; } _counter = _counter.add(1); } require(_withdrawBalance > 0, \"LQ21\"); _withdrawCounters[staker] = nextIndex; emit WithdrawUnstakeTokens(staker, _withdrawBalance, block.timestamp); _uTokens.mint(staker, _withdrawBalance); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unStake",
+                "fix_info": "Revised unstaking logic to support an indexed mapping system, optimizing storage and gas use during staking and unstaking operations.",
+                "corrected_code": "function unStake(address to, uint256 amount) public virtual override whenNotPaused returns (bool) { require(to == _msgSender(), \"LQ15\"); uint256 _currentSTokenBalance = _sTokens.balanceOf(to); uint256 _unstakeFeeAmount = (amount.mulDiv(_unstakeFee, _valueDivisor)).div(100); uint256 _finalTokens = amount.add(_unstakeFeeAmount); require(amount >= _minUnstake, \"LQ18\"); require(_currentSTokenBalance >= _finalTokens, \"LQ19\"); _sTokens.burn(to, _finalTokens); uint256 counterIndex = _withdrawCounters[to].add(1); _unstakingInfo[to][counterIndex] = UnstakingInfo(block.timestamp, amount); emit UnstakeTokens(to, amount, _finalTokens, block.timestamp); return true; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getTotalUnbondedTokens",
+                "fix_info": "Revised to accommodate the new data structure and improve gas efficiency by using the mapping directly rather than iterating over arrays.",
+                "corrected_code": "function getTotalUnbondedTokens(address staker) public view virtual override returns (uint256 unbondingTokens) { uint256 _counter = _withdrawCounters[staker]; while (_unstakingInfo[staker][_counter].expirationTime != 0) { UnstakingInfo memory info = _unstakingInfo[staker][_counter]; (uint256 _getUnstakeTime, , ) = getUnstakeTime(info.expirationTime); if (block.timestamp >= _getUnstakeTime) { unbondingTokens = unbondingTokens.add(info.amount); } _counter = _counter.add(1); } return unbondingTokens; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getTotalUnbondingTokens",
+                "fix_info": "Adapted to the new indexed data structure to optimize data access and match the new design.",
+                "corrected_code": "function getTotalUnbondingTokens(address staker) public view virtual override returns (uint256 unbondingTokens) { uint256 _counter = _withdrawCounters[staker]; while (_unstakingInfo[staker][_counter].expirationTime != 0) { UnstakingInfo memory info = _unstakingInfo[staker][_counter]; (uint256 _getUnstakeTime, , ) = getUnstakeTime(info.expirationTime); if (block.timestamp < _getUnstakeTime) { unbondingTokens = unbondingTokens.add(info.amount); } _counter = _counter.add(1); } return unbondingTokens; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

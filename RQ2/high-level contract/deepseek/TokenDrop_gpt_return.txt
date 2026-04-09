@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "function initialize(address _measure, address _asset) external { ... factory = msg.sender; }",
+            "description": "The initialize function can be called by any external address, allowing potential attackers to set themselves as the factory owner. This could lead to unauthorized control over the contract. There is no access control modifier or check to ensure only the intended deployer can initialize the contract."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "function claim(address user) external returns (uint256) { ... asset.transfer(user, balance); ... }",
+            "description": "The claim function performs an external call via asset.transfer() before updating the state (userStates[user].balance is set to 0 before the transfer, but totalUnclaimed is updated after). If the asset token is a malicious contract with a fallback function that reenters claim(), it could potentially manipulate contract state. While the state updates appear safe in this specific order, the external call before the totalUnclaimed state update creates a classic reentrancy pattern that should be secured with checks-effects-interactions."
+        }
+    ]
+}
+```

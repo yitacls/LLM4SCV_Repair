@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "Ark",
+    "contract_version": "0.8.21",
+    "state_variables": [
+        {
+            "variable_name": "insuranceFund",
+            "fix_info": "Changed visibility to private and added public getter",
+            "variable_code": "address private insuranceFund;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyInsuranceFund",
+            "fix_info": "Added modifier to check insuranceFund caller",
+            "modifier_code": "modifier onlyInsuranceFund() {\n    require(msg.sender == insuranceFund, \"only insuranceFund\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Updated initializer pattern for OpenZeppelin upgrades",
+            "corrected_code": "function initialize() external initializer {\n    __Ownable_init();\n    __ReentrancyGuard_init();\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawForLoss",
+            "fix_info": "Fixed SWC-113 by checking transfer success, updated to Solidity 0.8.x safe math, added explicit return value check",
+            "corrected_code": "function withdrawForLoss(Decimal.decimal memory _amount, IERC20 _quoteToken) \n    public \n    override \n    nonReentrant \n    onlyInsuranceFund \n{\n    require(\n        _balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \n        \"insufficient funds\"\n    );\n    \n    // Handle token decimals adjustment\n    if (_getTokenDecimals(address(_quoteToken)) < 18) {\n        _amount = _amount.addD(_toDecimal(_quoteToken, 1));\n    }\n    \n    // Store withdrawal history\n    Decimal.decimal memory cumulativeAmount;\n    uint256 len = withdrawnTokenHistory[_quoteToken].length;\n    \n    if (len == 0) {\n        cumulativeAmount = _amount;\n    } else {\n        cumulativeAmount = withdrawnTokenHistory[_quoteToken][len - 1].cumulativeAmount.addD(_amount);\n    }\n    \n    withdrawnTokenHistory[_quoteToken].push(\n        WithdrawnToken({ \n            timestamp: _blockTimestamp(), \n            cumulativeAmount: cumulativeAmount \n        })\n    );\n    \n    // Safe transfer with explicit success check\n    bool success = _transfer(_quoteToken, msg.sender, _amount);\n    require(success, \"Token transfer failed\");\n    \n    emit WithdrawnForLoss(msg.sender, _amount.toUint(), address(_quoteToken));\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claimTokens",
+            "fix_info": "Added explicit success checks for transfers, handle native ETH transfer safely",
+            "corrected_code": "function claimTokens(address payable _to, IERC20 _token) external onlyOwner {\n    require(_to != address(0), \"to address is required\");\n    \n    if (address(_token) == address(0)) {\n        // Handle native ETH transfer\n        (bool success, ) = _to.call{value: address(this).balance}(\"\");\n        require(success, \"ETH transfer failed\");\n    } else {\n        // Handle ERC20 token transfer with success check\n        Decimal.decimal memory balance = _balanceOf(_token, address(this));\n        bool transferSuccess = _transfer(_token, _to, balance);\n        require(transferSuccess, \"Token transfer failed\");\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setInsuranceFund",
+            "fix_info": "Added zero address check",
+            "corrected_code": "function setInsuranceFund(address _insuranceFund) external onlyOwner {\n    require(_insuranceFund != address(0), \"invalid insurance fund address\");\n    insuranceFund = _insuranceFund;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getInsuranceFund",
+            "fix_info": "Added public getter for insuranceFund",
+            "corrected_code": "function getInsuranceFund() external view returns (address) {\n    return insuranceFund;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "ReferralFeeReceiver",
+        "contract_version": "0.6.0",
+        "functions": [
+            {
+                "function_name": "updateReward",
+                "fix_info": "Prevent unauthorized Ether withdrawals",
+                "corrected_code": "function updateReward(address referral, uint256 amount) external override {\n        Mooniswap mooniswap = Mooniswap(msg.sender);\n        TokenInfo storage token = tokenInfo[address(mooniswap)];\n        UserInfo storage user = userInfo[referral];\n        uint256 currentEpoch = token.currentEpoch;\n\n        user.share[address(mooniswap)][currentEpoch] = user.share[address(mooniswap)][currentEpoch].add(amount);\n        token.epochBalance[currentEpoch].totalSupply = token.epochBalance[currentEpoch].totalSupply.add(amount);\n\n        // Collect all processed epochs and advance user token epoch\n        _collectProcessedEpochs(user, token, mooniswap, currentEpoch);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

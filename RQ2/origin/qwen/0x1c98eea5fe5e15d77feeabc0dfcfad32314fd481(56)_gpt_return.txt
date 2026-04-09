@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.transfer(balance);",
+    "description": "The contract updates the state variables (payouts and totalPayouts) after making an external call to msg.sender.transfer(). In Solidity ^0.4.19, the called contract's fallback function can re-enter the withdraw function before the state updates are completed, potentially allowing an attacker to withdraw more funds than they are entitled to. The state changes should occur before the external call to prevent reentrant attacks."
+}
+```

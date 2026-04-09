@@ -1,0 +1,23 @@
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "0.6.0",
+        "state_variables": [
+            {
+                "variable_name": "MAX_EPOCHS_PER_TX",
+                "fix_info": "Added a cap on the maximum number of epochs that can be harvested in a single transaction to mitigate DoS via block gas limit and preserve ability to batch harvest over multiple transactions.",
+                "variable_code": "uint128 private constant MAX_EPOCHS_PER_TX = 20;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Fixed to (1) handle epoch 0 gracefully to avoid underflow when calling sub(1), and (2) limit the number of iterations per call to avoid DoS via block gas limit. Uses SafeMath and checks transfer success.",
+                "corrected_code": "function massHarvest() external returns (uint) {\n    uint totalDistributedValue = 0;\n\n    uint currentEpoch = _getEpochId();\n    // if epochs haven't started yet, nothing to harvest\n    if (currentEpoch == 0) {\n        return 0;\n    }\n\n    // harvest up to the previous completed epoch\n    uint epochId = currentEpoch.sub(1);\n\n    // force max number of epochs\n    if (epochId > NR_OF_EPOCHS) {\n        epochId = NR_OF_EPOCHS;\n    }\n\n    uint128 userLast = lastEpochIdHarvested[msg.sender];\n    // nothing to harvest\n    if (uint128(epochId) <= userLast) {\n        return 0;\n    }\n\n    uint128 start = userLast + 1;\n    uint128 end = uint128(epochId);\n\n    // cap iterations to avoid DoS via block gas limit\n    if (end.sub(start).add(1) > MAX_EPOCHS_PER_TX) {\n        end = start.add(MAX_EPOCHS_PER_TX).sub(1);\n    }\n\n    for (uint128 i = start; i <= end; i++) {\n        totalDistributedValue = totalDistributedValue.add(_harvest(i));\n    }\n\n    emit MassHarvest(msg.sender, uint256(uint256(end).sub(uint256(userLast))), totalDistributedValue);\n\n    if (totalDistributedValue > 0) {\n        // transferFrom returns bool per ERC20; ensure success\n        require(_bond.transferFrom(_communityVault, msg.sender, totalDistributedValue), \"BOND transfer failed\");\n    }\n\n    return totalDistributedValue;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

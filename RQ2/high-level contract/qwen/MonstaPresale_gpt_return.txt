@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MonstaPresale",
+    "contract_version": "0.6.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "reclaimBNB",
+            "fix_info": "Fixed unprotected ether withdrawal by ensuring only owner can call this function and added proper error handling",
+            "corrected_code": "function reclaimBNB() external onlyOwner {\n    require(address(this).balance > 0, \"No BNB to withdraw\");\n    msg.sender.transfer(address(this).balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

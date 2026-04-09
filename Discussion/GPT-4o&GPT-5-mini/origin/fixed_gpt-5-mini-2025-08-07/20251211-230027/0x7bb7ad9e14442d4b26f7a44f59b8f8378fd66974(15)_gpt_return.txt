@@ -1,0 +1,34 @@
+[{
+    "contract_name": "STQDistribution",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Replace insecure tx.origin usage with owner check based on msg.sender. Ensure owner is publicly readable so ownership can be verified off-chain.",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "mintableTokenAddress",
+            "fix_info": "Ensure the mintable token contract address is stored as an address and accessible to distribution logic.",
+            "variable_code": "address public mintableTokenAddress;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added an onlyOwner modifier to centralize and clearly express access control, using msg.sender instead of tx.origin.",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "batchSend",
+            "fix_info": "Replaced tx.origin check with onlyOwner (msg.sender). Added sanity checks to avoid minting zero value or to the zero address. Cast lot size to uint256 for arithmetic safety. Preserved original functionality and signature.",
+            "corrected_code": "function batchSend(Token _token, uint160 _lotSize, uint256[] _transfers) public onlyOwner {\n    MintableToken token = MintableToken(mintableTokenAddress);\n    uint256 count = _transfers.length;\n    for (uint256 i = 0; i < count; i++) {\n      uint256 transfer = _transfers[i];\n      uint256 value = (transfer >> 160) * uint256(_lotSize);\n      address to = address(transfer & 0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);\n      require(to != address(0));\n      require(value > 0);\n      token.mint(to, value);\n    }\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]

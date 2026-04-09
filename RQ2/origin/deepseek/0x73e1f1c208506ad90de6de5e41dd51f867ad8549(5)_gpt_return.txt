@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The low-level call `wallet.send(msg.value)` does not check its return value. The `send` function returns a boolean indicating success, but this contract ignores it. If the send fails (e.g., due to out-of-gas in the recipient's fallback function, a contract revert, or insufficient balance), the ether transfer will fail silently. This leaves the contract's state inconsistent—the calling user's ether was deducted, but the intended recipient did not receive it. The contract's fallback function should handle the failure, either by reverting the transaction entirely or implementing proper error handling logic."
+}
+```

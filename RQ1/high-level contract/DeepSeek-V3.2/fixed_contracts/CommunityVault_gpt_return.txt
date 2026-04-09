@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "CommunityVault",
+    "contract_version": "0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "_bond",
+            "fix_info": "No changes needed",
+            "variable_code": "IERC20 private _bond;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Inherited from Ownable, no changes needed",
+            "modifier_code": "",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Updated to use safe pragma version and best practices",
+            "corrected_code": "constructor(address bond) {\n        require(bond != address(0), \"CommunityVault: bond token cannot be zero address\");\n        _bond = IERC20(bond);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setAllowance",
+            "fix_info": "Added reentrancy guard, input validation, and made function visibility explicit",
+            "corrected_code": "function setAllowance(address spender, uint256 amount) external onlyOwner {\n        require(spender != address(0), \"CommunityVault: spender cannot be zero address\");\n        require(amount > 0, \"CommunityVault: amount must be greater than zero\");\n        \n        // To prevent reentrancy, we first set allowance to 0 before setting new amount\n        uint256 currentAllowance = _bond.allowance(address(this), spender);\n        if (currentAllowance != 0) {\n            _bond.approve(spender, 0);\n        }\n        \n        _bond.approve(spender, amount);\n        \n        emit SetAllowance(msg.sender, spender, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getTokenAddress",
+            "fix_info": "Added getter function for better transparency",
+            "corrected_code": "function getTokenAddress() external view returns (address) {\n        return address(_bond);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PornTokenV2Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic vulnerability by sending the current balance before resetting it to 0, and added SafeMath library usage for arithmetic operations",
+            "corrected_code": "function () payable {\n        require(!crowdsaleClosed);\n        uint amount = msg.value;\n        if (beneficiary == msg.sender && currentBalance > 0) {\n            uint balanceToSend = currentBalance;\n            currentBalance = 0;\n            beneficiary.send(balanceToSend);\n        } else if (amount > 0) {\n            balanceOf[msg.sender] = balanceOf[msg.sender].add(amount);\n            amountRaised = amountRaised.add(amount);\n            currentBalance = currentBalance.add(amount);\n            tokenReward.transfer(msg.sender, (amount.div(price)).mul(1 ether));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

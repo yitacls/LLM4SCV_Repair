@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function sell(uint256 amount) public",
+    "description": "The sell function lacks access control modifiers, allowing any external caller to execute it. This could enable unauthorized users to trigger token sales and ether transfers from the contract without proper authorization checks. In the context of a token contract, sell functionality should typically be restricted to token owners or authorized parties. The absence of access control could lead to unintended draining of contract ether balances or disruption of token economic mechanisms."
+}
+```

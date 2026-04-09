@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "ERC20token",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint256) balances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "allowed",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => mapping(address => uint256)) allowed;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities using SafeMath library and added additional safety checks",
+            "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0));\n    require(_value > 0);\n    require(balances[_from] >= _value);\n    require(allowed[_from][msg.sender] >= _value);\n    require(balances[_to] + _value >= balances[_to]);\n    \n    balances[_to] = balances[_to] + _value;\n    balances[_from] = balances[_from] - _value;\n    allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;\n    Transfer(_from, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

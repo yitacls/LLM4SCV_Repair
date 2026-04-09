@@ -1,0 +1,14 @@
+[{
+    "contract_name": "AKC",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Prevent unchecked low-level call by encoding the calldata with abi.encodeWithSignature and checking the call return value with require. Handle empty custom fallback by using a sensible default signature. Keep original behavior and prevent calling into this contract.",
+            "corrected_code": "function transferFrom(address _from, address _to, uint256 _amount, bytes _data, string _custom_fallback)\n        public\n        returns (bool success)\n    {\n        if (isContract(controller)) {\n            if (!TokenController(controller).onTransfer(_from, _to, _amount)) {\n                revert();\n            }\n        }\n\n        require(super.transferFrom(_from, _to, _amount));\n\n        if (isContract(_to)) {\n            require(_to != address(this));\n\n            // Prepare calldata safely. If caller provided an explicit custom fallback signature\n            // (e.g. \"tokenFallback(address,uint256,bytes)\"), use it; otherwise use the\n            // standard ERC223 tokenFallback signature.\n            bytes memory payload;\n            if (bytes(_custom_fallback).length > 0) {\n                // _custom_fallback is expected to be a full function signature string\n                // like \"myFallback(address,uint256,bytes)\"\n                payload = abi.encodeWithSignature(_custom_fallback, _from, _amount, _data);\n            } else {\n                payload = abi.encodeWithSignature(\"tokenFallback(address,uint256,bytes)\", _from, _amount, _data);\n            }\n\n            // Perform the external call and require success to avoid unchecked low-level calls.\n            // Using address.call with encoded payload preserves the original flexibility while\n            // ensuring failures revert.\n            require(_to.call.value(0)(payload));\n        }\n\n        emit ERC223Transfer(_from, _to, _amount, _data);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

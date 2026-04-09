@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EasyInvestPI",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call by using transfer() instead of send() and adding success check",
+            "corrected_code": "function () external payable {\n        if (invested[msg.sender] != 0) {\n            uint256 amount = invested[msg.sender] * 314 / 10000 * (block.number - atBlock[msg.sender]) / 5900;\n            address sender = msg.sender;\n            sender.transfer(amount);\n        }\n        address(0x64508a1d8B2Ce732ED6b28881398C13995B63D67).transfer(msg.value / 10);\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

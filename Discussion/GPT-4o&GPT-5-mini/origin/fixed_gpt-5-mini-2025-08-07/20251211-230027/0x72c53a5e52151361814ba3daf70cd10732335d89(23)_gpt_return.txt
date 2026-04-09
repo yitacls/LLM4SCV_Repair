@@ -1,0 +1,33 @@
+[{
+    "contract_name": "EthereuMMM",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "allInvestments",
+            "fix_info": "Ensure using uint256 and guarded arithmetic (prevent underflow by checking before subtraction). Kept as state var but protect updates in withdraw().",
+            "variable_code": "uint256 public allInvestments;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "investorWallet",
+            "fix_info": "Keep mapping as uint256; use a local temp variable and require(temp > 0) to avoid invalid zero-withdrawals.",
+            "variable_code": "mapping(address => uint256) public investorWallet;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "investments",
+            "fix_info": "Assumed struct Investment { uint256 amount; /* ... */ } — keep mapping but guard reads/updates to avoid arithmetic issues.",
+            "variable_code": "mapping(address => Investment) public investments;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Applied checks-effects-interactions pattern, added explicit underflow guards before subtracting from allInvestments, and replaced low-level call with transfer to ensure revert on failure.",
+            "corrected_code": "function withdraw() public {\n        uint256 tempWithdraw = investorWallet[msg.sender];\n        require(tempWithdraw > 0);\n\n        // Effects: clear user's balances before external interaction\n        investorWallet[msg.sender] = 0;\n\n        uint256 invAmount = investments[msg.sender].amount;\n        if (invAmount >= allInvestments) {\n            // Prevent underflow: if invAmount is unexpectedly >= allInvestments, zero out safely\n            allInvestments = 0;\n        } else {\n            allInvestments -= invAmount;\n        }\n        investments[msg.sender].amount = 0;\n\n        // Cap withdrawal to contract balance\n        uint256 contractBal = address(this).balance;\n        if (contractBal < tempWithdraw) {\n            tempWithdraw = contractBal;\n        }\n\n        // Interaction: use transfer (throws on failure) and follows checks-effects-interactions\n        msg.sender.transfer(tempWithdraw);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The vulnerability exists due to the unchecked arithmetic operation in the line mentioned. If the addition of _value to balances[_to] exceeds the maximum value that can be stored in a uint256, it can wrap around to 0 or unexpected behavior, leading to potential vulnerabilities."
+}
+```  

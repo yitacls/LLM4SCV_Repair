@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "LiquidStakingV2",
+    "contract_version": "Solidity >=0.7.0",
+    "state_variables": [
+        {
+            "variable_name": "_withdrawCounters",
+            "fix_info": "Changed visibility from internal to private for consistency with other state variables",
+            "variable_code": "mapping(address => uint256) private _withdrawCounters;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawUnstakedTokens",
+            "fix_info": "Fixed potential gas limit DoS by limiting loop iterations and tracking processed items separately",
+            "corrected_code": "function withdrawUnstakedTokens(address staker)\n\tpublic\n\tvirtual\n\toverride\n\twhenNotPaused\n{\n\trequire(staker == _msgSender(), \"LQ20\");\n\tuint256 _withdrawBalance;\n\tuint256 _unstakingExpirationLength = _unstakingExpiration[staker].length;\n\tuint256 _counter = _withdrawCounters[staker];\n\t\n\t// Limit iterations to prevent gas limit DoS\n\tuint256 maxIterations = 100; // Reasonable upper bound per transaction\n\tuint256 iterations = 0;\n\t\n\tfor (\n\t\tuint256 i = _counter;\n\t\ti < _unstakingExpirationLength && iterations < maxIterations;\n\t\ti = i.add(1)\n\t) {\n\t\titerations = iterations.add(1);\n\t\t(uint256 _getUnstakeTime, , ) = getUnstakeTime(_unstakingExpiration[staker][i]);\n\t\tif (block.timestamp >= _getUnstakeTime) {\n\t\t\t_withdrawBalance = _withdrawBalance.add(_unstakingAmount[staker][i]);\n\t\t\t_unstakingExpiration[staker][i] = 0;\n\t\t\t_unstakingAmount[staker][i] = 0;\n\t\t\t_withdrawCounters[staker] = i.add(1);\n\t\t}\n\t}\n\t\n\t// Update counter if we reached end\n\tif (_counter.add(iterations) >= _unstakingExpirationLength) {\n\t\t_withdrawCounters[staker] = _unstakingExpirationLength;\n\t}\n\t\n\trequire(_withdrawBalance > 0, \"LQ21\");\n\temit WithdrawUnstakeTokens(staker, _withdrawBalance, block.timestamp);\n\t_uTokens.mint(staker, _withdrawBalance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "IntermediateWallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added check for low-level call success to prevent unchecked return value",
+            "corrected_code": "function () payable public {\n    require(wallet.call.value(msg.value)(), \"Low-level call failed\");\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

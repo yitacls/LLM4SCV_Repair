@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance - 2100000);",
+    "description": "The contract uses a low-level call (.send()) to transfer Ether without checking the return value. In Solidity 0.4.x, .send() returns a boolean indicating success or failure. If the transfer fails (e.g., if the owner is a contract without a payable fallback function or runs out of gas), the return value is ignored, causing the contract to proceed as if the transfer succeeded. This can lead to locked funds in the contract. The safe pattern involves checking the return value and handling failures appropriately via require() or revert()."
+}
+```

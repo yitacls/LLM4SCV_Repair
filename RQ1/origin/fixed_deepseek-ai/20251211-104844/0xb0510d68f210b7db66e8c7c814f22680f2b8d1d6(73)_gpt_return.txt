@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Splitter",
+        "contract_version": "^0.4.23",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fundPuppets",
+                "fix_info": "Replaced unchecked low-level calls with transfers and added error handling. In Solidity 0.4.x, use transfer() instead of call.value() for security and check success.",
+                "corrected_code": "function fundPuppets() public payable {\n    require(msg.sender == owner);\n    _share = SafeMath.div(msg.value, 4);\n    \n    // Use transfer() which reverts on failure in Solidity 0.4.x\n    require(extra[0].transfer(_share));\n    require(extra[1].transfer(_share));\n    require(extra[2].transfer(_share));\n    require(extra[3].transfer(_share));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

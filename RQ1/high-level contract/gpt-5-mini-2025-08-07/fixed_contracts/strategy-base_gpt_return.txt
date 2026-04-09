@@ -1,0 +1,34 @@
+[
+    {
+        "contract_name": "StrategyBase",
+        "contract_version": "^0.6.7",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_swapUniswap",
+                "fix_info": "Check inputs and verify the router call return value to avoid unchecked external call; ensure _from and _amount are valid.",
+                "corrected_code": "function _swapUniswap(\n        address _from,\n        address _to,\n        uint256 _amount\n    ) internal {\n        require(_from != address(0) && _to != address(0), \"invalid-token\");\n        require(_amount > 0, \"invalid-amount\");\n\n        // Approve router\n        IERC20(_from).safeApprove(univ2Router2, 0);\n        IERC20(_from).safeApprove(univ2Router2, _amount);\n\n        address[] memory path;\n\n        if (_from == weth || _to == weth) {\n            path = new address[](2);\n            path[0] = _from;\n            path[1] = _to;\n        } else {\n            path = new address[](3);\n            path[0] = _from;\n            path[1] = weth;\n            path[2] = _to;\n        }\n\n        uint256[] memory amounts = UniswapRouterV2(univ2Router2).swapExactTokensForTokens(\n            _amount,\n            0,\n            path,\n            address(this),\n            now.add(60)\n        );\n\n        require(amounts.length > 0 && amounts[amounts.length - 1] > 0, \"swap-uniswap-failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapUniswapWithPath",
+                "fix_info": "Validate provided path and amount, and check the router call return value to ensure swap succeeded.",
+                "corrected_code": "function _swapUniswapWithPath(\n        address[] memory path,\n        uint256 _amount\n    ) internal {\n        require(path.length >= 2, \"invalid-path\");\n        require(path[0] != address(0) && path[path.length - 1] != address(0), \"invalid-path-token\");\n        require(_amount > 0, \"invalid-amount\");\n\n        // Approve router\n        IERC20(path[0]).safeApprove(univ2Router2, 0);\n        IERC20(path[0]).safeApprove(univ2Router2, _amount);\n        \n        uint256[] memory amounts = UniswapRouterV2(univ2Router2).swapExactTokensForTokens(\n            _amount,\n            0,\n            path,\n            address(this),\n            now.add(60)\n        );\n\n        require(amounts.length > 0 && amounts[amounts.length - 1] > 0, \"swap-uniswap-failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapSushiswap",
+                "fix_info": "Check inputs and verify the sushi router call return value to avoid unchecked external call; ensure _from and _amount are valid.",
+                "corrected_code": "function _swapSushiswap(\n        address _from,\n        address _to,\n        uint256 _amount\n    ) internal {\n        require(_from != address(0) && _to != address(0), \"invalid-token\");\n        require(_amount > 0, \"invalid-amount\");\n\n        // Approve router\n        IERC20(_from).safeApprove(sushiRouter, 0);\n        IERC20(_from).safeApprove(sushiRouter, _amount);\n\n        address[] memory path;\n\n        if (_from == weth || _to == weth) {\n            path = new address[](2);\n            path[0] = _from;\n            path[1] = _to;\n        } else {\n            path = new address[](3);\n            path[0] = _from;\n            path[1] = weth;\n            path[2] = _to;\n        }\n\n        uint256[] memory amounts = UniswapRouterV2(sushiRouter).swapExactTokensForTokens(\n            _amount,\n            0,\n            path,\n            address(this),\n            now.add(60)\n        );\n\n        require(amounts.length > 0 && amounts[amounts.length - 1] > 0, \"swap-sushiswap-failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapSushiswapWithPath",
+                "fix_info": "Validate provided path and amount, and check the sushi router call return value to ensure swap succeeded.",
+                "corrected_code": "function _swapSushiswapWithPath(\n        address[] memory path,\n        uint256 _amount\n    ) internal {\n        require(path.length >= 2, \"invalid-path\");\n        require(path[0] != address(0) && path[path.length - 1] != address(0), \"invalid-path-token\");\n        require(_amount > 0, \"invalid-amount\");\n\n        // Approve router\n        IERC20(path[0]).safeApprove(sushiRouter, 0);\n        IERC20(path[0]).safeApprove(sushiRouter, _amount);\n        \n        uint256[] memory amounts = UniswapRouterV2(sushiRouter).swapExactTokensForTokens(\n            _amount,\n            0,\n            path,\n            address(this),\n            now.add(60)\n        );\n\n        require(amounts.length > 0 && amounts[amounts.length - 1] > 0, \"swap-sushiswap-failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

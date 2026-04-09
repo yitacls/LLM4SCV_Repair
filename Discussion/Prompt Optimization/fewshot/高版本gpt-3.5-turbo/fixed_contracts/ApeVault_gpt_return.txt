@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "ApeVaultWrapperImplementation",
+        "contract_version": "^0.8.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "apeWithdrawSimpleToken",
+                "fix_info": "Add a require statement to prevent unauthorized withdrawals",
+                "corrected_code": "function apeWithdrawSimpleToken(uint256 _amount) public {
+    require(_amount > 0, 'Amount must be greater than 0');
+    simpleToken.safeTransfer(msg.sender, _amount);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

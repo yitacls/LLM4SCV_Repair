@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the contract state. In Solidity ^0.4.19, the call.value()() syntax sends Ether and control to the caller, who can be a malicious contract that calls back into the CashOut function before the balance is reduced. This allows the attacker to withdraw more funds than they should be able to, potentially draining the contract. The state update balances[msg.sender]-=_am should occur before the external call to prevent reentrancy."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_target.call.value(_value)();",
+    "description": "The low-level call method does not check if the call was successful. In Solidity ^0.4.24, the return value of the call should be explicitly checked to handle potential failures. If the call fails, the function will continue execution without reverting, potentially leading to unexpected behavior or loss of funds. The call should be followed by a check of the return value, such as 'require(_target.call.value(_value)());' to ensure proper error handling."
+}
+```

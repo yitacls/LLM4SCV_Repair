@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "TIME_MANIPULATION",
+        "location": "require(now != pastBlockTime);",
+        "description": "This check only prevents multiple transactions within the same block, but miners can manipulate block timestamps within a small range (typically up to 15 seconds). A malicious miner could influence whether 'now % 15 == 0' evaluates to true by choosing when to mine the block containing the transaction, making the game predictable and unfair."
+    },
+    {
+        "type": "TIME_MANIPULATION",
+        "location": "if(now % 15 == 0) {",
+        "description": "Using block timestamp (now) for critical game logic makes the contract vulnerable to miner manipulation. Miners can influence the timestamp within limits, allowing them to increase their chances of winning by strategically including transactions when the timestamp modulo 15 equals zero."
+    },
+    {
+        "type": "ACCESS_CONTROL",
+        "location": "msg.sender.transfer(this.balance);",
+        "description": "When a winner is determined, the entire contract balance is transferred to msg.sender. This allows any winner to drain funds intended for future players, breaking the game's economic model. The contract should only award a portion of the balance or use a prize pool system."
+    },
+    {
+        "type": "ARITHMETIC_ISSUE",
+        "location": "require(msg.value == 10 ether);",
+        "description": "Using exact equality for ether amounts is risky due to potential precision issues and makes the function non-compatible with standard payment patterns. Consider using '>=' with a refund mechanism or implementing a more flexible payment structure."
+    }
+]
+```

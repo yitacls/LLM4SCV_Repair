@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint b = block.number;",
+        "description": "Using block.number as a source of randomness is predictable and can be manipulated by miners. Since block.number is publicly known and deterministic, attackers can calculate the expected value and potentially influence the outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint timestamp = block.timestamp;",
+        "description": "Using block.timestamp as a source of randomness is insecure because it can be manipulated by miners within a certain range (roughly 15 seconds). This makes the random value predictable and exploitable by malicious actors."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return uint8(uint256(keccak256(block.blockhash(b), player, cardNumber, timestamp)) % 52);",
+        "description": "The random number generation relies on predictable values (block.number, block.timestamp) and block.blockhash() which is only available for the most recent 256 blocks. This makes the card dealing mechanism vulnerable to manipulation and prediction, compromising the game's fairness."
+    }
+]
+```

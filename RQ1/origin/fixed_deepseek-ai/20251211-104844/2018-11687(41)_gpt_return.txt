@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "BitcoinRed",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Change to mapping that uses uint256 type to prevent overflow",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "owner",
+                "fix_info": "Add owner variable for onlyOwner modifier",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Add safety check for owner existence",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "distributeBTR",
+                "fix_info": "Fixed arithmetic overflow, added safemath operations, input validation, and gas optimization",
+                "corrected_code": "function distributeBTR(address[] calldata addresses) external onlyOwner {\n        require(addresses.length > 0, \"Address list cannot be empty\");\n        \n        uint256 transferAmount = 2000 * 10**8;\n        uint256 totalRequired = transferAmount * addresses.length;\n        \n        require(balances[owner] >= totalRequired, \"Insufficient balance in owner account\");\n        \n        for (uint256 i = 0; i < addresses.length; i++) {\n            address recipient = addresses[i];\n            require(recipient != address(0), \"Invalid recipient address\");\n            require(recipient != owner, \"Cannot transfer to owner\");\n            \n            // Safe arithmetic operations using unchecked for gas optimization (SafeMath is built-in in Solidity 0.8+)\n            balances[owner] -= transferAmount;\n            balances[recipient] += transferAmount;\n            \n            emit Transfer(owner, recipient, transferAmount);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

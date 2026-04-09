@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SMT",
+    "contract_version": "^0.4.15",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferProxy",
+            "fix_info": "Fixed arithmetic overflow/underflow vulnerabilities by using SafeMath or explicit checks. Changed from revert() to require() statements for better error handling. Fixed ecrecover verification to prevent replay attacks.",
+            "corrected_code": "function transferProxy(address _from, address _to, uint256 _value, uint256 _feeSmt,\n    uint8 _v, bytes32 _r, bytes32 _s) public transferAllowed(_from) returns (bool) {\n    \n    require(_from != address(0), \"Invalid sender address\");\n    require(_to != address(0), \"Invalid recipient address\");\n    require(balances[_from] >= _feeSmt + _value, \"Insufficient balance for transfer and fee\");\n    require(_value + _feeSmt >= _value, \"Arithmetic overflow check\");\n    \n    uint256 nonce = nonces[_from];\n    bytes32 h = keccak256(abi.encodePacked(_from, _to, _value, _feeSmt, nonce));\n    address recovered = ecrecover(h, _v, _r, _s);\n    require(recovered == _from, \"Invalid signature\");\n    \n    // Check for overflow in recipient balance\n    require(balances[_to] + _value >= balances[_to], \"Overflow in recipient balance\");\n    // Check for overflow in fee recipient balance\n    require(balances[msg.sender] + _feeSmt >= balances[msg.sender], \"Overflow in fee recipient balance\");\n    \n    balances[_to] += _value;\n    Transfer(_from, _to, _value);\n\n    balances[msg.sender] += _feeSmt;\n    Transfer(_from, msg.sender, _feeSmt);\n\n    balances[_from] -= _value + _feeSmt;\n    nonces[_from] = nonce + 1;\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

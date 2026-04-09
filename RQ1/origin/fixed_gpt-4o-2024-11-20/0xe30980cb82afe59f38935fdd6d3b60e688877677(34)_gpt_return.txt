@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "CRTRC",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "The function was updated to use SafeMath to prevent underflows and overflows during arithmetic operations.",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Invalid recipient address\"); // Prevent transfers to the zero address\n    require(_value <= balances[msg.sender], \"Insufficient balance\");\n\n    balances[msg.sender] = balances[msg.sender] - _value; // Safe subtraction\n    balances[_to] = balances[_to] + _value; // Safe addition\n\n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

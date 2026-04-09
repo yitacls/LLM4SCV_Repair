@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+            "description": "This code snippet performs an unchecked low-level call using 'token.call' which can be exploited by an attacker to perform unauthorized actions or manipulate data through the call to the 'transfer' function. It is important to validate inputs and handle the return value appropriately in such calls to prevent potential vulnerabilities."
+        }
+    ]
+}
+```

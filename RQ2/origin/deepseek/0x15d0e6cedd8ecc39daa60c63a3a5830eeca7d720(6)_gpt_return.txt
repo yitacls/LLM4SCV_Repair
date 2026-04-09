@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. An attacker can create a malicious contract that calls Lottery.withdraw() when the owner interacts with it. Since tx.origin returns the original external account (the owner), the require check will pass, allowing the attacker to drain the contract's balance. tx.origin should never be used for authorization; msg.sender is the correct identifier."
+}
+```

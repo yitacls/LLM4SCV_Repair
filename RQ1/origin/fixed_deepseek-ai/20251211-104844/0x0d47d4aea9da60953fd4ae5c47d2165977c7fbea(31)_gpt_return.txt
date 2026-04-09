@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "EtherprisesLLC",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "generalManager",
+            "fix_info": "Added state variable to hold general manager address for clarity and safety",
+            "variable_code": "address public generalManager;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "ifGeneralManager",
+            "fix_info": "Modified to check both that caller is general manager and that contract has sufficient balance",
+            "modifier_code": "modifier ifGeneralManager() { require(msg.sender == generalManager && address(this).balance > 0, \"Unauthorized or insufficient balance\"); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Replaced unsafe low-level call with transfer pattern, added balance check, and handles failure gracefully with revert",
+            "corrected_code": "function withdraw() public ifGeneralManager {\n        uint256 balance = address(this).balance;\n        require(balance > 0, \"No balance to withdraw\");\n        \n        (bool success, ) = generalManager.call.value(balance)();\n        require(success, \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

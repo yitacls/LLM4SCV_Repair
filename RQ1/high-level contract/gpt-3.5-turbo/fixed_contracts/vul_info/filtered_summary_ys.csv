@@ -1,0 +1,101 @@
+file,path,line,come,vul,vultype,version,fix_time,token_usage,detect
+Endpoint.sol,contracts/Endpoint.sol,313,,152,SWC-101-Integer Overflow and Underflow,0.7.6,0,121,no
+Relayer.sol,contracts/Relayer.sol,156,,4|4|21-23,SWC-101-Integer Overflow and Underflow,^0.7.6,0,229,yes
+ApeVault.sol,contracts/ApeVault.sol,288,,64|71|133-135,SWC-105-Unprotected Ether Withdrawal,^0.8.2,0,202,yes
+ImpossibleWrappedToken.sol,contracts/ImpossibleWrappedToken.sol,818,,53-61|65-73|65-73,SWC-107-Reentrancy,=0.7.6,0,252,no
+ve.sol,contracts/ve.sol,1343,,491-493|675-697|1097-1104,SWC-104-Unchecked Call Return Value,0.8.11,0,77,yes
+VEReward.sol,contracts/VEReward.sol,481,,119-134|269-275,SWC-113-DoS with Failed Call,0.8.11,0,205,yes
+Liquidator.sol,contracts/Liquidator.sol,37,,35,SWC-105-Unprotected Ether Withdrawal,^0.8.0,0,94,yes
+VaultManager.sol,contracts/VaultManager.sol,202,,156-166,SWC-101-Integer Overflow and Underflow,^0.8.0,0,88,no
+ZapIn.sol,contracts/ZapIn.sol,165,,53-54,SWC-101-Integer Overflow and Underflow,0.7.6,0,87,yes
+SwapHelper.sol,contracts/SwapHelper.sol,74,,11-74,SWC-101-Integer Overflow and Underflow,0.7.6,0,826,no
+IdleLiquidityModule.sol,contracts/IdleLiquidityModule.sol,133,,131,SWC-101-Integer Overflow and Underflow,0.7.6,0,128,yes
+BSCSCAN-2ae9952c1038dA3DafebA026B96053F24CBc03b3.sol,contracts/BSCSCAN-2ae9952c1038dA3DafebA026B96053F24CBc03b3.sol,732,,454- 457,SWC-105-Unprotected Ether Withdrawal,>=0.6.0 <0.8.0,0,100,yes
+MonstaPresale.sol,contracts/MonstaPresale.sol,97,,94 - 96,SWC-105-Unprotected Ether Withdrawal,0.6.0,0,102,yes
+wildfire.sol,contracts/wildfire.sol,1114,,809 - 817|898 - 902,SWC-113-DoS with Failed Call,^0.6.12,0,103,yes
+WorthTokenSale.sol,contracts/WorthTokenSale.sol,311,,279 - 282,SWC-105-Unprotected Ether Withdrawal,0.8.10,0,81,yes
+VaultManager_1.sol,contracts/VaultManager_1.sol,925,,692,SWC-104-Unchecked Call Return Value,0.8.12,0,77,no
+Comptroller.sol,contracts/Comptroller.sol,1358,,465-501,SWC-107-Reentrancy,^0.8.6,0,75,yes
+CToken.sol,contracts/CToken.sol,1201,,930-947,SWC-107-Reentrancy,^0.8.6,0,125,yes
+MultiplyProxyActions.sol,contracts/MultiplyProxyActions.sol,816,,119|172,SWC-101-Integer Overflow and Underflow,>=0.7.6,0,156,yes
+ReferralFeeReceiver.sol,contracts/ReferralFeeReceiver.sol,211,,11,SWC-107-Reentrancy,^0.6.0,0,99,no
+yield.sol,contracts/yield.sol,676,,2|532 - 541|640 - 644,SWC-128-DoS With Block Gas Limit,^0.5.12,0,217,yes
+FountainBase.sol,contracts/FountainBase.sol,351,,290-291|295-308,SWC-107-Reentrancy,0.6.12,0,211,no
+YieldFarm.sol,contracts/YieldFarm.sol,173,,3|76,SWC-128-DoS With Block Gas Limit,^0.6.0,0,180,no
+CommunityVault.sol,contracts/CommunityVault.sol,23,,2|19,SWC-107-Reentrancy,^0.6.0,0,128,no
+YieldFarm_1.sol,contracts/YieldFarm_1.sol,173,,3|73 - 77,SWC-128-DoS With Block Gas Limit,^0.6.0,0,70,yes
+YieldFarm_2.sol,contracts/YieldFarm_2.sol,173,,3|73 - 77,SWC-128-DoS With Block Gas Limit,^0.6.0,0,182,no
+YieldFarmLP.sol,contracts/YieldFarmLP.sol,160,,3|62 - 66,SWC-128-DoS With Block Gas Limit,^0.6.0,0,210,no
+wHakka.sol,contracts/wHakka.sol,601,,509|556 - 573|576 - 592|580,SWC-107-Reentrancy,0.5.17,0,308,no
+MasterChef.sol,contracts/MasterChef.sol,390,,105 - 127|131 - 143|227 - 266|247 - 251|272 - 306|310 - 329|333 - 340|378 - 381|384 - 389,SWC-107-Reentrancy,0.6.7,0,382,yes
+strategy-base.sol,contracts/strategy-base.sol,363,,237 - 268|271 - 288|291 - 322|325 - 342,SWC-104-Unchecked Call Return Value,^0.6.7,0,279,yes
+strategy-basis-farm-base.sol,contracts/strategy-basis-farm-base.sol,153,,78 - 152,SWC-104-Unchecked Call Return Value,^0.6.7,0,92,yes
+SpaceMonkey.sol,contracts/SpaceMonkey.sol,686,,53 - 64|67|194,SWC-107-Reentrancy,^0.8.4,0,297,no
+AllocationStaking.sol,contracts/AllocationStaking.sol,577,,129-134|207-214|472-475,SWC-101-Integer Overflow and Underflow,0.6.12,0,93,yes
+Admin.sol,contracts/Admin.sol,79,,43-68,SWC-113-DoS with Failed Call,0.6.12,0,118,no
+AvalaunchSale.sol,contracts/AvalaunchSale.sol,588,,294|346,SWC-113-DoS with Failed Call,0.6.12,0,138,no
+Ark.sol,contracts/Ark.sol,87,,3|55,SWC-113-DoS with Failed Call,0.6.9,0,163,yes
+Vesting.sol,contracts/Vesting.sol,213,,139-199|172-180,SWC-101-Integer Overflow and Underflow,0.8.10,0,181,yes
+Gate.sol,contracts/Gate.sol,250,,175-190,SWC-113-DoS with Failed Call,0.5.11,0,147,no
+woonklyPOS.sol,contracts/woonklyPOS.sol,1017,,743 - 769|874 - 886,SWC-107-Reentrancy,^0.6.6,0,91,yes
+vault.sol,contracts/vault.sol,699,,409|513 - 548|513 - 548,SWC-101-Integer Overflow and Underflow,0.6.6,0,215,yes
+BorrowerOperations.sol,contracts/BorrowerOperations.sol,666,,321 - 351,SWC-105-Unprotected Ether Withdrawal,0.6.11,0,82,yes
+TempusController.sol,contracts/TempusController.sol,520,,352-386|395-436,SWC-107-Reentrancy,0.8.6,0,276,yes
+MetaTransactionsFeature.sol,contracts/MetaTransactionsFeature.sol,552,,100-107,SWC-107-Reentrancy,^0.6.5,0,106,yes
+UniswapFeature.sol,contracts/UniswapFeature.sol,472,,203-206,SWC-107-Reentrancy,^0.6.5,0,126,yes
+LibFixedMath.sol,contracts/LibFixedMath.sol,378,,361-378,SWC-101-Integer Overflow and Underflow,^0.5.9,0,102,no
+Mooniswap.sol,contracts/Mooniswap.sol,341,,331-341,SWC-105-Unprotected Ether Withdrawal,^0.6.0,0,108,no
+ReferralFeeReceiver_1.sol,contracts/ReferralFeeReceiver_1.sol,211,,38-50,SWC-105-Unprotected Ether Withdrawal,^0.6.0,0,117,no
+LendingPool.sol,contracts/LendingPool.sol,1033,,92-119|579,SWC-107-Reentrancy,^0.6.8,0,183,yes
+JoinSplit.sol,contracts/JoinSplit.sol,397,,75-78,SWC-101-Integer Overflow and Underflow,>=0.5.0 <0.6.0,0,131,yes
+BNum.sol,contracts/BNum.sol,164,,68-69,SWC-101-Integer Overflow and Underflow,0.5.12,0,295,yes
+StandardBounties.sol,contracts/StandardBounties.sol,725,,2-725|3|48-49|246-265|249,SWC-101-Integer Overflow and Underflow,0.5.0,0,142,yes
+Accounts.sol,contracts/Accounts.sol,515,,387,SWC-128-DoS With Block Gas Limit,0.5.14,0,97,yes
+CompHelper.sol,contracts/CompHelper.sol,39,,27-138,SWC-104-Unchecked Call Return Value,^0.7.0,0,103,yes
+FLAaveV2.sol,contracts/FLAaveV2.sol,154,,106-137,SWC-107-Reentrancy,^0.7.0,0,76,yes
+ZeroxWrapper.sol,contracts/ZeroxWrapper.sol,60,,42-50,SWC-101-Integer Overflow and Underflow,^0.7.0,0,88,no
+KyberWrapperV3.sol,contracts/KyberWrapperV3.sol,144,,101-109,SWC-101-Integer Overflow and Underflow,^0.7.0,0,102,yes
+ETHRegistrarController.sol,contracts/ETHRegistrarController.sol,103,,46-49|56-65,SWC-104-Unchecked Call Return Value,^0.5.0,0,165,no
+SimplePriceOracle.sol,contracts/SimplePriceOracle.sol,30,,27-29,SWC-101-Integer Overflow and Underflow,^0.5.0,0,90,yes
+StablePriceOracle.sol,contracts/StablePriceOracle.sol,73,,58-64,SWC-101-Integer Overflow and Underflow,^0.5.0,0,91,yes
+xTRIBE.sol,contracts/xTRIBE.sol,141,,90-100,SWC-105-Unprotected Ether Withdrawal,^0.8.0,0,111,yes
+CollateralizationOracle.sol,contracts/CollateralizationOracle.sol,341,,323|327,SWC-101-Integer Overflow and Underflow,^0.8.4,0,130,yes
+BalancerLBPSwapper.sol,contracts/BalancerLBPSwapper.sol,365,,108-118|174-258,SWC-105-Unprotected Ether Withdrawal,^0.8.0,0,193,yes
+Hypervisor.sol,contracts/Hypervisor.sol,587,,81-142|175-216|415,SWC-107-Reentrancy,0.7.6,0,218,yes
+IdleCDO.sol,contracts/IdleCDO.sol,757,,242-258,SWC-107-Reentrancy,0.8.4,0,102,no
+AMM.sol,contracts/AMM.sol,782,,17|500-502,SWC-104-Unchecked Call Return Value,^0.5.2,0,176,yes
+ChainlinkAdapter.sol,contracts/ChainlinkAdapter.sol,21,,18,SWC-101-Integer Overflow and Underflow,^0.5.2,0,82,yes
+Perpetual.sol,contracts/Perpetual.sol,317,,4-5|34-41|270-289,SWC-105-Unprotected Ether Withdrawal,^0.5.2,0,208,no
+Pod.sol,contracts/Pod.sol,669,,275-282|279,SWC-107-Reentrancy,>=0.7.0 <0.8.0,0,2126,no
+TokenDrop.sol,contracts/TokenDrop.sol,236,,82-88|141-155,SWC-107-Reentrancy,>=0.7.0 <0.8.0,0,132,yes
+LiquidStakingV2.sol,contracts/LiquidStakingV2.sol,499,,370-404,SWC-128-DoS With Block Gas Limit,>=0.7.0,0,85,no
+STokensV2.sol,contracts/STokensV2.sol,621,,125-140,SWC-128-DoS With Block Gas Limit,>=0.7.0,0,107,yes
+ReversibleICO.sol,contracts/ReversibleICO.sol,1170,,230-299|948,SWC-113-DoS with Failed Call,^0.5.0,0,159,yes
+RocketDepositPool.sol,contracts/RocketDepositPool.sol,147,,116-129,SWC-128-DoS With Block Gas Limit,0.7.6,0,100,yes
+RocketNodeStaking.sol,contracts/RocketNodeStaking.sol,203,,150|166,SWC-104-Unchecked Call Return Value,0.7.6,0,209,yes
+DelegationRequestManager.sol,contracts/DelegationRequestManager.sol,128,,74-76,SWC-101-Integer Overflow and Underflow,^0.5.3,0,94,yes
+DelegationService.sol,contracts/DelegationService.sol,318,,152-158|310-316,SWC-128-DoS With Block Gas Limit,^0.5.3,0,167,yes
+SkaleBalances.sol,contracts/SkaleBalances.sol,91,,55-68,SWC-107-Reentrancy,^0.5.3,0,279,yes
+TokenState.sol,contracts/TokenState.sol,281,,65|259-265,SWC-128-DoS With Block Gas Limit,^0.5.3,0,152,no
+LockableERC777.sol,contracts/LockableERC777.sol,517,,399-422,SWC-107-Reentrancy,^0.5.3,0,103,yes
+EternalHeroesFactory.sol,contracts/EternalHeroesFactory.sol,420,,279-285,SWC-107-Reentrancy,^0.5.16,0,99,yes
+KeepRandomBeaconOperator.sol,contracts/KeepRandomBeaconOperator.sol,757,,452-494,SWC-120-Weak Sources of Randomness from Chain Attributes,^0.5.4,0,88,yes
+Moloch.sol,contracts/Moloch.sol,682,,266-305|408-413|638-640,SWC-101-Integer Overflow and Underflow,0.5.3,0,222,yes
+StakingController.sol,contracts/StakingController.sol,185,,92-101|121-153|135,SWC-105-Unprotected Ether Withdrawal,^0.7.3,0,301,no
+AOC_BEP.sol,contracts/AOC_BEP.sol,492,,115 - 126|362|362,SWC-105-Unprotected Ether Withdrawal,0.8.9,0,244,yes
+AniaLottery.sol,contracts/AniaLottery.sol,438,,4|4|119 - 121,SWC-105-Unprotected Ether Withdrawal,^0.8.2,0,213,no
+AniaStake.sol,contracts/AniaStake.sol,208,,4|4|185 - 194,SWC-128-DoS With Block Gas Limit,^0.8.2,0,228,yes
+BSB_StakingSmartStakers.sol,contracts/BSB_StakingSmartStakers.sol,819,,393 - 401|416 - 418,SWC-128-DoS With Block Gas Limit,>=0.8.0,0,84,yes
+BullMasterchef.sol,contracts/BullMasterchef.sol,457,,196-201,SWC-128-DoS With Block Gas Limit,0.8.4,0,103,yes
+CENNZnetBridge.sol,contracts/CENNZnetBridge.sol,159,,99-120,SWC-105-Unprotected Ether Withdrawal,^0.8.0,0,63,yes
+LatticeStakingPool0x74299A718b2c44483a27325d7725F0B2646DE3B1.sol,contracts/LatticeStakingPool0x74299A718b2c44483a27325d7725F0B2646DE3B1.sol,2097,,1795,SWC-128-DoS With Block Gas Limit,^0.8.0,0,101,yes
+FidoMeta.sol,contracts/FidoMeta.sol,1121,,2|512 - 521|555 - 587|775 - 782|788 - 832|978 - 980|1009-1010|1043 - 1046|1060 - 1070,SWC-101-Integer Overflow and Underflow,0.8.11,0,737,yes
+FidoMeta_1.sol,contracts/FidoMeta_1.sol,1121,,2|513 - 515|555 - 587|775 - 782|789 - 832|978 - 980|1009 - 1010|1047 - 1050|1062 - 1071,SWC-101-Integer Overflow and Underflow,0.8.11,0,327,no
+EpochVotingPowerStrategy.sol,contracts/EpochVotingPowerStrategy.sol,168,,66-79|100-112,SWC-128-DoS With Block Gas Limit,0.7.6,0,232,no
+SwapsUser.sol,contracts/SwapsUser.sol,226,,156-178,SWC-101-Integer Overflow and Underflow,0.5.17,0,69,yes
+ECOPToken.sol,contracts/ECOPToken.sol,315,,196 - 210,SWC-104-Unchecked Call Return Value,>=0.5.0 <0.7.0,0,91,no
+SportsIconPrivateVesting.sol,contracts/SportsIconPrivateVesting.sol,82,,60,SWC-104-Unchecked Call Return Value,^0.7.5,0,90,yes
+SNXFlashLoanTool.sol,contracts/SNXFlashLoanTool.sol,147,,54|122|143,SWC-107-Reentrancy,^0.7.6,0,197,yes
+NoteERC20.sol,contracts/NoteERC20.sol,407,,135,SWC-101-Integer Overflow and Underflow,^0.7.0,0,78,yes
+LPool.sol,contracts/LPool.sol,1025,,845-885,SWC-107-Reentrancy,0.7.6,0,126,yes
+LimitOrderProtocol.sol,contracts/LimitOrderProtocol.sol,462,,28 - 346|339,SWC-107-Reentrancy,^0.7.6,0,170,yes

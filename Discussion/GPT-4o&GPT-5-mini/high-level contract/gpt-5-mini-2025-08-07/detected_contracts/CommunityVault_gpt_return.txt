@@ -1,0 +1,14 @@
+{
+  "vulnerabilities": [
+    {
+      "type": "SWC-103-Floating Pragma",
+      "location": "pragma ^0.6.0;",
+      "description": "The contract uses a floating pragma (`^0.6.0`) which allows compilation with any 0.6.x compiler. This can lead to unexpected behavior, incompatibilities, or introduction of new compiler bugs when different patch versions are used. Pin the compiler version or restrict the range (for example `pragma solidity 0.6.12;` or `pragma solidity >=0.6.0 <0.7.0;`) to ensure reproducible compilation and to avoid unintentionally adopting incompatible compiler changes."
+    },
+    {
+      "type": "SWC-107-Reentrancy",
+      "location": "_bond.approve(spender, amount);",
+      "description": "The `setAllowance` function performs an external call to the token contract via `_bond.approve(...)` while altering contract behavior (emitting an event after the call) and without any reentrancy protection. If the token contract is malicious or supports callback hooks (e.g., ERC777 or a non-standard/malicious ERC20), the `approve` call could trigger a reentrant call back into this contract and manipulate state or call other functions. Although `setAllowance` is `onlyOwner`, a malicious token could still re-enter through fallback or other exposed entry points. Mitigations: avoid calling untrusted token contracts directly in state-changing flows; use OpenZeppelin's SafeERC20 wrappers (e.g., `SafeERC20.safeApprove`) which handle non-standard tokens, apply the checks-effects-interactions pattern, and/or add a reentrancy guard (e.g., `ReentrancyGuard`) where appropriate. Additionally, validate/trust the token contract address before interacting with it."
+    }
+  ]
+}

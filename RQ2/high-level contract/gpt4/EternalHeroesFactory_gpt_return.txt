@@ -1,0 +1,17 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": 
+    "function _buy(..){\n
+        ..\n
+        uint256 refundAmount = _arcAmount.sub(total_cost);\n
+        if (refundAmount > 0) {\n
+            arcadeumCoin.safeTransferFrom(address(this), _recipient, arcadeumCoinID, refundAmount, "");\n
+        }\n
+        ..\n
+        factoryManager.batchMint(_recipient, _ids, amounts_to_mint, "");\n
+        ..\n
+    }",
+    "description": "In the _buy function, the contract first sends a refund to the user if too much ARC was sent, and then performs a batchMint to mint tokens for the user. However, these operations are not atomic, leading to potential reentrancy attacks. An attacker could override the recipient's fallback function to call the _buy method again before the rest of the execution finishes, potentially enabling certain manipulations."
+}
+```

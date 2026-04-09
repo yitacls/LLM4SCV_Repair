@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "fundsWallet.send(msg.value);",
+    "description": "The `send()` function forwards Ether but only provides a boolean return value indicating success or failure. It does not revert on failure, allowing execution to continue even if the transfer is unsuccessful (e.g., if the recipient is a contract with a fallback function that runs out of gas or reverts). In this payable fallback function, if the `send()` call fails, the function will still have executed the state changes (token transfers via `balances` updates and the `Transfer` event), but the Ether payment will not have been forwarded, violating the intended token-for-Ether exchange logic. This could leave the contract in an inconsistent state where tokens are transferred without receiving Ether. The issue is compounded by the use of a deprecated unnamed fallback function (`function() payable`) in Solidity 0.4.24, which lacks proper error handling. Mitigation requires checking the return value of `send()` and reverting on failure, or using `transfer()` (which reverts on failure in this Solidity version), or implementing explicit error handling."
+}
+```

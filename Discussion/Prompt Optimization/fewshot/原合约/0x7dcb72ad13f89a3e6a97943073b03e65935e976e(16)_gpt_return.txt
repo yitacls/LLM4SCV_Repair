@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "WhiteList",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "addPack",
+                "fix_info": "Prevent arithmetic overflow by modifying the chunkNr increment check.",
+                "corrected_code": "function addPack(address[] addrs, uint16 _chunkNr) setupOnly adminOnly external {
+        require(chunkNr + 1 == _chunkNr);
+        chunkNr++;
+        for(uint16 i=0; i<addrs.length; ++i){
+            contains[addrs[i]] = true;
+            controlSum += uint160(addrs[i]);  
+        }
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

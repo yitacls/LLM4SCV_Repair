@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "OwnableImpl",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No changes needed - owner variable already properly declared",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to replace tx.origin check with msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "checkOwner",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender. tx.origin is susceptible to phishing attacks where malicious contracts can pose as owners. msg.sender provides direct caller verification instead of original transaction sender.",
+            "corrected_code": "function checkOwner() internal view {\n        require(msg.sender == owner, \"Caller is not the owner\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

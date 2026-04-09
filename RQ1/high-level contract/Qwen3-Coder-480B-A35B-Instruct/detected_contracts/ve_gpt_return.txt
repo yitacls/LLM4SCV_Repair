@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-112 Delegatecall to Untrusted Callee",
+        "location": "ve.sol#L491-L493",
+        "description": "The function 'ownerOf' calls 'idToOwner[_tokenId]' which could potentially delegate calls to untrusted addresses if '_tokenId' is manipulated or points to a malicious contract. This can lead to unauthorized access or manipulation of ownership data."
+    },
+    {
+        "type": "SWC-104 Unchecked Call Return Value",
+        "location": "ve.sol#L675-L697",
+        "description": "In the 'safeTransferFrom' function, the call to 'IERC721Receiver(_to).onERC721Received(...)' does not check the return value directly; instead, it uses a try-catch block that may not properly handle all edge cases, potentially leading to unexpected behavior if the receiver contract returns an invalid value."
+    },
+    {
+        "type": "SWC-107 Reentrancy",
+        "location": "ve.sol#L1097-L1104",
+        "description": "The 'withdraw' function makes an external call to transfer tokens before updating state variables such as burning the NFT and decreasing supply. This creates a reentrancy vulnerability where an attacker could re-enter the function and withdraw more tokens than allowed."
+    }
+]
+```

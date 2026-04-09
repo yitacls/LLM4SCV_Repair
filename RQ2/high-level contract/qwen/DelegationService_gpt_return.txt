@@ -1,0 +1,28 @@
+```json
+[{
+    "contract_name": "DelegationService",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getAllDelegationRequests",
+            "fix_info": "Fixed SWC-135 by implementing the function instead of reverting. Added proper logic to retrieve all delegation requests.",
+            "corrected_code": "function getAllDelegationRequests() external returns(uint[] memory) {\n        DelegationRequestManager delegationRequestManager = DelegationRequestManager(\n            contractManager.getContract(\"DelegationRequestManager\")\n        );\n        return delegationRequestManager.getAllDelegationRequests();\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getDelegationRequestsForValidator",
+            "fix_info": "Fixed SWC-135 by implementing the function instead of reverting. Added proper logic to retrieve delegation requests for a specific validator.",
+            "corrected_code": "function getDelegationRequestsForValidator(uint validatorId) external returns (uint[] memory) {\n        DelegationRequestManager delegationRequestManager = DelegationRequestManager(\n            contractManager.getContract(\"DelegationRequestManager\")\n        );\n        return delegationRequestManager.getDelegationRequestsForValidator(validatorId);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "distributeBounty",
+            "fix_info": "Fixed SWC-128 by adding a gas-efficient approach for the loop. Implemented batch processing limit and added a check for maximum iterations to prevent block gas limit issues.",
+            "corrected_code": "function distributeBounty(uint amount, uint validatorId) internal {\n        ValidatorService validatorService = ValidatorService(contractManager.getContract(\"ValidatorService\"));\n\n        SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));\n        Distributor distributor = Distributor(contractManager.getContract(\"Distributor\"));\n        SkaleBalances skaleBalances = SkaleBalances(contractManager.getContract(\"SkaleBalances\"));\n        TimeHelpers timeHelpers = TimeHelpers(contractManager.getContract(\"TimeHelpers\"));\n        DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n\n        Distributor.Share[] memory shares;\n        uint fee;\n        (shares, fee) = distributor.distributeBounty(validatorId, amount);\n\n        address validatorAddress = validatorService.getValidator(validatorId).validatorAddress;\n        skaleToken.send(address(skaleBalances), fee, abi.encode(validatorAddress));\n        skaleBalances.lockBounty(validatorAddress, timeHelpers.addMonths(_launchTimestamp, 3));\n        \n        // Limit iterations to prevent gas exhaustion (SWC-128)\n        uint maxIterations = 50;\n        if (shares.length < maxIterations) {\n            maxIterations = shares.length;\n        }\n        \n        for (uint i = 0; i < maxIterations; ++i) {\n            skaleToken.send(address(skaleBalances), shares[i].amount, abi.encode(shares[i].holder));\n\n            uint created = delegationController.getDelegation(shares[i].delegationId).created;\n            uint delegationStarted = timeHelpers.getNextMonthStartFromDate(created);\n            skaleBalances.lockBounty(shares[i].holder, timeHelpers.addMonths(delegationStarted, 3));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

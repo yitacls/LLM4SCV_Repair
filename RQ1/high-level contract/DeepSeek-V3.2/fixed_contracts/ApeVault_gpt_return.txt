@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "ApeVaultWrapperImplementation",
+        "contract_version": "^0.8.2",
+        "state_variables": [
+            {
+                "variable_name": "hasAccess",
+                "fix_info": "Removed unused mapping variable that had no effect",
+                "variable_code": "",
+                "change_type": "deleted"
+            },
+            {
+                "variable_name": "allowanceModule",
+                "fix_info": "Removed unused variable that had no effect on contract functionality",
+                "variable_code": "",
+                "change_type": "deleted"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "apeWithdrawSimpleToken",
+                "fix_info": "Added access control to prevent unauthorized withdrawals of simple tokens",
+                "corrected_code": "    function apeWithdrawSimpleToken(uint256 _amount) external onlyOwner {\n        simpleToken.safeTransfer(msg.sender, _amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

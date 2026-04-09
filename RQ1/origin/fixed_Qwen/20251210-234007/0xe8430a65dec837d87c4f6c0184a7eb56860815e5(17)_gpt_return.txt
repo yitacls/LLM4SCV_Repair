@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MUTOCoin",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow/underflow vulnerabilities in balance calculations",
+            "corrected_code": "function transfer(address _to, uint _value) public {\n        address _from = msg.sender;\n        require(_to != address(0));\n        require(balanceOf[_from] >= _value);\n        balanceOf[_from] = balanceOf[_from].sub(_value);\n        balanceOf[_to] = balanceOf[_to].add(_value);\n        emit Transfer(_from, _to, _value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

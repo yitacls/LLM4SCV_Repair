@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _setComptroller(ComptrollerInterface newComptroller) override public returns (uint) { ... }",
+        "description": "The _setComptroller function is identified as vulnerable because it lacks sufficient reentrancy protection. If an attacker invokes a reentrant external call during the execution of this function, it could alter the state or introduce unwanted side effects. Although the function checks the caller is admin and validates the provided comptroller, the lack of a `nonReentrant` modifier opens it up to potential reentrancy attacks."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _addReservesInternal(uint addAmount) internal nonReentrant returns (uint) { ... }",
+        "description": "Although this function uses the `nonReentrant` modifier for some protection, issues may still arise. The `doTransferIn(msg.sender, addAmount)` function call performs an external interaction to transfer tokens into the contract. If this external call is exploited by a malicious actor (e.g., through customized token contract logic), it could bypass expected safeguards or modify the behavior unexpectedly, leading to reentrancy issues."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _reduceReserves(uint reduceAmount) override external nonReentrant returns (uint) { ... }",
+        "description": "While the function includes the `nonReentrant` modifier, the external call to `doTransferOut(admin, reduceAmount)` could allow reentrancy under specific conditions. This external call interacts with another contract, and if the destination contract executes malicious code, it could cause unexpected states in the CToken contract."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function liquidateBorrowFresh(address liquidator, address borrower, uint repayAmount, CTokenInterface cTokenCollateral) internal { ... }",
+        "description": "The function contains external interactions with `cTokenCollateral.accrueInterest()` and `doTransferIn` functions, which could lead to reentrancy vulnerabilities if exploited by malicious collateral contracts. Additionally, the call to `cTokenCollateral.seize(liquidator, borrower, seizeTokens)` presents another potential vector for reentrancy that could be used to manipulate collateral values or other states."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function seizeInternal(address seizerToken, address liquidator, address borrower, uint seizeTokens) internal { ... }",
+        "description": "This function, despite being marked internal, calls external functions like `accountTokens[liquidator] += liquidatorSeizeTokens` and `doTransferOut`. If these functions enable an external contract to execute additional logic, they could potentially exploit a reentrancy attack to manipulate the state of the contract."
+    }
+]
+```

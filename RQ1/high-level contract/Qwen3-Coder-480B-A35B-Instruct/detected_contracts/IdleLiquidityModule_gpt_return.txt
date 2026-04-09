@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "(tick - tickDelta) / tickSpacing",
+        "description": "Integer underflow may occur when calculating tickLower if tick is smaller than tickDelta, leading to incorrect tick boundaries."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "((tick + tickDelta) / tickSpacing) * tickSpacing",
+        "description": "Potential integer overflow when adding tick and tickDelta before division, which could result in incorrect tickUpper boundary."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint24(tick - tickUpper)",
+        "description": "If tick is greater than tickUpper, this subtraction is safe, but conversion to uint24 can cause unexpected behavior if negative values were possible."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint24(tickLower - tick)",
+        "description": "If tickLower is less than tick, the subtraction would underflow in an unchecked environment. However, since Solidity 0.7.6 has default checks, this will revert unless explicit unchecked blocks are used elsewhere."
+    }
+]
+```

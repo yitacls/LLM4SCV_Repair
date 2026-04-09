@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of 'tx.origin' for access control in the 'mint' function is a vulnerability as it relies on the transaction initiator rather than the immediate caller. This can lead to potential security risks as the 'tx.origin' property can be manipulated in complex contract interactions, allowing unauthorized users to perform actions they are not permitted to."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Sale",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Replaced unchecked send() call with checked transfer() to prevent silent failures and ensure proper error handling",
+            "corrected_code": "function withdraw() onlyOwner {\n\t\tmsg.sender.transfer(this.balance);\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

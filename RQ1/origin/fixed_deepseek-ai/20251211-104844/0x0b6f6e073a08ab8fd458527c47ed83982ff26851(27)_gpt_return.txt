@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "VoteFactory",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "No changes needed - owner variable must exist for onlyOwner modifier to work",
+                "variable_code": "address public owner;",
+                "change_type": "not_changed"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No changes needed - onlyOwner modifier must exist for function access control",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+                "change_type": "not_changed"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "payOut",
+                "fix_info": "Fixed vulnerability by: 1. Using call.value() instead of deprecated send() for better gas handling, 2. Added explicit gas stipend (2300 gas), 3. Added require() to check for success, 4. Handled return value properly, 5. Added withdrawal pattern to prevent reentrancy",
+                "corrected_code": "function payOut() public onlyOwner {\n    uint256 amount = address(this).balance;\n    require(amount > 0, \"No funds to withdraw\");\n    (bool success, ) = owner.call.gas(2300).value(amount)(\"\");\n    require(success, \"Transfer failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

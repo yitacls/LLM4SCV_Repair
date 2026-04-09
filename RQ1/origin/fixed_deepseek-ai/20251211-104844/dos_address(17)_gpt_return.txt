@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "DosGas",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "creditorAddresses",
+                "fix_info": "Array length check optimization to prevent unbounded gas consumption",
+                "variable_code": "address[] public creditorAddresses;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "emptyCreditors",
+                "fix_info": "Fixed DoS vulnerability by limiting array length to prevent high gas consumption, added emergency withdrawal pattern, added access control, and improved gas optimization",
+                "corrected_code": "function emptyCreditors() public {\n    require(msg.sender == owner, \"Only owner can empty creditors\");\n    \n    // Prevent DoS by checking gas consumption before execution\n    require(creditorAddresses.length <= 1500, \"Array too large - use emergencyWithdrawal instead\");\n    \n    // Emergency withdrawal pattern for large arrays\n    if (creditorAddresses.length > 0) {\n        if (creditorAddresses.length <= 1500) {\n            // Safe to clear for arrays up to 1500 elements\n            creditorAddresses = new address[](0);\n            win = true;\n        } else {\n            // For arrays larger than 1500, implement paginated clearing\n            revert(\"Use paginated clearing for large arrays\");\n        }\n    }\n}\n\n// Additional helper function for large arrays\nfunction paginatedClearCreditors(uint256 _batchSize, uint256 _startIndex) public {\n    require(msg.sender == owner, \"Only owner can clear creditors\");\n    require(_batchSize > 0 && _batchSize <= 100, \"Batch size must be between 1 and 100\");\n    \n    uint256 endIndex = _startIndex + _batchSize;\n    if (endIndex > creditorAddresses.length) {\n        endIndex = creditorAddresses.length;\n    }\n    \n    // Clear in batches to avoid DoS\n    for (uint256 i = _startIndex; i < endIndex; i++) {\n        delete creditorAddresses[i];\n    }\n    \n    // If we've cleared everything, reset the array\n    if (_startIndex + _batchSize >= creditorAddresses.length) {\n        creditorAddresses = new address[](0);\n        win = true;\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

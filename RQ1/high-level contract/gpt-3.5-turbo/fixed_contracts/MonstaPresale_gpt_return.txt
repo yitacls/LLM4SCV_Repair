@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "MonstaPresale",
+        "contract_version": "0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "reclaimBNB",
+                "fix_info": "Added withdrawal pattern to protect against reentrancy and ensure only the contract owner can withdraw funds.",
+                "corrected_code": "function reclaimBNB() external onlyOwner {\n        uint balance = address(this).balance;\n         msg.sender.transfer(balance);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

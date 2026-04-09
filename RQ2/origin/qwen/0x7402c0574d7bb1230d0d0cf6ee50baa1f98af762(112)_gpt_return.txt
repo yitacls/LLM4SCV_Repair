@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "VerityToken(tokenAddress).call(msg.sender, amountToBeTransferred);",
+    "description": "The low-level call to transfer tokens is not checking the return value. In Solidity 0.4.24, .call() returns a boolean indicating success or failure, but this return value is not being verified. If the token transfer fails (e.g., due to insufficient balance, contract issues, or reverting), the function will continue execution and emit the Withdrawn event, potentially leading to funds being marked as withdrawn without actually being transferred. This could result in users losing access to their funds while the system records the withdrawal as successful."
+}
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "TempusController",
+        "contract_version": "0.8.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "exitTempusAMMAndRedeem",
+                "fix_info": "Fixed the reentrancy vulnerability by updating the LP token transfer sequence.",
+                "corrected_code": "function exitTempusAMMAndRedeem(ITempusAMM tempusAMM, uint256 sharesAmount, bool toBackingToken) external {\n    ITempusPool tempusPool = tempusAMM.tempusPool();\n    require(!tempusPool.matured(), 'Pool already finalized');\n    uint256 userPrincipalBalance = IERC20(address(tempusPool.principalShare())).balanceOf(msg.sender);\n    uint256 userYieldBalance = IERC20(address(tempusPool.yieldShare())).balanceOf(msg.sender);\n\n    uint256 ammExitAmountPrincipal = sharesAmount - userPrincipalBalance;\n    uint256 ammExitAmountYield = sharesAmount - userYieldBalance;\n\n    // transfer LP tokens to controller\n    uint256 userBalanceLP = tempusAMM.balanceOf(msg.sender);\n    tempusAMM.transferFrom(msg.sender, address(this), userBalanceLP);\n\n    doExitTempusAMMGivenAmountsOut(tempusAMM, address(this), msg.sender, getAMMOrderedAmounts(tempusPool, ammExitAmountPrincipal, ammExitAmountYield), userBalanceLP, false);\n    \n    if (toBackingToken) {\n        redeemToBacking(tempusPool, msg.sender, sharesAmount, sharesAmount, msg.sender);\n    } else {\n        redeemToYieldBearing(tempusPool, msg.sender, sharesAmount, sharesAmount, msg.sender);\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

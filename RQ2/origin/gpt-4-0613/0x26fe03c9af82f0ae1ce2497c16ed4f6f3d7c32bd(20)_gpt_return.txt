@@ -1,0 +1,8 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_recipient] += _value;",
+    "contract": "ERC20Standard",
+    "description": "In the code line 'balances[_recipient] += _value;', an arithmetic overflow could happen. If '_value' is significantly large, when added to the recipient's balance could cause the value to exceed the maximum limit for uint type, resulting in an overflow and resetting the balance to a small number, thus creating a discrepancy in the total balance."
+}
+```

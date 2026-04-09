@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "0x0E0Fc7a0a4a4AB61080E22D602fc038759403F03.send(msg.value);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.5.1, send() returns false if the transfer fails, but this return value is not being checked. This means that if the Ether transfer fails, the function will not revert and the failure will go unnoticed, potentially leading to loss of funds. The contract should check the return value of send() or use transfer() instead which automatically reverts on failure."
+}
+```

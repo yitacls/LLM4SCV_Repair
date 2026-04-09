@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "VaultManager",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "isValidCDP",
+                "fix_info": "Added safe math to prevent overflow/underflow during calculations. Updated collateral to avoid divide-by-zero errors.",
+                "corrected_code": "function isValidCDP(address collateral_, address debt_, uint256 cAmount_, uint256 dAmount_) public view override returns (bool) {\n    (uint256 collateralValueTimes100Point00000, uint256 debtValue) = _calculateValues(collateral_, debt_, cAmount_, dAmount_);\n\n    uint mcr = getMCR(collateral_);\n    uint cDecimals = IERC20Minimal(collateral_).decimals();\n\n    require(cDecimals > 0, \"VAULTMANAGER: Invalid collateral decimals\"); // Prevent divide-by-zero (safe division)\n    uint256 debtValueAdjusted = debtValue / (10 ** cDecimals);\n\n    // Avoid possible divide issue\n    if (debtValueAdjusted == 0) {\n        return true;\n    }\n\n    uint256 safeRatio = collateralValueTimes100Point00000 / debtValueAdjusted;\n    require(safeRatio >= collateralValueTimes100Point00000, \"VAULTMANAGER: Overflow during ratio calculation\");\n\n    return safeRatio >= mcr;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "isValidSupply",
+                "fix_info": "Added logic to ensure no overflow/underflow occurs when summing the stablecoin supply and issueAmount_.",
+                "corrected_code": "function isValidSupply(uint256 issueAmount_) public view override returns (bool) {\n    if (rebaseActive) {\n        uint256 currentSupply = IERC20Minimal(stablecoin).totalSupply();\n        require(currentSupply + issueAmount_ >= currentSupply, \"VAULTMANAGER: Overflow detected when calculating supply\");\n        return currentSupply + issueAmount_ <= desiredSupply;\n    } else {\n        return true;\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_calculateValues",
+                "fix_info": "Revised calculation to use safe multiplication and ensure no overflow occurs when multiplying values.",
+                "corrected_code": "function _calculateValues(address collateral_, address debt_, uint256 cAmount_, uint256 dAmount_) internal view returns (uint256, uint256) {\n    uint256 collateralValue = getAssetValue(collateral_, cAmount_);\n    uint256 debtValue = getAssetValue(debt_, dAmount_);\n\n    uint256 collateralValueTimes100Point00000 = collateralValue * 10000000;\n    require(collateralValue != 0, \"VAULTMANAGER: Collateral value cannot be zero\");\n    require(collateralValueTimes100Point00000 / 10000000 == collateralValue, \"VAULTMANAGER: Overflow during collateral value calculation\"); // Overflow check\n\n    return (collateralValueTimes100Point00000, debtValue);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getAssetValue",
+                "fix_info": "Added safe multiplication and ensured no overflow occurs when calculating the asset value.",
+                "corrected_code": "function getAssetValue(address asset_, uint256 amount_) public view override returns (uint256) {\n    uint price = getAssetPrice(asset_);\n    uint256 value = price * amount_;\n    require(price == 0 || value / price == amount_, \"VAULTMANAGER: Overflow detected in asset value calculation\"); // Overflow check\n    return value;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

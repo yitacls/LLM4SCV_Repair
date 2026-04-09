@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "BitcoinQuick",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "accounts",
+            "fix_info": "Added safe mathematical operations using SafeMath library to prevent arithmetic overflow/underflow",
+            "variable_code": "using SafeMath for uint256;\n    mapping(address => uint256) public accounts;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers added for this fix",
+            "modifier_code": "",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by implementing SafeMath operations and adding additional safety checks",
+            "corrected_code": "function transfer(address _to, uint256 _amount) public returns (bool success) {\n        require(_amount > 0);\n        require(accounts[msg.sender] >= _amount);\n        require(_to != address(0));\n        \n        accounts[msg.sender] = accounts[msg.sender].sub(_amount);\n        accounts[_to] = accounts[_to].add(_amount);\n        \n        emit Transfer(msg.sender, _to, _amount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

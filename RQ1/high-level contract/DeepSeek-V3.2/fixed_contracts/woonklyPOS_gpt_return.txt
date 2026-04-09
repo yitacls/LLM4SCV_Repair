@@ -1,0 +1,54 @@
+```json
+[
+  {
+    "contract_name": "WOOPStake",
+    "contract_version": "^0.6.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "_withdrawReward",
+        "fix_info": "Fixed reentrancy vulnerability by applying Checks-Effects-Interactions pattern. Moved token transfer to the end after updating state.",
+        "corrected_code": "function _withdrawReward(\n        address sc,\n        address account,\n        uint256 amount\n    ) internal Active nonReentrant returns (uint256) {\n        IERC20 _token = IERC20(sc);\n\n        uint256 rew = rewarded(sc, account);\n\n        require(amount <= rew, \"WO:amew\");\n\n        require(amount <= getMyTokensBalance(sc), \"WO:-tk\");\n\n        uint256 remainder = rew.sub(amount);\n\n        // Update state before external call (Checks-Effects-Interactions)\n        _doreward(sc, account, remainder);\n\n        emit RewardWithdrawed(sc, account, amount, remainder);\n\n        // Perform external call last\n        require(_token.transfer(account, amount), \"WO:transfer failed\");\n\n        return amount;\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_compoundReward",
+        "fix_info": "Fixed reentrancy vulnerability by ensuring state is updated before external token interaction with addToStake.",
+        "corrected_code": "function _compoundReward(address account, uint256 amount)\n        internal\n        Active\n        returns (uint256)\n    {\n        uint256 rew = rewarded(_woopERC20, account);\n\n        require(amount <= rew, \"WO: am>w\");\n\n        require(amount <= getMyTokensBalance(_woopERC20), \"WO:-tk\");\n\n        uint256 remainder = rew.sub(amount);\n\n        // Update state before external call\n        _doreward(_woopERC20, account, remainder);\n\n        emit RewardToCompound(account, amount);\n\n        // External call to stake contract\n        _stakes.addToStake(account, amount);\n\n        return amount;\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_withdrawRewardCOIN",
+        "fix_info": "Fixed reentrancy vulnerability by applying Checks-Effects-Interactions pattern. Moved ETH transfer to the end after updating state.",
+        "corrected_code": "function _withdrawRewardCOIN(address account, uint256 amount)\n        internal\n        Active\n        nonReentrant\n        returns (uint256)\n    {\n        uint256 rew = rewardedCOIN(account);\n\n        require(amount <= rew, \"WO:am++\");\n\n        require(amount <= getMyCoinBalance(), \"WO:tk-\");\n\n        address payable acc = address(uint160(address(account)));\n\n        uint256 remainder = rew.sub(amount);\n\n        // Update state before external call\n        _dorewardCOIN(account, remainder);\n\n        emit RewardCOINWithdrawed(account, amount, remainder);\n\n        // Perform external call last\n        acc.transfer(amount);\n\n        return amount;\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "processReward",
+        "fix_info": "Fixed reentrancy vulnerability by ensuring token transfer happens before state updates and adding proper error handling.",
+        "corrected_code": "function processReward(address sc, uint256 amount)\n        public\n        nonReentrant\n        Active\n        hasApprovedTokens(sc, _msgSender(), amount)\n        ProviderHasToken(sc, amount)\n        returns (bool)\n    {\n        if (!ERC20Exist(sc)) {\n            newERC20(sc);\n        }\n\n        processRewardInfo memory slot;\n\n        IERC20 _token = IERC20(sc);\n        \n        // Transfer tokens first\n        require(_processReward_1(_token, _msgSender(), amount), \"WO:transfer failed\");\n\n        // Then process state updates\n        slot.dealed = _processReward_2(sc, amount);\n\n        uint256 leftover = amount.sub(slot.dealed);\n        if (leftover > 0) {\n            require(_token.transfer(_remainder, leftover), \"WO:trf\");\n            emit NewLeftover(sc, _remainder, leftover);\n        }\n\n        return true;\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_processRewardCOIN",
+        "fix_info": "Fixed reentrancy vulnerability by ensuring state updates happen before ETH transfer.",
+        "corrected_code": "function _processRewardCOIN(uint256 amount)\n        internal\n        nonReentrant\n        Active\n        returns (bool)\n    {\n        processRewardInfo memory slot;\n\n        address payable nrem = address(uint160(_remainder));\n\n        slot.dealed = _processReward_2COIN(amount);\n\n        _distributedCOIN = _distributedCOIN.add(slot.dealed);\n\n        uint256 leftover = amount.sub(slot.dealed);\n        if (leftover > 0) {\n            // State already updated, now transfer ETH\n            nrem.transfer(leftover);\n            emit NewLeftoverCOIN(_remainder, leftover);\n        }\n\n        return true;\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_withdrawAllrewardsCOIN",
+        "fix_info": "Fixed DoS with Failed Call vulnerability by using transfer with error handling and limiting loop iterations.",
+        "corrected_code": "function _withdrawAllrewardsCOIN()\n        internal\n        SolvencyCOIN()\n        nonReentrant\n        returns (uint256)\n    {\n        uint256 total = 0;\n        uint256 rew = 0;\n        Stake memory p;\n\n        uint256 last = _stakes.getLastIndexStakes();\n        \n        // Limit loop to prevent gas issues and DoS\n        uint256 batchLimit = 50;\n        uint256 processed = 0;\n        \n        for (uint256 i = 0; i < (last + 1) && processed < batchLimit; i++) {\n            (p.account, p.bal, p.autoCompound, p.flag) = _stakes\n                .getStakeByIndex(i);\n\n            if (p.flag == 1) {\n                rew = rewardedCOIN(p.account);\n\n                if (rew > 0) {\n                    _withdrawRewardCOIN(p.account, rew);\n                    total = total.add(rew);\n                    processed++;\n                }\n            }\n        }\n\n        uint256 eth_reserve = address(this).balance;\n\n        if (eth_reserve > 0) {\n            address payable ow = address(uint160(_remainder));\n            // Use call instead of transfer for better error handling\n            (bool success, ) = ow.call{value: eth_reserve}(\"\");\n            require(success, \"ETH transfer failed\");\n        }\n\n        return total;\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_withdrawAllrewards",
+        "fix_info": "Added batch processing limit to prevent DoS with gas limits.",
+        "corrected_code": "function _withdrawAllrewards(address sc)\n        internal\n        Solvency(sc)\n        returns (uint256)\n    {\n        uint256 total = 0;\n        uint256 rew = 0;\n\n        Stake memory p;\n\n        uint256 last = _stakes.getLastIndexStakes();\n        \n        // Limit batch size to prevent gas issues\n        uint256 batchLimit = 50;\n        uint256 processed = 0;\n\n        for (uint256 i = 0; i < (last + 1) && processed < batchLimit; i++) {\n            (p.account, p.bal, p.autoCompound, p.flag) = _stakes\n                .getStakeByIndex(i);\n\n            if (p.flag == 1) {\n                rew = rewarded(sc, p.account);\n\n                if (rew > 0) {\n                    _withdrawReward(sc, p.account, rew);\n                    total = total.add(rew);\n                    processed++;\n                }\n            }\n        }\n\n        IERC20 _token = IERC20(sc);\n\n        uint256 token_reserve = _token.balanceOf(address(this));\n\n        if (token_reserve > 0) {\n            require(_token.transfer(_remainder, token_reserve), \"WO:trf\");\n        }\n\n        return total;\n    }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

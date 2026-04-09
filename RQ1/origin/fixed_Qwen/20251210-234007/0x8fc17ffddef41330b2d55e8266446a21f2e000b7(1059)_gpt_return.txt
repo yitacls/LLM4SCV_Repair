@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Factory",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "liabilityFinalized",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender to prevent authorization bypass",
+            "corrected_code": "function liabilityFinalized(\n        ILiability _liability,\n        uint256 _gas\n    )\n        external\n        onlyLighthouse\n        gasPriceEstimate\n        returns (bool)\n    {\n        totalGasConsumed          += _gas;\n        gasConsumedOf[_liability] += _gas;\n        require(xrt.mint(msg.sender, wnFromGas(gasConsumedOf[_liability])));\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

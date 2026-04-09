@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "function insertNnumbers(uint value, uint numbers) public { ... for(uint i=0;i<numbers;i++) { ... } }",
+    "description": "The function uses an unbounded loop where the 'numbers' parameter controls iteration count without an upper limit. When 'numbers' exceeds approximately 382 (depending on block gas limit), the transaction will consume all gas and revert, making the function unusable for legitimate callers. This can be exploited by front-running attacks or malicious users to block legitimate operations, resulting in permanent denial of service for the contract function."
+}
+```

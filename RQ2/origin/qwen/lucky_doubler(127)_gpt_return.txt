@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function rand(uint max) constant private returns (uint256 result){\n        uint256 factor = FACTOR * 100 / max;\n        uint256 lastBlockNumber = block.number - 1;\n        uint256 hashVal = uint256(block.blockhash(lastBlockNumber));\n\n        return uint256((uint256(hashVal) / factor)) % max;\n    }",
+    "description": "The random number generation function relies on block.blockhash() which is predictable and can be manipulated by miners. Since blockhash() only works for the most recent 256 blocks and returns 0 for older blocks, and miners can choose when to submit blocks, this creates a vulnerable randomness source. Additionally, the formula using division and modulo operations on the hash value does not provide sufficient entropy, making the random output predictable and exploitable by attackers."
+}
+```

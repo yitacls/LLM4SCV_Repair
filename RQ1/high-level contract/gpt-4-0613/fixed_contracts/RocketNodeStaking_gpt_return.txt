@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "RocketNodeStaking",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "stakeRPL",
+            "fix_info": "Fixed the unchecked return value issue by using a check on the result of the depositToken function. If deposit fails, the transaction reverts with an error message.",
+            "corrected_code": "function stakeRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) {\n    address rplTokenAddress = getContractAddress(\"rocketTokenRPL\");\n    address rocketVaultAddress = getContractAddress(\"rocketVault\");\n    IERC20 rplToken = IERC20(rplTokenAddress);\n    RocketVaultInterface rocketVault = RocketVaultInterface(rocketVaultAddress);\n    require(rplToken.transferFrom(msg.sender, address(this), _amount), \"Could not transfer RPL to staking contract\");\n    require(rplToken.approve(rocketVaultAddress, _amount), \"Could not approve vault RPL deposit\");\n    bool result = rocketVault.depositToken(\"rocketNodeStaking\", rplTokenAddress, _amount);\n    require(result, \"Could not deposit RPL to rocketVault\");\n    increaseTotalRPLStake(_amount);\n    increaseNodeRPLStake(msg.sender, _amount);\n    setNodeRPLStakedBlock(msg.sender, block.number);\n    emit RPLStaked(msg.sender, _amount, block.timestamp);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawRPL",
+            "fix_info": "Fixed the transaction order dependence issue by locking the function during the execution. This prevents multiple calls before the first has finished, ensuring the logic based on the node's RPL stake is not skewed by concurrent withdrawals.",
+            "corrected_code": "function withdrawRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) {\n    require(!_lock[msg.sender], 'Reentrancy Detected!');\n    _lock[msg.sender] = true;\n    RocketDAOProtocolSettingsRewardsInterface rocketDAOProtocolSettingsRewards = RocketDAOProtocolSettingsRewardsInterface(getContractAddress(\"rocketDAOProtocolSettingsRewards\"));\n    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n    require(block.number.sub(getNodeRPLStakedBlock(msg.sender)) >= rocketDAOProtocolSettingsRewards.getRewardsClaimIntervalBlocks(), \"The withdrawal cooldown period has not passed\");\n    uint256 rplStake = getNodeRPLStake(msg.sender);\n    require(rplStake >= _amount, \"Withdrawal amount exceeds node's staked RPL balance\");\n    require(rplStake.sub(_amount) >= getNodeMinimumRPLStake(msg.sender), \"Node's staked RPL balance after withdrawal is less than minimum balance\");\n    rocketVault.withdrawToken(msg.sender, getContractAddress(\"rocketTokenRPL\"), _amount);\n    decreaseTotalRPLStake(_amount);\n    decreaseNodeRPLStake(msg.sender, _amount);\n    _lock[msg.sender] = false;\n    emit RPLWithdrawn(msg.sender, _amount, block.timestamp);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

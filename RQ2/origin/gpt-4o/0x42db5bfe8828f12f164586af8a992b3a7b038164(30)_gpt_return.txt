@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.send(this.balance);",
+    "description": "The use of the `send` function does not check the return value, which creates a vulnerability. If the transfer fails due to issues like running out of gas, the function doesn't handle it properly, potentially leaving the contract in an erroneous state and causing unexpected behavior or fund loss."
+}
+```

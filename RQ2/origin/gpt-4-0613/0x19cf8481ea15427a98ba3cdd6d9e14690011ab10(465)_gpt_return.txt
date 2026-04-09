@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance)",
+    "description": "This code has a vulnerability because it sends the entire balance of the contract to the owner address without checking for the successful execution of call. Unchecked low-level calls can lead to unexpected behavior if the call fails, such as the call running out of gas. It is recommended to use transfer() instead of send() to automatically throw an exception on failure, or to check the return value of send() to handle the failure manually."
+}
+```

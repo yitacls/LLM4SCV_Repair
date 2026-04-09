@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "TIME_MANIPULATION",
+        "location": "require(now != pastBlockTime);",
+        "description": "The contract uses 'now' (alias for block.timestamp) to prevent multiple transactions per block, but miners can manipulate block timestamps within a small range, potentially allowing them to bypass this restriction or influence the outcome of the game."
+    },
+    {
+        "type": "TIME_MANIPULATION",
+        "location": "if(now % 15 == 0)",
+        "description": "The winning condition is based on block.timestamp, which can be slightly manipulated by miners. This makes the game outcome potentially predictable and unfair, as miners could choose when to include transactions to influence whether the timestamp modulo 15 equals zero."
+    }
+]
+```

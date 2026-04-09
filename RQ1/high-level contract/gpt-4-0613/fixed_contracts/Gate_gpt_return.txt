@@ -1,0 +1,18 @@
+【
+```json
+[{
+    "contract_name": "Gate",
+    "contract_version": "0.5.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "multiFill",
+            "fix_info": "To prevent DoS attack, we move the emit function call and delete function out of the for loop and use pull over push to handle the payment. We make use of two arrays then match each pair and send the ether.",
+            "corrected_code": "function multiFill(uint256[] calldata _ids) external onlyAdmin() {\n\n    address payable[] memory _owners = new address payable[](_ids.length);\n    uint256[] memory _eths = new uint256[](_ids.length);\n    uint256 totalEtherRequired = 0;\n    for (uint256 i = 0; i < _ids.length; i++) {\n        uint256 id = _ids[i];\n\n        require(orders[id].owner != address(0), \"Order doesn't exist\");\n\n        uint256 tmv = orders[id].amount;\n        uint256 eth = tmv2eth(tmv);\n\n        totalEtherRequired = totalEtherRequired.add(eth);\n        _owners[i] = orders[id].owner;\n        _eths[i] = eth;\n        delete orders[id];\n        IToken(settings.tmvAddress()).transfer(timviWallet, tmv);\n        emit OrderFilledPool(id, _owners[i], tmv, eth);\n    }\n\n    require(msg.value >= totalEtherRequired, \"Not enough Ether provided\");\n    for (uint256 i = 0; i < _ids.length; i++) {\n        _owners[i].transfer(_eths[i]);\n    }\n\n    uint256 leftoverEther = msg.value.sub(totalEtherRequired);\n    if (leftoverEther > 0) {\n        msg.sender.transfer(leftoverEther);\n    }\n    emit Funded(totalEtherRequired);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+】

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization in the Withdraw() function, which is a known security vulnerability. Using tx.origin makes the contract vulnerable to phishing attacks where a malicious contract can trick the owner into calling a function, causing the owner's address to become the tx.origin, thus bypassing the authorization check. The correct approach is to use msg.sender for authorization checks. Additionally, since the contract uses Solidity ^0.4.18, this version is outdated and contains multiple known vulnerabilities; it should be updated to at least 0.8.x for improved security features."
+}
+```

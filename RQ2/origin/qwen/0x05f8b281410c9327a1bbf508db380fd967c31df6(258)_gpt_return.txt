@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "selfdestruct(owner);",
+    "description": "The selfdestruct function can be called by anyone since it lacks access control modifiers. In Solidity ^0.4.16, the 'payable' keyword allows anyone to send ether and trigger this function, leading to the contract being destroyed and funds being sent to the owner address. This creates a potential denial of service vulnerability where unauthorized users can destroy the contract."
+}
+```

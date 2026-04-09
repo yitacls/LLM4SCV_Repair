@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = payable(msg.sender).call{ value: amountProfit }(\"\");",
+    "description": "The contract is vulnerable to reentrancy because it sends Ether to the caller using `call.value` before updating the state. A malicious contract could re-enter the `receive` function and repeatedly withdraw profits before the `dateUpdate` timestamp is updated or the `active` status is set to false, potentially draining the contract's balance."
+}
+```

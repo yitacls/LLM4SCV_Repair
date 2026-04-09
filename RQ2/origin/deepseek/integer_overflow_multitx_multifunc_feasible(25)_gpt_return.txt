@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "count -= input;",
+            "description": "This subtraction operation is vulnerable to integer underflow. Since Solidity 0.4.23 does not include built-in overflow/underflow checks, when 'input' is greater than 'count', the subtraction will wrap around and result in a very large unsigned integer value rather than reverting. This classic integer underflow vulnerability can be exploited to manipulate contract state unexpectedly."
+        }
+    ]
+}
+```

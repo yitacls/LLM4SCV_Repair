@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_recipient] += _value;",
+    "description": "This line is susceptible to an Integer Overflow or Underflow Arithmetic vulnerability. In Solidity, uint type does not have a check for overflows or underflows, which means when the maximum value is exceeded, it starts from the beginning (zero), and when subtracted from zero, it starts with the most significant (maximum possible) value. Thus, it can falsely pass the preceding balance check and allow for an erroneous transfer."
+}
+```

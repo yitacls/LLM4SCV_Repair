@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "Relayer",
+        "contract_version": "^0.8.20",
+        "state_variables": [
+            {
+                "variable_name": "pragma",
+                "fix_info": "Updated compiler version to 0.8.20 to address SWC-102 and SWC-103",
+                "variable_code": "pragma solidity 0.8.20;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_getPrices",
+                "fix_info": "Removed SafeMath library usage as Solidity 0.8.20 includes built-in overflow protection (SWC-101)",
+                "corrected_code": "function _getPrices(uint16 _dstChainId, uint16 _outboundProofType, address, bytes memory _adapterParameters) internal view returns (uint basePrice, uint pricePerByte) {\n        require(_adapterParameters.length == 34 || _adapterParameters.length > 66, \"Relayer: wrong _adapterParameters size\");\n        uint16 txType;\n        uint extraGas;\n        assembly {\n            txType := mload(add(_adapterParameters, 2))\n            extraGas := mload(add(_adapterParameters, 34))\n        }\n        require(extraGas > 0, \"Relayer: gas too low\");\n        require(txType == 1 || txType == 2, \"Relayer: unsupported txType\");\n\n        DstPrice storage dstPrice = dstPriceLookup[_dstChainId];\n        DstConfig storage dstConfig = dstConfigLookup[_dstChainId][_outboundProofType];\n\n        uint totalRemoteToken;\n        if (txType == 2) {\n            uint dstNativeAmt;\n            assembly {\n                dstNativeAmt := mload(add(_adapterParameters, 66))\n            }\n            require(dstConfig.dstNativeAmtCap >= dstNativeAmt, \"Relayer: dstNativeAmt too large\");\n            totalRemoteToken += dstNativeAmt;\n        }\n        uint remoteGasTotal = dstPrice.dstGasPriceInWei * (dstConfig.baseGas + extraGas);\n        totalRemoteToken += remoteGasTotal;\n        basePrice = totalRemoteToken * dstPrice.dstPriceRatio / (10**10);\n        pricePerByte = dstPrice.dstGasPriceInWei * dstConfig.gasPerByte * dstPrice.dstPriceRatio / (10**10);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getPrice",
+                "fix_info": "Removed SafeMath library usage as Solidity 0.8.20 includes built-in overflow protection (SWC-101)",
+                "corrected_code": "function getPrice(uint16 _dstChainId, uint16 _outboundProofType, address _userApplication, uint payloadSize, bytes calldata _adapterParams) external view override returns (uint) {\n        (uint basePrice, uint pricePerByte) = _getPrices(_dstChainId, _outboundProofType, _userApplication, _adapterParams);\n        return basePrice + (payloadSize * pricePerByte);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

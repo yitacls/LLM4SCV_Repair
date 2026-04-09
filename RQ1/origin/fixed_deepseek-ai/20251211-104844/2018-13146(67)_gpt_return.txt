@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "LEF",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added overflow protection for the mapping variable",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added overflow protection for the state variable",
+            "variable_code": "uint256 public totalSupply;\nusing SafeMath for uint256;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "no_change"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        emit Transfer(0, owner, mintedAmount);\n        emit Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "The low-level call method does not check the return value, which means if the call fails (e.g., the recipient is a contract that rejects the payment or runs out of gas), the transaction will not revert. This can lead to loss of funds as the state change (reducing Holders[_addr] by _wei) will still occur even though the ether transfer failed. The return value of the call should be checked and handled appropriately."
+}
+```

@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "Oraclize",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "admin",
+            "fix_info": "Added to store the admin address for access control",
+            "variable_code": "address public admin;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAdmin",
+            "fix_info": "Modified to use proper access control pattern and remove empty implementation",
+            "modifier_code": "modifier onlyAdmin() {\n        require(msg.sender == admin, \"Only admin can call this function\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawFunds",
+            "fix_info": "Fixed multiple vulnerabilities: 1) Added onlyAdmin modifier instead of function call, 2) Replaced unsafe low-level call with proper pattern, 3) Added success check and fallback handling, 4) Used address payable for ether transfers, 5) Added event for transparency",
+            "corrected_code": "function withdrawFunds(address payable _addr)\n    external\n    onlyAdmin\n    {\n        uint256 contractBalance = address(this).balance;\n        require(contractBalance > 0, \"Contract has no balance\");\n        \n        (bool success, ) = _addr.call.value(contractBalance)(\"\");\n        require(success, \"Transfer failed\");\n        \n        emit FundsWithdrawn(_addr, contractBalance);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "receiveEther",
+            "fix_info": "Added fallback function to receive ether safely in Solidity 0.4.x",
+            "corrected_code": "function() public payable {\n        // Accept ether\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize the admin address",
+            "corrected_code": "constructor() public {\n        admin = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

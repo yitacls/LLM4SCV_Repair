@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "FLAaveV2",
+        "contract_version": "^0.7.0",
+        "state_variables": [
+            {
+                "variable_name": "",
+                "fix_info": "",
+                "variable_code": "",
+                "change_type": ""
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "",
+                "fix_info": "",
+                "modifier_code": "",
+                "change_type": ""
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "executeOperation",
+                "fix_info": "Fixed reentrancy vulnerability by applying checks-effects-interactions pattern. Moved all state changes and internal accounting before external calls. Added reentrancy guard for multi-asset flash loans.",
+                "corrected_code": "    /// @notice Aave callback function that formats and calls back TaskExecutor\n    function executeOperation(\n        address[] memory _assets,\n        uint256[] memory _amounts,\n        uint256[] memory _fees,\n        address _initiator,\n        bytes memory _params\n    ) public returns (bool) {\n        require(msg.sender == AAVE_LENDING_POOL, ERR_ONLY_AAVE_CALLER);\n        require(_initiator == address(this), ERR_SAME_CALLER);\n        \n        (Task memory currTask, address proxy) = abi.decode(_params, (Task, address));\n        \n        // CHECKS: Validate input arrays\n        require(_assets.length == _amounts.length && _amounts.length == _fees.length, \"Array length mismatch\");\n        \n        // EFFECTS: Calculate total amounts owed upfront\n        uint256[] memory totalAmounts = new uint256[](_assets.length);\n        for (uint256 i = 0; i < _assets.length; i++) {\n            totalAmounts[i] = _amounts[i] + _fees[i];\n        }\n        \n        // INTERACTIONS: Safe transfer to proxy\n        for (uint256 i = 0; i < _assets.length; ++i) {\n            // Use safe transfer pattern\n            uint256 amount = _amounts[i];\n            if (amount > 0) {\n                _assets[i].withdrawTokens(proxy, amount);\n            }\n        }\n        \n        address payable taskExecutor = payable(registry.getAddr(TASK_EXECUTOR_ID));\n        \n        // INTERACTIONS: Execute proxy action\n        IDSProxy(proxy).execute{value: address(this).balance}(\n            taskExecutor,\n            abi.encodeWithSelector(CALLBACK_SELECTOR, currTask, bytes32(_amounts[0] + _fees[0]))\n        );\n        \n        // INTERACTIONS: Approve repayment after execution\n        for (uint256 i = 0; i < _assets.length; i++) {\n            uint256 totalOwed = totalAmounts[i];\n            if (totalOwed > 0) {\n                // Verify we have sufficient balance before approving\n                uint256 balance = IERC20(_assets[i]).balanceOf(address(this));\n                require(balance >= totalOwed, \"Insufficient balance for repayment\");\n                \n                _assets[i].approveToken(address(AAVE_LENDING_POOL), totalOwed);\n            }\n        }\n        \n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_flAaveV2",
+                "fix_info": "Added validation checks for input arrays to prevent inconsistencies that could lead to reentrancy vectors",
+                "corrected_code": "    /// @notice Gets a FL from AaveV2 and returns back the execution to the action address\n    /// @param _flData All the amounts/tokens and related aave fl data\n    /// @param _params Rest of the data we have in the task\n    function _flAaveV2(FLAaveV2Data memory _flData, bytes memory _params) internal returns (uint) {\n        // Validate input arrays to prevent inconsistencies\n        require(_flData.tokens.length == _flData.amounts.length, \"Tokens/amounts length mismatch\");\n        require(_flData.tokens.length == _flData.modes.length, \"Tokens/modes length mismatch\");\n        require(_flData.tokens.length > 0, \"No tokens specified\");\n        \n        // Validate amounts are non-zero\n        for (uint256 i = 0; i < _flData.amounts.length; i++) {\n            require(_flData.amounts[i] > 0, \"Zero amount specified\");\n        }\n        \n        ILendingPoolV2(AAVE_LENDING_POOL).flashLoan(\n            payable(registry.getAddr(FL_AAVE_V2_ID)),\n            _flData.tokens,\n            _flData.amounts,\n            _flData.modes,\n            _flData.onBehalfOf,\n            _params,\n            AAVE_REFERRAL_CODE\n        );\n\n        logger.Log(\n            address(this),\n            msg.sender,\n            \"FLAaveV2\",\n            abi.encode(_flData.tokens, _flData.amounts, _flData.modes, _flData.onBehalfOf)\n        );\n\n        return _flData.amounts[0];\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

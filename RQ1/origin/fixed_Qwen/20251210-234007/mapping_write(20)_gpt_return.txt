@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Map",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "set",
+            "fix_info": "Added access control to prevent unauthorized users from modifying the map",
+            "corrected_code": "function set(uint256 key, uint256 value) public onlyOwner {\n    if (map.length <= key) {\n        map.length = key + 1;\n    }\n    map[key] = value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

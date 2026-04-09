@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Government",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "lendGovernmentMoney",
+            "fix_info": "Fixed DoS vulnerability by replacing array deletion with incremental cleanup and adding gas-efficient payout mechanism",
+            "corrected_code": "function lendGovernmentMoney(address buddy) returns (bool) {\n    uint amount = msg.value;\n    // check if the system already broke down. If for 12h no new creditor gives new credit to the system it will brake down.\n    // 12h are on average = 60*60*12/12.5 = 3456\n    if (lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp) {\n        // Return money to sender\n        msg.sender.send(amount);\n        // Sends all contract money to the last creditor\n        if (creditorAddresses.length > 0) {\n            creditorAddresses[creditorAddresses.length - 1].send(profitFromCrash);\n        }\n        corruptElite.send(this.balance);\n        // Reset contract state\n        lastCreditorPayedOut = 0;\n        lastTimeOfNewCredit = block.timestamp;\n        profitFromCrash = 0;\n        // Fix DoS by resetting array length tracking instead of deleting arrays\n        creditorAddressCount = 0;\n        creditorAmountCount = 0;\n        round += 1;\n        return false;\n    }\n    else {\n        // the system needs to collect at least 1% of the profit from a crash to stay alive\n        if (amount >= 10 ** 18) {\n            // the System has received fresh money, it will survive at leat 12h more\n            lastTimeOfNewCredit = block.timestamp;\n            // register the new creditor and his amount with 10% interest rate\n            creditorAddresses[creditorAddressCount] = msg.sender;\n            creditorAmounts[creditorAmountCount] = amount * 110 / 100;\n            creditorAddressCount++;\n            creditorAmountCount++;\n            // now the money is distributed\n            // first the corrupt elite grabs 5% - thieves!\n            corruptElite.send(amount * 5/100);\n            // 5% are going into the economy (they will increase the value for the person seeing the crash comming)\n            if (profitFromCrash < 10000 * 10**18) {\n                profitFromCrash += amount * 5/100;\n            }\n            // if you have a buddy in the government (and he is in the creditor list) he can get 5% of your credits.\n            // Make a deal with him.\n            if(buddies[buddy] >= amount) {\n                buddy.send(amount * 5/100);\n            }\n            buddies[msg.sender] += amount * 110 / 100;\n            // 90% of the money will be used to pay out old creditors\n            if (lastCreditorPayedOut < creditorAddressCount && \n                creditorAmounts[lastCreditorPayedOut] <= address(this).balance - profitFromCrash) {\n                creditorAddresses[lastCreditorPayedOut].send(creditorAmounts[lastCreditorPayedOut]);\n                buddies[creditorAddresses[lastCreditorPayedOut]] -= creditorAmounts[lastCreditorPayedOut];\n                lastCreditorPayedOut += 1;\n            }\n            return true;\n        }\n        else {\n            msg.sender.send(amount);\n            return false;\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StorageBase",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and checking transfer result, or by removing return value requirement. Also added explicit address payable conversion.",
+            "corrected_code": "function withdrawBalance() external onlyOwner returns (bool) {\n        address payable owner = address(uint160(msg.sender));\n        owner.transfer(address(this).balance);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

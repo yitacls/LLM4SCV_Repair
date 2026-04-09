@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "RTokenMain",
+    "contract_version": "0.4.8",
+    "state_variables": [
+        {
+            "variable_name": "safeMathUsed",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflows in calculations",
+            "variable_code": "using SafeMath for uint256;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic vulnerabilities and reentrancy issue by using SafeMath, updating state before external calls, and using require() instead of throw",
+            "corrected_code": "function sell(uint256 amount) public {\n    require(balanceMap[msg.sender] >= amount, \"Insufficient balance\");\n    uint256 saleValue = amount.mul(sellPrice);\n    require(saleValue / amount == sellPrice, \"Multiplication overflow\");\n    \n    balanceMap[msg.sender] = balanceMap[msg.sender].sub(amount);\n    balanceMap[this] = balanceMap[this].add(amount);\n    \n    Transfer(msg.sender, this, amount);\n    \n    msg.sender.transfer(saleValue);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

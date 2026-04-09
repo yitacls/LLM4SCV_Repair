@@ -1,0 +1,33 @@
+```json
+[
+    {
+        "contract_name": "FUTM",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added ownership modifier to replace tx.origin check",
+                "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "changeOwner",
+                "fix_info": "Replaced vulnerable tx.origin check with msg.sender and added onlyOwner modifier",
+                "corrected_code": "function changeOwner(address _receiver) public onlyOwner {\n        require(_receiver != address(0));\n        owner = _receiver;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+Note: The fix addresses the access control vulnerability by:
+1. Replacing `tx.origin == owner` with proper ownership checking using `msg.sender`
+2. Adding a reusable `onlyOwner` modifier for consistent access control
+3. Adding input validation to prevent setting owner to zero address
+4. Removing the unsafe `tx.origin` check which is vulnerable to phishing attacks where intermediate contracts could call this function
+
+The original functionality is preserved (only the legitimate owner can change ownership), but now using secure access control patterns.

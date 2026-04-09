@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance);",
+    "description": "In Solidity versions prior to 0.8.0, low-level calls like `send()` return a boolean success value. This return value is not checked, meaning if the `send()` call fails (e.g., if the owner is a contract without a payable fallback function or runs out of gas with the 2300 gas stipend), the transaction will proceed as if the payment succeeded, causing the contract's balance to remain trapped. The vulnerability is compounded by the `onlyOwner` modifier, creating access control to locked funds."
+}
+```

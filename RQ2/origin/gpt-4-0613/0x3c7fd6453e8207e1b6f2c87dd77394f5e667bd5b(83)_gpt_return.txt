@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract is checking if the transaction origin is the owner of the contract, not the caller of the function. This is a security vulnerability because a malicious contract can force an innocent user to trigger this contract, getting around any checks for msg.sender, allowing the malicious contract to mint tokens."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MyOffer",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath checks to prevent integer overflow when adding minted amounts to balance and total supply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n        require(balanceOf[target] + mintedAmount >= balanceOf[target], \"Overflow in balance addition\");\n        require(totalSupply + mintedAmount >= totalSupply, \"Overflow in total supply addition\");\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

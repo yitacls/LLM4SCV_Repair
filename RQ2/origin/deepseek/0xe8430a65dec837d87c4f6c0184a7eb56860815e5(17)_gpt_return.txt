@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Over/Underflow",
+    "location": "balanceOf[_to] += _value;",
+    "description": "The transfer function uses standard arithmetic operations that are vulnerable to integer overflow/underflow in Solidity versions prior to 0.8.0. In this ^0.4.24 contract, when balanceOf[_to] + _value exceeds the maximum value that can be stored in a uint256 (2^256 - 1), it will wrap around to a very small number instead of reverting. Similarly, balanceOf[_from] -= _value could underflow if _value is greater than balanceOf[_from], though that case is prevented by the require statement. This overflow vulnerability could allow malicious users to receive extremely large token balances unexpectedly. The fix is to use SafeMath library or upgrade to Solidity 0.8.0+ which has built-in overflow checks."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function pwr(uint256 x, uint256 y) internal pure returns(uint256)",
+    "description": "The function pwr does not properly check the return value of the multiplication operation. If the multiplication operation were to result in an overflow, the result would be incorrect and could lead to unexpected behavior or vulnerabilities."
+}
+```  

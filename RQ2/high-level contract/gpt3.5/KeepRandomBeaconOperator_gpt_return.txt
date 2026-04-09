@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-120-Weak Sources of Randomness from Chain Attributes",
+    "location": "function relayEntry(bytes memory _groupSignature) public nonReentrant {",
+    "description": "The contract uses block.timestamp and block.number directly for generating randomness, which can be manipulated by miners or front-runners. This can lead to predictable behavior and potential attacks on the contract."
+}
+```

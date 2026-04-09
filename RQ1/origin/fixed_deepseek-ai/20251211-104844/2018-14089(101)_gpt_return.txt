@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "Virgo_ZodiacToken",
+        "contract_version": "^0.4.19",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "No changes needed for balances mapping",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "allowed",
+                "fix_info": "No changes needed for allowed mapping",
+                "variable_code": "mapping(address => mapping(address => uint256)) public allowed;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Fixed arithmetic underflow/overflow vulnerabilities and improved logic clarity",
+                "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {\n        // mitigates the ERC20 short address attack\n        if(msg.data.length < (3 * 32) + 4) { revert(); }\n\n        if (_value == 0) { return false; }\n        \n        uint256 fromBalance = balances[_from];\n        uint256 allowance = allowed[_from][msg.sender];\n        uint256 toBalance = balances[_to];\n\n        bool sufficientFunds = fromBalance >= _value;\n        bool sufficientAllowance = allowance >= _value;\n        bool noOverflow = toBalance + _value >= toBalance;\n\n        if (sufficientFunds && sufficientAllowance && noOverflow) {\n            balances[_to] += _value;\n            balances[_from] -= _value;\n            \n            allowed[_from][msg.sender] -= _value;\n            \n            emit Transfer(_from, _to, _value);\n            return true;\n        } else { \n            return false; \n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

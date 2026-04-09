@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PandaCore",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Replaced dangerous 'send()' with safe transfer pattern using 'transfer()' and added explicit transfer amount calculation with validation",
+            "corrected_code": "function withdrawBalance() external onlyCFO {\n    uint256 balance = this.balance;\n    uint256 subtractFees = (pregnantPandas + 1) * autoBirthFee;\n    \n    require(subtractFees <= balance, \"Insufficient balance for fees\");\n    \n    uint256 transferAmount = balance - subtractFees;\n    \n    if (transferAmount > 0) {\n        cfoAddress.transfer(transferAmount);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

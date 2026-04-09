@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin for authorization creates a phishing vulnerability. tx.origin returns the original external account that started the transaction, not the immediate caller (msg.sender). An attacker can trick the owner into calling a malicious contract that subsequently calls addMeByRC(), and since tx.origin would still be the owner, the attacker's address (msg.sender) would be granted RC privileges. This violates authorization intent and enables privilege escalation attacks. Additionally, using tx.origin is generally discouraged as it breaks modular code and composability."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Underflow",
+    "location": "count -= input;",
+    "description": "The subtraction operation is vulnerable to underflow. When 'input' is greater than 'count', the result will wrap around to a large positive number due to Solidity's unsigned integer behavior in version ^0.4.23, which lacks built-in overflow protection. This can lead to unexpected behavior and potential exploitation."
+}
+```

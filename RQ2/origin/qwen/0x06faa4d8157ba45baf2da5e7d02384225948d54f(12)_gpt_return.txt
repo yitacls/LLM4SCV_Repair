@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;",
+    "description": "The arithmetic operation is vulnerable to integer overflow and division by zero. In Solidity ^0.4.24, there is no automatic overflow protection. The multiplication and division operations on large numbers can cause overflow, leading to unexpected results. Additionally, if the denominator becomes zero due to manipulation of block numbers or other variables, it could cause division by zero errors."
+}
+```

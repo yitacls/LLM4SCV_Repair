@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "IntegerOverflowMappingSym1",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "init",
+                "fix_info": "Prevent arithmetic underflow by validating subtraction result.",
+                "corrected_code": "function init(uint256 k, uint256 v) public {
+    require(map[k] >= v);
+    map[k] -= v;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

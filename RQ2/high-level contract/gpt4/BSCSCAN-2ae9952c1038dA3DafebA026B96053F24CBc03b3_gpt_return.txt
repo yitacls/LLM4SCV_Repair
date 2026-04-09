@@ -1,0 +1,10 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+        _transfer(_msgSender(), recipient, amount);
+        return true;
+    }",
+    "description": "The unchecked send() operation fails quietly by returning false on failure. In this contract, the _transfer() method in the transfer function does not perform any checks on the state of the 'recipient' address before calling it. This could mean that tokens are transferred to an address that is not capable of receiving them. In this case, the recipient of the transfer could be a contract that does not have a function to accept a transfer of tokens. This would result in the contract being incapable of accepting the tokens, and their value would be effectively lost."
+}
+```

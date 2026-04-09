@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "KAPAYcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations for addition",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

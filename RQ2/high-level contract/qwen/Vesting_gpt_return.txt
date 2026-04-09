@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Vesting",
+        "contract_version": "0.8.10",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "updateScore",
+                "fix_info": "Fixed SWC-113 DoS by adding try-catch for token transfer and SWC-101 by using SafeMath operations. The function now handles failed transfers gracefully by skipping them instead of reverting the entire transaction.",
+                "corrected_code": "function updateScore(uint8 _newScore)\n    external\n    onlyOracle\n    isInitialized\n    notFinalized\n{\n    require(_newScore <= 100, \"invalid score value\");\n    require(\n        _currentTime().sub(initializedAt) > EPOCH_SIZE,\n        \"scoring epoch 1 still not finished\"\n    );\n\n    uint256 timeFromLastEpoch = _currentTime().sub(initializedAt).mod(\n        EPOCH_SIZE\n    );\n\n    require(\n        timeFromLastEpoch > 0 && timeFromLastEpoch <= 1 days,\n        \"scoring epoch still not finished\"\n    );\n\n    require(\n        _currentTime().sub(updatedAt) > 1 days,\n        \"can not update score value twise in the same window\"\n    );\n\n    lastScore = _newScore;\n    updatedAt = _currentTime();\n\n    if (_newScore != 0) {\n        for (uint256 i = 0; i < beneficiaries.length; i++) {\n            LockVesting storage lock = locks[beneficiaries[i]];\n            uint256 remainingAmount = lock.totalAmount.sub(\n                lock.releasedAmount\n            );\n            uint256 releasableAmount = uint256(_newScore).mul(remainingAmount).div(\n                100\n            );\n            \n            // Prevent adding more than the remaining amount\n            if (releasableAmount > remainingAmount) {\n                releasableAmount = remainingAmount;\n            }\n            \n            // Update released amount\n            lock.releasedAmount = lock.releasedAmount.add(releasableAmount);\n            \n            // Try to transfer tokens, skip on failure\n            try IERC20(token).transfer(beneficiaries[i], releasableAmount) {\n                // Transfer successful, do nothing\n            } catch {\n                // Transfer failed, revert the release amount change\n                lock.releasedAmount = lock.releasedAmount.sub(releasableAmount);\n            }\n        }\n\n        // Check if first beneficiary got all tokens to finalize\n        if (\n            locks[beneficiaries[0]].releasedAmount ==\n            locks[beneficiaries[0]].totalAmount\n        )\n            finalized = true;\n    }\n\n    emit ScoreUpdated(_newScore, _epochNumber());\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

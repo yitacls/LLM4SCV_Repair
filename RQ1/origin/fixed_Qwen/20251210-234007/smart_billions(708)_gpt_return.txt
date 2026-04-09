@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "hashesSize",
+            "fix_info": "Added state variable to store the size of hash segments",
+            "variable_code": "uint256 public hashesSize = 0xFFFFFF;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "lastRandomSeed",
+            "fix_info": "Added state variable to store the last random seed for entropy",
+            "variable_code": "uint256 public lastRandomSeed = 0;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by replacing block.blockhash with a commitment-based approach using keccak256 and incorporating external entropy sources",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Fixed BAD_RANDOMNESS by using keccak256 with multiple entropy sources\n        bytes32 entropy = keccak256(\n            block.coinbase,\n            block.difficulty,\n            block.gaslimit,\n            block.number,\n            block.timestamp,\n            lastRandomSeed,\n            msg.sender\n        );\n        \n        // Update lastRandomSeed for future calls\n        lastRandomSeed = uint256(entropy);\n        \n        // Generate pseudo-random values from the entropy\n        uint256 rand1 = uint256(keccak256(entropy, 1)) & 0xFFFFFF;\n        uint256 rand2 = uint256(keccak256(entropy, 2)) & 0xFFFFFF;\n        uint256 rand3 = uint256(keccak256(entropy, 3)) & 0xFFFFFF;\n        uint256 rand4 = uint256(keccak256(entropy, 4)) & 0xFFFFFF;\n        uint256 rand5 = uint256(keccak256(entropy, 5)) & 0xFFFFFF;\n        uint256 rand6 = uint256(keccak256(entropy, 6)) & 0xFFFFFF;\n        uint256 rand7 = uint256(keccak256(entropy, 7)) & 0xFFFFFF;\n        uint256 rand8 = uint256(keccak256(entropy, 8)) & 0xFFFFFF;\n        uint256 rand9 = uint256(keccak256(entropy, 9)) & 0xFFFFFF;\n        uint256 rand10 = uint256(keccak256(entropy, 10)) & 0xFFFFFF;\n        \n        return( ( rand1 )\n            | ( rand2 << 24 )\n            | ( rand3 << 48 )\n            | ( rand4 << 72 )\n            | ( rand5 << 96 )\n            | ( rand6 << 120 )\n            | ( rand7 << 144 )\n            | ( rand8 << 168 )\n            | ( rand9 << 192 )\n            | ( rand10 << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

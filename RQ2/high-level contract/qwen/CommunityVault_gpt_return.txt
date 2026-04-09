@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CommunityVault",
+    "contract_version": "^0.6.0",
+    "state_variables": [
+        {
+            "variable_name": "pragma",
+            "fix_info": "Fixed floating pragma to specific version to prevent compilation with potentially incompatible compiler versions",
+            "variable_code": "pragma solidity 0.6.12;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "setAllowance",
+            "fix_info": "Applied reentrancy guard by following Checks-Effects-Interactions pattern. Added require statement to check return value of external call and moved event emission before the external call",
+            "corrected_code": "function setAllowance(address spender, uint amount) public onlyOwner {\n        emit SetAllowance(msg.sender, spender, amount);\n        require(_bond.approve(spender, amount), \"Approval failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

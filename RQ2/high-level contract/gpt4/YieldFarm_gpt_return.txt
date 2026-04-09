@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "Line 3: pragma solidity ^0.6.0;",
+        "description": "The contract specifies a pragma version with a caret (^), which is called a floating pragma. The caret means that the contract can be compiled with a higher version of the compiler above 0.6.0 until, but not including, version 0.7.0. This can introduce unexpected behaviour if a new compiler version introduces breaking changes."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 76-78: for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) { totalDistributedValue += _harvest(i); }",
+        "description": "This loop iterates over a number of unbounded elements (epochs), during which it calls the _harvest function that performs computations and state changes. The for loop can grow to a size that may require more gas than what is available in a block, potentially causing the transaction to fail due to exceeding the Ethereum block gas limit."
+    }
+]
+```

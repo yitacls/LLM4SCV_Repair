@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint256 ethAmount = amount * sellPrice;",
+    "description": "The multiplication operation between amount and sellPrice can cause an arithmetic overflow, leading to unexpected behavior. In Solidity 0.4.18, there is no automatic overflow protection, so if the product of amount and sellPrice exceeds the maximum value of uint256, it will wrap around to a smaller value, resulting in incorrect ETH calculation and potential loss of funds."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(msg.value-value);",
+    "description": "The send() function returns a boolean indicating success or failure, but this return value is not checked. If the send() fails (e.g., if the recipient is a contract that runs out of gas or reverts), the ether transfer will fail silently. This leaves the contract in an inconsistent state where the user's partial refund has not been sent, even though their tickets have been processed and the remainder of their funds have been added to the pot. In Solidity ^0.4.0, send() only provides 2300 gas, which is insufficient for most operations, making failures more likely when sending to contracts."
+}
+```

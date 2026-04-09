@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_privilegedBirther == address(0) || tx.origin == _privilegedBirther) {  // fault line",
+    "description": "The function uses `tx.origin` for authorization, which is vulnerable to phishing attacks and does not respect the principle of least privilege. An attacker can trick the `_privilegedBirther` into calling a malicious contract that invokes this function, bypassing access controls. Additionally, when `_privilegedBirther` is not set (zero address), the check defaults to allowing any origin, potentially leading to unintended access."
+}
+```

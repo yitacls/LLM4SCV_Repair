@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PonziScheme",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call to send() by adding return value check and using require() for proper error handling",
+            "corrected_code": "function() payable {\n    if(round == 1) {\n      if(msg.value != startingAmount) {\n        throw;\n      }\n    } else {\n      checkAmount(msg.value);\n      require(lastDepositor.send(msg.value));  // Fixed: Added require() to check send() return value\n    }\n    lastDepositorAmount = msg.value;\n    lastDepositor = msg.sender;\n    nextAmount = msg.value * 2;\n    increaseRound();\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

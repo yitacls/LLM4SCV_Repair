@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "dgame",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low level call vulnerability by adding success check for send() and using require() to handle failure cases",
+            "corrected_code": "function () payable {\n    if (players.length == 0)\n      endRegisterTime = now + registerDuration;\n    if (now > endRegisterTime && players.length > 0) {\n      uint winner = uint(block.blockhash(block.number - 1)) % players.length;\n      require(players[winner].send(this.balance));  // Fixed: added require to check send success\n      delete players;\n    }\n    else\n      players.push(msg.sender);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

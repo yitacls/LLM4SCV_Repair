@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "MP3Coin",
+        "contract_version": "^0.4.8",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "distribute",
+                "fix_info": "Fixed arithmetic vulnerabilities by using SafeMath library to prevent overflow/underflow issues. Enhanced input validation to prevent exploits.",
+                "corrected_code": "function distribute(address[] _addresses, uint[] _amounts) public returns (bool success) {\n        require(_addresses.length < 256 && _addresses.length == _amounts.length, \"Invalid input lengths\");\n        \n        uint totalAmount = 0;\n        for (uint a = 0; a < _amounts.length; a++) {\n            totalAmount = totalAmount.add(_amounts[a]); // Using SafeMath to prevent overflow\n        }\n\n        require(totalAmount > 0, \"Total amount must be greater than zero\");\n        require(balances[msg.sender] >= totalAmount, \"Insufficient balance\");\n\n        // Deduct amount from sender\n        balances[msg.sender] = balances[msg.sender].sub(totalAmount); // Using SafeMath to prevent underflow\n\n        // Transfer amounts to receivers\n        for (uint b = 0; b < _addresses.length; b++) {\n            if (_amounts[b] > 0) {\n                balances[_addresses[b]] = balances[_addresses[b]].add(_amounts[b]); // Using SafeMath to prevent overflow\n                emit Transfer(msg.sender, _addresses[b], _amounts[b]);\n            }\n        }\n\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

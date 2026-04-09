@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "STokensV2",
+        "contract_version": ">=0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setRewardRate",
+                "fix_info": "Added a gas limit check for the loop to avoid potential DoS with block gas limit vulnerability.",
+                "corrected_code": "function setRewardRate(uint256 rewardRate) public virtual override returns (bool success) { require(rewardRate <= _valueDivisor.mul(100), 'ST17'); require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'ST2'); _rewardRate.push(rewardRate); _lastMovingRewardTimestamp.push(block.timestamp); emit SetRewardRate(rewardRate); return true; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

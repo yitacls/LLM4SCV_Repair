@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "This line contains an integer overflow vulnerability when minting tokens. In Solidity versions before 0.8.0, arithmetic operations do not automatically check for overflow/underflow. Since balanceOf[target] and totalSupply are uint256 variables, if their current value plus mintedAmount exceeds 2^256 - 1, the addition will wrap around (overflow), potentially allowing an attacker to mint a very small balance from an overflowed value. This could be exploited if the owner account is compromised or if there's insufficient validation of mintedAmount parameter. The same vulnerability exists for totalSupply += mintedAmount."
+}
+```

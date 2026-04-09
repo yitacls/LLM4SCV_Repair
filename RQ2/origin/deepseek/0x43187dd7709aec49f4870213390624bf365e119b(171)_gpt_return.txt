@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "Line 14: if (_to == tx.origin) { // fault line",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, which creates a vulnerability where malicious contracts can impersonate users. When _source == 2, the code compares _to (the deposit recipient) with tx.origin (the original transaction sender), potentially allowing a malicious contract in the middle to manipulate profit balance deductions from unintended accounts. This violates the principle that only the immediate caller (msg.sender) should be used for access control checks."
+}
+```

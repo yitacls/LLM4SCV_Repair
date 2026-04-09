@@ -1,0 +1,20 @@
+```json
+{
+    "contract_name": "SwapsUser",
+    "contract_version": "0.5.17",
+    "functions": [
+        {
+            "function_name": "_swapsCall",
+            "fix_info": "Fixed potential integer overflow and underflow vulnerabilities.",
+            "corrected_code": "function _swapsCall(address[5] memory addrs, uint256[3] memory vals, bytes32 loanId, bool miscBool, bytes memory loanDataBytes) internal returns (uint256, uint256) { require(vals[0] != 0, 'sourceAmount == 0'); uint256 destTokenAmountReceived; uint256 sourceTokenAmountUsed; if (!miscBool) { uint256 tradingFee; if (vals[2] == 0) { tradingFee = _getTradingFee(vals[0]); if (tradingFee != 0) { _payTradingFee(addrs[4], loanId, addrs[0], tradingFee); vals[0] = vals[0] - tradingFee; } } else { tradingFee = _getTradingFee(vals[2]); if (tradingFee != 0) { vals[2] = vals[2] + tradingFee; } } } if (vals[1] == 0) { vals[1] = vals[0]; } else { require(vals[0] <= vals[1], 'min greater than max'); } require(loanDataBytes.length == 0, 'invalid state'); (destTokenAmountReceived, sourceTokenAmountUsed) = _swapsCall_internal(addrs, vals); if (vals[2] == 0) { require(sourceTokenAmountUsed == vals[0], 'swap too large to fill'); if (tradingFee != 0) { sourceTokenAmountUsed = sourceTokenAmountUsed + tradingFee; } } else { require(sourceTokenAmountUsed <= vals[1], 'swap fill too large'); require(destTokenAmountReceived >= vals[2], 'insufficient swap liquidity'); if (tradingFee != 0) { _payTradingFee(addrs[4], loanId, addrs[1], tradingFee); destTokenAmountReceived = destTokenAmountReceived - tradingFee; } } return (destTokenAmountReceived, sourceTokenAmountUsed); }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_swapsCall_internal",
+            "fix_info": "Fixed potential integer overflow and underflow vulnerabilities.",
+            "corrected_code": "function _swapsCall_internal(address[5] memory addrs, uint256[3] memory vals) internal returns (uint256 destTokenAmountReceived, uint256 sourceTokenAmountUsed) { bytes memory data = abi.encodeWithSelector(ISwapsImpl(swapsImpl).dexSwap.selector, addrs[0], addrs[1], addrs[2], addrs[3], vals[0], vals[1], vals[2]); bool success; (success, data) = swapsImpl.delegatecall(data); require(success, 'swap failed'); (destTokenAmountReceived, sourceTokenAmountUsed) = abi.decode(data, (uint256, uint256)); }",
+            "change_type": "modified"
+        }
+    ]
+}
+```

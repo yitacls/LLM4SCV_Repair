@@ -1,0 +1,28 @@
+[{
+    "contract_name": "ETH_VAULT",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "Added a reentrancy guard state variable to prevent recursive calls during external interactions.",
+            "variable_code": "bool private locked = false;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "noReentrancy",
+            "fix_info": "Added a modifier implementing the checks-effects-interactions pattern via a simple mutex to prevent reentrancy.",
+            "modifier_code": "modifier noReentrancy() {\n    require(!locked);\n    locked = true;\n    _;\n    locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "CashOut",
+            "fix_info": "Applied checks-effects-interactions, used transfer() instead of call.value(), and protected with noReentrancy modifier to mitigate reentrancy vulnerability while preserving original behavior.",
+            "corrected_code": "function CashOut(uint _am) public payable noReentrancy {\n    require(_am <= balances[msg.sender]);\n\n    // Effects: update state before external calls\n    balances[msg.sender] -= _am;\n\n    // Interaction: use transfer to limit gas forwarded and reduce reentrancy risk\n    msg.sender.transfer(_am);\n\n    // Log the transfer (external call) after state update\n    TransferLog.AddMessage(msg.sender, _am, \"CashOut\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

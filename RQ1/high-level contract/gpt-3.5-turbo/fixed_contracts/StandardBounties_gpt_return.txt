@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "StandardBounties",
+        "contract_version": "0.5.0",
+        "functions": [
+            {
+                "function_name": "contribute",
+                "fix_info": "Added visibility specifier to the 'balance' state variable to avoid defaulting to public",
+                "corrected_code": "uint internal balance; // The number of tokens which the bounty is able to pay out or refund",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

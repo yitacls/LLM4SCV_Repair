@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Integer Overflow/Underflow",
+        "location": "Line 9: 'amount*sellPrice' in 'if(!msg.sender.send(amount*sellPrice))'",
+        "description": "In Solidity 0.4.8, arithmetic operations are vulnerable to integer overflow/underflow as there were no built-in safe math operations. The multiplication 'amount*sellPrice' could overflow if the product exceeds 2^256-1, resulting in a much smaller value being sent than intended. This could allow an attacker to purchase tokens at a fraction of their actual cost."
+    }
+}
+```

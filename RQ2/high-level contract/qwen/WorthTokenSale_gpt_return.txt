@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WorthTokenSale",
+    "contract_version": "0.8.10",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawCrypto",
+            "fix_info": "Fixed SWC-105-Unprotected Ether Withdrawal by storing balance before transfer and using it for the event emission to prevent reentrancy and incorrect balance reporting",
+            "corrected_code": "function withdrawCrypto(address payable beneficiary) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n    uint256 amount = address(this).balance;\n    require(amount > 0, \"No Crypto inside contract\");\n    (bool success, ) = beneficiary.call{value: amount}(\"\");\n    require(success, \"Transfer failed.\");\n    emit CryptoWithdrawn(beneficiary, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

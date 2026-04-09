@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "TimedCrowdsale",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "closingTime",
+            "fix_info": "Added state variable to store the sale closing time instead of using hardcoded timestamp",
+            "variable_code": "uint256 public closingTime;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "isSaleFinished",
+            "fix_info": "Replaced hardcoded timestamp with configurable closingTime variable to prevent time manipulation vulnerability",
+            "corrected_code": "function isSaleFinished() view public returns (bool) {\n    return block.timestamp >= closingTime;\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RobotCoinSeller",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added SafeMath protection to prevent arithmetic overflow/underflow in token calculation",
+            "corrected_code": "function() external payable { \n        require(now > start && now < start + period*24*60*60);\n        require(saleIsOn);\n        uint256 tokens = msg.value.mul(1000).div(salePrice);\n        robotCoin.serviceTransfer(msg.sender, tokens);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ETHDice",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "canPlay",
+            "fix_info": "Enhanced access control modifier to prevent contract interactions and ensure only EOA can call",
+            "modifier_code": "modifier canPlay() {\n    require(msg.sender == tx.origin, \"Only EOA allowed\");\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "play",
+            "fix_info": "Fixed access control vulnerability by removing redundant isContract check and strengthening tx.origin validation",
+            "corrected_code": "function play() payable canPlay public {\n    if (nonce < 5e8) {\n        nonce = 3000e8;\n    }\n    uint256 etherValue=msg.value;\n    address sender = msg.sender;\n    require(sender == tx.origin, \"Only EOA allowed\");\n    address myAddress = this;\n    uint256 etherBalance = myAddress.balance;\n    if(sender == owner){\n    }else{\n        if(etherValue>StartEth){\n            RandNonce = RandNonce.add(nonce);\n            uint256 random1 = uint(keccak256(abi.encodePacked(blockhash(RandNonce % 100),RandNonce,sender))) % 10;\n            RandNonce = RandNonce.add(random1);\n            if(random1 < 5) {\n                etherValue = etherValue.add(etherValue);\n                nonce = nonce.div(100000).mul(99999);\n                if(etherValue <= etherBalance.mul(5).div(100)){\n                    msg.sender.transfer(etherValue);\n                }else{\n                    etherValue = etherValue.div(2);\n                    msg.sender.transfer(etherBalance.mul(5).div(100).add(etherValue));\n                }\n            }\n        }else{\n            msg.sender.transfer(etherValue);\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

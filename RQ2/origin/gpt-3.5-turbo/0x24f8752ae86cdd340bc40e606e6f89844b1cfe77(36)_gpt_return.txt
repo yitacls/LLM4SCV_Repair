@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amount); // fault line",
+    "description": "The use of 'send()' for transferring Ether to the beneficiary address in the Crowdsale contract exposes a vulnerability as it does not handle potential failure cases. If the send operation fails, the Ether transfer will be reverted, but the remaining operations will stay executed, potentially leaving the contract in an inconsistent state."
+}
+```

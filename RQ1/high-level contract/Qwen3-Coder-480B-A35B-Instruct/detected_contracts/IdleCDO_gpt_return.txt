@@ -1,0 +1,14 @@
+```json
+[
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function _deposit(uint256 _amount, address _tranche) internal returns (uint256 _minted)",
+    "description": "The _deposit function is vulnerable to reentrancy because it updates the state variables (like lastNAVAA or lastNAVBB) after calling external functions like safeTransferFrom. An attacker can potentially re-enter this function before the state changes are committed, leading to unexpected behavior or theft of funds."
+  },
+  {
+    "type": "SWC-107-Reentrancy",
+    "location": "function _withdraw(uint256 _amount, address _tranche) internal returns (uint256 toRedeem)",
+    "description": "The _withdraw function has a reentrancy vulnerability as it performs external transfers using safeTransfer before updating the contract's state variables such as lastNAVAA or lastNAVBB. This could allow an attacker to re-enter and manipulate the withdrawal process, potentially leading to multiple withdrawals or incorrect accounting."
+  }
+]
+```

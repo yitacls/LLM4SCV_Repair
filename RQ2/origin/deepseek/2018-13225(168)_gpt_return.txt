@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "balanceOf[this] += amount; balanceOf[msg.sender] -= amount;",
+            "description": "This contract uses integer arithmetic without overflow protection. Since Solidity 0.4.13 does not have built-in overflow checking by default, the operations 'balanceOf[this] += amount' and 'balanceOf[msg.sender] -= amount' are vulnerable to integer overflows/underflows. An attacker could exploit this by providing values that cause the balance to wrap around, potentially creating or destroying tokens."
+        },
+        {
+            "type": "Arithmetic",
+            "location": "amount * sellPrice",
+            "description": "The multiplication 'amount * sellPrice' is susceptible to integer overflow if the product exceeds 2^256-1. Since there are no checks on the multiplication result, an attacker could manipulate 'amount' and 'sellPrice' to cause an overflow, leading to incorrect ether calculations when sending funds via 'msg.sender.send(amount * sellPrice)'."
+        }
+    ]
+}
+```

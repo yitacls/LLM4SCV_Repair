@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.6.0;",
+        "description": "The contract uses a floating pragma version ^0.6.0 which allows compilation with any minor version of Solidity 0.6.x. This can lead to unexpected behavior or security vulnerabilities when compiled with different compiler versions. It is recommended to use a specific Solidity version (e.g., pragma solidity 0.6.12;) to ensure consistent compilation and avoid potential compatibility issues."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "_bond.approve(spender, amount);",
+        "description": "The setAllowance function calls _bond.approve() which interacts with an external ERC20 token contract. If the token contract is malicious or has reentrancy vulnerabilities, it could potentially reenter the setAllowance function before the state is properly updated. Although approve() typically doesn't cause reentrancy issues, the external call should be made after updating any critical state or using reentrancy guards for better security."
+    }
+]
+```

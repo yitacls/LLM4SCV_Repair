@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "uint256 refundAmount = _arcAmount.sub(total_cost);\nif (refundAmount > 0) {\n  arcadeumCoin.safeTransferFrom(address(this), _recipient, arcadeumCoinID, refundAmount, \"\");\n}",
+        "description": "The contract performs external calls (arcadeumCoin.safeTransferFrom) after state changes (factoryManager.batchMint) but before completing all validations and state updates. Although SafeMath is used, the external call to transfer ARC back to the recipient could potentially be re-entered if the recipient is a contract with a fallback function that re-calls the purchase function, leading to unexpected behavior or drain of funds."
+    }
+]
+```

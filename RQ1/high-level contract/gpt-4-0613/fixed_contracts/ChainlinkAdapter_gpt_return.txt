@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ChainlinkAdapter",
+        "contract_version": "^0.5.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "price",
+                "fix_info": "Added safeMath library for multiplication to prevent integer overflow and underflow",
+                "corrected_code": "function price() public view returns (uint256 newPrice, uint256 timestamp) {\n    // use safemath multiplication\n        newPrice = feeder.latestAnswer().mul(chainlinkDecimalsAdapter);\n        timestamp = feeder.latestTimestamp();\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

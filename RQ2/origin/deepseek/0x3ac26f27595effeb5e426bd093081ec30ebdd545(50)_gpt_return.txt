@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(balance);",
+    "description": "This contract uses the deprecated `send()` method without checking its return value. In Solidity 0.4.11, `send()` returns a boolean indicating success/failure, but this return value is ignored. If the transfer fails (e.g., recipient is a contract without fallback function, runs out of gas, or reverts), the contract will incorrectly assume the payment succeeded while `solved` has already been set to true. This creates a state inconsistency where the puzzle is marked as solved but the reward wasn't actually transferred. The vulnerability can be exploited by a malicious contract that intentionally fails when receiving ether, allowing them to solve the puzzle without paying the reward."
+}
+```

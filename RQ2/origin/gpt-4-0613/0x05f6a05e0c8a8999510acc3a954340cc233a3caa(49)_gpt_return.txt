@@ -1,0 +1,12 @@
+```json
+{
+  "contractName": "ERC20Standard",
+  "vulnerabilities": [
+    {
+      "type": "access_control",
+      "location": "require(tx.origin == owner);",
+      "description": "The contract uses tx.origin for authorization. Since tx.origin corresponds to the original address that initiated the call, authorization mechanisms based on it could be tricked by a malicious contract that is called by the owner. The use of msg.sender is advised because it will always point to the immediate sender of the call, and is therefore more secure."
+    }
+  ]
+}
+```

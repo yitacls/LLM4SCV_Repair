@@ -1,0 +1,14 @@
+[{
+    "contract_name": "MyToken",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sendCoin",
+            "fix_info": "Added a msg.data length check to prevent short-address attacks and added explicit visibility. Preserves original behavior of returning false on insufficient balance.",
+            "corrected_code": "function sendCoin(address to, uint amount) public returns (bool sufficient) {\n        // Protect against short address attack: function selector (4 bytes) + 2 args * 32 bytes each\n        require(msg.data.length == 4 + 32 * 2);\n\n        if (balances[msg.sender] < amount) return false;\n        balances[msg.sender] -= amount;\n        balances[to] += amount;\n        Transfer(msg.sender, to, amount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

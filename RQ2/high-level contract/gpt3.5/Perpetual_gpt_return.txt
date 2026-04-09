@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "pragma experimental ABIEncoderV2; // to enable structure-type parameter",
+            "description": "The pragma experimental ABIEncoderV2 is enabled but no structure-type parameter is being used in the contract."
+        },
+        {
+            "type": "SWC-119-Shadowing State Variables",
+            "location": "constructor(address globalConfig, address devAddress, address collateral, uint256 collateralDecimals)",
+            "description": "State variables are being shadowed in the constructor of the contract, which can lead to confusion."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "function withdrawFromAccount(address payable guy, uint256 amount) private",
+            "description": "There is a potential vulnerability related to unprotected ether withdrawal in the function withdrawFromAccount."
+        }
+    ]
+}
+```

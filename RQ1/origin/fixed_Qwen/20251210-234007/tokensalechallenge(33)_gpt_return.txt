@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenSaleChallenge",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Added SafeMath protection to prevent arithmetic overflow/underflow in balance subtraction and token price multiplication",
+            "corrected_code": "function sell(uint256 numTokens) public {\n        require(balanceOf[msg.sender] >= numTokens);\n\n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(numTokens);\n        msg.sender.transfer(numTokens.mul(PRICE_PER_TOKEN));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

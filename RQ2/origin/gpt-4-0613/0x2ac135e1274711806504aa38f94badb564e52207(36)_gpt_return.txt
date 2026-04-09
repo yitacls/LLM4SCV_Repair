@@ -1,0 +1,12 @@
+```json
+{
+    "contractName": "LetsBreakThings",
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "_recipient.send(1);",
+            "description": "The low-level .send() method is used without checking its return value. This function call could potentially fail silently, without throwing an error. The return value should always be tested to ensure that the ether transfer was successful."
+        }
+    ]
+}
+```

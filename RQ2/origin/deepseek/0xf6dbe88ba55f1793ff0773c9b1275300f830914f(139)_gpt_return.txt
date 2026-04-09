@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(_amount)()",
+    "description": "The contract uses a low-level `call.value()` to send ETH before updating the internal state (`balances[msg.sender] -= _amount`). In Solidity 0.4.25, the called address (which could be a malicious contract) can re-enter the `withdraw` function in its `fallback` or `receive` function. Since the balance is only reduced after the external call, the reentrant call will again pass the `if(balances[msg.sender] >= _amount)` check, allowing multiple withdrawals and potentially draining the contract's funds."
+}
+```】

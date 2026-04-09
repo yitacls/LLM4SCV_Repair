@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "caddress.call(id,from,_tos[i],v[i]);",
+        "description": "The low-level call to caddress.call() is not checked for success. In Solidity versions before 0.4.0, calls would throw exceptions on failure, but post-0.4.0, calls return a boolean success value. Failure to check this return value means failed token transfers will go unnoticed, potentially causing loss of funds or state inconsistencies. The function will continue executing even if some transfers fail, but return true regardless."
+    }
+}
+```

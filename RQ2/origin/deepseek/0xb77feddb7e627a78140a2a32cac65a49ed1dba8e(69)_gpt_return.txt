@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_privilegedBirther == address(0) || tx.origin == _privilegedBirther) { \n    require(block.number > _targetBlock);\n} else {\n    require(block.number > _targetBlock + privilegedBirtherWindowSize);\n}",
+    "description": "The contract uses tx.origin for access control, which is a security anti-pattern. The comparison 'tx.origin == _privilegedBirther' makes the authorization vulnerable to phishing attacks where a malicious contract could call this function on behalf of the privileged birther. An attacker could trick the privileged birther into interacting with a malicious contract that calls mixGenes, bypassing the additional block delay requirement (privilegedBirtherWindowSize). This violates the principle of least privilege and allows unauthorized access to the privileged birther's functionality."
+}
+```

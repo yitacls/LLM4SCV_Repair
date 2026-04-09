@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RTokenMain",
+    "contract_version": "0.4.8",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic underflow/overflow vulnerabilities by adding SafeMath-style checks for subtraction and addition operations, and improved error handling",
+            "corrected_code": "function sell(uint256 amount) {\n    if(balanceMap[msg.sender] < amount)\n      throw;\n    \n    // Prevent underflow\n    balanceMap[msg.sender] = balanceMap[msg.sender] - amount;\n    \n    // Prevent overflow\n    balanceMap[this] = balanceMap[this] + amount;\n    \n    if(!msg.sender.send(amount*sellPrice))\n      throw;\n    else\n      Transfer(msg.sender, this, amount);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

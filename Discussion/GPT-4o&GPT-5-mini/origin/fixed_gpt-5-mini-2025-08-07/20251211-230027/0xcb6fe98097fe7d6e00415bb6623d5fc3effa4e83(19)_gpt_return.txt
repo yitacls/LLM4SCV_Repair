@@ -1,0 +1,28 @@
+[{
+    "contract_name": "THE_BANK",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "Added a reentrancy guard state variable to prevent reentrant calls to sensitive functions.",
+            "variable_code": "bool private locked;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "noReentrancy",
+            "fix_info": "Added a reentrancy guard modifier (checks and resets a lock) to prevent reentrant entry into functions.",
+            "modifier_code": "modifier noReentrancy() {\n    require(!locked);\n    locked = true;\n    _;\n    locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Collect",
+            "fix_info": "Applied checks-effects-interactions pattern, used transfer for safe ETH transfer, and protected the function with the reentrancy guard modifier.",
+            "corrected_code": "function Collect(uint _am) public payable noReentrancy {\n    // Checks\n    require(now > Acc[msg.sender].unlockTime);\n    require(Acc[msg.sender].balance >= MinSum && Acc[msg.sender].balance >= _am);\n\n    // Effects\n    Acc[msg.sender].balance -= _am;\n\n    // Interaction (external call after state changes)\n    address(msg.sender).transfer(_am);\n\n    // Log after successful transfer\n    LogFile.AddMessage(msg.sender, _am, \"Collect\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

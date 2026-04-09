@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "amountRaised += amount;",
+    "description": "In Solidity versions <0.8.0, arithmetic operations do not automatically check for overflow or underflow. If `amountRaised` exceeds the maximum value for its data type (likely uint256), the addition can wrap around to zero, causing incorrect balance tracking and potentially allowing attackers to exploit the overflow."
+}
+```

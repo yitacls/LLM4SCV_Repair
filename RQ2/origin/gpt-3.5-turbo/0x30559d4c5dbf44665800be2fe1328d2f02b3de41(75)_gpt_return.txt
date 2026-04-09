@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token_reward.call( beneficiary, token_amount);",
+    "description": "The contract directly calls an external contract using 'call' without validating the return value or handling potential errors. This can lead to unexpected behavior and vulnerabilities, such as reentrancy or loss of funds."
+}
+```

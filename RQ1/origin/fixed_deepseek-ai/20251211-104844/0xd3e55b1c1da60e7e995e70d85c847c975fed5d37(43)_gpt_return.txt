@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "BetBuyer",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "bounty",
+            "fix_info": "Changed to use SafeMath to prevent arithmetic overflow/underflow",
+            "variable_code": "using SafeMath for uint256;\nuint256 public bounty;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyDeveloper",
+            "fix_info": "Added modifier to check if caller is developer",
+            "modifier_code": "modifier onlyDeveloper() {\n    require(msg.sender == developer);\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "killSwitchNotActive",
+            "fix_info": "Added modifier to check if kill switch is not active",
+            "modifier_code": "modifier killSwitchNotActive() {\n    require(!kill_switch);\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "tokensNotBought",
+            "fix_info": "Added modifier to check if tokens have not been bought yet",
+            "modifier_code": "modifier tokensNotBought() {\n    require(!bought_tokens);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "add_to_bounty",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath, replaced throw with require, added modifiers for access control",
+            "corrected_code": "function add_to_bounty()\n    public\n    payable\n    onlyDeveloper\n    killSwitchNotActive\n    tokensNotBought\n{\n    bounty = bounty.add(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,12 @@
+```json
+{
+    "contract_name": "ERC20Standard",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The use of 'tx.origin' for authentication is vulnerable to phishing attacks. If a user is convinced to call a malicious contract, then that contract can call into other contracts with the same origin, performing actions as if the user intended. It is recommended to use 'msg.sender' for authorization control instead, as it only represents the caller of the current function."
+        }
+    ]
+}
+```

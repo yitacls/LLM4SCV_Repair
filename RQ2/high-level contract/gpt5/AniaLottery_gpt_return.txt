@@ -1,0 +1,17 @@
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "The contract specifies an old compiler range starting at 0.8.2. Older compiler releases may lack important bug fixes, security patches, and improvements introduced in later patch releases. Continuing to compile and deploy with an outdated compiler increases the risk of known vulnerabilities or subtle bugs that have already been fixed in later versions. Remediation: upgrade to a recent, patched compiler release and recompile (for example a recent 0.8.x patch or the latest 0.8 release), then run full test and audit. Prefer specifying an explicitly tested compiler version in the pragma (see also SWC-103)."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "The pragma uses a caret (^) which is a floating pragma and allows the contract to be compiled with any compatible newer compiler version (e.g. 0.8.3, 0.8.4, ...). While this can be convenient during development, it is dangerous for production: future compiler releases may introduce subtle behavior changes or new compiler bugs that could alter contract semantics. Remediation: pin the pragma to a specific compiler version that the contract has been tested with (for example: \"pragma solidity 0.8.20;\"), or document and lock the exact compiler version in your build configuration, and re-run tests and audits when upgrading."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function withdraw() public payable onlyOwner {\n        payable (msg.sender).transfer(address(this).balance);\n    }",
+        "description": "The withdraw function transfers the entire contract balance to msg.sender (the owner) and is only protected by a single-owner check. This creates centralization risk: if the owner's key is compromised, an attacker can drain all Ether. Additionally, using transfer forwards a fixed gas stipend which can fail with some recipient contracts or future gas cost changes. The function is also marked payable unnecessarily. Remediation: require a stronger access control (e.g. multisig or timelock) for administrative withdrawals, emit an event for withdrawals, avoid transfer() in favor of a checked call pattern (e.g. (bool success, ) = recipient.call{value: amount}(""); require(success, \"transfer failed\"); ), remove the payable modifier if not needed, and consider using a pull-pattern for users and the Checks-Effects-Interactions pattern and/or reentrancy guard where applicable."
+    }
+]

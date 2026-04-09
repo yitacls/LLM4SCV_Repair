@@ -1,0 +1,16 @@
+```json
+{
+    "smart_contract": {
+        "name": "BestMultiplier",
+        "solidity_version": "^0.4.25",
+        "code": "function send(address _receiver, uint _amount) internal {\n    if (_amount > 0 && address(_receiver) != 0) {\n        _receiver.send(_amount);  // fault line\n    }\n}"
+    },
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "_receiver.send(_amount);",
+            "description": "The use of send() for transferring funds can lead to potential vulnerabilities. This function forwards only 2,300 gas to the receiving contract, and if the receiver runs out of gas during execution, it could cause the transaction to revert, resulting in a loss of funds. It is recommended to use transfer() or call.value()() with proper checks to handle failures."
+        }
+    ]
+}
+```

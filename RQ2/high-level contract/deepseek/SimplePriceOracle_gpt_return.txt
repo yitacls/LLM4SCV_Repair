@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "SWC-101 Integer Overflow and Underflow",
+    "location": "Lines 27-29: `function price(string calldata /*name*/, uint /*expires*/, uint duration) external view returns(uint) { return duration * rentPrice; }`",
+    "description": "The price function performs an unprotected multiplication operation between the duration and rentPrice parameters. Since both are unsigned integers (uint), when their product exceeds the maximum value representable by a uint (2^256 - 1), it will wrap around to zero due to overflow. An attacker could exploit this by providing a large duration value, causing the computed price to become zero or extremely small, potentially allowing them to register or renew names for free or at a significantly reduced cost. This vulnerability exists because the contract uses Solidity ^0.5.0 without implementing overflow protection (SafeMath library)."
+}
+```】

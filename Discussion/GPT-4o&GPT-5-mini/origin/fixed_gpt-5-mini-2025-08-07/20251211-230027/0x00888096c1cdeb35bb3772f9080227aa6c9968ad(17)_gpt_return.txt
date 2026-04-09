@@ -1,0 +1,28 @@
+[{
+    "contract_name": "ICOBuyer",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "developer",
+            "fix_info": "Ensure explicit visibility so the developer address is publicly readable. Keep type as address; assume value set in constructor elsewhere.",
+            "variable_code": "address public developer;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyDeveloper",
+            "fix_info": "Restrict privileged functions so only the developer can call them.",
+            "modifier_code": "modifier onlyDeveloper() {\n    require(msg.sender == developer);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Limit access to developer, transfer any ERC20 tokens first (with require), then transfer ETH. Use explicit visibility and address(this).balance. Preserve original behavior while adding access control.",
+            "corrected_code": "function withdraw() public onlyDeveloper {\n    // Transfer any ERC20 tokens held by this contract to the developer first\n    uint256 tokenBalance = token.balanceOf(address(this));\n    if (tokenBalance > 0) {\n        require(token.transfer(developer, tokenBalance));\n    }\n\n    // Transfer any ETH balance to the developer\n    uint256 ethBalance = address(this).balance;\n    if (ethBalance > 0) {\n        developer.transfer(ethBalance);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

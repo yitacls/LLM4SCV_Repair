@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function newOwner(address _owner) external returns (bool)",
+    "description": "The function lacks any access control modifier (like onlyOwner) or authorization check, allowing any caller to designate themselves as the owner's creator (via the owners[_owner] = msg.sender mapping). This enables unauthorized users to arbitrarily assign ownership relationships, bypassing intended administrative controls."
+}
+```

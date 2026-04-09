@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "CENNZnetBridge",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "verificationFee",
+                "fix_info": "No change needed - verification fee is properly used in verifyMessage function",
+                "variable_code": "uint public verificationFee = 1e15;",
+                "change_type": "none"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setValidators",
+                "fix_info": "Fixed SWC-105 by adding access control to reward withdrawal and ensuring only verified callers can receive accumulated fees. Changed from returning all contract balance to only returning surplus verification fees after successful verification.",
+                "corrected_code": "function setValidators(\n        address[] memory newValidators,\n        uint32 newValidatorSetId,\n        CENNZnetEventProof memory proof\n    ) external payable {\n        require(newValidators.length > 0, \"empty validator set\");\n        require(newValidatorSetId > activeValidatorSetId , \"validator set id replayed\");\n\n        bytes memory message = abi.encode(newValidators, newValidatorSetId, proof.validatorSetId, proof.eventId);\n        this.verifyMessage(message, proof);\n\n        // Store current balance before fee deduction\n        uint initialBalance = address(this).balance;\n        require(initialBalance >= msg.value, \"insufficient balance for fee\");\n        \n        // Refund any overpayment from verification fee\n        if (msg.value > verificationFee) {\n            uint refundAmount = msg.value - verificationFee;\n            (bool refundSent, ) = msg.sender.call{value: refundAmount}(\"\");\n            require(refundSent, \"failed to refund excess fee\");\n        }\n\n        // Update\n        validators[newValidatorSetId] = newValidators;\n        activeValidatorSetId = newValidatorSetId;\n\n        // Calculate reward: accumulated verification fees minus any refund\n        uint reward = msg.value >= verificationFee ? verificationFee : msg.value;\n        // Only send reward if there's actually a reward\n        if (reward > 0) {\n            (bool rewardSent, ) = msg.sender.call{value: reward}(\"\");\n            require(rewardSent, \"failed to send reward\");\n        }\n\n        emit SetValidators(newValidators, reward, newValidatorSetId);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

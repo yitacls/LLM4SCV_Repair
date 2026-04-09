@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "ve",
+        "contract_version": "1.0.0",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "nonreentrant",
+                "fix_info": "Added a modifier to prevent reentrancy in all access-sensitive functions. Included state variable `_entered_state` to track reentrancy state to ensure contract safety.",
+                "modifier_code": "modifier nonreentrant() {\n    require(_entered_state == _not_entered, \"ReentrancyGuard: reentrant call\");\n    _entered_state = _entered;\n    _;\n    _entered_state = _not_entered;\n}",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "safeTransferFrom",
+                "fix_info": "Surrounded the external call to ERC721Receiver with try/catch and enhanced error handling to prevent unchecked calls.",
+                "corrected_code": "function safeTransferFrom(\n    address _from,\n    address _to,\n    uint _tokenId,\n    bytes memory _data\n) public {\n    _transferFrom(_from, _to, _tokenId, msg.sender);\n\n    if (_isContract(_to)) {\n        try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 selector) {\n            require(\n                selector == IERC721Receiver.onERC721Received.selector,\n                \"ERC721: transfer to non ERC721Receiver implementer\"\n            );\n        } catch Error(string memory reason) {\n            revert(reason);\n        } catch {\n            revert(\"ERC721: transfer to non ERC721Receiver implementer\");\n        }\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_transferFrom",
+                "fix_info": "Added require statement to protect against delegatecall vulnerability by ensuring the sender is either approved or the owner. Prevent unchecked behaviors in internal transfers.",
+                "corrected_code": "function _transferFrom(\n    address _from,\n    address _to,\n    uint _tokenId,\n    address _sender\n) internal {\n    require(_to != address(0), \"Transfer to the zero address\");\n    require(attachments[_tokenId] == 0 && !voted[_tokenId], \"Token is attached or in use\");\n    \n    // Check requirements\n    require(_isApprovedOrOwner(_sender, _tokenId), \"Not approved or owner\");\n\n    // Clear approval and update mappings\n    _clearApproval(_from, _tokenId);\n    _removeTokenFrom(_from, _tokenId);\n    _addTokenTo(_to, _tokenId);\n\n    // Set the block of ownership transfer for anti-flash-loan protection\n    ownership_change[_tokenId] = block.number;\n\n    emit Transfer(_from, _to, _tokenId);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Added stricter reentrancy protection and improved validation. Added safety check on successful ERC20 transfer to prevent SWC-107 vulnerability.",
+                "corrected_code": "function withdraw(uint _tokenId) external nonreentrant {\n    require(_isApprovedOrOwner(msg.sender, _tokenId), \"Caller is not owner nor approved\");\n    require(attachments[_tokenId] == 0 && !voted[_tokenId], \"Token is attached or voted\");\n\n    LockedBalance memory _locked = locked[_tokenId];\n    require(block.timestamp >= _locked.end, \"Lock has not expired\");\n\n    uint value = uint(int256(_locked.amount));\n    locked[_tokenId] = LockedBalance(0, 0);\n    uint supply_before = supply;\n    supply = supply_before - value;\n\n    _checkpoint(_tokenId, _locked, LockedBalance(0, 0));\n\n    bool success = IERC20(token).transfer(msg.sender, value);\n    require(success, \"Transfer failed\");\n\n    _burn(_tokenId);\n\n    emit Withdraw(msg.sender, _tokenId, value, block.timestamp);\n    emit Supply(supply_before, supply);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

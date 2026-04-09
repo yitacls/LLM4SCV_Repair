@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "require(this.balance >= amount * sellPrice);",
+    "description": "The multiplication operation 'amount * sellPrice' can cause an integer overflow if the result exceeds the maximum value of uint256. In Solidity ^0.4.16, there is no automatic overflow protection, which could lead to unexpected behavior or vulnerabilities. An attacker could potentially provide large values for 'amount' or 'sellPrice' that cause the multiplication to overflow, resulting in a smaller value than expected and potentially bypassing the balance check."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function sendAll(address[] _users,uint[] _prices,uint _allPrices) public onlyOwner",
+    "description": "The function uses onlyOwner modifier but lacks proper validation of the owner's authorization. In Solidity ^0.4.16, the OpenZeppelin onlyOwner implementation may be vulnerable to certain access control bypasses, especially if the owner address can be changed or if there are multiple owners. The function allows transferring funds to arbitrary addresses without additional verification, which could be exploited if owner privileges are compromised."
+}
+```

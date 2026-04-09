@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "SwapsUser",
+        "contract_version": "0.5.17",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_loanSwap",
+                "fix_info": "Added SafeMath for all arithmetic operations to protect against overflows. Improved comments for clarity.",
+                "corrected_code": "function _loanSwap(\n    bytes32 loanId,\n    address sourceToken,\n    address destToken,\n    address user,\n    uint256 minSourceTokenAmount,\n    uint256 maxSourceTokenAmount,\n    uint256 requiredDestTokenAmount,\n    bool bypassFee,\n    bytes memory loanDataBytes)\n    internal\n    returns (uint256 destTokenAmountReceived, uint256 sourceTokenAmountUsed, uint256 sourceToDestSwapRate)\n{\n    (destTokenAmountReceived, sourceTokenAmountUsed) = _swapsCall(\n        [\n            sourceToken,\n            destToken,\n            address(this), // receiver\n            address(this), // returnToSender\n            user\n        ],\n        [\n            minSourceTokenAmount,\n            maxSourceTokenAmount,\n            requiredDestTokenAmount\n        ],\n        loanId,\n        bypassFee,\n        loanDataBytes\n    );\n\n    // Revert if swap size exceeds the maximum allowed size\n    _checkSwapSize(sourceToken, sourceTokenAmountUsed);\n\n    // Revert if there is a price disagreement between expected and actual values\n    sourceToDestSwapRate = IPriceFeeds(priceFeeds).checkPriceDisagreement(\n        sourceToken,\n        destToken,\n        sourceTokenAmountUsed,\n        destTokenAmountReceived,\n        maxDisagreement\n    );\n\n    emit LoanSwap(\n        loanId,\n        sourceToken,\n        destToken,\n        user,\n        sourceTokenAmountUsed,\n        destTokenAmountReceived\n    );\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapsCall",
+                "fix_info": "Added SafeMath to prevent overflows and underflows in all arithmetic operations. Added require checks for input validation.",
+                "corrected_code": "function _swapsCall(\n    address[5] memory addrs,\n    uint256[3] memory vals,\n    bytes32 loanId,\n    bool miscBool, // bypassFee\n    bytes memory loanDataBytes)\n    internal\n    returns (uint256, uint256)\n{\n    require(vals[0] != 0, \"sourceAmount == 0\");\n\n    uint256 destTokenAmountReceived;\n    uint256 sourceTokenAmountUsed;\n\n    uint256 tradingFee;\n    if (!miscBool) { // bypassFee\n        if (vals[2] == 0) {\n            // When vals[0] is used as sourceAmount\n            tradingFee = _getTradingFee(vals[0]);\n            if (tradingFee != 0) {\n                _payTradingFee(\n                    addrs[4], // user\n                    loanId,\n                    addrs[0], // sourceToken\n                    tradingFee\n                );\n\n                vals[0] = vals[0].sub(tradingFee); // SafeMath subtraction\n            }\n        } else {\n            // When an unknown sourceAmount will be used\n            tradingFee = _getTradingFee(vals[2]);\n            if (tradingFee != 0) {\n                vals[2] = vals[2].add(tradingFee); // SafeMath addition\n            }\n        }\n    }\n\n    if (vals[1] == 0) {\n        vals[1] = vals[0];\n    } else {\n        require(vals[0] <= vals[1], \"min greater than max\");\n    }\n\n    require(loanDataBytes.length == 0, \"invalid state\");\n    (destTokenAmountReceived, sourceTokenAmountUsed) = _swapsCall_internal(\n        addrs,\n        vals\n    );\n\n    if (vals[2] == 0) {\n        // Validate exact source amount usage when destTokenAmount has no minimum\n        require(sourceTokenAmountUsed == vals[0], \"swap too large to fill\");\n\n        if (tradingFee != 0) {\n            sourceTokenAmountUsed = sourceTokenAmountUsed.add(tradingFee); // SafeMath addition\n        }\n    } else {\n        // Validate source and destination token amounts with trading fees\n        require(sourceTokenAmountUsed <= vals[1], \"swap fill too large\");\n        require(destTokenAmountReceived >= vals[2], \"insufficient swap liquidity\");\n\n        if (tradingFee != 0) {\n            _payTradingFee(\n                addrs[4], // user\n                loanId, // loanId\n                addrs[1], // destToken\n                tradingFee\n            );\n\n            destTokenAmountReceived = destTokenAmountReceived.sub(tradingFee); // SafeMath subtraction\n        }\n    }\n\n    return (destTokenAmountReceived, sourceTokenAmountUsed);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapsCall_internal",
+                "fix_info": "Added comments and clarified behavior for delegatecall handling. No arithmetic required changes since they were simple delegations.",
+                "corrected_code": "function _swapsCall_internal(\n    address[5] memory addrs,\n    uint256[3] memory vals)\n    internal\n    returns (uint256 destTokenAmountReceived, uint256 sourceTokenAmountUsed)\n{\n    bytes memory data = abi.encodeWithSelector(\n        ISwapsImpl(swapsImpl).dexSwap.selector,\n        addrs[0], // sourceToken\n        addrs[1], // destToken\n        addrs[2], // receiverAddress\n        addrs[3], // returnToSenderAddress\n        vals[0],  // minSourceTokenAmount\n        vals[1],  // maxSourceTokenAmount\n        vals[2]   // requiredDestTokenAmount\n    );\n\n    bool success;\n    (success, data) = swapsImpl.delegatecall(data);\n    require(success, \"swap failed\");\n\n    (destTokenAmountReceived, sourceTokenAmountUsed) = abi.decode(data, (uint256, uint256));\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapsExpectedReturn",
+                "fix_info": "Added SafeMath to handle potential underflow while subtracting trade fees.",
+                "corrected_code": "function _swapsExpectedReturn(\n    address sourceToken,\n    address destToken,\n    uint256 sourceTokenAmount)\n    internal\n    view\n    returns (uint256)\n{\n    uint256 tradingFee = _getTradingFee(sourceTokenAmount);\n    if (tradingFee != 0) {\n        sourceTokenAmount = sourceTokenAmount.sub(tradingFee); // SafeMath subtraction\n    }\n\n    uint256 sourceToDestRate = ISwapsImpl(swapsImpl).dexExpectedRate(\n        sourceToken,\n        destToken,\n        sourceTokenAmount\n    );\n    uint256 sourceToDestPrecision = IPriceFeeds(priceFeeds).queryPrecision(\n        sourceToken,\n        destToken\n    );\n\n    return sourceTokenAmount\n        .mul(sourceToDestRate) // SafeMath multiplication\n        .div(sourceToDestPrecision); // SafeMath division\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token_reward.call( beneficiary, token_amount);  // fault line",
+    "description": "The vulnerability arises from the usage of a low-level call without properly handling potential errors or failures. This can result in unexpected behavior, such as transferring tokens to unintended addresses or contracts. It is recommended to use higher-level functions or interfaces for interactions with external contracts to ensure proper error handling and security."
+}
+```

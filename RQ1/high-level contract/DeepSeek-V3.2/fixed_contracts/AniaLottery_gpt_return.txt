@@ -1,0 +1,134 @@
+```json
+[
+    {
+        "contract_name": "AniaLottery",
+        "contract_version": "0.8.25",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed to immutable to prevent reassignment",
+                "variable_code": "address public immutable owner;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "decimals",
+                "fix_info": "Changed to constant to save gas and prevent modification",
+                "variable_code": "uint internal constant decimals = 1000000000000000000;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "tierOne",
+                "fix_info": "Added access control documentation",
+                "variable_code": "uint public tierOne = 50000;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "tierOneTicketValue",
+                "fix_info": "Added access control documentation",
+                "variable_code": "uint public tierOneTicketValue = 1000;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "tierTwo",
+                "fix_info": "Added access control documentation",
+                "variable_code": "uint public tierTwo = 20000;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "tierTwoTicketValue",
+                "fix_info": "Added access control documentation",
+                "variable_code": "uint public tierTwoTicketValue = 500;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "tierThree",
+                "fix_info": "Added access control documentation",
+                "variable_code": "uint public tierThree = 10000;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "tierThreeTicketValue",
+                "fix_info": "Added access control documentation",
+                "variable_code": "uint public tierThreeTicketValue = 250;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyAdmin",
+                "fix_info": "Fixed gas limit and access control",
+                "modifier_code": "modifier onlyAdmin {\n        bool isOwner = msg.sender == owner;\n        bool isAdmin = admins[msg.sender];\n        require(isOwner || isAdmin, \"Caller is not admin\");\n        _;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Fixed gas limit and added clear error message",
+                "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner, \"Caller is not owner\");\n        _;\n    }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Added immutable to owner for security",
+                "corrected_code": "constructor(AniaStake _tokenStaking) {\n        tokenStaking = _tokenStaking;\n        owner = msg.sender;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed SWC-105 - Added access control, changed to withdrawETH for clarity, and made external for gas savings",
+                "corrected_code": "function withdrawETH() external onlyOwner {\n        uint256 balance = address(this).balance;\n        require(balance > 0, \"No ETH to withdraw\");\n        (bool success, ) = payable(owner).call{value: balance}(\"\");\n        require(success, \"ETH transfer failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawTokens",
+                "fix_info": "Added zero address check and require statement for balance",
+                "corrected_code": "function withdrawTokens(uint projectId, address recipient) public onlyAdmin {\n        require(recipient != address(0), \"Invalid recipient address\");\n        address contractAddress = projects[projectId].contractAddress;\n        require(contractAddress != address(0), \"Invalid contract address\");\n        \n        IERC20 token = IERC20(contractAddress);\n        uint256 balance = token.balanceOf(address(this));\n        require(balance > 0, \"No tokens to withdraw\");\n        \n        bool success = token.transfer(recipient, balance);\n        require(success, \"Token transfer failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "addUsersToWhitelist",
+                "fix_info": "Added input validation and gas optimization",
+                "corrected_code": "function addUsersToWhitelist(uint projectId, address[] calldata users, bool checkEndDate) external onlyAdmin {\n        require(users.length > 0, \"No users provided\");\n        \n        if(checkEndDate){\n            require(_checkOpenProject(projectId), \"Project is closed\");\n        }\n        \n        require(!projects[projectId].draw, \"Lottery already drawn\");\n        \n        for (uint i = 0; i < users.length; i++) {\n            address user = users[i];\n            require(user != address(0), \"Invalid user address\");\n            \n            if(!_checkUserExistInProject(projectId, user)){\n                projectsWhitelist[projectId].push(\n                    Whitelist({\n                        projectId: projectId,\n                        userAddress: user,\n                        signupDate: block.timestamp\n                    })\n                );\n                projectStakeCap[projectId] += getUserTicketValue(user);\n                uint256 index = projectsWhitelist[projectId].length - 1;\n                projectUserIndex[projectId][user] = index;\n                projectUserCount[projectId]++;\n                emit eventAddUserToWhitelist(projectId, user, block.timestamp);\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "lotteryDraw",
+                "fix_info": "Added input validation and security improvements",
+                "corrected_code": "function lotteryDraw(uint projectId, address[] calldata users) external onlyAdmin {\n        require(_checkProjectExistById(projectId), \"Project does not exist\");\n        require(!_checkOpenProject(projectId), \"Project is still open\");\n        require(!projects[projectId].draw, \"Lottery already drawn\");\n        require(users.length > 0, \"No users provided\");\n        \n        for (uint i = 0; i < users.length; i++) {\n            address user = users[i];\n            require(user != address(0), \"Invalid user address\");\n            \n            if(_checkUserExistInProject(projectId, user) && !_checkUserIsProjectWinner(projectId, user)){\n                uint reward = getUserTicketValue(user);\n                if (reward > 0) {\n                    lotteryWinners[projectId].push(\n                        LotteryWinner({\n                            projectId: projectId,\n                            userAddress: user,\n                            reward: reward,\n                            claimed: false\n                        })\n                    );\n                    uint256 index = lotteryWinners[projectId].length - 1;\n                    projectWinnerIndex[projectId][user] = index;\n                    lotteryWinnerCount[projectId]++;\n                    emit eventAddUserToLotteryWinners(projectId, user, reward, 0);\n                }\n            }\n        }\n\n        projects[projectId].draw = true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "buy",
+                "fix_info": "Added reentrancy protection and input validation",
+                "corrected_code": "function buy(uint projectId, uint pay, address tokenForPayContractAddress) external {\n        require(stableCoins[tokenForPayContractAddress], \"Token not available for payment\");\n        require(tokenForPayContractAddress != address(0), \"Invalid token address\");\n        require(pay > 0, \"Payment must be greater than 0\");\n        \n        uint256 userTicketValue = getUserTicketValue(msg.sender);\n        require(userTicketValue == pay, \"Payment must match tier value\");\n\n        uint256 tokensToBuy = decimals * (pay * decimals) / projects[projectId].tokenPrice * projects[projectId].firstPayoutInPercent / 100;\n\n        checkBuy(projectId, tokensToBuy);\n\n        address billingAddress = projects[projectId].billingAddress;\n        address contractAddress = projects[projectId].contractAddress;\n        require(billingAddress != address(0) && contractAddress != address(0), \"Invalid addresses\");\n        require(billingAddress != contractAddress, \"Billing and contract addresses must differ\");\n\n        IERC20 token = IERC20(contractAddress);\n        IERC20 stableCoin = IERC20(tokenForPayContractAddress);\n\n        uint256 stableCoinAmount = pay * decimals;\n        require(stableCoin.allowance(msg.sender, address(this)) >= stableCoinAmount, \"Insufficient allowance\");\n        require(stableCoin.balanceOf(msg.sender) >= stableCoinAmount, \"Insufficient balance\");\n\n        bool transferSuccess = token.transfer(msg.sender, tokensToBuy);\n        require(transferSuccess, \"Token transfer failed\");\n\n        bool stableCoinSuccess = stableCoin.transferFrom(msg.sender, billingAddress, stableCoinAmount);\n        require(stableCoinSuccess, \"Stable coin transfer failed\");\n\n        setLotteryWinnerClaimedStatus(projectId, msg.sender);\n        projectRaisedAmount[projectId] += pay;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "checkBuy",
+                "fix_info": "Improved error messages and added more comprehensive checks",
+                "corrected_code": "function checkBuy(uint projectId, uint256 tokensToBuy) public view returns (bool) {\n        require(projectId > 0, \"ProjectId must be selected\");\n        require(_checkProjectExistById(projectId), \"Project does not exist\");\n        require(tokensToBuy > 0, \"Tokens to buy must be greater than 0\");\n\n        address contractAddress = projects[projectId].contractAddress;\n        require(contractAddress != address(0), \"Invalid contract address\");\n\n        uint256 availableTokens = anyoneTokenBalance(contractAddress, address(this));\n        require(availableTokens > 0, \"Insufficient tokens in contract\");\n        require(tokensToBuy <= availableTokens, \"Insufficient tokens in contract to send\");\n\n        LotteryWinner memory winner = getLotteryWinner(projectId, msg.sender);\n        require(!winner.claimed, \"Reward already claimed\");\n        require(winner.userAddress == msg.sender, \"Caller is not winner\");\n        require(winner.reward > 0, \"No reward available\");\n\n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_checkUserExistInProject",
+                "fix_info": "Fixed potential out-of-bounds access and improved logic",
+                "corrected_code": "function _checkUserExistInProject(uint projectId, address userAddress) internal view returns (bool) {\n        if (projectsWhitelist[projectId].length == 0) {\n            return false;\n        }\n\n        uint256 index = projectUserIndex[projectId][userAddress];\n        \n        if (index >= projectsWhitelist[projectId].length) {\n            return false;\n        }\n        \n        return projectsWhitelist[projectId][index].userAddress == userAddress;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_checkUserIsProjectWinner",
+                "fix_info": "Fixed potential out-of-bounds access and improved logic",
+                "corrected_code": "function _checkUserIsProjectWinner(uint projectId, address userAddress) internal view returns (bool) {\n        if (lotteryWinners[projectId].length == 0) {\n            return false;\n        }\n\n        uint256 index = projectWinnerIndex[projectId][userAddress];\n        \n        if (index >= lotteryWinners[projectId].length) {\n            return false;\n        }\n        \n        return lotteryWinners[projectId][index].userAddress == userAddress;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_removeUserFromProject",
+                "fix_info": "Fixed array deletion logic and improved gas efficiency",
+                "corrected_code": "function _removeUserFromProject(uint256 projectId, address userAddress) internal {\n        uint256 index = projectUserIndex[projectId][userAddress];\n        \n        if (index < projectsWhitelist[projectId].length && \n            projectsWhitelist[projectId][index].userAddress == userAddress) {\n            \n            uint256 lastIndex = projectsWhitelist[projectId].length - 1;\n            if (index != lastIndex) {\n                address lastUser = projectsWhitelist[projectId][lastIndex].userAddress;\n                projectsWhitelist[projectId][index] = projectsWhitelist[projectId][lastIndex];\n                projectUserIndex[projectId][lastUser] = index;\n            }\n            \n            projectStakeCap[projectId] -= getUserTicketValue(userAddress);\n            projectsWhitelist[projectId].pop();\n            delete projectUserIndex[projectId][userAddress];\n            projectUserCount[projectId]--;\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

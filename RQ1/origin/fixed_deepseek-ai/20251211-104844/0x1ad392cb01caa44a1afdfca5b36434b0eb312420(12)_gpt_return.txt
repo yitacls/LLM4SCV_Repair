@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "XG4K",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "coiner",
+            "fix_info": "State variable referenced in the mint function, likely defined as address",
+            "variable_code": "address public coiner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "balances",
+            "fix_info": "Mapping to track token balances, required for mint function",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyCoiner",
+            "fix_info": "Added access control modifier for coiner-only functions",
+            "modifier_code": "modifier onlyCoiner() {\n        require(msg.sender == coiner, \"Only coiner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath and added proper access control. Added validation to prevent zero address and zero amount minting.",
+            "corrected_code": "function mint(address receiver, uint256 amount) public onlyCoiner {\n        require(receiver != address(0), \"Cannot mint to zero address\");\n        require(amount > 0, \"Amount must be greater than zero\");\n        require(balances[receiver] + amount >= balances[receiver], \"Addition overflow detected\");\n        \n        balances[receiver] += amount;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

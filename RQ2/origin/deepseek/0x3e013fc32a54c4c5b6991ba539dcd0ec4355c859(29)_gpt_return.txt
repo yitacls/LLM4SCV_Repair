@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "adr.call.value(msg.value)(data);",
+            "description": "The low-level call to 'adr' does not check the return value or handle failures. If the call fails, the contract will continue execution without reverting, potentially leading to silent failures and loss of funds. In Solidity 0.4.18, calls do not automatically propagate exceptions from external contracts. This could allow the Owner to inadvertently execute a failed transaction without being aware, or enable reentrancy attacks if the called contract is malicious. The issue is compounded because the function transfers Ether (msg.value) during the call. Recommended fix: Use address.transfer() for simple Ether transfers, or properly validate the call's return value and handle failures explicitly."
+        }
+    ]
+}
+```

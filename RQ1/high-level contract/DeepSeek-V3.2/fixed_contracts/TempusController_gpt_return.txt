@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "TempusController",
+        "contract_version": "0.8.6",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+                "modifier_code": "modifier nonReentrant() {\n        require(!_locked, \"Reentrant call\");\n        _locked = true;\n        _;\n        _locked = false;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "exitTempusAMMAndRedeem",
+                "fix_info": "Fixed reentrancy vulnerability by implementing checks-effects-interactions pattern and adding reentrancy guard",
+                "corrected_code": "    function exitTempusAMMAndRedeem(\n        ITempusAMM tempusAMM,\n        uint256 sharesAmount,\n        bool toBackingToken\n    ) external nonReentrant {\n        ITempusPool tempusPool = tempusAMM.tempusPool();\n        require(!tempusPool.matured(), \"Pool already finalized\");\n        \n        uint256 userPrincipalBalance = IERC20(address(tempusPool.principalShare())).balanceOf(msg.sender);\n        uint256 userYieldBalance = IERC20(address(tempusPool.yieldShare())).balanceOf(msg.sender);\n\n        require(sharesAmount <= userPrincipalBalance + userYieldBalance, \"Insufficient shares\");\n        \n        uint256 ammExitAmountPrincipal = sharesAmount > userPrincipalBalance ? sharesAmount - userPrincipalBalance : 0;\n        uint256 ammExitAmountYield = sharesAmount > userYieldBalance ? sharesAmount - userYieldBalance : 0;\n\n        // transfer LP tokens to controller\n        uint256 userBalanceLP = tempusAMM.balanceOf(msg.sender);\n        uint256 transferredLP = userBalanceLP;\n        tempusAMM.transferFrom(msg.sender, address(this), transferredLP);\n\n        if (ammExitAmountPrincipal > 0 || ammExitAmountYield > 0) {\n            uint256[] memory amountsOut = getAMMOrderedAmounts(tempusPool, ammExitAmountPrincipal, ammExitAmountYield);\n            doExitTempusAMMGivenAmountsOut(\n                tempusAMM,\n                address(this),\n                msg.sender,\n                amountsOut,\n                transferredLP,\n                false\n            );\n        }\n\n        // transfer remaining LP tokens back to user\n        uint256 remainingLP = tempusAMM.balanceOf(address(this));\n        if (remainingLP > 0) {\n            tempusAMM.transfer(msg.sender, remainingLP);\n        }\n\n        // Perform redemption after all transfers are complete\n        if (toBackingToken) {\n            redeemToBacking(tempusPool, msg.sender, sharesAmount, sharesAmount, msg.sender);\n        } else {\n            redeemToYieldBearing(tempusPool, msg.sender, sharesAmount, sharesAmount, msg.sender);\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "completeExitAndRedeem",
+                "fix_info": "Fixed reentrancy vulnerability by implementing checks-effects-interactions pattern and adding reentrancy guard",
+                "corrected_code": "    function completeExitAndRedeem(ITempusAMM tempusAMM, bool toBackingToken) external nonReentrant {\n        ITempusPool tempusPool = tempusAMM.tempusPool();\n        require(tempusPool.matured(), \"Not supported before maturity\");\n\n        IERC20 principalShare = IERC20(address(tempusPool.principalShare()));\n        IERC20 yieldShare = IERC20(address(tempusPool.yieldShare()));\n        \n        // Check balances first\n        uint256 userPrincipalBalance = principalShare.balanceOf(msg.sender);\n        uint256 userYieldBalance = yieldShare.balanceOf(msg.sender);\n        \n        // Transfer shares to controller\n        if (userPrincipalBalance > 0) {\n            principalShare.safeTransferFrom(msg.sender, address(this), userPrincipalBalance);\n        }\n        if (userYieldBalance > 0) {\n            yieldShare.safeTransferFrom(msg.sender, address(this), userYieldBalance);\n        }\n\n        uint256 userBalanceLP = tempusAMM.balanceOf(msg.sender);\n        \n        if (userBalanceLP > 0) {\n            // Transfer LP tokens to controller\n            tempusAMM.transferFrom(msg.sender, address(this), userBalanceLP);\n            \n            uint256[] memory minAmountsOut = new uint256[](2);\n            \n            // Exit AMM and send shares to controller\n            doExitTempusAMMGivenLP(tempusAMM, address(this), address(this), userBalanceLP, minAmountsOut, false);\n        }\n\n        // Get final balances after all transfers\n        uint256 finalPrincipalBalance = principalShare.balanceOf(address(this));\n        uint256 finalYieldBalance = yieldShare.balanceOf(address(this));\n        \n        // Perform redemption\n        if (toBackingToken) {\n            redeemToBacking(\n                tempusPool,\n                address(this),\n                finalPrincipalBalance,\n                finalYieldBalance,\n                msg.sender\n            );\n        } else {\n            redeemToYieldBearing(\n                tempusPool,\n                address(this),\n                finalPrincipalBalance,\n                finalYieldBalance,\n                msg.sender\n            );\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

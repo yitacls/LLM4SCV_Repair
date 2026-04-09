@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner)",
+    "description": "Using tx.origin for authorization introduces a phishing vulnerability. A malicious actor could trick the contract owner into interacting with a malicious contract, which then calls addMeByRC(). Since tx.origin would be the owner's address (the transaction initiator), the authorization check would pass, allowing the attacker's contract (msg.sender) to be added to rc[]. This violates the principle that authorization should rely on msg.sender, which directly identifies the immediate caller. The use of Solidity ^0.4.19 also means the contract lacks modern security features and compiler protections."
+}
+```

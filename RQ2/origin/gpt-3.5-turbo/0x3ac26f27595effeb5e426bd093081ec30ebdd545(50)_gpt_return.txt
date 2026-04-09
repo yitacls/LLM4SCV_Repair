@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(balance);",
+    "description": "The vulnerable code allows for unchecked low-level calls to be made to msg.sender, which can result in unexpected behavior if the recipient is a contract with a fallback function that performs arbitrary actions."
+}
+```

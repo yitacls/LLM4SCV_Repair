@@ -1,0 +1,9 @@
+The JSON representation of the vulnerability found in the given smart contract would look like this:
+
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "The function 'transferOrigin' specifies that the message sender must be 'impl'. However, there is no mechanism to control or limit who can set themselves as 'impl', hence providing an opportunity for unauthorized access and potential manipulation of token balances."
+}
+```

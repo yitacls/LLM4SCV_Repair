@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic Overflow/Underflow",
+        "location": "balanceOf[msg.sender] -= value;  balanceOf[to] += value;",
+        "description": "This contract uses Solidity version ^0.4.21 which does not have built-in overflow/underflow protection. The arithmetic operations on unsigned integers (balanceOf mapping) are vulnerable to integer overflow when balanceOf[to] + value exceeds uint256 maximum (2^256 - 1) and underflow when balanceOf[msg.sender] - value results in a negative number (which wraps around to maximum uint256 value). The vulnerability is particularly critical at the line 'balanceOf[to] += value' where an overflow could artificially inflate token balances. This issue is fixed in Solidity 0.8.0+ with automatic overflow checks or can be mitigated using SafeMath library in earlier versions."
+    }
+}
+```

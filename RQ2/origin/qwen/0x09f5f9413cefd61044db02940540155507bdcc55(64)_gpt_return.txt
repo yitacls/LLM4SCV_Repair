@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "feeCollector.call.value(fee)();",
+    "description": "The low-level call to feeCollector does not check the return value, which means if the call fails (e.g., due to out of gas or revert in the callee), the failure will not be detected. This could lead to the fee not being properly transferred while the balance is still set to zero, resulting in loss of funds. In Solidity 0.4.24, low-level calls return a boolean indicating success/failure which should be checked."
+}
+```

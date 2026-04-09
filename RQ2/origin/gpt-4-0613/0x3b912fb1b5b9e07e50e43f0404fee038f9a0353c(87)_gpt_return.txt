@@ -1,0 +1,9 @@
+```json
+{
+    "type": "access_control",
+    "contract": "CountryCoin",
+    "version": "^0.4.25",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract checks whether the origin of the transaction is the contract owner rather than the sender. The tx.origin global variable in Solidity refers to the original address that initiated the current call chain. If a contract is called by another contract which was initiated by the owner, then tx.origin will still be the owner's address rather than the address of the calling contract. This can potentially allow the contract owner to perform unauthorized actions if a contract is invoked by another contract."
+}
+```

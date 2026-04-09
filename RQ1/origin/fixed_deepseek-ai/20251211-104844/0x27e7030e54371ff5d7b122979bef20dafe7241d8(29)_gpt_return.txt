@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "myNewPet",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Using SafeMath library for safe arithmetic operations to prevent overflow/underflow",
+            "variable_code": "using SafeMath for uint256; mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations, preventing overflows in balance calculations",
+            "corrected_code": "function transfer(address to, uint256 tokens) public returns (bool success) {\n    require(balances[msg.sender] >= tokens && tokens > 0);\n    require(to != address(0));\n    \n    balances[to] = balances[to].add(tokens);\n    balances[msg.sender] = balances[msg.sender].sub(tokens);\n    \n    emit Transfer(msg.sender, to, tokens);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

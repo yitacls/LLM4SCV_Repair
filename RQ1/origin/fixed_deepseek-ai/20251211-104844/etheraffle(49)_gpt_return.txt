@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Ethraffle_v4b",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "blockNumber",
+                "fix_info": "Modified from immediate assignment to lazy initialization - block.number should not be stored at declaration time",
+                "variable_code": "uint public blockNumber;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "drawRandomWinner",
+                "fix_info": "Added safe random number generation using blockhash combined with multiple future blocks to prevent miner manipulation. Uses commit-reveal pattern for better randomness when applicable.",
+                "corrected_code": "function drawRandomWinner() internal returns (uint) {\n    require(blockNumber == 0, \"Random number already generated\");\n    blockNumber = block.number;\n    \n    // Commit-reveal pattern: Use blockhash of future blocks to prevent miner manipulation\n    // Wait for at least 1 block after setting blockNumber\n    require(block.number > blockNumber + 1, \"Must wait for at least 1 block\");\n    \n    // Create randomness using multiple block hashes to improve unpredictability\n    uint randomSeed = uint(keccak256(abi.encodePacked(\n        blockhash(blockNumber),\n        blockhash(blockNumber + 1),\n        block.timestamp,\n        block.difficulty,\n        msg.sender\n    )));\n    \n    // Apply modulo operation to get winner index\n    uint winnerIndex = randomSeed % participants.length;\n    return winnerIndex;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

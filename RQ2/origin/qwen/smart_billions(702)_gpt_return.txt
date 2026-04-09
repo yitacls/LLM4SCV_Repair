@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint(block.blockhash(_lastb)) & 0xFFFFFF",
+    "description": "The contract uses block.blockhash() for generating randomness, which is insecure because miners can manipulate block hashes to some extent. Additionally, block.blockhash() is deprecated in Solidity 0.4.22 and above, and only works for the most recent 256 blocks, limiting its utility and introducing predictability."
+}
+```

@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "BitcoinAgileToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Address to balance mapping, no change needed",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added overflow protection using SafeMath functions",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath and updating to modern syntax",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid target address\");\n        \n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        \n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

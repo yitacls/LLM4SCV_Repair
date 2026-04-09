@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "The mintToken function is vulnerable to arithmetic overflow. In Solidity ^0.4.16, arithmetic operations are not checked for overflow by default. When mintedAmount is added to balanceOf[target], if the result exceeds the maximum value that can be stored in a uint256, it will wrap around to zero, potentially allowing an attacker to manipulate balances. The same vulnerability exists with totalSupply += mintedAmount; where the total supply could overflow and wrap around."
+}
+```

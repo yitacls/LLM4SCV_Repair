@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "The low-level call operation does not check the return value, which means if the call fails (e.g., due to insufficient gas or the recipient contract throwing an exception), the function will not revert and the state changes (reducing Holders[_addr] by _wei) will still occur. This can lead to loss of funds as the withdrawal may fail but the balance deduction will still happen."
+}
+```

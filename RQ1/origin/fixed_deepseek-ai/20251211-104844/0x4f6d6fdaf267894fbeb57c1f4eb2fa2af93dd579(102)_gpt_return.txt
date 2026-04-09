@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "BasicToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable to implement proper access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "impl",
+            "fix_info": "Modified variable visibility to private and removed direct public/contract comparison",
+            "variable_code": "address private impl;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier for proper ownership-based access control",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, 'Only owner can call this function'); _; }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "onlyImpl",
+            "fix_info": "Added modifier for implementation contract access control",
+            "modifier_code": "modifier onlyImpl() { require(msg.sender == impl, 'Only implementation contract can call this function'); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferOrigin",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender for authentication and using proper modifiers",
+            "corrected_code": "function transferOrigin(address _to, uint256 _value) public onlyImpl returns (bool) {\n    require(!locked, 'Contract is locked');\n    require(_to != address(0), 'Invalid recipient address');\n    require(_value <= balances[msg.sender], 'Insufficient balance');\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

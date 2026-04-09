@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "URANUS",
+    "contract_version": "^0.4.22",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "withdraw",
+        "fix_info": "Added reentrancy guard and safe transfer pattern to prevent potential reentrancy attacks and ensure proper access control",
+        "corrected_code": "function withdraw() onlyOwner public {\n        uint256 etherBalance = address(this).balance;\n        require(etherBalance > 0, \"No balance to withdraw\");\n        \n        // Reset balance before transfer to prevent reentrancy\n        (bool success, ) = owner.call.value(etherBalance)(\"\");\n        require(success, \"Transfer failed\");\n    }",
+        "change_type": "modified"
+    }]
+}]
+```

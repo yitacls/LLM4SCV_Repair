@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "VerityToken(tokenAddress).call(msg.sender, amountToBeTransferred);",
+    "description": "The low-level .call() function is used without checking the return value. In Solidity 0.4.24, .call() forwards all available gas and returns a boolean success value. If the external token transfer fails (e.g., due to insufficient gas, reentrancy guard, or contract revert), the boolean return is ignored, causing the contract state (lockingData[msg.sender][\"amount\"] = 0) to be permanently updated while the user receives no tokens. This creates a permanent loss of funds. The fix is to check the return value and revert on failure: require(VerityToken(tokenAddress).call(msg.sender, amountToBeTransferred))."
+}
+```

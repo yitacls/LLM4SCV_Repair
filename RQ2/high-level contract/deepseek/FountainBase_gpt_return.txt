@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 290-291 and 295-308 in the internal functions _depositAngel and _withdrawAngel which call external contracts (angel.deposit() and angel.withdraw()) before updating the local state variable info.totalBalance",
+    "description": "The contract contains reentrancy vulnerabilities in the _depositAngel and _withdrawAngel functions. Although these functions are marked with the nonReentrant modifier, they call external contract functions (angel.deposit() and angel.withdraw()) before updating the local state variable info.totalBalance. This violates the checks-effects-interactions pattern and could allow reentrancy attacks if the nonReentrant modifier fails or is bypassed. The correct pattern would be to update info.totalBalance before making external calls to ensure state consistency even if the external call fails or behaves maliciously."
+}
+```

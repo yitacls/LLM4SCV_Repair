@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner && _sze >= 1 ether, \"error blksze\");",
+    "description": "The function uses tx.origin for authentication which is vulnerable to phishing attacks. In Solidity 0.4.24, tx.origin returns the original external caller address, but this can be exploited by malicious contracts that trick the owner into calling them. The owner could be deceived into interacting with a malicious contract that calls this function on behalf of the attacker. Additionally, the function lacks proper access control modifiers or checks that would prevent unauthorized access. A more secure approach would be to use msg.sender for authentication and implement proper ownership verification patterns."
+}
+```

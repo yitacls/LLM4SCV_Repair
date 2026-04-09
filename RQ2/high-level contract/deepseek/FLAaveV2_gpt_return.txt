@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 106-137 in the executeOperation function",
+    "description": "The contract violates the checks-effects-interactions pattern by making external calls before updating state. Specifically: 1) Line 119 makes an external call to proxy.execute() after transferring tokens (lines 115-117) but before approving token repayments (lines 129-131). 2) The external call to proxy.execute() could potentially re-enter this contract through the receive() function (line 143) or other entry points. 3) The .withdrawTokens() call on line 116 transfers tokens to an external proxy contract before the flash loan repayment is secured. This could allow malicious proxy contracts to re-enter and manipulate the contract state during flash loan execution."
+}
+```

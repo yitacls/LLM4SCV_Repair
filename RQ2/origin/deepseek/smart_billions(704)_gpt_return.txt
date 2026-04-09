@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "calcHashes function - multiple block.blockhash() calls for recent block numbers",
+    "description": "The function uses block.blockhash() for recent block numbers (_lastb to _lastb+9) to generate a hash value. The block.blockhash() function returns zero for all but the 256 most recent blocks, making it predictable. Miners can manipulate block timestamps and contents to influence these values, allowing them to gain unfair advantage in games of chance or random number generation. This pattern is widely recognized as insecure pseudo-randomness in blockchain applications where trustless randomness is required."
+}
+```

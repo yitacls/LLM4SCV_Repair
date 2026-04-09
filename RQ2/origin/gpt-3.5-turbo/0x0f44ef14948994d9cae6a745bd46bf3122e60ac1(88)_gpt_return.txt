@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout);",
+    "description": "The contract uses a low-level call to send funds to depositors without checking the return value. This can lead to potential reentrancy attacks if the recipient contract executes an untrusted operation before completing the funds transfer. It is recommended to use the pull payment pattern or implement checks-effects-interactions pattern to mitigate this vulnerability."
+}
+```

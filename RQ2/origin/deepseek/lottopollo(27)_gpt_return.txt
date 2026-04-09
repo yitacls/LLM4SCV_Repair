@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "function randomGen() constant returns (uint randomNumber) { return block.timestamp; }",
+    "description": "The 'randomGen' function uses 'block.timestamp' as a source of randomness, which is predictable and can be influenced by miners. In the context of 'lottopollo' (likely a lottery contract), this allows miners or users to manipulate outcomes by controlling the timestamp of the block in which the transaction is included, making the 'random' number generation insecure and unfair."
+}
+```

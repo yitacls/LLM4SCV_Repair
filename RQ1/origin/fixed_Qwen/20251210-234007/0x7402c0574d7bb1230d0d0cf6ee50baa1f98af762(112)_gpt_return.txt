@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ValidationNodeLock",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawFunds",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and using safeTransfer instead of call",
+            "corrected_code": "function withdrawFunds()\n    public\n    onlyOnceLockingPeriodIsOver()\n  {\n    uint amountToBeTransferred = lockingData[msg.sender][\"amount\"];\n    lockingData[msg.sender][\"amount\"] = 0;\n    require(VerityToken(tokenAddress).transfer(msg.sender, amountToBeTransferred));\n    emit Withdrawn(\n      msg.sender,\n      amountToBeTransferred\n    );\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

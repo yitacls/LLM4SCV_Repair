@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.value(msg.value)(bytes4(keccak256(\"play(uint256)\")), a);",
+    "description": "The low-level call operation does not check the return value, which means the function will continue execution even if the external call fails. In Solidity ^0.4.11, low-level calls like call.value() return a boolean indicating success or failure, but this return value is not being checked. This can lead to unexpected behavior where the contract continues execution assuming the call succeeded when it actually failed."
+}
+```

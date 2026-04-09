@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "KMCToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change needed to declaration, but overflow protection added in functions",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No change needed to declaration, but overflow protection added in functions",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath operations to prevent arithmetic overflows on balanceOf and totalSupply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    // Safe addition for balanceOf to prevent overflow\n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Balance overflow\");\n    balanceOf[target] = newBalance;\n    \n    // Safe addition for totalSupply to prevent overflow\n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Total supply overflow\");\n    totalSupply = newTotalSupply;\n    \n    Transfer(0, this, mintedAmount);\n    Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

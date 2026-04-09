@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[target] += initialSupply; // <IO_VUL>",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations can overflow/underflow without reverting, allowing unintended values. This code adds 'initialSupply' to 'balanceOf[target]' without SafeMath checks, enabling an attacker to mint an extremely large token amount (e.g., using 2^256 - 1) that could overflow back to a small balance or create invalid totalSupply inconsistencies."
+}
+```】

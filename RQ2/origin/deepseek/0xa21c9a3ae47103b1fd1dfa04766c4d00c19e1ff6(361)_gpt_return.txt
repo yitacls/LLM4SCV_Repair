@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function _payout(address _to) private { ... ceoAddress.transfer(this.balance); ... _to.transfer(this.balance); ... }",
+            "description": "The _payout function transfers the entire contract balance to either a specified address or the CEO address without any access control or validation checks. This private function can be called by any internal function, potentially allowing unauthorized drainage of all contract funds if any public/external function calls it without proper authorization checks. Additionally, it uses the deprecated 'this.balance' and 'transfer()' with arbitrary gas forwarding, which can be unsafe in Solidity 0.4.18."
+        }
+    ]
+}
+```

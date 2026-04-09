@@ -1,0 +1,28 @@
+[{
+    "contract_name": "EncryptedToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "Added a reentrancy guard state variable to prevent reentrant calls to the fallback function.",
+            "variable_code": "bool private locked = false;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a nonReentrant modifier implementing the checks-effects-interactions pattern to mitigate reentrancy.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!locked);\n    locked = true;\n    _;\n    locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback (function () payable public)",
+            "fix_info": "Reordered operations to follow checks-effects-interactions, added nonReentrant modifier, and replaced send with transfer to ensure failures revert rather than silently drop funds. Added a sanity check for buyPrice.",
+            "corrected_code": "function () payable public nonReentrant {\n    // Ensure buyPrice is set to avoid unexpected behavior\n    require(buyPrice > 0);\n\n    // Calculate token amount to transfer\n    uint amount = msg.value * buyPrice;               // calculates the amount\n\n    // Effects: transfer tokens from owner to buyer\n    _transfer(owner, msg.sender, amount);\n\n    // Interaction: forward received Ether to owner. transfer() reverts on failure.\n    owner.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

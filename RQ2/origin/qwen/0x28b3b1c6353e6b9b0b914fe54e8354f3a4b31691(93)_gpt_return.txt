@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. Malicious contracts can trick the owner into calling the burn function through a proxy, allowing unauthorized access. Additionally, there's a logic inconsistency where the access control check uses tx.origin but the balance deduction uses msg.sender, potentially allowing unauthorized users to burn other users' tokens if they can manipulate the msg.sender value."
+}
+```

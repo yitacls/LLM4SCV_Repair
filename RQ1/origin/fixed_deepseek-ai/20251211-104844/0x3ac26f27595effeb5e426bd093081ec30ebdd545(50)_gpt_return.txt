@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "BirthdayPuzzle",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "solved",
+            "fix_info": "Removed 'throw' usage and marked variable as internal",
+            "variable_code": "bool internal solved;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "solvePuzzle",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing deprecated 'throw' and '.send()' with require() and .transfer(); also added reentrancy guard and input validation",
+            "corrected_code": "function solvePuzzle(uint256 solution) public {\n    require(!solved, \"Puzzle already solved\");\n    \n    uint256 a = 50540984125924;\n    uint256 b = 50540984125915;\n    uint256 c = 1981;\n    uint256 d = 2017;\n    uint256 e;\n    \n    e = powerWithModulus(1234567890, solution, 4 * a + c);\n    \n    if (powerWithModulus(e, d, 4 * b + d) == 1234567890) {\n        Solved(msg.sender);\n        solved = true;\n        \n        // Use transfer() instead of send() for security\n        // Check balance before transfer\n        require(address(this).balance >= balance, \"Insufficient contract balance\");\n        msg.sender.transfer(balance);\n    } else {\n        UnsuccessfulAttempt(msg.sender);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

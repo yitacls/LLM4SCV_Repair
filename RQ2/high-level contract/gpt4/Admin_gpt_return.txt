@@ -1,0 +1,9 @@
+Here is the JSON description of the vulnerability present in the provided smart contract:
+
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "function removeAdmin(address _adminAddress)",
+    "description": "This function iterates through an array looking for a specific address, and if it does not find it, the function reverts. If the given address is not in the array, it results in an unbounded loop - a potential Denial of Service (DoS) vulnerability. An attacker may trigger the function with an unknown address leading to high gas costs."
+}
+```

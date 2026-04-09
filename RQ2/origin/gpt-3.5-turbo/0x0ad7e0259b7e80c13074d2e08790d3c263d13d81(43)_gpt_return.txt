@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "[3: transfer->call.value]",
+    "description": "The contract is vulnerable to reentrancy due to the use of call.value for transferring funds. This allows a malicious contract to exploit the reentrant behavior and potentially drain the contract's balance."
+}
+```

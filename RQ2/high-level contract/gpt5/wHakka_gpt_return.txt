@@ -1,0 +1,22 @@
+[
+    {
+        "type": "SWC-116-Block values as a proxy for time",
+        "location": "contract stakingRateModel, function stakingRateMax()\n\n    uint256 timeElapsed = block.timestamp.sub(lastUpdateTimestamp);\n    if(timeElapsed > 0) {\n        lastUpdateTimestamp = block.timestamp;\n        rate = timeElapsed.mul(ratePerSecond).add(1e18).mul(stakingRateStored).div(1e18);\n        stakingRateStored = rate;\n    }\n    else rate = stakingRateStored;",
+        "description": "The stakingRateMax() function uses block.timestamp to compute timeElapsed and then updates stakingRateStored based on that elapsed time. Miners (or validators) have limited control over block timestamps and can manipulate them within protocol-allowed bounds. Because stakingRateMax() updates contract state using block.timestamp, an attacker controlling block timestamps (or colluding with miners) could influence the calculated staking rate to their advantage (e.g., increase or decrease rewards). Additionally, stakingRateMax() is non-view and mutates state (lastUpdateTimestamp, stakingRateStored) on apparently read operations (stakingRate()), which can lead to unexpected state changes and makes timestamp manipulation more impactful."
+    },
+    {
+        "type": "SWC-116-Block values as a proxy for time",
+        "location": "contract wHakka, function stake(...)\n\n        v.unlockTime = block.timestamp.add(time);\n\nand\n\ncontract wHakka, function unstake(...)\n\n        require(block.timestamp >= v.unlockTime, \"locked\");",
+        "description": "The contract sets and checks lockup periods using block.timestamp. Since block.timestamp can be manipulated slightly by miners, relying on it for precise enforcement of time-sensitive lockups is unsafe. An adversarial miner could slightly accelerate or delay unlocks, potentially enabling early unstake or delaying it. While small deviations are expected, depending on exact economic assumptions this can be exploited (especially when combined with other vulnerabilities or miner collusion)."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "contract wHakka, function stake(...)\n\n        _mint(to, wAmount);\n        Hakka.safeTransferFrom(msg.sender, address(this), amount);\n\n(where safeTransferFrom performs an external call to the Hakka token contract)",
+        "description": "The stake() function performs an external call to the Hakka token contract (via safeTransferFrom) after changing contract state and minting wHAKKA. Although the function follows the checks-effects-interactions pattern (state variables updated before the external call), calling an external token contract that may be malicious (or a token with callbacks/hooks) can still re-enter this contract. If the external token contract is compromised or implements callbacks (e.g., non-standard tokens), it could re-enter wHakka and attempt to call stake/unstake or other sensitive functions. Even when most ERC20 tokens are safe, relying on an external token without additional safeguards (reentrancy guard modifier) leaves a reentrancy risk if any token at the Hakka address becomes malicious or is replaced in a proxy setup."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "contract wHakka, function unstake(...)\n\n        _burn(msg.sender, wAmount);\n        Hakka.safeTransfer(to, amount);\n\n(where safeTransfer performs an external call to the Hakka token contract)",
+        "description": "The unstake() function performs an external call to the Hakka token contract via safeTransfer after updating storage and burning wHAKKA. While state updates occur before the external call (which mitigates typical reentrancy), the external token transfer still provides an entry point for a malicious token contract to re-enter wHakka. A reentrant call could attempt to exploit other paths or interact with the contract in unexpected ways. Best practice is to add explicit reentrancy protection (e.g., a nonReentrant modifier) on functions that make external calls, or to minimize trust in external token contracts (ensure the token is trusted and cannot re-enter)." 
+    }
+]

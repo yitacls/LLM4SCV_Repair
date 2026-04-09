@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "MetaTransactionsFeature",
+        "contract_version": "0.6.5",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "refundsAttachedEth",
+                "fix_info": "Added reentrancy guard to prevent reentrancy vulnerability",
+                "corrected_code": "modifier refundsAttachedEth() nonReentrant(REENTRANCY_MTX) {...}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

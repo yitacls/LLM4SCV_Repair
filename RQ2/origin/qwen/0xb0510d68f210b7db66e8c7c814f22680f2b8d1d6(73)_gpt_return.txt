@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "extra[0].call.value(_share).gas(800000)();",
+    "description": "The low-level call operation does not check the return value, which means if the call fails (e.g., due to out of gas or the recipient contract rejecting the call), the failure will not be detected and the transaction may continue execution as if the call succeeded. This can lead to loss of funds as ETH may be sent to contracts that cannot properly handle it."
+}
+```

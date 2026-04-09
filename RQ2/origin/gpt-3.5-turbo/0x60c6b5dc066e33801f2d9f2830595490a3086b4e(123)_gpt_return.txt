@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "totalSupply = totalSupply-amount;",
+    "description": "The subtraction operation in this line can potentially lead to an arithmetic underflow vulnerability if 'amount' is greater than 'totalSupply'. This can result in unexpected behavior and manipulation of the total supply of tokens."
+}
+```

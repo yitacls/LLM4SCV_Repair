@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint256 newVal = freeEther+msg.value;",
+    "description": "The addition operation freeEther+msg.value can cause an integer overflow when the sum exceeds the maximum value of uint256 (2^256-1). This can result in the newVal being smaller than either of the operands, leading to unexpected behavior in the subsequent comparison and assignment operations. In Solidity version ^0.4.19, arithmetic operations are not protected against overflow by default, making this vulnerability exploitable."
+}
+```

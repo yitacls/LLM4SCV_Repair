@@ -1,0 +1,13 @@
+```json
+{
+    "contract": "company_acc",
+    "version": "^0.4.25",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The function clear() uses 'tx.origin' for authorization, which is a potential security vulnerability. This code checks if the original sender (tx.origin) of the transaction is the owner, but it can potentially allows any contract that is called by the owner to pass this check. In other words, a malicious contract could trick the owner into initiating a transaction that calls this contract and 'selfdestructs' it."
+        }
+    ]
+}
+```

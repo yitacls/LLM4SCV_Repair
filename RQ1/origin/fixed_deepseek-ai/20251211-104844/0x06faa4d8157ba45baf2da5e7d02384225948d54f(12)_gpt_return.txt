@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "EasyInvest25",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "invested",
+            "fix_info": "No changes required",
+            "variable_code": "mapping(address => uint256) public invested;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "atBlock",
+            "fix_info": "No changes required",
+            "variable_code": "mapping(address => uint256) public atBlock;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyInvestor",
+            "fix_info": "Added modifier to check if investor has existing investment",
+            "modifier_code": "modifier onlyInvestor() {\n        require(invested[msg.sender] > 0, \"No existing investment\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic calculation to prevent overflow, replaced unsafe send with transfer pattern, added reentrancy protection, and added input validation.",
+            "corrected_code": "function() external payable {\n        require(msg.value > 0, \"Investment amount must be greater than 0\");\n        \n        // Process existing investment payout if applicable\n        if (invested[msg.sender] > 0) {\n            address kashout = msg.sender;\n            \n            // Calculate payout with safe arithmetic\n            uint256 investedAmount = invested[msg.sender];\n            uint256 blocksElapsed = block.number - atBlock[msg.sender];\n            \n            // Check for calculation overflow before proceeding\n            require(blocksElapsed <= block.number, \"Block calculation overflow\");\n            \n            // Calculate getout with safe multiplication and division\n            uint256 basePayout = investedAmount * 25 / 100;\n            uint256 getout = (basePayout * blocksElapsed) / 5900;\n            \n            // Check for payout calculation overflow\n            require(getout >= basePayout || blocksElapsed == 0, \"Payout calculation overflow\");\n            \n            // Clear state before external call to prevent reentrancy\n            atBlock[msg.sender] = block.number;\n            \n            // Transfer funds safely\n            if (getout > 0) {\n                require(address(this).balance >= getout, \"Insufficient contract balance\");\n                kashout.transfer(getout);\n            }\n        }\n        \n        // Update investment records\n        atBlock[msg.sender] = block.number;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

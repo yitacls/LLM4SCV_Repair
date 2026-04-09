@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), _from, _amount, _data);",
+    "description": "The low-level call() method is being used. The return value isn't being checked. The call() method allows arbitrary method calling and opens up the possibility to execute reentrant attacks by external contracts. A contract could be not aware of its state being changed unexpectedly. Additionally, any exceptions in the called contract will not bubble up, and will only return false, contributing to potentially inconsistent states. The solidity version 0.4.25 also does not yet make checks automated."
+}
+```

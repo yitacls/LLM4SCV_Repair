@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Reentrancy",
+            "location": "if(target.call.value(amount)())",
+            "description": "The `target.call.value(amount)()` external call transfers control to the recipient's fallback function before updating any state (the `CashMove` event is logged after the call). In Solidity 0.4.11, the recipient's contract can re-enter this function by calling `loggedTransfer` again before the first invocation completes, as `msg.sender` is checked against `address(this)` rather than against `currentOwner` or a trusted caller. This allows recursive reentrancy attacks, potentially draining the contract's balance if the function can be invoked multiple times (e.g., via another public function that calls `loggedTransfer`). The use of low-level `call.value()` without gas limits also enables the attack."
+        }
+    ]
+}
+```

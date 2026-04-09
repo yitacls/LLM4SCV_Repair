@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "0.6.0",
+        "state_variables": [
+            {
+                "variable_name": "pragma",
+                "fix_info": "Fixed floating pragma to specific version to prevent compilation with incompatible compiler versions",
+                "variable_code": "pragma solidity 0.6.12;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Added gas optimization by limiting the number of epochs processed in a single transaction to prevent block gas limit DoS",
+                "corrected_code": "    function massHarvest() external returns (uint){\n        uint totalDistributedValue;\n        uint epochId = _getEpochId().sub(1);\n        if (epochId > NR_OF_EPOCHS) {\n            epochId = NR_OF_EPOCHS;\n        }\n\n        uint128 startEpoch = lastEpochIdHarvested[msg.sender] + 1;\n        uint128 endEpoch = epochId;\n        \n        // Limit number of epochs to process to prevent gas DoS\n        if (endEpoch.sub(startEpoch) >= 10) {\n            endEpoch = startEpoch + 9;\n        }\n\n        for (uint128 i = startEpoch; i <= endEpoch; i++) {\n            totalDistributedValue += _harvest(i);\n        }\n\n        emit MassHarvest(msg.sender, endEpoch.sub(lastEpochIdHarvested[msg.sender]), totalDistributedValue);\n\n        if (totalDistributedValue > 0) {\n            _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n        }\n\n        return totalDistributedValue;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

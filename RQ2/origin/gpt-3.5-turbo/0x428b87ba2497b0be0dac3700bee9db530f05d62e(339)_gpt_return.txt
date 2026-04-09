@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "balance.profitBalance = balance.profitBalance.sub(_deposited);",
+    "description": "The function allows for unrestricted access to adjusting the profit balance of a user based on the condition that the source is equal to 2. This could lead to unauthorized modification of profit balances by malicious actors."
+}
+```

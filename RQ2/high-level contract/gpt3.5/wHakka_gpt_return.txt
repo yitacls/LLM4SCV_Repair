@@ -1,0 +1,23 @@
+```json
+{
+    "type": "SWC-116-Block values as a proxy for time",
+    "location": "In the stakingRateMax function at line 67",
+    "description": "The contract uses the block.timestamp in an insecure way as a proxy for time, which can lead to vulnerabilities as the value of 'timeElapsed' may not truly represent the elapsed time due to miner manipulation."
+},
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "In the stake function at lines 96-98",
+    "description": "The stake function is vulnerable to reentrancy attacks as the state changes are not properly handled, allowing an attacker to exploit the function and potentially manipulate the flow of the contract."
+},
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "In the unstake function at lines 116-118",
+    "description": "The unstake function is vulnerable to reentrancy attacks as the state changes are not properly handled, allowing an attacker to exploit the function and potentially manipulate the flow of the contract."
+},
+{
+    "type": "SWC-116-Block values as a proxy for time",
+    "location": "In the unstake function at line 109",
+    "description": "The contract uses the block.timestamp in an insecure way as a proxy for time, which can lead to vulnerabilities as the unlock time comparison may be inaccurate due to miner manipulation."
+}
+```
+```

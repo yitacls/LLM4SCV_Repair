@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "MAVCash",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "sellPrice",
+                "fix_info": "Potential visibility issue - specifying visibility explicitly",
+                "variable_code": "uint256 public sellPrice;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Potential visibility issue - specifying visibility explicitly",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow with SafeMath, added reentrancy protection, updated throw to revert, added visibility specifier",
+                "corrected_code": "function sell(uint256 amount) public {\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        \n        // Prevent reentrancy by updating state before external call\n        balanceOf[msg.sender] = balanceOf[msg.sender] - amount;\n        balanceOf[address(this)] = balanceOf[address(this)] + amount;\n        \n        uint256 etherAmount = amount * sellPrice;\n        require(etherAmount / amount == sellPrice, \"Multiplication overflow\");\n        \n        emit Transfer(msg.sender, address(this), amount);\n        \n        // Send ether - use transfer() for security in older versions\n        msg.sender.transfer(etherAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

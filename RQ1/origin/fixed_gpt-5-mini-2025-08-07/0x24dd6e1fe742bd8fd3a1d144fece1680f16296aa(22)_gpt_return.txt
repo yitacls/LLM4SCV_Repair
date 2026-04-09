@@ -1,0 +1,16 @@
+[
+    {
+        "contract_name": "OBK",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Added zero-address check and explicit overflow check to prevent arithmetic vulnerabilities while preserving original behavior and events.",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(_to != address(0));\n        require(balances[msg.sender] >= _value);\n        // Prevent overflow on recipient balance\n        require(balances[_to] + _value >= balances[_to]);\n\n        balances[msg.sender] -= _value;\n        balances[_to] += _value;\n        Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

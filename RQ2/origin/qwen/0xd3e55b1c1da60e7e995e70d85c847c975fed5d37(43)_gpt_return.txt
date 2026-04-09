@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "bounty += msg.value;",
+    "description": "The contract is vulnerable to arithmetic overflow in the add_to_bounty function. When msg.value is added to the bounty variable, if the resulting sum exceeds the maximum value that can be stored in the integer type, it will overflow and wrap around to a smaller value. This can lead to loss of funds or unexpected behavior. In Solidity ^0.4.11, there are no built-in overflow checks, so this vulnerability can be exploited by sending a large enough value that causes the bounty variable to overflow."
+}
+```

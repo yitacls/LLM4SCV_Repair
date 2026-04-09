@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "timelock",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "",
+            "fix_info": "No state variables needed modification",
+            "variable_code": "",
+            "change_type": ""
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers added or modified",
+            "modifier_code": "",
+            "change_type": ""
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Replaced unsafe send() with transfer() and added reentrancy protection by updating state before external call",
+            "corrected_code": "function withdraw() public {\n        locker storage l = lockers[msg.sender];\n        require(block.number > l.freedom && l.bal > 0);\n        \n        // Prevent reentrancy by updating state before external call\n        uint value = l.bal;\n        l.bal = 0;\n        \n        // Replace send() with transfer() for safer low-level call\n        // transfer() automatically reverts on failure and provides gas stipend\n        msg.sender.transfer(value);\n        \n        Released(msg.sender, value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

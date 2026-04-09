@@ -1,0 +1,30 @@
+【```json
+[
+    {
+        "contract_name": "AOC_BEP",
+        "contract_version": "0.8.9",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "In Solidity, a public function is used instead of a constructor for contract initialization when using inheritance to avoid the incorrect constructor name vulnerability. Here, the choice of the `initializer` modifier (provided by the `Initializable` contract from OpenZeppelin) ensures that initialization is done only once. The initializer function is correctly used, and scanning tool mistakenly reports SWC-118-Incorrect Constructor Name.",
+                "corrected_code": "",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawBNBFromContract",
+                "fix_info": "To mitigate the \"Unprotected Ether Withdrawal\" vulnerability, we can add the `external` visibility specifier and also the `onlyOwner` modifier to the function, ensuring only the contract owner can perform this action.",
+                "corrected_code": "function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner {\\n        require(recipient != address(0), \\"Address cant be zero address\\");\\n        require(amount <= address(this).balance, \\"withdrawBNBFromContract: withdraw amount exceeds BNB balance\\\");\\n        \\n        (bool success, ) = recipient.call{value: amount}(\\\"\\\");\\n        require(success, \\"Transfer failed.\\");\\n        \\n        emit BNBFromContractTransferred(amount);\\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawToken",
+                "fix_info": "This function does not have a code with no effects vulnerability. Nothing is changed here.",
+                "corrected_code": "",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```】

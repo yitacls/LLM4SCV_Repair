@@ -1,0 +1,46 @@
+[{
+    "contract_name": "TempusController",
+    "contract_version": "0.8.6",
+    "state_variables": [
+        {
+            "variable_name": "_NOT_ENTERED",
+            "fix_info": "Added reentrancy guard sentinel constant for nonReentrant modifier.",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_ENTERED",
+            "fix_info": "Added reentrancy guard sentinel constant for nonReentrant modifier.",
+            "variable_code": "uint256 private constant _ENTERED = 2;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_status",
+            "fix_info": "Added reentrancy guard storage variable to prevent reentrant calls.",
+            "variable_code": "uint256 private _status = _NOT_ENTERED;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier (Checks-Effects-Interactions) to prevent reentrancy on vulnerable external-call-heavy functions.",
+            "modifier_code": "modifier nonReentrant() {\n        require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n        _status = _ENTERED;\n        _;\n        _status = _NOT_ENTERED;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "exitTempusAMMAndRedeem",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy. Replaced transferFrom(...) when returning LP tokens with transfer(...) since the controller holds the tokens itself (safer and correct). Preserved original logic and checks.",
+            "corrected_code": "function exitTempusAMMAndRedeem(\n        ITempusAMM tempusAMM,\n        uint256 sharesAmount,\n        bool toBackingToken\n    ) external nonReentrant {\n        ITempusPool tempusPool = tempusAMM.tempusPool();\n        require(!tempusPool.matured(), \"Pool already finalized\");\n        uint256 userPrincipalBalance = IERC20(address(tempusPool.principalShare())).balanceOf(msg.sender);\n        uint256 userYieldBalance = IERC20(address(tempusPool.yieldShare())).balanceOf(msg.sender);\n\n        uint256 ammExitAmountPrincipal = sharesAmount - userPrincipalBalance;\n        uint256 ammExitAmountYield = sharesAmount - userYieldBalance;\n\n        // transfer LP tokens to controller\n        uint256 userBalanceLP = tempusAMM.balanceOf(msg.sender);\n        tempusAMM.transferFrom(msg.sender, address(this), userBalanceLP);\n\n        doExitTempusAMMGivenAmountsOut(\n            tempusAMM,\n            address(this),\n            msg.sender,\n            getAMMOrderedAmounts(tempusPool, ammExitAmountPrincipal, ammExitAmountYield),\n            userBalanceLP,\n            false\n        );\n\n        // transfer remainder of LP tokens back to user\n        uint256 remainingLP = tempusAMM.balanceOf(address(this));\n        if (remainingLP > 0) {\n            // controller owns the LP tokens; use transfer instead of transferFrom\n            tempusAMM.transfer(msg.sender, remainingLP);\n        }\n\n        if (toBackingToken) {\n            redeemToBacking(tempusPool, msg.sender, sharesAmount, sharesAmount, msg.sender);\n        } else {\n            redeemToYieldBearing(tempusPool, msg.sender, sharesAmount, sharesAmount, msg.sender);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "completeExitAndRedeem",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy. Replaced transferFrom(...) when returning LP tokens with transfer(...) since the controller holds the tokens itself (safer and correct). Preserved original logic and checks.",
+            "corrected_code": "function completeExitAndRedeem(ITempusAMM tempusAMM, bool toBackingToken) external nonReentrant {\n        ITempusPool tempusPool = tempusAMM.tempusPool();\n        require(tempusPool.matured(), \"Not supported before maturity\");\n\n        IERC20 principalShare = IERC20(address(tempusPool.principalShare()));\n        IERC20 yieldShare = IERC20(address(tempusPool.yieldShare()));\n        // send all shares to controller\n        uint256 userPrincipalBalance = principalShare.balanceOf(msg.sender);\n        uint256 userYieldBalance = yieldShare.balanceOf(msg.sender);\n        principalShare.safeTransferFrom(msg.sender, address(this), userPrincipalBalance);\n        yieldShare.safeTransferFrom(msg.sender, address(this), userYieldBalance);\n\n        uint256 userBalanceLP = tempusAMM.balanceOf(msg.sender);\n\n        if (userBalanceLP > 0) {\n            // if there is LP balance, transfer to controller\n            tempusAMM.transferFrom(msg.sender, address(this), userBalanceLP);\n\n            uint256[] memory minAmountsOut = new uint256[](2);\n\n            // exit amm and sent shares to controller\n            doExitTempusAMMGivenLP(tempusAMM, address(this), address(this), userBalanceLP, minAmountsOut, false);\n        }\n\n        if (toBackingToken) {\n            redeemToBacking(\n                tempusPool,\n                address(this),\n                principalShare.balanceOf(address(this)),\n                yieldShare.balanceOf(address(this)),\n                msg.sender\n            );\n        } else {\n            redeemToYieldBearing(\n                tempusPool,\n                address(this),\n                principalShare.balanceOf(address(this)),\n                yieldShare.balanceOf(address(this)),\n                msg.sender\n            );\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

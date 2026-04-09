@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Jobscoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for addition operations to prevent integer overflow",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(target != address(0));\n    \n    // Using SafeMath to prevent arithmetic overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    Transfer(0, owner, mintedAmount);\n    Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

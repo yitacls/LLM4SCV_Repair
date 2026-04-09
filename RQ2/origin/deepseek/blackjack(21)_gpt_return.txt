@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint b = block.number;",
+        "description": "Using block.number as a source of randomness is insecure as it can be predicted by miners who can manipulate it within certain bounds to influence the outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint timestamp = block.timestamp;",
+        "description": "Using block.timestamp as a source of randomness is insecure because miners can influence the timestamp within a small range (~30 seconds), allowing them to manipulate outcomes."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return uint8(uint256(keccak256(block.blockhash(b), player, cardNumber, timestamp)) % 52);",
+        "description": "The combination of blockhash, block number, timestamp, and player address creates predictable randomness. Miners can precompute or manipulate these values, making the card dealing process vulnerable to exploitation. Additionally, using block.blockhash(b) with the current block.number will always return 0 in Solidity ^0.4.2, making the randomness entirely dependent on player and timestamp."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint(block.blockhash(_lastb)) & 0xFFFFFF",
+    "description": "The contract uses block.blockhash() as a source of randomness, which is predictable and controllable by miners. In Solidity ^0.4.13, block.blockhash() only works for the most recent 256 blocks, and miners can manipulate or predict the hash values, making this randomness insecure for critical contract logic."
+}
+```

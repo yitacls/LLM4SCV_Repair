@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "demo",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking return value and using address.transferFrom pattern instead of raw call. Added require statement to ensure each transfer succeeds. Also updated parameter syntax for Solidity 0.4.0 compatibility.",
+            "corrected_code": "function transfer(address from, address caddress, address[] _tos, uint v) public returns (bool) {\n    require(_tos.length > 0);\n    \n    for (uint i = 0; i < _tos.length; i++) {\n        // Use the standard ERC20 transferFrom pattern with error checking\n        require(ERC20(caddress).transferFrom(from, _tos[i], v));\n    }\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

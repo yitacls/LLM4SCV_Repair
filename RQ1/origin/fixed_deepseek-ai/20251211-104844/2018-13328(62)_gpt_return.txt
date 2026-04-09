@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "PFG",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Added SafeMath library to prevent overflows/underflows",
+            "variable_code": "using SafeMath for uint256;\nmapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyPayloadSize",
+            "fix_info": "Kept modifier but ensure it's properly implemented",
+            "modifier_code": "modifier onlyPayloadSize(uint size) {\n    require(msg.data.length >= size + 4, \"Invalid payload size\");\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath operations and reordered checks for better security",
+            "corrected_code": "function transfer(address _recipient, uint256 _value) onlyPayloadSize(2*32) public {\n    require(_value > 0, \"Transfer value must be positive\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    require(_recipient != address(0), \"Invalid recipient address\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_recipient] = balances[_recipient].add(_value);\n    \n    emit Transfer(msg.sender, _recipient, _value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

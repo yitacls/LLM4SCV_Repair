@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public",
+    "description": "The contract uses the deprecated tx.origin for authorization in the onlyOwner modifier (implied but not shown in the provided snippet). In Solidity ^0.4.19, using tx.origin for authentication makes the contract vulnerable to phishing attacks, where an attacker can trick the owner into calling a malicious contract that then calls this function, passing the authorization check because tx.origin remains the owner's address. Additionally, the function transfers the contract's entire balance to the owner without any withdrawal limits or emergency pause mechanisms, which could be exploited if the owner's account is compromised. The use of 'this.balance' and direct transfer is also potentially unsafe if the contract interacts with untrusted contracts, but the primary issue is the insecure authorization method."
+}
+```

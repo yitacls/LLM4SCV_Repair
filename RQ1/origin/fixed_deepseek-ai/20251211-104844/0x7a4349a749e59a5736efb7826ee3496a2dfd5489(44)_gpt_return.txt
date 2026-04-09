@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "WhaleGiveaway1",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added onlyOwner modifier to replace repeated require statement",
+                "modifier_code": "    modifier onlyOwner() {\n        require(msg.sender == Owner);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "Command",
+                "fix_info": "Replaced vulnerable low-level call with safe external call pattern, added onlyOwner modifier, and implemented proper return value checking",
+                "corrected_code": "    function Command(address adr, bytes data)\n        payable\n        public\n        onlyOwner\n    {\n        bool success;\n        (success, ) = adr.call.value(msg.value)(data);\n        require(success, \"Low-level call failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

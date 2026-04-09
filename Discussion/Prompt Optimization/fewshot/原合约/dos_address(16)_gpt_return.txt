@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "DosGas",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "emptyCreditors",
+                "fix_info": "Prevent DoS by limiting the number of elements in creditorAddresses.",
+                "corrected_code": "function emptyCreditors() public {
+    require(creditorAddresses.length <= 1500, 'Exceeded maximum number of creditors');
+    if(creditorAddresses.length > 1500) {
+        creditorAddresses = new address[](0);
+        win = true;
+    }
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

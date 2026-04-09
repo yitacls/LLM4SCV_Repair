@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "FILM",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow",
+            "variable_code": "using SafeMath for uint256;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and added zero-address validation",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    emit Transfer(address(0), this, mintedAmount);\n    emit Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

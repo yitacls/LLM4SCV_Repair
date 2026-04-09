@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (tx.origin != owner) { // fault line ... }",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, which makes it vulnerable to phishing attacks. A malicious contract could trick the owner into calling a function that invokes _transfer, causing tx.origin to equal the owner's address while msg.sender is the malicious contract's address. This bypasses the intended restriction and allows unauthorized execution of the Transfer212 emission and randomLucky() calls."
+}
+```

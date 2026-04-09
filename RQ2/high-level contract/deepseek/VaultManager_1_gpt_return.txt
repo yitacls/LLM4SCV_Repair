@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Line 692: `_repayDebt(vaultIDs[i], (amounts[i] * liquidationSurcharge) / BASE_PARAMS, liqData.newInterestAccumulator);`",
+        "description": "The return value of the `_repayDebt` function call is not checked. While the function returns an amount of stablecoins to be burnt, in this liquidation context the return value is ignored. This could potentially lead to incorrect accounting if the function behaves unexpectedly or fails silently. However, since this is an internal call and the function reverts on critical errors, the risk is somewhat mitigated but still violates best practices for return value checking."
+    }
+]
+```

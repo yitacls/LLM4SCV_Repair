@@ -1,0 +1,78 @@
+```json
+[
+    {
+        "contract_name": "LibFixedMath",
+        "contract_version": "^0.5.9",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_mul",
+                "fix_info": "Added proper checks for multiplication overflow and underflow to prevent SWC-101 vulnerabilities. Replaced unsafe logic with safe arithmetic.",
+                "corrected_code": "function _mul(int256 a, int256 b) private pure returns (int256 c) {\n    require(a == 0 || (c = a * b) / a == b, \"Multiplication overflow\");\n    return c;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_div",
+                "fix_info": "Added a check to prevent division by zero, ensuring safe arithmetic operations.",
+                "corrected_code": "function _div(int256 a, int256 b) private pure returns (int256 c) {\n    require(b != 0, \"Division by zero\");\n    require(!(a == -2**255 && b == -1), \"Division overflow\");\n    return a / b;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_add",
+                "fix_info": "Safeguarded against addition overflow and underflow by adding proper checks for edge cases.",
+                "corrected_code": "function _add(int256 a, int256 b) private pure returns (int256 c) {\n    c = a + b;\n    if ((b > 0 && c < a) || (b < 0 && c > a)) {\n        revert(\"Addition overflow or underflow\");\n    }\n    return c;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "add",
+                "fix_info": "Ensured the public wrapper function uses the fixed _add function.",
+                "corrected_code": "function add(int256 a, int256 b) internal pure returns (int256 c) {\n    return _add(a, b);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "sub",
+                "fix_info": "Safeguarded against subtraction overflow. Adjusted the logic to safely handle subtraction by adding checks in _add (negative numbers).",
+                "corrected_code": "function sub(int256 a, int256 b) internal pure returns (int256 c) {\n    return _add(a, -b);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "mul",
+                "fix_info": "Updated to use the safe internal _mul method to ensure no overflow occurs during fixed-point multiplication.",
+                "corrected_code": "function mul(int256 a, int256 b) internal pure returns (int256 c) {\n    return _mul(a, b) / FIXED_1;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "div",
+                "fix_info": "Updated to use the safe internal _div method to ensure no overflow or division-by-zero occurs during fixed-point division.",
+                "corrected_code": "function div(int256 a, int256 b) internal pure returns (int256 c) {\n    return _div(_mul(a, FIXED_1), b);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "mulDiv",
+                "fix_info": "Updated to use safe arithmetic (via _mul and _div) for precision multiplication and division without overflow.",
+                "corrected_code": "function mulDiv(int256 a, int256 n, int256 d) internal pure returns (int256 c) {\n    return _div(_mul(a, n), d);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "uintMul",
+                "fix_info": "Added checks for unsigned integer inputs and converted negative results to unsigned to prevent underflow.",
+                "corrected_code": "function uintMul(int256 f, uint256 u) internal pure returns (uint256) {\n    require(int256(u) >= 0, \"Input must be unsigned\");\n    int256 c = _mul(f, int256(u));\n    if (c <= 0) {\n        return 0;\n    }\n    return uint256(c >> 127);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "toFixed",
+                "fix_info": "Added checks to prevent improper typecasting overflow for unsigned-to-signed conversion.",
+                "corrected_code": "function toFixed(uint256 n) internal pure returns (int256 f) {\n    require(int256(n) >= 0, \"Input value too large\");\n    return _mul(int256(n), FIXED_1);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "toFixed(uint256,uint256)",
+                "fix_info": "Added checks to safeguard against unsigned typecasting during division operations.",
+                "corrected_code": "function toFixed(uint256 n, uint256 d) internal pure returns (int256 f) {\n    require(int256(n) >= 0, \"Numerator too large\");\n    require(int256(d) > 0, \"Denominator invalid\");\n    return _div(_mul(int256(n), FIXED_1), int256(d));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

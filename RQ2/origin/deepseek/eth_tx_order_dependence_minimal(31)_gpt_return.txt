@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "msg.sender.transfer(reward);",
+    "description": "The claimReward function is vulnerable to front-running because it transfers funds before updating the 'claimed' state variable. An attacker can monitor the blockchain for pending transactions calling this function, then submit their own transaction with a higher gas price to claim the reward first. Since 'claimed' is set to true only after the transfer, the original transaction will fail due to the initial 'require(!claimed)' check, allowing the attacker to steal the reward. This violates the check-effects-interactions pattern where state variables should be updated before making external calls."
+}
+```

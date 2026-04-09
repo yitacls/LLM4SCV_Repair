@@ -1,0 +1,26 @@
+[{
+    "contract_name": "LinearFinance",
+    "contract_version": ">=0.6.0 <0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "receive",
+            "fix_info": "Prevent accidental sending of Ether to the token contract by reverting in receive() so Ether cannot be locked or withdrawn by an attacker.",
+            "corrected_code": "receive() external payable {\n    revert(\"LinearFinance: contract does not accept Ether\");\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "fallback",
+            "fix_info": "Prevent accidental sending of Ether or calls to non-existent functions by reverting in fallback(), avoiding accidental Ether deposits and unexpected behavior.",
+            "corrected_code": "fallback() external payable {\n    revert(\"LinearFinance: contract does not accept Ether\");\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "withdrawEther",
+            "fix_info": "Provide an admin-only, explicit Ether recovery function to safely withdraw any Ether accidentally sent to the contract. The function is protected by onlyAdmin and uses a safe call pattern.",
+            "corrected_code": "function withdrawEther(uint256 amount) external onlyAdmin {\n    uint256 bal = address(this).balance;\n    uint256 sendAmount = amount == 0 ? bal : amount;\n    require(sendAmount <= bal, \"LinearFinance: insufficient balance\");\n\n    address payable recipient = address(uint160(admin));\n    (bool success, ) = recipient.call{value: sendAmount}(\"\");\n    require(success, \"LinearFinance: withdraw failed\");\n}",
+            "change_type": "added"
+        }
+    ]
+}]

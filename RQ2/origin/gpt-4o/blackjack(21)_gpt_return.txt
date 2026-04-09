@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "return uint8(uint256(keccak256(block.blockhash(b), player, cardNumber, timestamp)) % 52);",
+    "description": "The function uses blockchain properties like block.blockhash(b), block.timestamp, and block.number as sources for generating random numbers. These values are predictable by miners, especially if they have control over block creation. This vulnerability can be exploited to manipulate the outcome of the random number generation, which may lead to unintended behavior or security flaws."
+}
+```

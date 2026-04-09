@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint256 amount = uint256(cnt) * _value;",
+    "description": "The multiplication operation between cnt and _value can cause an integer overflow in Solidity 0.4.16, as there is no built-in overflow protection. If the product of cnt and _value exceeds the maximum value of uint256, it will wrap around to a smaller value, leading to incorrect calculation of the total amount to be transferred. This could allow an attacker to transfer more tokens than they actually have, as the balance deduction would be based on the overflowed (incorrect) amount."
+}
+```

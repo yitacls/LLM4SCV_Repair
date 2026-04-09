@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(this.balance);",
+    "description": "The low-level call `send()` returns a boolean value indicating success or failure, but this return value is not checked. In Solidity 0.4.25, `send()` forwards only 2,300 gas, which is insufficient for most operations. If the recipient is a contract with a fallback function that requires more gas, or if any other failure occurs, the `send()` will return `false` and silently fail. Since the return value is ignored, the contract owner will not be notified of the failed transfer, and the funds will remain trapped in the contract. This vulnerability is compounded by the use of `this.balance`, which could allow reentrancy if the call were successful (though limited by the 2,300 gas stipend). Recommended fixes include: 1) Checking the return value and reverting on failure, 2) Using `transfer()` (which automatically reverts on failure in versions ≥0.4.25), or 3) Using a withdrawal pattern where the recipient pulls funds."
+}
+```

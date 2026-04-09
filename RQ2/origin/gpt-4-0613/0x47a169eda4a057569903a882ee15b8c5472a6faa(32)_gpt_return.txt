@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract contains a tx.origin check for authorization which can lead to serious security vulnerabilities. Using tx.origin can allow a malicious contract to invoke functions on the affected contract, leading to unintended behavior, if the owner of the contract initiates interaction with the malicious contract."
+}
+```

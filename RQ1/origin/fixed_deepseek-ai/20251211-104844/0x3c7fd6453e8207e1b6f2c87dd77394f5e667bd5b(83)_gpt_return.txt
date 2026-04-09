@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "BlessToken",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with proper ownership pattern",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with onlyOwner modifier and added safe math pattern",
+            "corrected_code": "function mint(address _toAddress, uint256 _amount) public onlyOwner returns (bool) {\n    require(_toAddress != address(0), \"Invalid address\");\n    require(_amount > 0, \"Amount must be greater than 0\");\n    require(safeAdd(_amount, mintTotal) <= totalSupply, \"Exceeds total supply\");\n    \n    mintTotal = safeAdd(_amount, mintTotal);\n    balances[_toAddress] = safeAdd(balances[_toAddress], _amount);\n    emit Mint(_toAddress, _amount);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

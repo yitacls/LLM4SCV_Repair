@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+            "description": "The mintToken function performs integer addition without checking for overflow. In Solidity ^0.4.18, integers are not protected from overflow by default. An attacker with owner privileges could intentionally overflow balanceOf[target] or totalSupply by minting an extremely large amount, causing the values to wrap around to zero or small numbers, leading to incorrect token balances and potential loss of funds. This vulnerability should be mitigated by using SafeMath library or implementing explicit overflow checks before performing arithmetic operations."
+        }
+    ]
+}
+```

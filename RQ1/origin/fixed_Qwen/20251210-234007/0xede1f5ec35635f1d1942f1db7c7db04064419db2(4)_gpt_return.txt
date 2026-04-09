@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Blocklancer_Payment",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added check for low-level call return value to prevent unchecked call vulnerabilities",
+            "corrected_code": "function () public payable {\n        require(address(0x0581cee36a85Ed9e76109A9EfE3193de1628Ac2A).call.value(msg.value)());\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

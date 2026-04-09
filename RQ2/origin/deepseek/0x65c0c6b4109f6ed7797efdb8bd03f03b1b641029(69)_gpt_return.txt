@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.call.value(value)()",
+    "description": "The low-level call to send Ether is not checked for success. In Solidity < 0.4.24, the .call() function returns false on failure rather than throwing an exception. This allows the function to continue executing (emitting the Withdraw event and updating state) even if the Ether transfer fails, resulting in an inconsistent state where the user's token balance is deducted but they never received the corresponding Ether. This could be exploited by attackers who intentionally cause the transfer to fail (e.g., through a fallback function that reverts)."
+}
+```

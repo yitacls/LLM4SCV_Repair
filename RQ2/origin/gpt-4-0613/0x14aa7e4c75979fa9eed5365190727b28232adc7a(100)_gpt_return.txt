@@ -1,0 +1,12 @@
+```json
+{
+    "contractName": "CTS",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract uses tx.origin for authorization which is vulnerable to attacks. An attacker can create a malicious contract that is called by the owner of the contract. As a result, tx.origin will be equal to the contract's owner and the attacker can withdraw ether."
+        }
+    ]
+}
+```

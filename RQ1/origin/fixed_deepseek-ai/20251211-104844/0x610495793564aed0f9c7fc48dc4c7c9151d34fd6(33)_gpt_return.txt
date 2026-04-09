@@ -1,0 +1,27 @@
+Looking at the vulnerable function, I can identify the issues:
+
+1. **Unchecked low-level call**: The `.call.value()` doesn't check for success/failure
+2. **Solidity 0.4.24 version**: Need to use appropriate syntax for that version
+3. **Reentrancy vulnerability**: The function sends money before checking results
+4. **bytes type without memory specifier**: In 0.4.24, `bytes` parameters need explicit data location
+
+Here's the corrected version:
+
+```json
+[
+    {
+        "contract_name": "SimpleWallet",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sendMoney",
+                "fix_info": "Fixed unchecked low-level call by adding success check and using gas stipend; prevented reentrancy by using transfer pattern; added proper data location for bytes parameter",
+                "corrected_code": "function sendMoney(address _target, uint _value, bytes _data) public onlyOwner {\n        require(_value <= address(this).balance, \"Insufficient balance\");\n        bool success;\n        \n        if (_data.length > 0) {\n            success = _target.call.value(_value).gas(2300)(_data);\n        } else {\n            success = _target.call.value(_value).gas(2300)();\n        }\n        \n        require(success, \"Transfer failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

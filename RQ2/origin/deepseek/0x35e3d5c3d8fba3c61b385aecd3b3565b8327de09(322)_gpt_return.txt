@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "Unchecked Low-Level Call with Value Transfer",
+            "location": "bancor.convert.value(value)(path, value, 1);",
+            "description": "The contract uses a deprecated `.value()` syntax to forward ETH when calling `bancor.convert()` without checking the success of the external call. In Solidity 0.4.x, low-level `call` operations (including `address.function.value()()`) do not propagate exceptions by default. If the called contract fails (runs out of gas, reverts, or throws), the transaction will not revert, causing the ETH transfer to be lost while the state changes in `MultiChanger` continue execution. This violates the checks-effects-interactions pattern and risks permanent loss of funds. Additionally, the `.value()` syntax is unsafe as it forwards all remaining gas by default, making the contract vulnerable to reentrancy attacks."
+        }
+    ]
+}
+```

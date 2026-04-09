@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "LatticeStakingPool",
+        "contract_version": "0.8.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "whitelistAddresses",
+                "fix_info": "Added gas control to prevent DoS attacks.",
+                "corrected_code": "function whitelistAddresses(uint256 _projectId, address[] memory _newAddressesToWhitelist) external {\n        require(msg.sender == owner, \"whitelistAddresses: Caller is not the owner\");\n        require(_projectId < projects.length, \"whitelistAddresses: Invalid project ID.\");\n        require(_newAddressesToWhitelist.length > 0, \"whitelistAddresses: Addresses array is empty.\");\n\n        for (uint i = 0; i < _newAddressesToWhitelist.length; i++) {\n            if (!projectIdToWhitelistedAddress[_projectId][_newAddressesToWhitelist[i]]) {\n                projectIdToWhitelistedAddress[_projectId][_newAddressesToWhitelist[i]] = true;\n                projectIdToWhitelistedArray[_projectId].push(_newAddressesToWhitelist[i]);\n            }\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

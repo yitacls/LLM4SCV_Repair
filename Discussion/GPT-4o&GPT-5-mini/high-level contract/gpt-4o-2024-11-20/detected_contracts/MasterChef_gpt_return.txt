@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L105 - L127",
+        "description": "The `add` function is vulnerable to reentrancy attacks, as it performs external calls such as `massUpdatePools` and modifies critical state variables like `totalAllocPoint` and the `poolInfo` array without proper reentrancy protection. An attacker may exploit this function to manipulate the pool creation process."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L131 - L143",
+        "description": "The `set` function does not implement a reentrancy guard and calls `massUpdatePools` prior to updating the `allocPoint`. An attacker could re-enter the function through one of the external calls to manipulate the allocation of points to pools."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L227 - L266",
+        "description": "The `deposit` function is vulnerable to reentrancy attacks due to external calls such as `safeTransferFrom` being made without appropriate reentrancy protection. An attacker could exploit this to manipulate the state variables `user.shares`, `user.rewardDebt`, and `pool.totalShares`."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L272 - L306",
+        "description": "The `withdraw` function allows external interaction with the `IStrategy` contract via the `withdraw` function call. Without a reentrancy guard, an attacker can potentially exploit this function to make unauthorized modifications to pool shares and user balances."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L310 - L329",
+        "description": "The `emergencyWithdraw` function interacts with an external contract using the `IStrategy.withdraw` call and then updates the user's balance. A malicious strategy could re-enter this function and disrupt its proper balance management."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "L378 - L381",
+        "description": "The `balance` function performs an external call to the `IStrategy.balanceOf` function without any protection against reentrancy. An attacker could exploit this by introducing a reentrant strategy that impacts other contract functions relying on `balance`."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "L333 - L340",
+        "description": "The `safePudTransfer` function does not check the return value of the `pud.transfer` call. If the token transfer fails, this function will silently continue execution, which can result in loss of funds or unexpected behavior."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "L384 - L389",
+        "description": "The `setPoolStrategy` function does not check the return value of the `IStrategy.withdrawAll` call. If the call fails, the function may leave the contract in an inconsistent state and impact fund withdrawal or strategy updates."
+    }
+]
+```

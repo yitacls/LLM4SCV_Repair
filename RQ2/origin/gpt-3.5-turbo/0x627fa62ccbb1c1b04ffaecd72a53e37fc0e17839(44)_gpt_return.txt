@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+    "description": "The contract is using a low-level call to interact with another contract without properly checking the return value. This can lead to unexpected results or loss of funds if the called contract does not behave as expected."
+}
+```

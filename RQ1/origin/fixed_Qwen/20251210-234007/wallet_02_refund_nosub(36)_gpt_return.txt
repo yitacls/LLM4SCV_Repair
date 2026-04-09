@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Added state variable to track user balances",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "hasBalance",
+            "fix_info": "Added modifier to check if user has balance before refund",
+            "modifier_code": "modifier hasBalance() {\n    require(balances[msg.sender] > 0, \"No balance to refund\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "refund",
+            "fix_info": "Fixed access control vulnerability by adding balance check and resetting balance before transfer to prevent reentrancy",
+            "corrected_code": "function refund() public hasBalance {\n    uint256 amount = balances[msg.sender];\n    balances[msg.sender] = 0;\n    msg.sender.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

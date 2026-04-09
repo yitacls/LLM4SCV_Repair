@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PornTokenV2Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using require() to check the return value of send()",
+            "corrected_code": "function () payable {\n        require(!crowdsaleClosed);\n        uint amount = msg.value;\n        if (beneficiary == msg.sender && currentBalance > 0) {\n            uint amountToSend = currentBalance;\n            currentBalance = 0;\n            require(beneficiary.send(amountToSend));\n        } else if (amount > 0) {\n            balanceOf[msg.sender] += amount;\n            amountRaised += amount;\n            currentBalance += amount;\n            tokenReward.transfer(msg.sender, (amount / price) * 1 ether);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

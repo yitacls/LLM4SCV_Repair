@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 152-158: getAllDelegationRequests() function",
+            "description": "The getAllDelegationRequests() function includes a revert statement that renders the function call useless. It declares a return type (uint[] memory) but immediately reverts with 'Not implemented', making the return value inaccessible and the function non-functional. This violates the expected behavior where functions with return values should return meaningful data."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 310-316: distributeBounty() function loop",
+            "description": "The for-loop in distributeBounty() processes an unbounded array of shares, which could cause the transaction to exceed the block gas limit if shares.length is large. This would prevent the bounty distribution from completing successfully, potentially locking funds indefinitely. The gas cost increases linearly with each iteration, making the function vulnerable to DoS attacks through large share arrays."
+        }
+    ]
+}
+```

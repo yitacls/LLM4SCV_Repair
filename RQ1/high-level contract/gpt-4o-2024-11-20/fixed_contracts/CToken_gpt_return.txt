@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "CToken",
+    "contract_version": "0.8.6",
+    "state_variables": [
+        {
+            "variable_name": "_nonReentrantGuard",
+            "fix_info": "Added a state variable to manage reentrancy guard more explicitly.",
+            "variable_code": "bool private _nonReentrantGuard;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Replaced the original '_notEntered' mechanism with a standard boolean-based reentrancy guard for clearer implementation.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!_nonReentrantGuard, \"Reentrant call\");\n    _nonReentrantGuard = true;\n    _;\n    _nonReentrantGuard = false;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "_setComptroller",
+            "fix_info": "Modified to use the updated reentrancy guard logic to avoid potential reentrant calls. Preserved original functionality.",
+            "corrected_code": "function _setComptroller(ComptrollerInterface newComptroller) override public nonReentrant returns (uint) {\n    \n    // Check caller is admin\n    if (msg.sender != admin) {\n        revert SetComptrollerOwnerCheck();\n    }\n\n    ComptrollerInterface oldComptroller = comptroller;\n    \n    // Ensure invoke comptroller.isComptroller() returns true\n    require(newComptroller.isComptroller(), \"marker method returned false\");\n\n    // Set market's comptroller to newComptroller\n    comptroller = newComptroller;\n\n    // Emit NewComptroller(oldComptroller, newComptroller)\n    emit NewComptroller(oldComptroller, newComptroller);\n\n    return NO_ERROR;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "seizeInternal",
+            "fix_info": "Added reentrancy protection to the internal seize function in case of unexpected external calls.",
+            "corrected_code": "function seizeInternal(address seizerToken, address liquidator, address borrower, uint seizeTokens) internal nonReentrant {\n    \n    // Fail if seize not allowed\n    uint allowed = comptroller.seizeAllowed(address(this), seizerToken, liquidator, borrower, seizeTokens);\n    if (allowed != 0) {\n        revert LiquidateSeizeComptrollerRejection(allowed);\n    }\n\n    // Fail if borrower = liquidator\n    if (borrower == liquidator) {\n        revert LiquidateSeizeLiquidatorIsBorrower();\n    }\n\n    uint protocolSeizeTokens = mul_(seizeTokens, Exp({mantissa: protocolSeizeShareMantissa}));\n    uint liquidatorSeizeTokens = seizeTokens - protocolSeizeTokens;\n\n    uint protocolSeizeAmount = mul_ScalarTruncate(Exp({mantissa: exchangeRateStoredInternal()}), protocolSeizeTokens);\n    uint totalReservesNew = totalReserves + protocolSeizeAmount;\n\n    totalReserves = totalReservesNew;\n    totalSupply = totalSupply - protocolSeizeTokens;\n    accountTokens[borrower] = accountTokens[borrower] - seizeTokens;\n    accountTokens[liquidator] = accountTokens[liquidator] + liquidatorSeizeTokens;\n\n    emit Transfer(borrower, liquidator, liquidatorSeizeTokens);\n    emit Transfer(borrower, address(this), protocolSeizeTokens);\n    emit ReservesAdded(address(this), protocolSeizeAmount, totalReservesNew);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "redeemFresh",
+            "fix_info": "Added reentrancy protection to ensure unexpected external calls are prevented during the critical redeem process.",
+            "corrected_code": "function redeemFresh(address payable redeemer, uint redeemTokensIn, uint redeemAmountIn) internal nonReentrant {\n    require(redeemTokensIn == 0 || redeemAmountIn == 0, \"one of redeemTokensIn or redeemAmountIn must be zero\");\n\n    Exp memory exchangeRate = Exp({mantissa: exchangeRateStoredInternal() });\n\n    uint redeemTokens;\n    uint redeemAmount;\n\n    if (redeemTokensIn > 0) {\n        redeemTokens = redeemTokensIn;\n        redeemAmount = mul_ScalarTruncate(exchangeRate, redeemTokensIn);\n    } else {\n        redeemTokens = div_(redeemAmountIn, exchangeRate);\n        redeemAmount = redeemAmountIn;\n    }\n\n    uint allowed = comptroller.redeemAllowed(address(this), redeemer, redeemTokens);\n    if (allowed != 0) {\n        revert RedeemComptrollerRejection(allowed);\n    }\n\n    if (accrualBlockNumber != getBlockNumber()) {\n        revert RedeemFreshnessCheck();\n    }\n\n    if (getCashPrior() < redeemAmount) {\n        revert RedeemTransferOutNotPossible();\n    }\n\n    totalSupply = totalSupply - redeemTokens;\n    accountTokens[redeemer] = accountTokens[redeemer] - redeemTokens;\n\n    doTransferOut(redeemer, redeemAmount);\n\n    emit Transfer(redeemer, address(this), redeemTokens);\n    emit Redeem(redeemer, redeemAmount, redeemTokens);\n\n    comptroller.redeemVerify(address(this), redeemer, redeemAmount, redeemTokens);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

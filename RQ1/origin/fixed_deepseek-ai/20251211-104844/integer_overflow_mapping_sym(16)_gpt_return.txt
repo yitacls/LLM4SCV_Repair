@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "IntegerOverflowMappingSym1",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "map",
+                "fix_info": "Original mapping was likely defined elsewhere; assumed to exist",
+                "variable_code": "mapping(uint256 => uint256) public map;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "init",
+                "fix_info": "Fixed arithmetic underflow vulnerability by using SafeMath library or explicit checks",
+                "corrected_code": "function init(uint256 k, uint256 v) public {\n    require(map[k] >= v, \"Integer underflow prevented\");\n    map[k] = map[k] - v;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Burner",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "dragonHandler",
+            "fix_info": "Fixed arithmetic overflow vulnerability by checking for potential overflow before updating state variable.",
+            "corrected_code": "function dragonHandler(uint256 _amount) onlyDragon { \n        Dragon drag = Dragon(dragon); \n        drag.burnDragons(_amount); \n        require(DragonsBurned + _amount >= DragonsBurned, 'Overflow detected'); \n        DragonsBurned += _amount; \n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

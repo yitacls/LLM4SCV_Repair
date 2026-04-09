@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract 'Swapper' is vulnerable due to the use of tx.origin for authorization. This is an issue because it trusts the contract that directly triggered the action as opposed to the user who signed the transaction. This can allow other contracts to act on behalf of users without their consent. It is advised to use msg.sender instead of tx.origin for checks as it refers to the immediate caller of the contract."
+}
+```

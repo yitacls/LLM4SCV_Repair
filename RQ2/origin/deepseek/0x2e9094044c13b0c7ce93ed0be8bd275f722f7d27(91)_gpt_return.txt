@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint lotterynumber = (uint(curhash)+block.timestamp)%(maxguess+1);",
+    "description": "The lottery number generation uses predictable on-chain data (curhash and block.timestamp) that can be manipulated by miners or predicted by attackers. In Solidity 0.4.11, block.timestamp can be influenced by miners within a small range (~30 seconds), and curhash (likely block.coinbase or similar) is also miner-controlled. This allows malicious miners to influence the outcome when they are also participants, making the lottery game unfair and vulnerable to manipulation."
+}
+```

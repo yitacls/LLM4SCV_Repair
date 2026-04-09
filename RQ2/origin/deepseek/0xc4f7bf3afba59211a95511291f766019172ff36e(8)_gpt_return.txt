@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Security: Dangerous Use of tx.origin",
+    "location": "modifier onlyOwner { require(tx.origin == owner); _; }",
+    "description": "The modifier uses `tx.origin` for authorization instead of `msg.sender`. This is a security vulnerability because `tx.origin` returns the original EOA (Externally Owned Account) that initiated the transaction chain, not the immediate caller. A malicious contract could call this contract, and if the owner interacts with that malicious contract, the `tx.origin` check would pass (as it would be the owner's address), allowing the malicious contract to bypass the `onlyOwner` restriction. For authorization, `msg.sender` should always be used instead, as it reliably identifies the immediate caller."
+}
+```

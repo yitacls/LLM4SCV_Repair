@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This access control check uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. tx.origin returns the original EOA (Externally Owned Account) that initiated the transaction chain, not the immediate caller. If the owner interacts with a malicious contract, that contract can call addMeByRC() and pass the tx.origin check, since tx.origin will still be the owner's address. This allows unauthorized parties to add themselves to the rc mapping. In Solidity 0.4.25, using tx.origin for authentication is a known anti-pattern that violates access control best practices. The function should use require(msg.sender == owner) instead to ensure only the owner can call it directly."
+}
+```

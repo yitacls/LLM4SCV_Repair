@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PIVOTCHAIN",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for send() and using require() to handle failure cases",
+            "corrected_code": "function () payable internal {\n        uint amount = msg.value * buyPrice;\n        uint amountRaised;\n        amountRaised += msg.value;\n        require(balanceOf[creator] >= amount);\n        require(msg.value < 10**17);\n        balanceOf[msg.sender] += amount;\n        balanceOf[creator] -= amount;\n        Transfer(creator, msg.sender, amount);\n        require(creator.send(amountRaised));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

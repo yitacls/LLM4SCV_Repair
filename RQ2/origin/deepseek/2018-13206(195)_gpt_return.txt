@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[msg.sender] -= amount; and balanceOf[this] += amount;",
+    "description": "In Solidity 0.4.2, there is no built-in safe math protection. The operations 'balanceOf[msg.sender] -= amount' and 'balanceOf[this] += amount' are vulnerable to integer underflow and overflow respectively. If 'amount' is greater than 'balanceOf[msg.sender]', the subtraction will underflow, resulting in an extremely large balance for the seller. Similarly, if 'balanceOf[this] + amount' exceeds 2^256-1, it will overflow and wrap around to a small value."
+}
+```

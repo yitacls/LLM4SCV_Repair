@@ -1,0 +1,66 @@
+```json
+[
+    {
+        "contract_name": "NoteERC20",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Added underflow/overflow protections during token grant calculations by replacing unchecked addition with safe addition.",
+                "corrected_code": "function initialize(\n    address[] calldata initialAccounts,\n    uint96[] calldata initialGrantAmount,\n    NotionalProxy notionalProxy_\n) public initializer {\n    require(initialGrantAmount.length == initialAccounts.length, \"Lengths must match\");\n\n    notionalProxy = notionalProxy_;\n    uint96 totalGrants = 0;\n    for (uint256 i = 0; i < initialGrantAmount.length; i++) {\n        totalGrants = _add96(totalGrants, initialGrantAmount[i], \"Note::initialize: total grants overflow\");\n        balances[initialAccounts[i]] = initialGrantAmount[i];\n\n        emit Transfer(address(0), initialAccounts[i], initialGrantAmount[i]);\n    }\n\n    require(totalGrants == totalSupply, \"Total grants must equal total supply\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transfer",
+                "fix_info": "Ensured safe conversion of `rawAmount` to `uint96` with overflow checks using `_safe96` utility function.",
+                "corrected_code": "function transfer(address dst, uint256 rawAmount) external returns (bool) {\n    uint96 amount = _safe96(rawAmount, \"Note::transfer: amount exceeds 96 bits\");\n    _transferTokens(msg.sender, dst, amount);\n    return true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Safe subtraction to prevent underflows when adjusting allowances during token transfers.",
+                "corrected_code": "function transferFrom(\n    address src,\n    address dst,\n    uint256 rawAmount\n) external returns (bool) {\n    address spender = msg.sender;\n    uint96 spenderAllowance = allowances[src][spender];\n    uint96 amount = _safe96(rawAmount, \"Note::transferFrom: amount exceeds 96 bits\");\n\n    if (spender != src && spenderAllowance != uint96(-1)) {\n        uint96 newAllowance = _sub96(\n            spenderAllowance,\n            amount,\n            \"Note::transferFrom: transfer amount exceeds allowance\"\n        );\n        allowances[src][spender] = newAllowance;\n\n        emit Approval(src, spender, newAllowance);\n    }\n\n    _transferTokens(src, dst, amount);\n    return true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_transferTokens",
+                "fix_info": "Replaced unchecked arithmetic with safe addition and subtraction for both sender and receiver balances.",
+                "corrected_code": "function _transferTokens(\n    address src,\n    address dst,\n    uint96 amount\n) internal {\n    require(src != address(0), \"Note::_transferTokens: cannot transfer from the zero address\");\n    require(dst != address(0), \"Note::_transferTokens: cannot transfer to the zero address\");\n\n    balances[src] = _sub96(\n        balances[src],\n        amount,\n        \"Note::_transferTokens: transfer amount exceeds balance\"\n    );\n    balances[dst] = _add96(\n        balances[dst],\n        amount,\n        \"Note::_transferTokens: transfer amount overflows\"\n    );\n    emit Transfer(src, dst, amount);\n\n    _moveDelegates(delegates[src], delegates[dst], amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_writeCheckpoint",
+                "fix_info": "Added safe conversion for block number using `_safe32` to prevent overflow risks.",
+                "corrected_code": "function _writeCheckpoint(\n    address delegatee,\n    uint32 nCheckpoints,\n    uint96 oldVotes,\n    uint96 newVotes\n) internal {\n    uint32 blockNumber = _safe32(block.number, \"Note::_writeCheckpoint: block number exceeds 32 bits\");\n\n    if (nCheckpoints > 0 && checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber) {\n        checkpoints[delegatee][nCheckpoints - 1].votes = newVotes;\n    } else {\n        checkpoints[delegatee][nCheckpoints] = Checkpoint(blockNumber, newVotes);\n        numCheckpoints[delegatee] = nCheckpoints + 1;\n    }\n\n    emit DelegateVotesChanged(delegatee, oldVotes, newVotes);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_add96",
+                "fix_info": "Used to safely add two `uint96` numbers with overflow protection.",
+                "corrected_code": "function _add96(\n    uint96 a,\n    uint96 b,\n    string memory errorMessage\n) private pure returns (uint96) {\n    uint96 c = a + b;\n    require(c >= a, errorMessage);\n    return c;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_sub96",
+                "fix_info": "Used to safely subtract two `uint96` numbers with underflow protection.",
+                "corrected_code": "function _sub96(\n    uint96 a,\n    uint96 b,\n    string memory errorMessage\n) private pure returns (uint96) {\n    require(b <= a, errorMessage);\n    return a - b;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_safe96",
+                "fix_info": "Added a utility function to safely cast from uint256 to uint96 with overflow protection.",
+                "corrected_code": "function _safe96(uint256 n, string memory errorMessage) private pure returns (uint96) {\n    require(n < 2**96, errorMessage);\n    return uint96(n);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_safe32",
+                "fix_info": "Added a utility function to safely cast from uint256 to uint32 with overflow protection.",
+                "corrected_code": "function _safe32(uint256 n, string memory errorMessage) private pure returns (uint32) {\n    require(n < 2**32, errorMessage);\n    return uint32(n);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

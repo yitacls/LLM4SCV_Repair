@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "The code lacks protections against arithmetic overflow or underflow in the statement `balanceOf[target] += mintedAmount;`. In Solidity versions prior to 0.8.0, arithmetic operations do not check for overflow or underflow, which can result in unexpected behavior or vulnerabilities if the incremented value exceeds the maximum allowable uint256 size. This could allow malicious actors to manipulate balances, potentially inflating a user's balance without bound."
+}
+```

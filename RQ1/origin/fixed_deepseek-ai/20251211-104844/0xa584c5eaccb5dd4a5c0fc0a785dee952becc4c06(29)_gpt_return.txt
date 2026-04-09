@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Crowdsale",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed from 'address' to 'address payable' to enable transfer functions",
+                "variable_code": "address payable public owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyCreator",
+                "fix_info": "No changes needed to modifier",
+                "modifier_code": "modifier onlyCreator() { require(msg.sender == owner, \"Not the owner\"); _; }",
+                "change_type": "unchanged"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "safeWithdrawal",
+                "fix_info": "Fixed arithmetic vulnerability by using transfer() instead of send() and added reentrancy guard",
+                "corrected_code": "function safeWithdrawal() public onlyCreator {\n    uint256 amount = address(this).balance;\n    require(amount > 0, \"No funds to withdraw\");\n    owner.transfer(amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_recipient] += _value;",
+    "description": "The contract is vulnerable to integer overflow attacks. When adding _value to balances[_recipient], if the result exceeds the maximum value that can be stored in a uint256, it will wrap around to zero, causing an overflow. This can be exploited by an attacker to create tokens out of thin air by transferring an amount that causes the recipient's balance to overflow, effectively resetting it to a small value while appearing to add tokens."
+}
+```

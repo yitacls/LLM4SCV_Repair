@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "function getBlockByTime(uint _time) public view returns (uint) { ... } // Lines 119-134",
+        "description": "This function uses binary search and lacks sufficient checks for malformed input data or extreme edge cases. It could result in an infinite loop if the input is not properly validated, potentially causing a Denial-of-Service."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function claimRewardMany(uint[] calldata tokenIds, Interval[][] calldata intervals) public returns (uint[] memory rewards) { ... } // Lines 269-275",
+        "description": "This function loops through an array of tokenIds and their respective intervals, potentially resulting in high gas costs when the arrays are large. If the gas required exceeds the block gas limit, the function will fail, causing a Denial-of-Service for users trying to claim rewards in bulk."
+    }
+]
+```

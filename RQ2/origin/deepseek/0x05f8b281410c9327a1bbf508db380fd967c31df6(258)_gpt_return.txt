@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function selfdestructs() payable public {\n    selfdestruct(owner); // <SUICIDAL_VUL>\n}",
+    "description": "The 'selfdestructs()' function is declared as 'public' without any access control modifier (such as 'onlyOwner'), allowing any caller to trigger contract self-destruction and forcibly send the contract's remaining Ether balance to the 'owner' address. This lack of authorization enables malicious actors to irreversibly destroy the contract at will."
+}
+```

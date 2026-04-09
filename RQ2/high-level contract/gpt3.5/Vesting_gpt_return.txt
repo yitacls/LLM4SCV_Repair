@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-113-DoS with Failed Call",
+            "location": "Function: updateScore, Line: 139-199",
+            "description": "This vulnerability arises due to potential denial-of-service (DoS) attacks arising from failed external calls. The function updateScore can be affected if an external call fails, leading to a DoS risk."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Function: updateScore, Line: 172-180",
+            "description": "This vulnerability arises due to a lack of proper integer boundary checks. Integer overflow and underflow can occur if the calculations involving integer division and multiplication in the updateScore function exceed the limits of uint256 datatype."
+        }
+    ]
+}
+```

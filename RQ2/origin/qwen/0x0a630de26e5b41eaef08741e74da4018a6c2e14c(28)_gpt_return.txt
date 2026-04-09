@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "players[currentGamenumber][winner].send(this.balance);",
+    "description": "The send() function call does not check the return value, which means if the transfer fails (e.g., due to gas stipend limitations, recipient being a contract without payable fallback, or intentional reversion), the contract will not handle the failure properly. This could lead to loss of funds or incorrect game state. The send() function returns a boolean indicating success or failure, but this return value is ignored in the current implementation."
+}
+```

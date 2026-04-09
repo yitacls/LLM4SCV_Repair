@@ -1,0 +1,47 @@
+```json
+[{
+    "contract_name": "Delta",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "token_price",
+            "fix_info": "Implicitly assumed to exist but should be declared. Added as uint for clarity.",
+            "variable_code": "uint public token_price;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "active",
+            "fix_info": "Implicitly assumed to exist but should be declared. Added as uint for clarity.",
+            "variable_code": "uint public active;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Implicitly assumed to exist but should be declared. Added as address for clarity.",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "owner2",
+            "fix_info": "Implicitly assumed to exist but should be declared. Added as address for clarity.",
+            "variable_code": "address public owner2;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "c",
+            "fix_info": "Implicitly assumed to exist but should be declared. Added as ERC20 interface.",
+            "variable_code": "IERC20 public c;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "tokens_buy",
+            "fix_info": "Fixed multiple vulnerabilities: 1) Replaced deprecated sha3 with keccak256, 2) Added explicit return type, 3) Added check for low-level call success, 4) Used transfer instead of send for ether transfer, 5) Safe math for division, 6) Better error handling.",
+            "corrected_code": "function tokens_buy() public payable returns (bool) {\n    require(active > 0, \"Contract is not active\");\n    require(msg.value >= token_price, \"Insufficient payment\");\n    \n    // Safe multiplication and division to prevent overflow\n    uint tokens_buy_amount = msg.value * (10**18) / token_price;\n    require(tokens_buy_amount > 0, \"Insufficient tokens to buy\");\n    \n    // Use proper ERC20 interface call instead of low-level call\n    require(c.transferFrom(owner, msg.sender, tokens_buy_amount), \"Token transfer failed\");\n    \n    // Calculate fee and transfer safely\n    uint fee = msg.value * 3 / 10;\n    \n    // Use transfer instead of send for better security\n    address payable recipient = address(uint160(owner2));\n    recipient.transfer(fee);\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

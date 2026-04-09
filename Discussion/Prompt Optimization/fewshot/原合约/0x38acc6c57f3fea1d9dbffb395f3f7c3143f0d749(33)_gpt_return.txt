@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "GetSomeEther",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "PutEther",
+                "fix_info": "Prevent arithmetic overflow by validating addition result.",
+                "corrected_code": "function PutEther() public payable {
+    require(msg.value <= uint256(-1) - freeEther);
+    freeEther += msg.value;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

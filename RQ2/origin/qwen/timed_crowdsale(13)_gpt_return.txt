@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "return block.timestamp >= 1546300800;",
+    "description": "The function isSaleFinished() relies on block.timestamp which can be manipulated by miners within a small range (roughly 15 seconds). In Solidity ^0.4.25, this poses a risk for time-sensitive operations like crowdsale end conditions. A malicious miner could potentially influence the timestamp to either extend or prematurely end the sale, affecting the contract's business logic and potentially causing financial loss to participants."
+}
+```

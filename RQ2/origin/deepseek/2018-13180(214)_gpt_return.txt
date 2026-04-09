@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability - Integer Overflow",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "In Solidity versions prior to 0.8.0, unchecked arithmetic operations can lead to integer overflows. The operations 'balanceOf[target] += mintedAmount' and 'totalSupply += mintedAmount' do not include overflow protection, allowing an attacker to mint a very large amount of tokens (e.g., 2^256 - balanceOf[target] + 1) that would cause the balance to wrap around to a small number. Similarly, totalSupply could overflow. This vulnerability occurs because Solidity 0.4.16 uses unchecked arithmetic by default, and the contract does not implement SafeMath libraries or manual checks to prevent overflow conditions."
+}
+```

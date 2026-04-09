@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "TokenFallbackCaller",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "callTokenFallbackIfNeeded",
+        "fix_info": "Added proper low-level call return value check and replaced deprecated 'call()' with newer syntax for better compatibility with 0.4.24. Also improved recipient contract existence check by using assembly to check if recipient is a contract and not a regular address.",
+        "corrected_code": "function callTokenFallbackIfNeeded(address sender, address recipient, uint amount, bytes data)\n        internal\n        preventReentrancy\n    {\n        uint length;\n        assembly {\n            length := extcodesize(recipient)\n        }\n        \n        if (length > 0) {\n            // Use proper low-level call with return value checking\n            (bool success, ) = recipient.call(\n                abi.encodeWithSignature(\n                    \"tokenFallback(address,uint256,bytes)\", \n                    sender, \n                    amount, \n                    data\n                )\n            );\n            \n            // Check if the call succeeded\n            require(success, \"TokenFallbackCaller: tokenFallback call failed\");\n        }\n    }",
+        "change_type": "modified"
+    }]
+}]
+```

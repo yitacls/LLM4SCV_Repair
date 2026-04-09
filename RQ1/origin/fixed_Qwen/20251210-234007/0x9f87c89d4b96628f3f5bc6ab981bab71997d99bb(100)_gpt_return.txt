@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CryptoThreeKingdoms",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replaced tx.origin with msg.sender to prevent access control bypass and follow best practices for authentication",
+            "corrected_code": "function transfer(address _to, uint256 _tokenId) public {\n    require(msg.sender == ownerOf(_tokenId));\n    _transfer(msg.sender, _to, _tokenId);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

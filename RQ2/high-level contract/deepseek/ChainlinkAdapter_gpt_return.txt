@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 18: newPrice = (feeder.latestAnswer() * chainlinkDecimalsAdapter).toUint256();",
+    "description": "The multiplication operation between `feeder.latestAnswer()` (which returns an `int256`) and `chainlinkDecimalsAdapter` (a constant `int256` with value 10^10) could result in an integer overflow if the product exceeds the maximum value representable by `int256` (2^255-1). Chainlink price feeds can return large values, especially for assets with high prices. This overflow could cause the price to wrap around to a much smaller or negative value, leading to incorrect pricing data being used by the contract's consumers. While `toUint256()` is called afterward, the overflow occurs during the multiplication before the type conversion."
+}
+```

@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-108-State Variable Default Visibility",
+            "location": "L48-L49",
+            "description": "The 'owner' and 'metaTxRelayer' state variables should specify their visibility explicitly as 'public', 'internal', 'private', or 'internal'."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "L249",
+            "description": "The contract does not have explicit handling to prevent integer underflow/overflow in the calculation of the bounty balance when a contribution is made."
+        }
+    ]
+}
+```

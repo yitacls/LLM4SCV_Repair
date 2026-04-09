@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "STokensV2",
+    "contract_version": "v2",
+    "state_variables": [
+        {
+            "variable_name": "_lastMovingRewardTimestamp",
+            "fix_info": "Limited the length of this array to a maximum allowed size to prevent potential gas limit issues during processing.",
+            "variable_code": "uint256[] private _lastMovingRewardTimestamp;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "setRewardRate",
+            "fix_info": "Added a cap to restrict the array size of '_rewardRate' and '_lastMovingRewardTimestamp' using a maximum limit.",
+            "corrected_code": "function setRewardRate(uint256 rewardRate) public virtual override returns (bool success) {\n    require(rewardRate <= _valueDivisor.mul(100), \"ST17\");\n    require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"ST2\");\n\n    // Cap the size of the array to prevent excessive gas costs\n    uint256 MAX_ENTRIES = 100;\n    if (_rewardRate.length >= MAX_ENTRIES) {\n        _rewardRate.pop(); // Remove the oldest entry to maintain capped size\n        _lastMovingRewardTimestamp.pop();\n    }\n\n    _rewardRate.push(rewardRate);\n    _lastMovingRewardTimestamp.push(block.timestamp);\n    emit SetRewardRate(rewardRate);\n\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_calculatePendingRewards",
+            "fix_info": "Added an iteration limit to ensure safe loop execution even with a large '_lastMovingRewardTimestamp' length.",
+            "corrected_code": "function _calculatePendingRewards(uint256 principal, uint256 lastRewardTimestamp) internal view returns (uint256 pendingRewards) {\n    uint256 _index;\n    uint256 _rewardBlocks;\n    uint256 _simpleInterestOfInterval;\n    uint256 _temp;\n\n    if (principal == 0 || block.timestamp.sub(lastRewardTimestamp) == 0)\n        return 0;\n\n    uint256 _lastMovingRewardLength = _lastMovingRewardTimestamp.length;\n\n    // Limit the number of iterations for safety\n    uint256 MAX_ITERATIONS = 100;\n    require(_lastMovingRewardLength <= MAX_ITERATIONS, \"Exceeds allowable iterations\");\n\n    for (_index = _lastMovingRewardLength.sub(1); _index >= 0; ) {\n        if (_index < _lastMovingRewardLength.sub(1)) {\n            if (_lastMovingRewardTimestamp[_index] > lastRewardTimestamp) {\n                _rewardBlocks = (_lastMovingRewardTimestamp[_index.add(1)]).sub(_lastMovingRewardTimestamp[_index]);\n                _temp = principal.mulDiv(_rewardRate[_index], 100);\n                _simpleInterestOfInterval = _temp.mulDiv(_rewardBlocks, _valueDivisor);\n                pendingRewards = pendingRewards.add(_simpleInterestOfInterval);\n            } else {\n                _rewardBlocks = (_lastMovingRewardTimestamp[_index.add(1)]).sub(lastRewardTimestamp);\n                _temp = principal.mulDiv(_rewardRate[_index], 100);\n                _simpleInterestOfInterval = _temp.mulDiv(_rewardBlocks, _valueDivisor);\n                pendingRewards = pendingRewards.add(_simpleInterestOfInterval);\n                break;\n            }\n        } else {\n            if (_lastMovingRewardTimestamp[_index] > lastRewardTimestamp) {\n                _rewardBlocks = (block.timestamp).sub(_lastMovingRewardTimestamp[_index]);\n                _temp = principal.mulDiv(_rewardRate[_index], 100);\n                _simpleInterestOfInterval = _temp.mulDiv(_rewardBlocks, _valueDivisor);\n                pendingRewards = pendingRewards.add(_simpleInterestOfInterval);\n            } else {\n                _rewardBlocks = (block.timestamp).sub(lastRewardTimestamp);\n                _temp = principal.mulDiv(_rewardRate[_index], 100);\n                _simpleInterestOfInterval = _temp.mulDiv(_rewardBlocks, _valueDivisor);\n                pendingRewards = pendingRewards.add(_simpleInterestOfInterval);\n                break;\n            }\n        }\n\n        if (_index == 0) break;\n        else {\n            _index = _index.sub(1);\n        }\n    }\n    return pendingRewards;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_beforeTokenTransfer",
+            "fix_info": "Added checks to avoid excessive gas usage during token transfers affected by whitelisted addresses or reward calculation.",
+            "corrected_code": "function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {\n    require(!paused(), \"ST7\");\n    super._beforeTokenTransfer(from, to, amount);\n\n    // Batch processing sanity check to ensure these calls don't breach block gas limits\n    uint256 MAX_REWARD_ACTIONS = 50;\n    require(_whitelistedAddresses.length() <= MAX_REWARD_ACTIONS, \"Too many reward actions\");\n\n    if (from == address(0)) {\n        if (!_whitelistedAddresses.contains(to)) {\n            _calculateRewards(to);\n        } else {\n            _calculateHolderRewards(to, from, amount);\n        }\n    }\n\n    if (from != address(0) && !_whitelistedAddresses.contains(from)) {\n        if (to == address(0)) {\n            _calculateRewards(from);\n        }\n\n        if (to != address(0) && !_whitelistedAddresses.contains(to)) {\n            _calculateRewards(from);\n            _calculateRewards(to);\n        }\n\n        if (to != address(0) && _whitelistedAddresses.contains(to)) {\n            _calculateRewards(from);\n            _calculateHolderRewards(to, from, amount);\n        }\n    }\n\n    if (from != address(0) && _whitelistedAddresses.contains(from)) {\n        if (to == address(0)) {\n            _calculateHolderRewards(from, to, amount);\n        }\n\n        if (to != address(0) && !_whitelistedAddresses.contains(to)) {\n            _calculateHolderRewards(from, to, amount);\n            _calculateRewards(to);\n        }\n\n        if (to != address(0) && _whitelistedAddresses.contains(to)) {\n            _calculateHolderRewards(from, address(0), amount);\n            _calculateHolderRewards(to, address(0), amount);\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

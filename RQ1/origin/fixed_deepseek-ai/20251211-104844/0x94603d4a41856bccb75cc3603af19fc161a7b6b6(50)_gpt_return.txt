@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "RfsCoin",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable for access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict withdraw function",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier and reentrancy protection",
+            "corrected_code": "function withdraw(uint tokenCount) public onlyOwner returns (bool) {\n        require(tokenCount > 0);\n        uint256 balance = dividends(msg.sender);\n        require(balance > 0);\n        \n        // Update state before transfer to prevent reentrancy\n        payouts[msg.sender] += (int256)(balance * PRECISION);\n        totalPayouts += (int256)(balance * PRECISION);\n        \n        // Reset balance before transfer\n        uint256 amountToSend = balance;\n        balance = 0;\n        \n        // Use call.value() instead of transfer for better compatibility\n        msg.sender.transfer(amountToSend);\n        return true;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize owner",
+            "corrected_code": "function RfsCoin() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

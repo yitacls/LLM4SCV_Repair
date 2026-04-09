@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "StakingController",
+    "contract_version": "^0.7.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "approveDomainBid",
+            "fix_info": "Added modifier to ensure only authorized address can approve the bid",
+            "corrected_code": "function approveDomainBid(uint256 parentId, string memory bidIPFSHash, bytes memory signature) external authorizedOwner(parentId) {\n  require(registrar.domainExists(parentId), 'ZNS: Invalid Domain');\n  bytes32 hashOfSig = keccak256(abi.encode(signature));\n  approvedBids[hashOfSig] = true;\n  emit DomainBidApproved(bidIPFSHash);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "fulfillDomainBid",
+            "fix_info": "Modified signature recovery to eliminate signature malleability, and ensured that bid has been approved before it's fullfilled",
+            "corrected_code": "function fulfillDomainBid(uint256 parentId, uint256 bidAmount, uint256 royaltyAmount, string memory bidIPFSHash, string memory name, string memory metadata, bytes memory signature, bool lockOnCreation, address recipient) external {\n  bytes32 recoveredBidHash = createBid(parentId, bidAmount, bidIPFSHash, name);\n  bytes32 r;\n  bytes32 s;\n  uint8 v;\n  assembly {\n    r := mload(add(signature, 0x20))\n    s := mload(add(signature, 0x40))\n    v := byte(0, mload(add(signature, 0x60)))\n  }\n  if (uint256(s) > 7) revert();\n  if (v < 27) v += 27;\n  address recoveredBidder = ecrecover(recoveredBidHash, v, r, s);\n  require(recipient == recoveredBidder, 'ZNS: bid info doesnt match/exist');\n  bytes32 hashOfSig = keccak256(abi.encode(signature));\n  require(approvedBids[hashOfSig] == true, 'ZNS: bid not approved');\n  infinity.safeTransferFrom(recoveredBidder, controller, bidAmount);\n  uint256 id = registrar.registerDomain(parentId, name, controller, recoveredBidder);\n  registrar.setDomainMetadataUri(id, metadata);\n  registrar.setDomainRoyaltyAmount(id, royaltyAmount);\n  registrar.transferFrom(controller, recoveredBidder, id);\n  if (lockOnCreation) {\n    registrar.lockDomainMetadataForOwner(id);\n  }\n  approvedBids[hashOfSig] = false;\n  emit DomainBidFulfilled(metadata, name, recoveredBidder, id, parentId);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

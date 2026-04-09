@@ -1,0 +1,40 @@
+[
+    {
+        "contract_name": "TokenState",
+        "contract_version": "^0.5.3",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getLockedCount",
+                "fix_info": "Made view-only and use a non-mutating state read (getStateView) to avoid state changes and large gas consumption during off-chain calls. Also read purchased/slashed directly from storage instead of using external call to this.",
+                "corrected_code": "function getLockedCount(address holder) external view returns (uint amount) {\n    amount = 0;\n    DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n    uint[] memory delegationIds = delegationController.getDelegationsByHolder(holder);\n    for (uint i = 0; i < delegationIds.length; ++i) {\n        uint id = delegationIds[i];\n        if (isLocked(getStateView(id))) {\n            amount += delegationController.getDelegation(id).amount;\n        }\n    }\n    return amount + _purchased[holder] + _slashed[holder];\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getDelegatedCount",
+                "fix_info": "Made view-only and use a non-mutating state read (getStateView) to avoid state changes and reduce transaction gas risk when used off-chain.",
+                "corrected_code": "function getDelegatedCount(address holder) external view returns (uint amount) {\n    amount = 0;\n    DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n    uint[] memory delegationIds = delegationController.getDelegationsByHolder(holder);\n    for (uint i = 0; i < delegationIds.length; ++i) {\n        uint id = delegationIds[i];\n        if (isDelegated(getStateView(id))) {\n            amount += delegationController.getDelegation(id).amount;\n        }\n    }\n    return amount;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getPurchasedAmount",
+                "fix_info": "Made view-only. Removed on-call state transitions (previously it invoked getState for ending delegations). For off-chain reads this avoids expensive/long-running on-chain updates and DoS risk. Returns stored purchased amount.",
+                "corrected_code": "function getPurchasedAmount(address holder) public view returns (uint amount) {\n    return _purchased[holder];\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getStateView",
+                "fix_info": "Added a non-mutating read-only version of getState which computes the effective state without writing storage. This enables safe off-chain reads and prevents callers from being able to trigger large state updates (DoS with block gas limit) simply by querying.",
+                "corrected_code": "function getStateView(uint delegationId) public view returns (State state) {\n    DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n    require(delegationController.getDelegation(delegationId).holder != address(0), \"Delegation does not exists\");\n\n    state = _state[delegationId];\n    if (state == State.PROPOSED) {\n        if (_timelimit[delegationId] == 0) {\n            // compute what initProposed would set as timelimit without writing it\n            TimeHelpers timeHelpers = TimeHelpers(contractManager.getContract(\"TimeHelpers\"));\n            DelegationController.Delegation memory delegation = delegationController.getDelegation(delegationId);\n            uint tempTimelimit = timeHelpers.getNextMonthStartFromDate(delegation.created);\n            if (now >= tempTimelimit) {\n                state = State.COMPLETED;\n            }\n        } else {\n            if (now >= _timelimit[delegationId]) {\n                state = State.COMPLETED;\n            }\n        }\n    } else if (state == State.ACCEPTED) {\n        if (_timelimit[delegationId] != 0 && now >= _timelimit[delegationId]) {\n            state = State.DELEGATED;\n        }\n    } else if (state == State.ENDING_DELEGATED) {\n        if (_timelimit[delegationId] != 0 && now >= _timelimit[delegationId]) {\n            state = State.COMPLETED;\n        }\n    }\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "endingDelegatedToUnlocked",
+                "fix_info": "Replaced the expensive shift-based array element removal with a swap-and-pop pattern to reduce gas and avoid potential DoS via large arrays. Preserved original logic for purchased handling.",
+                "corrected_code": "function endingDelegatedToUnlocked(uint delegationId, DelegationController.Delegation memory delegation) internal returns (State state) {\n    state = State.COMPLETED;\n    _state[delegationId] = state;\n    _timelimit[delegationId] = 0;\n\n    // remove delegationId from _ending array using swap-and-pop to minimize gas\n    uint endingLength = _endingDelegations[delegation.holder].length;\n    for (uint i = 0; i < endingLength; ++i) {\n        if (_endingDelegations[delegation.holder][i] == delegationId) {\n            if (i != endingLength - 1) {\n                _endingDelegations[delegation.holder][i] = _endingDelegations[delegation.holder][endingLength - 1];\n            }\n            _endingDelegations[delegation.holder][endingLength - 1] = 0;\n            _endingDelegations[delegation.holder].length--;\n            break;\n        }\n    }\n\n    if (_isPurchased[delegationId]) {\n        address holder = delegation.holder;\n        _totalDelegated[holder] += delegation.amount;\n        if (_totalDelegated[holder] >= _purchased[holder]) {\n            purchasedToUnlocked(holder);\n        }\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

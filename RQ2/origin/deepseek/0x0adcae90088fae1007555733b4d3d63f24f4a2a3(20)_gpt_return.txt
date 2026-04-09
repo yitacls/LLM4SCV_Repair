@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Unchecked Overflow",
+    "location": "balances[_recipient] += _value;",
+    "description": "In Solidity version ^0.4.11, integer arithmetic operations do not automatically check for overflow/underflow. The operation 'balances[_recipient] += _value' could overflow if the recipient's balance plus _value exceeds the maximum value of uint256 (2^256-1), which would wrap around and potentially result in a very small balance. This could allow attackers to artificially inflate token balances. The vulnerability applies to both the addition (line shown) and the subtraction 'balances[msg.sender] -= _value' (previous line). This issue was addressed in Solidity 0.8.0 with built-in overflow checks, and in earlier versions requires using SafeMath libraries or explicit checks."
+}
+```

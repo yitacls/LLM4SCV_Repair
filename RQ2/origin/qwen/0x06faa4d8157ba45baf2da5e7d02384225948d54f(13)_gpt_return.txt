@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "kashout.send(getout);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.24, send() returns false if the transfer fails, but this return value is ignored. This means that if the ether transfer fails, the contract will not handle the failure properly, potentially leading to loss of funds or unexpected behavior. The invested amount is still updated even if the payout fails."
+}
+```

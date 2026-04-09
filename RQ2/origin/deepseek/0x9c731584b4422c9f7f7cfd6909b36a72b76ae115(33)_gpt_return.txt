@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization in the clear() function instead of msg.sender, which creates a vulnerability where a middle contract could call this function and pass the authorization check if the original transaction initiator is the owner. Additionally, the function allows the owner to selfdestruct the contract without any additional safeguards, which could lead to loss of funds if the owner's account is compromised or if this is called unintentionally through a phishing attack."
+}
+```

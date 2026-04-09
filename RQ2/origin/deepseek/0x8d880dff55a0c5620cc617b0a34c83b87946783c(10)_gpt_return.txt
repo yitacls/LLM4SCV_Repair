@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. An attacker can trick the owner into interacting with a malicious contract that calls addToWhitelist(), resulting in unauthorized access since tx.origin will be the owner's address even though the malicious contract initiated the call. Additionally, using tx.origin is incompatible with smart contract wallets and future account abstraction upgrades. The Solidity version 0.4.23 also lacks modern security features, increasing risk."
+}
+```

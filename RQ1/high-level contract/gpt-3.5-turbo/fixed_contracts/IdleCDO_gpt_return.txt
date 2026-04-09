@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "IdleCDO",
+        "contract_version": "0.8.4",
+        "functions": [
+            {
+                "function_name": "_deposit",
+                "fix_info": "Fixed reentrancy vulnerability by updating state before transferring tokens.",
+                "corrected_code": "function _deposit(uint256 _amount, address _tranche) internal returns (uint256 _minted) {\n    _guarded(_amount);\n    _updateCallerBlock();\n    _checkDefault();\n    _updatePrices();\n    _minted = _mintShares(_amount, msg.sender, _tranche);\n    IERC20Detailed(token).safeTransferFrom(msg.sender, address(this), _amount);\n    // Update NAV\n    if (_tranche == AATranche) {\n        lastNAVAA += _amount;\n    } else {\n        lastNAVBB += _amount;\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdraw",
+                "fix_info": "Updated to prevent reentrancy by updating state before transferring tokens.",
+                "corrected_code": "function _withdraw(uint256 _amount, address _tranche) internal returns (uint256 toRedeem) {\n    require(!paused() || ( _tranche == AATranche ? allowAAWithdraw : allowBBWithdraw), 'IDLE:TRANCHE_NOT_ALLOWED');\n    _checkSameTx();\n    _checkDefault();\n    _updatePrices();\n    // Redeem tranche tokens\n    if (_amount == 0) {\n        _amount = IERC20Detailed(_tranche).balanceOf(msg.sender);\n    }\n    require(_amount > 0, 'IDLE:AMOUNT_IS_0');\n    address _token = token;\n    uint256 balanceUnderlying = _contractTokenBalance(_token);\n    toRedeem = _amount * _lastTranchePrice(_tranche) / ONE_TRANCHE_TOKEN;\n    if (toRedeem > balanceUnderlying) {\n        toRedeem = _liquidate(toRedeem - balanceUnderlying, revertIfTooLow);\n    }\n    IdleCDOTranche(_tranche).burn(msg.sender, _amount);\n    IERC20Detailed(_token).safeTransfer(msg.sender, toRedeem);\n    // Update NAV\n    if (_tranche == AATranche) {\n        lastNAVAA -= toRedeem;\n    } else {\n        lastNAVBB -= toRedeem;\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

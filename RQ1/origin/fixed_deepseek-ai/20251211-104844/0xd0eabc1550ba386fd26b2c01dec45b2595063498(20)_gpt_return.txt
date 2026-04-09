@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "againstFaucet",
+    "contract_version": ">=0.4.24 <0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by handling send() return value properly using require() statement",
+            "corrected_code": "function () payable external {\n    uint stockSupply = tokenReward.balanceOf(address(this));\n    require(stockSupply >= 1000000*(10**18), \"Faucet Ended\");\n    require(now - lastdate[address(msg.sender)] >= 1 days, \"Faucet enable once a day\");\n    lastdate[address(msg.sender)] = now;\n    tokenReward.transfer(msg.sender, 1000000*(10**18));\n    if (address(this).balance > 2*(10**15)) {\n        (bool success, ) = releaseWallet.call{value: address(this).balance}(\"\");\n        require(success, \"Transfer to release wallet failed\");\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

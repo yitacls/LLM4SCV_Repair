@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "_allowed[msg.sender][spender] = value;",
+    "description": "The approve() function directly sets the allowance to the provided `value` parameter. This allows front-running attacks where a malicious spender can observe the pending transaction, quickly submit another transaction to spend the current allowance, and then still receive the new (increased) allowance once the original approve transaction is mined. According to ERC-20 specification recommendations, this should be implemented as increaseAllowance/decreaseAllowance or use a safe pattern like `approve(_spender, _currentAllowance + _newAllowance)` to prevent front-running of allowance changes."
+}
+```

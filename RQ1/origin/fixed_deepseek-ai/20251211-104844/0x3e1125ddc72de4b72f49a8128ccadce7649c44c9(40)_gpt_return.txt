@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PIVOTCHAIN",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing .send() with .transfer() and adding better validation. Also corrected logic for amount calculation and amountRaised tracking.",
+            "corrected_code": "function() external payable {\n    require(msg.value < 10**17);\n    require(msg.value > 0);\n    \n    uint256 amount = msg.value * buyPrice;\n    require(balanceOf[creator] >= amount);\n    \n    balanceOf[msg.sender] += amount;\n    balanceOf[creator] -= amount;\n    \n    Transfer(creator, msg.sender, amount);\n    \n    // Use transfer() instead of send() for security\n    creator.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;  // fault line\n        balances[_from] -= _value;",
+    "description": "In the mentioned code snippet, there is an arithmetic vulnerability where overflow and underflow might occur. Solidity, up to version 0.8.0, does not provide built-in protection against arithmetic overflow and underflow. If _value is very large that adding it on balances[_to] causes an overflow, it will revert to a low number, altering the integrity of the contract's state. Similarly, underflow can happen if _value is larger than balances[_from]. When that happens, the balance would turn to a very large number due to underflow, making the user infinitely rich."
+}
+```

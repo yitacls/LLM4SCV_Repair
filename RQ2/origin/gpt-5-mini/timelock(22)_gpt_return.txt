@@ -1,0 +1,5 @@
+{
+    "type": "Arithmetic",
+    "location": "lockTime[msg.sender] += _secondsToIncrease;",
+    "description": "The contract uses unchecked addition on a user-controlled value in Solidity ^0.4.0. Solidity versions before built-in overflow checks allow unsigned integer overflow (wrap-around). An attacker can call increaseLockTime with a specially crafted large _secondsToIncrease that causes lockTime[msg.sender] to overflow and wrap to a much smaller value (potentially zero), letting them bypass the intended timelock and withdraw funds earlier. Mitigation: validate the addition (e.g., require(lockTime[msg.sender] + _secondsToIncrease > lockTime[msg.sender])) or use a safe arithmetic library such as SafeMath."
+}

@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "StakingController",
+        "contract_version": "^0.7.3",
+        "state_variables": [
+            {
+                "variable_name": "approvedBids",
+                "fix_info": "Ensure approvedBids entries are properly invalidated after successful bid fulfillment to prevent reuse or replay attacks.",
+                "variable_code": "mapping(bytes32 => bool) private approvedBids;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "approveDomainBid",
+                "fix_info": "Added a check to ensure that the bid associated with the signature has not been reused or approved multiple times. The domain owner is also verified.",
+                "corrected_code": "function approveDomainBid(\n    uint256 parentId,\n    string memory bidIPFSHash,\n    bytes memory signature\n) external authorizedOwner(parentId) {\n    bytes32 hashOfSig = keccak256(abi.encode(signature));\n    require(!approvedBids[hashOfSig], \"ZNS: Bid already approved\"); // Prevent re-approval\n    approvedBids[hashOfSig] = true;\n    emit DomainBidApproved(bidIPFSHash);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "fulfillDomainBid",
+                "fix_info": "Proper signature verification was added to ensure user-provided signatures match the expected domain bid format. Added checks for signature replay and improved signature verification to prevent signature malleability attacks. Approved bid flag is invalidated after successful bid fulfillment.",
+                "corrected_code": "function fulfillDomainBid(\n    uint256 parentId,\n    uint256 bidAmount,\n    uint256 royaltyAmount,\n    string memory bidIPFSHash,\n    string memory name,\n    string memory metadata,\n    bytes memory signature,\n    bool lockOnCreation,\n    address recipient\n) external {\n    require(registrar.domainExists(parentId), \"ZNS: Invalid domain\"); // Validate parent ID\n    bytes32 recoveredBidHash = createBid(\n        parentId,\n        bidAmount,\n        bidIPFSHash,\n        name\n    );\n    address recoveredBidder = recover(recoveredBidHash, signature);\n\n    require(recoveredBidder != address(0), \"ZNS: Invalid signature\");  // Ensure valid signature\n    require(recipient == recoveredBidder, \"ZNS: Recipient mismatch\");  // Ensure recovered address matches recipient\n\n    bytes32 hashOfSig = keccak256(abi.encode(signature));\n    require(approvedBids[hashOfSig], \"ZNS: Bid not approved or already fulfilled\"); // Prevent replay attacks\n\n    // Transfer bid amount securely\n    infinity.safeTransferFrom(recoveredBidder, controller, bidAmount);\n\n    uint256 id = registrar.registerDomain(\n        parentId,\n        name,\n        controller,\n        recoveredBidder\n    );\n    registrar.setDomainMetadataUri(id, metadata);\n    registrar.setDomainRoyaltyAmount(id, royaltyAmount);\n    registrar.transferFrom(controller, recoveredBidder, id);\n\n    if (lockOnCreation) {\n        registrar.lockDomainMetadataForOwner(id);\n    }\n\n    approvedBids[hashOfSig] = false; // Disable bid to prevent reuse\n\n    emit DomainBidFulfilled(metadata, name, recoveredBidder, id, parentId);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "recover",
+                "fix_info": "Ensured proper handling of signatures to minimize risk of signature malleability by providing a robust message hashing mechanism.",
+                "corrected_code": "function recover(bytes32 unsignedRequestHash, bytes memory signature)\n    public\n    pure\n    returns (address)\n{\n    // Enforce strict signature recovery to address malleability risk\n    return unsignedRequestHash.toEthSignedMessageHash().recover(signature);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;  // fault line",
+    "description": "The addition operation here poses an arithmetic overflow vulnerability. If the value being added to balances[_to] is too large, it could result in an overflow and unintended behavior in the contract."
+}
+```  

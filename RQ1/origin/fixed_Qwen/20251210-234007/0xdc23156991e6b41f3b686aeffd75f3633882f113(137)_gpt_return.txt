@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "SmartWalletLib",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOperator",
+            "fix_info": "Added access control modifier to restrict function calls to operator only",
+            "modifier_code": "modifier onlyOperator(Wallet storage _self) {\n    require(msg.sender == _self.operatorAccount, \"Only operator can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initWallet",
+            "fix_info": "Added access control to prevent unauthorized initialization of wallet",
+            "corrected_code": "function initWallet(Wallet storage _self, address _operator, address _feesAccount) \n            public\n            validAddress(_operator)\n            validAddress(_feesAccount)\n            onlyOperator(_self)\n            {\n                _self.operatorAccount = _operator;\n                _self.feesAccount = _feesAccount;\n            }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

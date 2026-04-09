@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "This contract uses Solidity version ^0.4.16, which does not have built-in overflow/underflow protection. The addition operations on unsigned integers (balanceOf[target] += mintedAmount and totalSupply += mintedAmount) can overflow if the result exceeds the maximum value of uint256 (2^256 - 1). An attacker could exploit this by minting an extremely large amount of tokens, causing the values to wrap around to very small numbers, disrupting token economics and potentially allowing unauthorized balance manipulation. This vulnerability was mitigated in Solidity 0.8.0 with automatic overflow checks or can be prevented in earlier versions using SafeMath library."
+}
+```

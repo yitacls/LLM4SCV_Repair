@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "ADDRESS_EIFP2_CONTRACT.call.value(address(this).balance)(\"\");",
+    "description": "In Solidity, low-level calls like 'call' do not propagate exceptions if the called contract throws an exception or if the called function does not exist. This can lead to unexpected behaviors if not carefully managed. In the above code snippet, if the call to ADDRESS_EIFP2_CONTRACT fails for any reason, the failure will not be detected and handled, which can lead to potential loss of funds or other adverse effects."
+}
+```

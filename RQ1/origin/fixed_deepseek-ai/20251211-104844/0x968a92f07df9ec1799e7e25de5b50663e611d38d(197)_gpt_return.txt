@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "SetBuyer",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner address for access control",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferTokenProportionToOrigin",
+            "fix_info": "Fixed multiple vulnerabilities: 1) Removed tx.origin in favor of msg.sender for better security, 2) Added onlyOwner modifier for access control, 3) Upgraded to SafeMath, 4) Added check for zero division, 5) Improved error handling",
+            "corrected_code": "function transferTokenProportionToOrigin(IERC20 token, uint256 mul, uint256 div) external onlyOwner {\n        require(div > 0, \"Division by zero\");\n        \n        uint256 contractBalance = token.balanceOf(address(this));\n        uint256 amount = (contractBalance * mul) / div;\n        \n        require(amount > 0, \"Amount must be greater than zero\");\n        require(amount <= contractBalance, \"Insufficient balance\");\n        \n        bool success = token.transfer(msg.sender, amount);\n        require(success, \"Token transfer failed\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set contract owner during deployment",
+            "corrected_code": "constructor() {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

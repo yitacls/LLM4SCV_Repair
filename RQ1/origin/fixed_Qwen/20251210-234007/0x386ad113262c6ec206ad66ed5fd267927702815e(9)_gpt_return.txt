@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EasyHOLD",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using recommended transfer() instead of send() and added success check for external calls",
+            "corrected_code": "function () external payable {\n        if (invested[msg.sender] != 0) {\n            uint waited = block.timestamp - atTime[msg.sender];\n            uint256 amount = invested[msg.sender] * waited * waited / (25 days) / (25 days);\n            require(msg.sender.send(amount), \"Transfer failed\");\n        }\n        atTime[msg.sender] = block.timestamp;\n        invested[msg.sender] += msg.value;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

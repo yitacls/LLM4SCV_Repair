@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "Function 'postponeSale' at line 294",
+        "description": "This function defines a for loop to update every single registered rounds' start time, during which any failure would cause this to revert, potentially locking funds and state updates."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "Function 'depositTokens' at line 346",
+        "description": "The function calls 'safeTransferFrom' without handling a potential failure of this call. If this function call fails and reverts for an external reason, it might affect the logic of the 'depositTokens' function making it vulnerable to the DoS attack."
+    }
+]
+```

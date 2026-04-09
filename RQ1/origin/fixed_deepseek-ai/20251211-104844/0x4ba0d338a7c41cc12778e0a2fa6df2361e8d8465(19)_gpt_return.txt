@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ICO_Hold",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "deposits",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint256) public deposits;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath for addition to prevent overflow",
+            "corrected_code": "function deposit() public payable {\n    require(msg.value >= 0.5 ether, \"Minimum deposit is 0.5 ether\");\n    \n    // Using SafeMath addition to prevent overflow\n    deposits[msg.sender] = deposits[msg.sender].add(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

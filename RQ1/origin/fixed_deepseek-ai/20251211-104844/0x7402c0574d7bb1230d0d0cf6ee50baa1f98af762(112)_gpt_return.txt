@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "ValidationNodeLock",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "lockingData",
+                "fix_info": "State variable remains unchanged but should be properly declared as mapping(address => mapping(string => uint256)) in the contract declaration",
+                "variable_code": "",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOnceLockingPeriodIsOver",
+                "fix_info": "Modifier remains unchanged but should ensure proper access control",
+                "modifier_code": "",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "withdrawFunds",
+                "fix_info": "Fixed low-level call vulnerability by replacing 'call' with proper token transfer pattern and adding security checks",
+                "corrected_code": "function withdrawFunds()\n    public\n    onlyOnceLockingPeriodIsOver()\n{\n    uint256 amountToBeTransferred = lockingData[msg.sender][\"amount\"];\n    require(amountToBeTransferred > 0, \"No funds to withdraw\");\n    require(VerityToken(tokenAddress).balanceOf(address(this)) >= amountToBeTransferred, \"Insufficient contract balance\");\n    \n    lockingData[msg.sender][\"amount\"] = 0;\n    \n    bool success = VerityToken(tokenAddress).transfer(msg.sender, amountToBeTransferred);\n    require(success, \"Token transfer failed\");\n    \n    emit Withdrawn(\n        msg.sender,\n        amountToBeTransferred\n    );\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

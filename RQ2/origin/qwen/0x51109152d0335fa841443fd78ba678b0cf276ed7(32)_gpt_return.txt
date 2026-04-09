@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountRaised);",
+    "description": "The send() function is a low-level call that returns a boolean indicating success or failure, but the return value is not checked. If the send() call fails (e.g., due to gas limitations or the beneficiary's fallback function reverting), the transaction will continue execution without handling the failure. This could lead to loss of funds as amountRaised is reset to 0 regardless of whether the funds were actually transferred. In Solidity 0.4.18, it's crucial to check the return value of send() calls to ensure proper error handling."
+}
+```

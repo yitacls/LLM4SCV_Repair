@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "airPort",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed unchecked low-level call by checking the return value and handling failures properly",
+            "corrected_code": "function transfer(address from,address caddress,address[] _tos,uint v)public returns (bool){\n        require(_tos.length > 0);\n        bytes4 id=bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n        for(uint i=0;i<_tos.length;i++){\n            // Fix unchecked low-level call vulnerability\n            bool success;\n            bytes memory data = abi.encodeWithSelector(id, from, _tos[i], v);\n            assembly {\n                success := call(gas, caddress, 0, add(data, 0x20), mload(data), 0, 0)\n            }\n            require(success, \"Call failed\");\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

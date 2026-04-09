@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced use of blockhash for random value generation with a more secure and unpredictable construct to prevent exploitation due to BAD_RANDOMNESS vulnerability.",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) private view returns (uint) {\n    return uint(keccak256(abi.encodePacked(\n        block.timestamp,\n        block.difficulty,\n        _lastb,\n        _delta\n    )));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

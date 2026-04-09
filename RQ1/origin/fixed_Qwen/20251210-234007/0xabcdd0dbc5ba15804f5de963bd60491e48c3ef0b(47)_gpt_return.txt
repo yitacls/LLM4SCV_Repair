@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Investment",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and adding success check",
+            "corrected_code": "function withdraw(){\n        if(msg.sender==owner){\n            msg.sender.transfer(this.balance);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "count += input;",
+    "description": "The addition operation is vulnerable to integer overflow. In Solidity ^0.4.19, arithmetic operations do not automatically check for overflow conditions. When 'count + input' exceeds the maximum value of uint256, it will wrap around to a smaller value, causing unexpected behavior. This can lead to security vulnerabilities where the count variable can be manipulated to incorrect values."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceOf[_to] += _value;",
+    "description": "The contract is vulnerable to arithmetic overflow because it uses Solidity version ^0.4.24 which does not have automatic overflow/underflow protection. When adding _value to balanceOf[_to], if the result exceeds the maximum uint256 value, it will overflow and wrap around to a smaller value, potentially setting the recipient's balance to an incorrect amount. This could allow an attacker to manipulate balances by causing controlled overflows."
+}
+```

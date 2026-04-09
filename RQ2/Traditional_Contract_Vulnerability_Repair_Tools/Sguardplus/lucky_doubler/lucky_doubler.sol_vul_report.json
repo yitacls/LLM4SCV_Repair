@@ -1,0 +1,1 @@
+{"REN": [], "IOU": [], "TXO": [], "UCR": [{"function_name": "LuckyDoubler::fallback", "strategys": [{"type": "check", "repair_location": []}]}, {"function_name": "LuckyDoubler::init", "strategys": [{"type": "check", "repair_location": [60]}]}, {"function_name": "LuckyDoubler::join", "strategys": [{"type": "check", "repair_location": [74, 102, 119]}]}], "USI": []}

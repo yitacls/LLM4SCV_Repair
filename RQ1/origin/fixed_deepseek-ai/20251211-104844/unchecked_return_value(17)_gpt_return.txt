@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ReturnValue",
+        "contract_version": "0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "callnotchecked",
+                "fix_info": "Added return value checking to prevent funds loss from failed external calls",
+                "corrected_code": "function callnotchecked(address callee) public {\n    bool success = callee.call();\n    require(success, \"Low-level call failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

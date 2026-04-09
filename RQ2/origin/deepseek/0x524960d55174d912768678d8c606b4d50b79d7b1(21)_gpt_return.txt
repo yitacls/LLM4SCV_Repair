@@ -1,0 +1,7 @@
+```json
+{
+    "type": "UNCHECKED_LL_CALLS",
+    "location": "contract_address.call(\"register\", \"CentraToken\"); and contract_address.call(bytes4(keccak256(\"transfer(address,uint256)\")),c2,k)",
+    "description": "The contract uses low-level call operations without checking the return value's success condition. In Solidity ^0.4.13, .call() returns a boolean indicating success, but here it's ignored in the first call and only checked in an if statement for the second. More critically, unchecked low-level calls can lead to loss of funds or unexpected state changes if the called contract fails or behaves maliciously. The calls should handle the return value properly and consider using transfer() or send() for Ether transfers, or at minimum validate the success boolean for contract calls."
+}
+```

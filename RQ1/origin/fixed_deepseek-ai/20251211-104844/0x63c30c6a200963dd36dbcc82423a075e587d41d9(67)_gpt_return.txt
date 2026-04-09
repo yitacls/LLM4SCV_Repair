@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "TRAC_drop",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "pay_user__",
+            "fix_info": "Changed to a SafeMath wrapper to prevent arithmetic overflow/underflow",
+            "variable_code": "uint256 public pay_user__;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "raised",
+            "fix_info": "Changed to a SafeMath wrapper to prevent arithmetic overflow/underflow",
+            "variable_code": "uint256 public raised;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "refund_balance",
+            "fix_info": "Added SafeMath declaration for arithmetic operations",
+            "variable_code": "mapping(uint256 => uint256) public refund_balance;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "fair",
+            "fix_info": "No changes needed",
+            "variable_code": "bool public fair;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Refund_user",
+            "fix_info": "Fixed arithmetic overflow vulnerability, redundant condition, and proper variable naming. Also added SafeMath operations to prevent overflow/underflow.",
+            "corrected_code": "function Refund_user() payable external {\n        require(refund_balance[1] == 0 || fair, \"Refund condition not met\");\n        address current_user = msg.sender;\n        // The condition \"current_user == msg.sender\" is always true, so we remove the redundant check\n        if (fair) {\n            // Using SafeMath operations to prevent overflow\n            pay_user__ = pay_user__.add(msg.value);\n            raised = raised.add(msg.value);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

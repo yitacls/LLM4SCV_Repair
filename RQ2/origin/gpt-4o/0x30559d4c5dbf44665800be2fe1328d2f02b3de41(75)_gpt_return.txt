@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token_reward.call( beneficiary, token_amount);",
+    "description": "The use of `call` in the statement is risky as it does not check whether the call was successful or not. This can result in unexpected behavior, as the execution will proceed even if the call fails. Furthermore, the contract code does not validate the returned value from the `call` method, making the contract vulnerable to potential issues. It is recommended to use safe alternatives, such as using `transfer` or `send`, or explicitly validating the success value of the `call`."
+}
+```

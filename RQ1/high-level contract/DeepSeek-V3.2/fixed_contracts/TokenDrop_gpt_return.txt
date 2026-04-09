@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "TokenDrop",
+    "contract_version": ">=0.7.0 <0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "factory",
+            "fix_info": "Changed visibility to private to prevent unauthorized access",
+            "variable_code": "address private factory;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyInitializer",
+            "fix_info": "Added modifier to restrict initialize function to be called only once",
+            "modifier_code": "modifier onlyInitializer() {\n        require(factory == address(0), \"TokenDrop: already initialized\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Fixed SWC-105 by adding initialization check and removing external factory assignment",
+            "corrected_code": "function initialize(address _measure, address _asset) external onlyInitializer {\n        require(_measure != address(0), \"TokenDrop: measure address cannot be zero\");\n        require(_asset != address(0), \"TokenDrop: asset address cannot be zero\");\n        measure = IERC20Upgradeable(_measure);\n        asset = IERC20Upgradeable(_asset);\n        \n        // Set Factory Deployer\n        factory = msg.sender;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "addAssetToken",
+            "fix_info": "Added reentrancy protection and input validation",
+            "corrected_code": "function addAssetToken(uint256 amount) external returns (bool) {\n        require(amount > 0, \"TokenDrop: amount must be greater than zero\");\n        \n        // Transfer asset/reward token from msg.sender to TokenDrop\n        require(asset.transferFrom(msg.sender, address(this), amount), \"TokenDrop: transfer failed\");\n        \n        // Update TokenDrop asset balance\n        drop();\n        \n        // Return BOOL for transaction gas savings\n        return true;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Fixed SWC-107 by implementing checks-effects-interactions pattern and adding reentrancy guard",
+            "corrected_code": "function claim(address user) external returns (uint256) {\n        require(user != address(0), \"TokenDrop: user address cannot be zero\");\n        \n        drop();\n        _captureNewTokensForUser(user);\n        \n        uint256 balance = userStates[user].balance;\n        require(balance > 0, \"TokenDrop: no tokens to claim\");\n        \n        // Apply checks-effects-interactions pattern\n        userStates[user].balance = 0;\n        totalUnclaimed = uint256(totalUnclaimed).sub(balance).toUint112();\n        \n        // Emit Claimed before external call\n        emit Claimed(user, balance);\n        \n        // Transfer asset/reward token to user\n        require(asset.transfer(user, balance), \"TokenDrop: transfer failed\");\n        \n        return balance;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "drop",
+            "fix_info": "Added overflow protection for safe calculations",
+            "corrected_code": "function drop() public returns (uint256) {\n        uint256 assetTotalSupply = asset.balanceOf(address(this));\n        \n        // Safe subtraction with underflow check\n        require(assetTotalSupply >= totalUnclaimed, \"TokenDrop: insufficient asset balance\");\n        uint256 newTokens = assetTotalSupply.sub(totalUnclaimed);\n        \n        if (newTokens > 0) {\n            uint256 measureTotalSupply = measure.totalSupply();\n            \n            if (measureTotalSupply > 0) {\n                uint256 indexDeltaMantissa = FixedPoint.calculateMantissa(newTokens, measureTotalSupply);\n                uint256 nextExchangeRateMantissa = uint256(exchangeRateMantissa).add(indexDeltaMantissa);\n                \n                // Prevent overflow on uint112 conversion\n                require(nextExchangeRateMantissa <= type(uint112).max, \"TokenDrop: exchange rate overflow\");\n                exchangeRateMantissa = nextExchangeRateMantissa.toUint112();\n                \n                uint256 newTotalUnclaimed = uint256(totalUnclaimed).add(newTokens);\n                require(newTotalUnclaimed <= type(uint112).max, \"TokenDrop: total unclaimed overflow\");\n                totalUnclaimed = newTotalUnclaimed.toUint112();\n            }\n            \n            emit Dripped(newTokens);\n        }\n        \n        return newTokens;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_captureNewTokensForUser",
+            "fix_info": "Added safety checks for user address and overflow protection",
+            "corrected_code": "function _captureNewTokensForUser(address user) private returns (uint128) {\n        require(user != address(0), \"TokenDrop: user address cannot be zero\");\n        \n        UserState storage userState = userStates[user];\n        if (exchangeRateMantissa == userState.lastExchangeRateMantissa) {\n            return 0;\n        }\n        \n        require(exchangeRateMantissa >= userState.lastExchangeRateMantissa, \"TokenDrop: exchange rate decreased\");\n        uint256 deltaExchangeRateMantissa = uint256(exchangeRateMantissa).sub(\n            userState.lastExchangeRateMantissa\n        );\n        \n        uint256 userMeasureBalance = measure.balanceOf(user);\n        uint128 newTokens = FixedPoint\n            .multiplyUintByMantissa(\n                userMeasureBalance,\n                deltaExchangeRateMantissa\n            )\n            .toUint128();\n        \n        uint256 newUserBalance = uint256(userState.balance).add(newTokens);\n        require(newUserBalance <= type(uint128).max, \"TokenDrop: user balance overflow\");\n        \n        userStates[user] = UserState({\n            lastExchangeRateMantissa: exchangeRateMantissa,\n            balance: newUserBalance.toUint128()\n        });\n        \n        return newTokens;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "BaseToken",
+        "contract_version": "^0.4.19",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Ensure balanceOf maps to uint256 to avoid potential underflow or overflow issues.",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_transfer",
+                "fix_info": "Added safe math checks to prevent the arithmetic overflow/underflow for balance operations and ensure the integrity of the function. Replaced assertions and manual checks with safer arithmetic handling.",
+                "corrected_code": "function _transfer(address _from, address _to, uint _value) internal { \n    require(_to != address(0), \"Invalid recipient address\"); \n    require(balanceOf[_from] >= _value, \"Insufficient balance\"); \n    require(balanceOf[_to] + _value >= balanceOf[_to], \"Overflow detected\"); \n\n    uint256 previousBalances = balanceOf[_from] + balanceOf[_to]; \n    balanceOf[_from] -= _value; \n    balanceOf[_to] += _value; \n\n    uint256 newBalanceOfFrom = balanceOf[_from]; \n    uint256 newBalanceOfTo = balanceOf[_to]; \n\n    require(newBalanceOfFrom + newBalanceOfTo == previousBalances, \"Balance mismatch after transfer\"); \n\n    emit Transfer(_from, _to, _value); \n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

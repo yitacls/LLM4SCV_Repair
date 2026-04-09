@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RiptideCoin",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic operations to prevent integer underflow/overflow vulnerabilities by using SafeMath library patterns. Also fixed potential reentrancy vulnerability by following checks-effects-interactions pattern.",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balanceOf[msg.sender] < amount) throw;        // checks if the sender has enough to sell\n        balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance FIRST\n        balanceOf[this] += amount;                         // adds the amount to owner's balance\n        uint256 etherAmount = amount * sellPrice;\n        Transfer(msg.sender, this, amount);                // executes an event reflecting on the change\n        if (!msg.sender.send(etherAmount)) {               // sends ether to the seller. It's important \n            throw;                                         // to do this last to avoid recursion attacks\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

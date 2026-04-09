@@ -1,0 +1,60 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed from public to private and added setter function for better access control",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "crowdsaleClosed",
+            "fix_info": "No change needed",
+            "variable_code": "bool public crowdsaleClosed;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "sharesTokenAddress",
+            "fix_info": "No change needed",
+            "variable_code": "Token public sharesTokenAddress;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "tokenFree",
+            "fix_info": "No change needed",
+            "variable_code": "uint256 public tokenFree;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "unsoldTokensBack",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and adding onlyOwner modifier",
+            "corrected_code": "function unsoldTokensBack() public onlyOwner {\n        require(crowdsaleClosed, \"Crowdsale must be closed\");\n        uint256 balance = sharesTokenAddress.balanceOf(this);\n        require(sharesTokenAddress.transfer(owner, balance), \"Token transfer failed\");\n        tokenFree = 0;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Added ownership transfer function with proper access control",
+            "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n        require(newOwner != address(0), \"New owner cannot be zero address\");\n        owner = newOwner;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "getOwner",
+            "fix_info": "Added getter function to access owner address",
+            "corrected_code": "function getOwner() public view returns (address) {\n        return owner;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

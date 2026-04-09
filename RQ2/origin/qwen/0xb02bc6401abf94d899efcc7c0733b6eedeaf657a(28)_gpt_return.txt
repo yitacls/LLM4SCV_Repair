@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "The addition of balanceOf[_from] + balanceOf[_to] can overflow, causing previousBalances to wrap around to a small number. This would make the subsequent assertion fail or pass incorrectly, potentially allowing balance manipulation. The overflow occurs because the sum of two large balances might exceed the maximum value of uint256, resulting in an undetected arithmetic error."
+}
+```

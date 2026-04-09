@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenHandler",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and proper error handling",
+            "corrected_code": "function _transfer (address _token, address _recipient, uint256 _value) internal {\n        ERC20Basic token = ERC20Basic(_token);\n        require(_recipient != address(0));\n        require(_value > 0);\n        bool success = token.transfer(_recipient, _value);\n        require(success, \"Token transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

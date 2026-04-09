@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Lotto",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low level call vulnerability by checking the return value of send() and using require() to handle failures properly",
+            "corrected_code": "function() public payable {\n    //this is the function that gets called when people send money to the contract.\n\n    uint256 roundIndex = getRoundIndex();\n    uint256 value = msg.value-(msg.value%ticketPrice);\n\n    if(value==0) return;\n\n    if(value<msg.value){\n        // Fixed unchecked low level call vulnerability\n        require(msg.sender.send(msg.value-value), \"Refund failed\");\n    }\n    //no partial tickets, send a partial refund\n\n    uint256 ticketsCount = value/ticketPrice;\n    rounds[roundIndex].ticketsCount+=ticketsCount;\n\n    if(rounds[roundIndex].ticketsCountByBuyer[msg.sender]==0){\n        uint256 buyersLength = rounds[roundIndex].buyers.length++;\n        rounds[roundIndex].buyers[buyersLength] = msg.sender;\n    }\n\n    rounds[roundIndex].ticketsCountByBuyer[msg.sender]+=ticketsCount;\n    rounds[roundIndex].ticketsCount+=ticketsCount;\n    //keep track of the total tickets\n\n    rounds[roundIndex].pot+=value;\n    //keep track of the total pot\n\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

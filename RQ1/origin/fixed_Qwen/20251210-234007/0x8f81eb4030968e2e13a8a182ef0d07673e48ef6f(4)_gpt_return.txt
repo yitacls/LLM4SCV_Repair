@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DSSafeAddSub",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "safeToAdd",
+            "fix_info": "Fixed overflow vulnerability by using Solidity's built-in SafeMath-style overflow check instead of naive comparison",
+            "corrected_code": "function safeToAdd(uint a, uint b) internal returns (bool) {\n        return (a + b >= a && a + b >= b);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

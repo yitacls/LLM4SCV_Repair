@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout)",
+    "description": "This line contains a low level '.send' call which is not checked for its return value. In Solidity, the return value of a '.send' or '.call' function should always be checked because it might fail silently (it returns 'false' instead of throwing an exception). If the return value is not checked, unexpected behavior might arise which poses a security risk."
+}
+```

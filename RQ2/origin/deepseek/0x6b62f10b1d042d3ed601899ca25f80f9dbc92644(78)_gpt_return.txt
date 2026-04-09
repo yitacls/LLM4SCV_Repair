@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "feeCollector.call.value(fee)() and msg.sender.transfer(amount)",
+    "description": "The withdraw function is vulnerable to reentrancy attacks due to the order of state changes and external calls. The function performs an external call to feeCollector before updating the user's balance state (balance[msg.sender] = 0). If msg.sender is a contract, its fallback function can recursively call withdraw() again before its balance is zeroed, allowing multiple withdrawals. Additionally, the use of call.value() instead of transfer() on line 'feeCollector.call.value(fee)()' forwards all remaining gas, making reentrancy easier. The function should follow the Checks-Effects-Interactions pattern: update all state variables before making any external calls, and consider using transfer() or send() which limit gas to 2300 units to prevent reentrancy."
+}
+```

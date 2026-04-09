@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_source == 2) {\n            if (_to == tx.origin) {    // fault line\n                walletStore.setProfitBalance(_to, profitBalance.sub(_deposited));\n            } else {\n                uint senderProfitBalance = getProfitBalance(tx.origin);\n                walletStore.setProfitBalance(tx.origin, senderProfitBalance.sub(_deposited));\n            }",
+    "description": "The contract allows unauthorized deduction of profit balances. When _source == 2, the function deducts _deposited amount from either the receiver's (_to) or sender's (tx.origin) profit balance without proper validation of ownership or authorization. The condition `if (_to == tx.origin)` creates a logic flaw where if the receiver is the transaction originator, their own profit balance is deducted; otherwise, any arbitrary sender's profit balance can be deducted. This bypasses the `onlyReserveFundContract` modifier, allowing the approved contract to arbitrarily reduce profit balances of any user without their consent or proper business logic validation."
+}
+```

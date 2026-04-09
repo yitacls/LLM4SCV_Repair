@@ -1,0 +1,52 @@
+[{
+    "contract_name": "RocketNodeStaking",
+    "contract_version": "1",
+    "state_variables": [
+        {
+            "variable_name": "_NOT_ENTERED",
+            "fix_info": "Added reentrancy guard status constants and state to mitigate reentrancy/TOCTOU risks when performing external calls (checks-effects-interactions).",
+            "variable_code": "uint8 private constant _NOT_ENTERED = 1;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_ENTERED",
+            "fix_info": "Added reentrancy guard status constants and state to mitigate reentrancy/TOCTOU risks when performing external calls (checks-effects-interactions).",
+            "variable_code": "uint8 private constant _ENTERED = 2;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_status",
+            "fix_info": "Added reentrancy guard status variable, initialized to _NOT_ENTERED. Used by nonReentrant modifier to prevent reentrant calls on sensitive functions.",
+            "variable_code": "uint8 private _status = _NOT_ENTERED;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier (simple reentrancy guard) and applied to functions making external calls after internal state changes to prevent reentrancy and transaction-order issues.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "stakeRPL",
+            "fix_info": "Checked external vault call return using a low-level call and returned-data decoding. Added nonReentrant modifier and applied checks-effects-interactions ordering for state updates. Ensures vault deposit failure reverts and prevents reentrancy.",
+            "corrected_code": "function stakeRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) nonReentrant {\n    // Load contracts\n    address rplTokenAddress = getContractAddress(\"rocketTokenRPL\");\n    address rocketVaultAddress = getContractAddress(\"rocketVault\");\n    IERC20 rplToken = IERC20(rplTokenAddress);\n    RocketVaultInterface rocketVault = RocketVaultInterface(rocketVaultAddress);\n    // Transfer RPL tokens from node to this contract\n    require(rplToken.transferFrom(msg.sender, address(this), _amount), \"Could not transfer RPL to staking contract\");\n    // Update RPL stake amounts & node RPL staked block (checks-effects)\n    increaseTotalRPLStake(_amount);\n    increaseNodeRPLStake(msg.sender, _amount);\n    setNodeRPLStakedBlock(msg.sender, block.number);\n    // Approve vault to pull tokens\n    require(rplToken.approve(rocketVaultAddress, _amount), \"Could not approve vault RPL deposit\");\n    // Deposit RPL tokens to vault, check low-level return in case vault does not return bool\n    (bool success, bytes memory returnData) = address(rocketVault).call(abi.encodeWithSelector(rocketVault.depositToken.selector, \"rocketNodeStaking\", rplTokenAddress, _amount));\n    require(success, \"Vault deposit call failed\");\n    if (returnData.length > 0) {\n        require(abi.decode(returnData, (bool)), \"Vault deposit returned false\");\n    }\n    // Emit RPL staked event\n    emit RPLStaked(msg.sender, _amount, block.timestamp);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawRPL",
+            "fix_info": "Moved state updates (decreaseTotalRPLStake / decreaseNodeRPLStake) before the external vault withdraw call (checks-effects-interactions). Added nonReentrant modifier and performed low-level call with return-data checks to ensure the vault withdraw succeeded. This mitigates SWC-114 and SWC-104.",
+            "corrected_code": "function withdrawRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) nonReentrant {\n    // Load contracts\n    RocketDAOProtocolSettingsRewardsInterface rocketDAOProtocolSettingsRewards = RocketDAOProtocolSettingsRewardsInterface(getContractAddress(\"rocketDAOProtocolSettingsRewards\"));\n    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n    // Check cooldown period (one claim period) has passed since RPL last staked\n    require(block.number.sub(getNodeRPLStakedBlock(msg.sender)) >= rocketDAOProtocolSettingsRewards.getRewardsClaimIntervalBlocks(), \"The withdrawal cooldown period has not passed\");\n    // Get & check node's current RPL stake\n    uint256 rplStake = getNodeRPLStake(msg.sender);\n    require(rplStake >= _amount, \"Withdrawal amount exceeds node's staked RPL balance\");\n    // Check withdrawal would not undercollateralize node\n    require(rplStake.sub(_amount) >= getNodeMinimumRPLStake(msg.sender), \"Node's staked RPL balance after withdrawal is less than minimum balance\");\n    // Update RPL stake amounts before external call (checks-effects-interactions)\n    decreaseTotalRPLStake(_amount);\n    decreaseNodeRPLStake(msg.sender, _amount);\n    // Transfer RPL tokens to node address via vault and check return\n    (bool success, bytes memory returnData) = address(rocketVault).call(abi.encodeWithSelector(rocketVault.withdrawToken.selector, msg.sender, getContractAddress(\"rocketTokenRPL\"), _amount));\n    require(success, \"Vault withdraw call failed\");\n    if (returnData.length > 0) {\n        require(abi.decode(returnData, (bool)), \"Vault withdraw returned false\");\n    }\n    // Emit RPL withdrawn event\n    emit RPLWithdrawn(msg.sender, _amount, block.timestamp);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "slashRPL",
+            "fix_info": "Performed internal state updates prior to calling the external vault transfer, added nonReentrant modifier, and used a low-level call with return-data decoding to ensure the transfer succeeded. This ensures state is consistent and external calls are checked (mitigates SWC-104 & SWC-114).",
+            "corrected_code": "function slashRPL(address _nodeAddress, uint256 _ethSlashAmount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyLatestContract(\"rocketMinipoolStatus\", msg.sender) nonReentrant {\n    // Load contracts\n    RocketNetworkPricesInterface rocketNetworkPrices = RocketNetworkPricesInterface(getContractAddress(\"rocketNetworkPrices\"));\n    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n    // Calculate RPL amount to slash\n    uint256 calcBase = 1 ether;\n    uint256 rplSlashAmount = calcBase.mul(_ethSlashAmount).div(rocketNetworkPrices.getRPLPrice());\n    // Cap slashed amount to node's RPL stake\n    uint256 rplStake = getNodeRPLStake(_nodeAddress);\n    if (rplSlashAmount > rplStake) { rplSlashAmount = rplStake; }\n    // Update RPL stake amounts before external call (checks-effects-interactions)\n    decreaseTotalRPLStake(rplSlashAmount);\n    decreaseNodeRPLStake(_nodeAddress, rplSlashAmount);\n    // Transfer slashed amount to auction contract and check return\n    (bool success, bytes memory returnData) = address(rocketVault).call(abi.encodeWithSelector(rocketVault.transferToken.selector, \"rocketAuctionManager\", getContractAddress(\"rocketTokenRPL\"), rplSlashAmount));\n    require(success, \"Vault transfer call failed\");\n    if (returnData.length > 0) {\n        require(abi.decode(returnData, (bool)), \"Vault transfer returned false\");\n    }\n    // Emit RPL slashed event\n    emit RPLSlashed(_nodeAddress, rplSlashAmount, _ethSlashAmount, block.timestamp);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

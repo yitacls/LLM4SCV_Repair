@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contract": "airPort",
+    "location": "caddress.call(id,from,_tos[i],v);",
+    "description": "In Solidity, the low level .call() function is used to directly interact with other contracts. It returns a boolean indicating success or failure of the function call, but does not automatically propagate the error. If the return value of call() is not checked, any function call failure will be silently ignored which can cause unexpected behavior in the contract, leading to potential security vulnerabilities."
+}
+```

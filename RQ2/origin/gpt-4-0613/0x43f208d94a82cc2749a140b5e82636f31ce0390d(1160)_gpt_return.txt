@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "player.transfer(winningAmount);",
+    "description": "This contract function involves transfer of Ethereum coins which means it is subject to security risks. The function does not have any checks in place to ensure that only authorised individuals (typically the contract owner) can call it. This makes it vulnerable to unauthorised access and any malicious actor can take advantage of this, initiate the function, and receive the winning amount."
+}
+```

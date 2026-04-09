@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "return(betPrize(player,uint24(block.blockhash(player.blockNum))));",
+    "description": "The contract relies on the `block.blockhash` function to generate randomness. This makes the randomness predictable and vulnerable to manipulation by miners, as they can influence the block's hash within the constraints of proof-of-work mining. This undermines the security and fairness of any randomness-dependent functionality, such as betting outcomes."
+}
+```

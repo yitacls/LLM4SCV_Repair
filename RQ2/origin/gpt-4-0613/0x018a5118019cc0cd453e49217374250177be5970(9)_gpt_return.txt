@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "Low level calls like .call(), .callcode(), .delegatecall(), .send(), work with gas directly so one should be cautious. They return false on failure. Here sender.send(amount); fails silently. The contract does not provide a mechanism for handling this failure, which could potentially result in unhandled exceptions and unexpected behavior. It is known as unchecked low level calls vulnerability."
+}
+```

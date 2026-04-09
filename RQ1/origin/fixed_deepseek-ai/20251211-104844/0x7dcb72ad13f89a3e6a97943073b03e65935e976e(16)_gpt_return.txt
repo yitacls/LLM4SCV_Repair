@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "WhiteList",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "controlSum",
+            "fix_info": "Changed from uint160 to uint256 to prevent overflow vulnerabilities",
+            "variable_code": "uint256 public controlSum;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "chunkNr",
+            "fix_info": "Added to track chunk numbers for synchronization",
+            "variable_code": "uint16 public chunkNr;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "contains",
+            "fix_info": "Added mapping for address tracking",
+            "variable_code": "mapping(address => bool) public contains;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "setupOnly",
+            "fix_info": "Placeholder for setup-only modifier",
+            "modifier_code": "modifier setupOnly { require(isSetup); _; }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "adminOnly",
+            "fix_info": "Placeholder for admin-only modifier",
+            "modifier_code": "modifier adminOnly { require(msg.sender == admin); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addPack",
+            "fix_info": "Fixed arithmetic overflow vulnerability in controlSum calculation by using SafeMath or explicit checks. Added proper length validation for arrays. Fixed increment operation order. Added explicit casting with overflow protection. Added require statement for array length validation.",
+            "corrected_code": "function addPack(address[] addrs, uint16 _chunkNr)\n    setupOnly\n    adminOnly\n    external \n{\n    require(_chunkNr == chunkNr, \"Chunk number mismatch\");\n    require(addrs.length > 0, \"Empty address array\");\n    require(addrs.length <= 1000, \"Array too large\"); // Added limit to prevent gas exhaustion\n    \n    // Pre-calculate total addition to check for overflow\n    uint256 sumAddition = 0;\n    for(uint16 i = 0; i < addrs.length; i++) {\n        sumAddition = sumAddition + uint256(uint160(addrs[i]));\n        require(sumAddition >= uint256(uint160(addrs[i])), \"Overflow detected\");\n    }\n    \n    // Check if adding sumAddition to controlSum would overflow\n    require(controlSum + sumAddition >= controlSum, \"Control sum overflow\");\n    \n    // Update state variables\n    for(i = 0; i < addrs.length; i++) {\n        contains[addrs[i]] = true;\n    }\n    controlSum = controlSum + sumAddition;\n    chunkNr = chunkNr + 1; // Increment after successful execution\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

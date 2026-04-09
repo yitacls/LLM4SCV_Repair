@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic Overflow/Underflow",
+            "location": "amount * sellPrice",
+            "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflow/underflow. The multiplication 'amount * sellPrice' could overflow if either value is sufficiently large, potentially resulting in a much smaller actual value sent via 'msg.sender.send()'. This could allow attackers to receive significantly less ether than intended, or in extreme cases, cause the transaction to fail unexpectedly due to the overflow result being used in the send operation."
+        }
+    ]
+}
+```

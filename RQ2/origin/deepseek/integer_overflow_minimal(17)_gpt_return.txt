@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic",
+        "location": "count -= input;",
+        "description": "This subtraction operation is vulnerable to integer underflow due to the use of Solidity 0.4.19 without SafeMath or built-in overflow protection. When 'input' is greater than 'count', the result will wrap around to a very large number (2^256 - difference) instead of reverting, potentially causing unexpected behavior and token balance manipulation attacks."
+    }
+}
+```

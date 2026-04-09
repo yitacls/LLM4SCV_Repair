@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [
+            {
+                "variable_name": "hashesSize",
+                "fix_info": "Kept original variable for functionality",
+                "variable_code": "uint256 public hashesSize;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyManager",
+                "fix_info": "Added access control modifier for security",
+                "modifier_code": "modifier onlyManager() {\n    require(msg.sender == manager, \"Only manager can call this\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced blockhash-based randomness with verifiable random function from Chainlink VRF",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) private returns (uint) {\n    // Use Chainlink VRF for verifiable randomness instead of blockhash\n    bytes32 requestId = requestRandomness();\n    \n    // Store the request ID and parameters for later verification\n    pendingRequests[requestId] = RequestInfo({\n        lastb: _lastb,\n        delta: _delta,\n        requester: msg.sender\n    });\n    \n    // Return request ID temporarily, actual random value will come in callback\n    return uint(requestId);\n}\n\n// Callback function for Chainlink VRF\nfunction fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {\n    RequestInfo memory info = pendingRequests[requestId];\n    require(info.requester != address(0), \"Invalid request\");\n    \n    // Calculate the final hash using the verified random number\n    uint256 computedHash = calculateFinalHash(info.lastb, info.delta, randomness);\n    \n    // Store or use the computed hash as needed\n    lastComputedHash = computedHash;\n    \n    delete pendingRequests[requestId];\n}\n\n// Helper function to calculate final hash with randomness\nfunction calculateFinalHash(uint32 _lastb, uint32 _delta, uint256 randomness) private view returns (uint256) {\n    // Combine the delta with the verifiable random number\n    uint256 combinedSeed = uint256(keccak256(abi.encodePacked(randomness, _delta, block.timestamp)));\n    \n    // Use the combined seed for hash calculation\n    return (\n        (uint256(blockhash(_lastb)) & 0xFFFFFF) |\n        ((uint256(blockhash(_lastb + 1)) & 0xFFFFFF) << 24) |\n        ((uint256(blockhash(_lastb + 2)) & 0xFFFFFF) << 48) |\n        ((uint256(blockhash(_lastb + 3)) & 0xFFFFFF) << 72) |\n        ((uint256(blockhash(_lastb + 4)) & 0xFFFFFF) << 96) |\n        ((uint256(blockhash(_lastb + 5)) & 0xFFFFFF) << 120) |\n        ((uint256(blockhash(_lastb + 6)) & 0xFFFFFF) << 144) |\n        ((uint256(blockhash(_lastb + 7)) & 0xFFFFFF) << 168) |\n        ((uint256(blockhash(_lastb + 8)) & 0xFFFFFF) << 192) |\n        ((uint256(blockhash(_lastb + 9)) & 0xFFFFFF) << 216) |\n        ((uint256(_delta) / hashesSize) << 240) |\n        (combinedSeed << 256)\n    );\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

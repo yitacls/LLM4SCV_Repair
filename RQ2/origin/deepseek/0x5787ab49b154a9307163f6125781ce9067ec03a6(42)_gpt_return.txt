@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value( fomo3d.getBuyPrice() *2 )()",
+    "description": "This low-level call does not check the return value or handle potential failures. In Solidity 0.4.24, the .call() method returns a boolean indicating success, but this return value is ignored. If the external call fails (e.g., due to out-of-gas, reversion, or insufficient funds in the target contract), the transaction will continue executing without reverting. This can lead to unexpected contract state inconsistencies and loss of funds. Additionally, this pattern is vulnerable to reentrancy attacks if state changes aren't properly handled before the external call."
+}
+```

@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "AvalaunchSale",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "safeTransferAVAX",
+                "fix_info": "Added a check to log and revert with an error message if the recipient address is a contract and the fallback function of that contract fails. This resolves the possibility of DoS with failed call.",
+                "corrected_code": "function safeTransferAVAX(address to, uint value) internal {\n    require(to != address(0), \"Recipient address cannot be zero\");\n    (bool success,) = to.call{value: value}(new bytes(0));\n    require(success, \"Transfer failed: recipient may have reverted\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "depositTokens",
+                "fix_info": "Modified to revert with a specific error message if the token transfer fails. This resolves the potential DoS issue caused by failing transfers.",
+                "corrected_code": "function depositTokens() external onlySaleOwner {\n    require(sale.totalTokensSold == 0 && sale.token.balanceOf(address(this)) == 0, \"Deposit can only be done once\");\n    require(block.timestamp < roundIdToRound[roundIds[0]].startTime, \"Deposit too late. Round already started\");\n    \n    uint256 balanceBefore = sale.token.balanceOf(address(this));\n    sale.token.safeTransferFrom(msg.sender, address(this), sale.amountOfTokensToSell);\n    uint256 balanceAfter = sale.token.balanceOf(address(this));\n    \n    require(balanceAfter.sub(balanceBefore) == sale.amountOfTokensToSell, \"Token transfer failed\");\n    sale.tokensDeposited = true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawEarningsAndLeftover",
+                "fix_info": "Added separate checks and error messages for AVAX and token transfers. Ensures that the sale proceeds and tokens are handled gracefully to prevent failures.",
+                "corrected_code": "function withdrawEarningsAndLeftover(bool withBurn) external onlySaleOwner {\n    require(block.timestamp >= sale.saleEnd, \"Sale has not ended yet\");\n    require(sale.earningsWithdrawn == false, \"Earnings already withdrawn\");\n    \n    sale.earningsWithdrawn = true;\n\n    // Calculate earnings in AVAX\n    uint256 totalProfit = address(this).balance;\n    uint256 leftover = sale.amountOfTokensToSell.sub(sale.totalTokensSold);\n\n    // Transfer AVAX Earnings\n    try this.safeTransferAVAX(msg.sender, totalProfit) {\n    } catch {\n        revert(\"AVAX transfer failed\");\n    }\n\n    // Handle leftover tokens\n    if (leftover > 0) {\n        if (withBurn) {\n            try sale.token.safeTransfer(address(1), leftover) {\n            } catch {\n                revert(\"Token burn failed\");\n            }\n        } else {\n            try sale.token.safeTransfer(msg.sender, leftover) {\n            } catch {\n                revert(\"Token transfer to sale owner failed\");\n            }\n        }\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

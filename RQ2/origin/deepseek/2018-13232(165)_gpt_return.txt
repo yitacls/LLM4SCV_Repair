@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic Underflow/Overflow",
+            "location": "balanceOf[msg.sender] -= amount",
+            "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for underflow/overflow. If amount > balanceOf[msg.sender], the subtraction will underflow, resulting in an extremely large value for balanceOf[msg.sender] instead of reverting the transaction. This vulnerability allows attackers to manipulate token balances."
+        },
+        {
+            "type": "Arithmetic Underflow/Overflow",
+            "location": "balanceOf[this] += amount",
+            "description": "Similarly, increasing the contract's balance without overflow checks could allow the balance to wrap around to a small value if it exceeds the maximum uint256 value (2^256 - 1)."
+        },
+        {
+            "type": "Integer Overflow",
+            "location": "amount * sellPrice",
+            "description": "The multiplication in 'amount * sellPrice' could overflow if the product exceeds 2^256 - 1. Since sellPrice is likely a user-controlled or configurable value, an attacker might intentionally cause an overflow to manipulate the ether sent, potentially receiving more ether than intended or causing unexpected behavior."
+        }
+    ]
+}
+```

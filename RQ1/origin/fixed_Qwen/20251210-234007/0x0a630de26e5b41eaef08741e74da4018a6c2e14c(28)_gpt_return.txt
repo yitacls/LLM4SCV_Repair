@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "dgame",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low level call vulnerability by adding success check for send() operation and handling failure case",
+            "corrected_code": "function() payable {\n        if (endRegisterTime == 0) {\n            endRegisterTime = now + registerDuration;\n            if (msg.value == 0)\n                throw;  \n            StartedGame(msg.sender, endRegisterTime, msg.value, gameNumber);\n        } else if (now > endRegisterTime && numPlayers > 0) {\n            uint winner = uint(block.blockhash(block.number - 1)) % numPlayers; \n            uint currentGamenumber = gameNumber;\n            FoundWinner(players[currentGamenumber][winner], currentGamenumber);\n            endRegisterTime = 0;\n            numPlayers = 0;\n            gameNumber++;\n            if (!players[currentGamenumber][winner].send(this.balance)) {\n                throw;\n            }\n        } else {\n            if (registered[gameNumber][msg.sender])\n                throw;  \n            registered[gameNumber][msg.sender] = true;\n            players[gameNumber][numPlayers] = (msg.sender);\n            numPlayers++;\n            RegisteredPlayer(msg.sender, gameNumber);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

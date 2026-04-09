@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": "L48",
+        "description": "The state variable 'owner' does not have an explicit visibility modifier. By default, the visibility is internal, which may not be the intended behavior. Adding an explicit visibility modifier like public, internal, or private is recommended."
+    },
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": "L49",
+        "description": "The state variable 'metaTxRelayer' does not have an explicit visibility modifier. By default, the visibility is internal, which may lead to unintended behavior. An explicit visibility modifier should be added to improve clarity."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "L3",
+        "description": "The use of floating pragma `pragma solidity 0.5.0;` can lead to compatibility issues. It is better to use a fixed version pragma or a constrained version pragma (e.g., `pragma solidity ^0.5.0;`) to avoid unexpected changes due to compiler updates."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L249",
+        "description": "Potential integer overflow in the statement 'bounties[_bountyId].balance += _amount;'. If '_amount' is very large, this can cause the value of 'bounties[_bountyId].balance' to overflow. Consider using a library like SafeMath to prevent overflow and underflow issues."
+    },
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": "L246-L265",
+        "description": "State variables or internal operations in this section are implicitly relying on default visibility. Although this is within a function, internal operations without proper validation or explicit visibility can lead to unintended vulnerabilities. Ensure explicit visibility modifiers are added where needed."
+    }
+]
+```

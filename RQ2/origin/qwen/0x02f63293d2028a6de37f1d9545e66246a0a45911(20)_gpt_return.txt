@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "DragonsBurned += _amount;",
+    "description": "The statement DragonsBurned += _amount; is vulnerable to arithmetic overflow. In Solidity version ^0.4.11, arithmetic operations do not have built-in overflow protection. If the _amount parameter is large enough, the addition operation could cause an integer overflow, resulting in the DragonsBurned variable wrapping around to zero or a smaller value, leading to incorrect tracking of burned dragons and potential exploitation."
+}
+```

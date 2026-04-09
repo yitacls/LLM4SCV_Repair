@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "BasicToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply_",
+            "fix_info": "Added internal visibility and renamed to follow Solidity conventions",
+            "variable_code": "uint256 internal _totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier for privileged functions",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "totalSupply",
+            "fix_info": "Replaced direct state variable return with proper access control. Added explicit public visibility and best practice naming.",
+            "corrected_code": "function totalSupply() public view returns (uint256) {\n        return _totalSupply;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "mint",
+            "fix_info": "Added minting function with proper access control to manage total supply",
+            "corrected_code": "function mint(address _to, uint256 _amount) public onlyOwner returns (bool) {\n        require(_to != address(0), \"Cannot mint to zero address\");\n        _totalSupply = _totalSupply.add(_amount);\n        balances[_to] = balances[_to].add(_amount);\n        emit Transfer(address(0), _to, _amount);\n        return true;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "burn",
+            "fix_info": "Added burning function with proper access control to manage total supply",
+            "corrected_code": "function burn(uint256 _amount) public returns (bool) {\n        require(balances[msg.sender] >= _amount, \"Insufficient balance to burn\");\n        balances[msg.sender] = balances[msg.sender].sub(_amount);\n        _totalSupply = _totalSupply.sub(_amount);\n        emit Transfer(msg.sender, address(0), _amount);\n        return true;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

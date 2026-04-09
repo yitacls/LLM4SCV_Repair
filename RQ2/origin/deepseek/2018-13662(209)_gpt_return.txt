@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Arithmetic",
+        "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+        "description": "The contract uses unchecked arithmetic operations in version ^0.4.16, which does not have built-in overflow/underflow protection. Both balanceOf and totalSupply additions could overflow, allowing malicious actors to manipulate token balances and total supply beyond intended limits. This could enable unauthorized minting of tokens or incorrect accounting of token supply."
+    }
+]
+```

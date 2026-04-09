@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "cur_coin.call(bytes4(keccak256(\"pay(address,uint256,uint256)\")), msg.sender, msg.value, price);",
+    "description": "The use of low-level call without checking the return value can lead to unexpected behavior if the called function fails. It can result in loss of funds or vulnerability to reentrancy attacks."
+}
+```

@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint i=0; i < _newAddressesToWhitelist.length; i++) { ... }",
+        "description": "The loop iterates over an array of arbitrary length, which can lead to excessive gas consumption and potentially cause the transaction to fail if the gas limit is exceeded. An attacker could provide a large array to make the function unusable, leading to a denial of service."
+    }
+]
+```

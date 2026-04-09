@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;",
+    "description": "The contract contains an integer arithmetic operation which could potentially result in an overflow/underflow thus leading to erroneous results. The division operation in the 'getout' could cause unexpected behavior if 'block.number-atBlock[msg.sender]' is not evenly divisible by '5900'. This is because Solidity performs integer division where the answer will be rounded towards zero. Further, no checks are in place to prevent an overflow when multiplying 'invested[msg.sender]' by '25/100', leading to potentially incorrect calculations"
+}
+```

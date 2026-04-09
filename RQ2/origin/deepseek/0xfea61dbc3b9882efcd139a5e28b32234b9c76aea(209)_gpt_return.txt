@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This access control check uses tx.origin instead of msg.sender, which makes it vulnerable to phishing attacks. An attacker could trick the owner into calling a malicious contract that then invokes this function, causing tx.origin to be the owner's address while msg.sender is the attacker's contract address. This would allow unauthorized users to set ambassador mappings for any address they control when the owner interacts with their malicious contract."
+}
+```

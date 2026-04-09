@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_source == 2) { if (_to == tx.origin) { balance.profitBalance = balance.profitBalance.sub(_deposited); } else { Balance storage senderBalance = userWallets[tx.origin]; senderBalance.profitBalance = senderBalance.profitBalance.sub(_deposited); }",
+    "description": "The code allows any externally owned account (EOA) to access and modify the profit balance of another user by impersonating transactions. This can lead to unauthorized changes in the profit balance and potential loss of funds."
+}
+```

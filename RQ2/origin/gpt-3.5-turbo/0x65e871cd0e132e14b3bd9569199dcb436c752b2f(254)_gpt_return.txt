@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "bricks[_brickId].owner == 0x0 || bricks[_brickId].owner == tx.origin",
+    "description": "The vulnerability lies in the attempt to check ownership of the brick using 'tx.origin'. This is not a secure way to verify ownership as 'tx.origin' could be the address of a contract calling the function, bypassing the intended owner check. It is recommended to use 'msg.sender' instead of 'tx.origin' for access control to prevent possible exploits."
+}
+```

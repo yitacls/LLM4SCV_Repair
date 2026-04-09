@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value",
+    "description": "The arithmetic operation in this function could be vulnerable to an integer overflow or underflow issue. For instance, if '_value' is extremely high, the assigned balance could roll over to a very small number due to overflow, leading to incorrect balance assignment. Similarly, an underflow could occur if '_value' is subtracted from a very small amount. It is recommended to use 'SafeMath' or similar libraries to prevent such arithmetic vulnerabilities."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "REENTRANCY",
+    "location": "require(msg.sender.call.value(_weiToWithdraw)());",
+    "description": "This contract is vulnerable to reentrancy attacks because it makes an external call (transferring ETH to msg.sender) before updating the contract's state (balances[msg.sender] and lastWithdrawTime[msg.sender]). An attacker can create a malicious contract that calls withdrawFunds() recursively in its fallback function. Since the balance is only subtracted after the ETH transfer, subsequent recursive calls will pass the initial require(balances[msg.sender] >= _weiToWithdraw) check, allowing the attacker to drain funds. Additionally, using call.value() without limiting gas forwards all remaining gas, enabling complex reentrancy attacks. This should be fixed by following the checks-effects-interactions pattern: update all state variables before making external calls, or use the transfer() method (which limits gas to 2300) for simple ETH transfers."
+}
+```

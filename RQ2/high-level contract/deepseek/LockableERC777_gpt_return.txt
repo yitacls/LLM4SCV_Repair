@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 399-422 in the _burn function",
+    "description": "The _burn function contains a reentrancy vulnerability due to the state changes occurring after an external call. The function calls _callTokensToSend at line 408, which may invoke an external contract's tokensToSend method. If the from address is a malicious contract that reenters the burn function through a callback, the state variables _totalSupply and _balances[from] are still at their original values (not yet reduced by the amount), allowing the attacker to potentially burn more tokens than they own or manipulate the contract state in unexpected ways. The vulnerability exists because the state is updated (lines 413-414) only after the external call, violating the checks-effects-interactions pattern."
+}
+```

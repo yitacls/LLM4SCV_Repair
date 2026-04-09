@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "Function postponeSale(uint256 timeToShift)",
+    "description": "The function postponeSale in line 294 can potentially lead to a denial-of-service vulnerability. When iterating through all registered rounds and postponing them, the function does not have a limit on the number of rounds that can be processed. If the loop has to iterate through a large number of rounds, it can consume excessive gas, leading to a failed transaction due to out-of-gas. It is recommended to limit the number of rounds processed in a single transaction to mitigate this vulnerability."
+}
+```

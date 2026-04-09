@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "if ( rand> 0 && now - rand > 24 hours )",
+    "description": "The contract uses a user-provided 'rand' parameter to determine time intervals. An attacker can manipulate this parameter to bypass the 24-hour check by providing a crafted 'rand' value that satisfies 'now - rand > 24 hours', potentially allowing them to trigger the payout condition immediately or at an unintended time. The 'rand' parameter is controlled by the user in the else-if branch when setting themselves as leader, making it unreliable for time-based validation."
+}
+```

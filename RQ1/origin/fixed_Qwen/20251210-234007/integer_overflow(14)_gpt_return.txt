@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Overflow",
+    "contract_version": "^0.4.15",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "add",
+            "fix_info": "Added overflow protection using SafeMath library pattern to prevent arithmetic overflow when adding value to sellerBalance",
+            "corrected_code": "function add(uint value) returns (bool){\n    // Check for overflow before addition\n    require(sellerBalance + value >= sellerBalance);\n    sellerBalance += value;\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

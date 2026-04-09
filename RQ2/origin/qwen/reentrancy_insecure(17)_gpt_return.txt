@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call.value(amountToWithdraw)(\"\");",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to the user before updating the user's balance. When msg.sender.call.value() is executed, it transfers control to the caller's contract which can then re-enter the withdrawBalance function before userBalances[msg.sender] is set to 0. This allows the attacker to withdraw the same balance multiple times. The balance update should occur before the external call to prevent this vulnerability."
+}
+```

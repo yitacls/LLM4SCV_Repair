@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability - Integer Underflow",
+    "location": "l.freedom = block.number + freezeBlocks;",
+    "description": "The addition operation 'block.number + freezeBlocks' is susceptible to integer overflow in Solidity versions prior to 0.8.0. Since block.number is a uint256 that increments with each block, and freezeBlocks is also a uint256, their sum could exceed the maximum value representable by uint256 (2^256 - 1), causing the value to wrap around to a small number. This could allow attackers to bypass intended lock periods by making l.freedom become a very small value or zero. Additionally, the lack of SafeMath or built-in overflow checks in Solidity 0.4.19 makes this operation dangerous."
+}
+```

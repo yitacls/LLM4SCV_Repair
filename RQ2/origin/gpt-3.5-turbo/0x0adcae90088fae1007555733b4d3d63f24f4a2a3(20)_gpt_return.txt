@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_recipient] += _value;  // fault line",
+    "description": "The vulnerability arises from directly updating the balance of the recipient without checking for potential overflow/underflow issues. This could lead to unintended behavior if the value being added exceeds the maximum limit or result in an undesirable negative balance."
+}
+```

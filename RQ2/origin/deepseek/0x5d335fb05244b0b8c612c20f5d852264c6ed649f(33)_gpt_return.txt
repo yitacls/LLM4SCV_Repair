@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization which can be manipulated through phishing attacks. An attacker can create a malicious contract that calls trump.clear() when the owner interacts with it. Since tx.origin returns the original EOA that initiated the transaction chain, the check will pass if the owner triggered the interaction, allowing unauthorized selfdestruct of the contract. This should be replaced with msg.sender == owner for proper access control."
+}
+```

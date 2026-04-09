@@ -1,0 +1,17 @@
+```json
+{
+    "contractName": "EncryptedToken",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "owner.send(msg.value);",
+            "description": "The function sends Ether to the owner without performing any checks to ensure it's legitimate. An attacker can potentially trigger this function to drain all the Ether from the contract causing a Denial of Service."
+        },
+        {
+            "type": "access_control",
+            "location": "_transfer(owner, msg.sender, amount);",
+            "description": "The function transfers tokens to the sender without any validations, allowing anyone who calls the function to acquire tokens without verification. This can lead to unauthorized access and potential asset theft."
+        }
+    ]
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "VernamWhiteListDeposit",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and reverting on failure",
+            "corrected_code": "function() public payable {\n\t\trequire(participants.length <= maxWiteList);\n\t\trequire(block.timestamp <= deadLine);\n\t\trequire(msg.value >= depositAmount);\n\t\trequire(!isWhiteList[msg.sender]);\n\t\trequire(benecifiary.send(msg.value));\n\t\tisWhiteList[msg.sender] = true;\n\t\tparticipants.push(msg.sender);\n\t\temit WhiteListSuccess(msg.sender, msg.value);\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

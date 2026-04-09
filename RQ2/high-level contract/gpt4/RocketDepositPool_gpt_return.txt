@@ -1,0 +1,16 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": 
+        "for (uint256 i = 0; i < rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments(); ++i) {
+            uint256 minipoolCapacity = rocketMinipoolQueue.getNextCapacity();
+            if (minipoolCapacity == 0 || getBalance() < minipoolCapacity) { break; }
+            address minipoolAddress = rocketMinipoolQueue.dequeueMinipool();
+            RocketMinipoolInterface minipool = RocketMinipoolInterface(minipoolAddress);
+            rocketVault.withdrawEther(minipoolCapacity);
+            minipool.userDeposit{value: minipoolCapacity}();
+            emit DepositAssigned(minipoolAddress, minipoolCapacity, block.timestamp);
+        }",
+    "description": "This loop withdraws ether and assigns it to a minipool for every deposit. However, if the rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments() is set to a very large number, the loop could consume all the gas provided to the transaction, causing the transaction to fail. This is known as a Denial of Service (DoS) attack, where an attacker could manipulate the maximum deposit assignments causing all transactions to fail due to block gas limit. Moreover, there aren't preventive measures to stop execution overflow."
+}
+```

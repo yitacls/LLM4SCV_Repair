@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability (Insufficient Gas Griefing / Out-of-Gas)",
+    "location": "owner.send(amount);",
+    "description": "In Solidity 0.4.25, address.send() forwards a fixed 2300 gas stipend and returns false on failure instead of throwing an exception. If the owner's fallback function requires more than 2300 gas (e.g., for complex logic, state updates, or forwarding to another contract), the transfer will fail silently, locking the contract's balance permanently. Additionally, the contract does not handle the boolean return value, so failed transfers go undetected. This is a gas-related arithmetic vulnerability as the limited gas allocation can cause the arithmetic transfer operation to fail under expected conditions."
+}
+```

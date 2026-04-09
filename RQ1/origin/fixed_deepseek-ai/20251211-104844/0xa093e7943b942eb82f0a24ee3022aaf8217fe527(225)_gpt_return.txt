@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "DiceLuck100",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added ownership tracking variable for onlyOwner modifier",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to restrict function access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed arithmetic vulnerability by using transfer() instead of send() for safer ether transfer and added constructor to set owner. The original send() function had limited gas forwarding and could fail silently, while transfer() reverts on failure. Also changed from using address(this).balance directly to storing in local variable to prevent reentrancy issues.",
+            "corrected_code": "function withdraw() public onlyOwner {\n    address contractOwner = owner;\n    uint256 balance = address(this).balance;\n    require(balance > 0, \"No funds to withdraw\");\n    // Using transfer for safer ether transfer that reverts on failure\n    contractOwner.transfer(balance);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set the contract owner during deployment",
+            "corrected_code": "constructor() public {\n    owner = msg.sender;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

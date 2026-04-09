@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "SYC2ndEarlyPurchase",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "appendEarlyPurchase",
+        "fix_info": "Fixed unchecked low-level call vulnerability by checking send() return value and using transfer() instead. Also replaced deprecated 'throw' with 'revert()' and 'now' with 'block.timestamp'.",
+        "corrected_code": "function appendEarlyPurchase(address purchaser, uint amount, uint purchasedAt)\n        internal\n        onlyEarlyPurchaseTerm\n        returns (bool)\n    {\n        if (purchasedAt == 0 || purchasedAt > block.timestamp) {\n            revert(\"Invalid purchase time\");\n        }\n        \n        if(totalEarlyPurchaseRaised + amount >= WEI_MAXIMUM_EARLYPURCHASE){\n            uint refundAmount = totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE;\n            uint purchaseAmount = WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised;\n            \n            if (refundAmount > 0) {\n                purchaser.transfer(refundAmount);\n            }\n            \n            earlyPurchases.push(EarlyPurchase(purchaser, purchaseAmount, purchasedAt));\n            totalEarlyPurchaseRaised += purchaseAmount;\n        }\n        else{\n            earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));\n            totalEarlyPurchaseRaised += amount;\n        }\n        \n        if(totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE || block.timestamp >= ENDING_TIME){\n            earlyPurchaseClosedAt = block.timestamp;\n        }\n        \n        return true;\n    }",
+        "change_type": "modified"
+    }]
+}]
+```

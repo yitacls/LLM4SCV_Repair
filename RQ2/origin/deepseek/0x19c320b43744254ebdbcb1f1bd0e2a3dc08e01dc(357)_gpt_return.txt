@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Reentrancy",
+        "location": "bool success = msg.sender.call.value(amount)(\"\");",
+        "description": "The vulnerable line uses low-level call.value() without gas limits and before updating the state. An attacker contract's fallback function can re-enter withdraw() multiple times because pendingWithdrawals[msg.sender] is only set to 0 after the external call, allowing repeated withdrawals of the same funds until the contract balance is drained."
+    }
+]
+```

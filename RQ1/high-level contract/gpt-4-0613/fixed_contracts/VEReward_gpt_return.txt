@@ -1,0 +1,57 @@
+[{
+    "contract_name": "Reward",
+    "contract_version": "0.8.11",
+    "state_variables": [], 
+    "modifiers": [],
+    "functions": [
+    {
+        "function_name": "getBlockByTime",
+        "fix_info": "The getBlockByTime function does not handle a failed binary search correctly which could lead to a potential fallback DoS scenario. We fix it by handling the fallback scenario.",
+        "corrected_code": "function getBlockByTime(uint _time) public view returns (uint) {
+            // Binary search
+            uint _min = 0;
+            uint _max = point_history.length - 1; // asserting length >= 2
+            for (uint i = 0; i < 128; ++i) {
+                // 128 iterations enough for 128-bit numbers
+                if (_min >= _max) {
+                    break;
+                }
+                uint _mid = (_min + _max + 1) / 2;
+                if (point_history[_mid].ts <= _time) {
+                    _min = _mid;
+                } else {
+                    _max = _mid - 1;
+                }
+            }
+
+            // fallback in case a suitable block number was not found.
+            if(_min < _max) {
+                return 0;
+            }
+
+            Point memory point0 = point_history[_min];
+            Point memory point1 = point_history[_min + 1];
+            // asserting point0.blk < point1.blk, point0.ts < point1.ts
+            uint block_slope; // dblock/dt
+            block_slope = (BlockMultiplier * (point1.blk - point0.blk)) / (point1.ts - point0.ts);
+            uint dblock = (block_slope * (_time - point0.ts)) / BlockMultiplier;
+            return point0.blk + dblock;
+        }",
+        "change_type": "modified"
+    },
+    {
+        "function_name": "claimRewardMany",
+        "fix_info": "The claimRewardMany function does not efficiently handle gas cost which could lead to a potential DoS scenario. We fix it by adding gas limit to the loop iterations as a precautionary measure.",
+        "corrected_code": "function claimRewardMany(uint[] calldata tokenIds, Interval[][] calldata intervals) public returns (uint[] memory rewards) {
+        require(tokenIds.length <= 50, 'Cannot process more than 50 token Ids at a time');
+        rewards = new uint[] (tokenIds.length);
+        for (uint i = 0; i < tokenIds.length; i++) {
+                require(gasleft() > 200000, 'Out of gas, please try with less tokens');
+                rewards[i] = claimReward(tokenIds[i], intervals[i]);
+        }
+        return rewards;
+    }",
+        "change_type": "modified"
+    }
+    ] 
+}]

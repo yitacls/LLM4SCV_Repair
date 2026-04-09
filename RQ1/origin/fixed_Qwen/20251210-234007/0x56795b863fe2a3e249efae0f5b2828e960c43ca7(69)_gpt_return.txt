@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Trade",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and adding proper error handling",
+            "corrected_code": "function() payable{\n        totalEthInWei = totalEthInWei + msg.value;\n        uint256 amount = msg.value * unitsOneEthCanBuy;\n        require(balances[fundsWallet] >= amount);\n        balances[fundsWallet] = balances[fundsWallet] - amount;\n        balances[msg.sender] = balances[msg.sender] + amount;\n        Transfer(fundsWallet, msg.sender, amount); \n        fundsWallet.transfer(msg.value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

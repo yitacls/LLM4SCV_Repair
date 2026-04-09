@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This line of code has a potential underflow/overflow issue. The operation can overflow if '_value' is large enough, leading to a smaller actual transferred value and violating the invariant that the sum of all balances does not change. There's no check in place to ensure the addition won't result in an overflow."
+}
+```

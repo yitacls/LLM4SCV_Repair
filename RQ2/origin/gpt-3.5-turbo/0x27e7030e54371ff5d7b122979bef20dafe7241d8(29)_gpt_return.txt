@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[to] += tokens;",
+    "description": "The vulnerability arises due to the lack of overflow check in the addition operation. This can result in an integer overflow if the token amount is extremely large, potentially leading to unexpected behavior in the contract."
+}
+```  

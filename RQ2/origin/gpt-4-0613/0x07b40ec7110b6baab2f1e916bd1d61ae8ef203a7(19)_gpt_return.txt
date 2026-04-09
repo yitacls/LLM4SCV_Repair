@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This line of code is vulnerable because it uses 'tx.origin' for authentication. 'tx.origin' refers to the original entity that initiated the transaction and hence can be manipulated by malicious contracts called by the owner, which could allow unauthorized access. Instead, it would be safer to use 'msg.sender', which refers directly to the immediate sender of the transaction."
+}
+```

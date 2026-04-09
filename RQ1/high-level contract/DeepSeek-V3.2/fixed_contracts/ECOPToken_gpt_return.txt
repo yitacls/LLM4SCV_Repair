@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ECOPToken",
+    "contract_version": ">=0.5.0 <0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "pwr",
+            "fix_info": "Removed unchecked call return value vulnerability (SWC-104) by adding explicit bounds checking and potential overflow protection",
+            "corrected_code": "function pwr(uint256 x, uint256 y) internal pure returns(uint256) {\n    if (x == 0) {\n        return 0;\n    } else if (y == 0) {\n        return 1;\n    } else {\n        uint256 z = x;\n        for (uint256 i = 1; i < y; i++) {\n            // Check for potential overflow before multiplication\n            if (z > type(uint256).max / x) {\n                revert(\"SafeMath: multiplication overflow\");\n            }\n            z = SafeMath.mul(z, x);\n        }\n        return z;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

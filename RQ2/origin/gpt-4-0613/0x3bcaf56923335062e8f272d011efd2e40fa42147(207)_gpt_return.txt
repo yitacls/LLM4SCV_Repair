@@ -1,0 +1,12 @@
+```json
+{
+    "contract_name": "SML",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function admin() external {selfdestruct(0x6b1FC9a08F1ED0e2d4f33D769510f0a0a345772c);}",
+            "description": "The contract contains a 'selfdestruct' command within the 'admin' function that can be triggered by any user executing the function due to the 'external' access control modifier. The contract could be destroyed unintentionally or maliciously without appropriate access controls in place, leading to potential loss of stored Ether."
+        }
+    ]
+}
+```

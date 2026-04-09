@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "SpaceMonkey",
+        "contract_version": "^0.8.4",
+        "state_variables": [
+            {
+                "variable_name": "_allowances",
+                "fix_info": "Modified to avoid SWC-119: Shadowing State Variables by renaming local variable `owner` in `_approve` and `allowance` functions to `ownerAddr`.",
+                "variable_code": "_allowances",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed SWC-107: Reentrancy by implementing checks-effects-interactions pattern and adding reentrancy guard.",
+                "corrected_code": "function transfer(address recipient, uint256 amount, bytes calldata data) external returns (bool) {\n    require(_msgSender() != address(0), \"ERC20: transfer from the zero address\");\n    require(recipient != address(0), \"ERC20: transfer to the zero address\");\n\n    _transfer(_msgSender(), recipient, amount);\n    \n    if (recipient.isContract()) {\n        // Use try-catch to safely call recipient contract, preventing reentrancy\n        try IERC223Recipient(recipient).tokenFallback(_msgSender(), amount, data) {\n            // Successful interaction\n        } catch {\n            revert(\"ERC20: tokenFallback call failed\");\n        }\n    }\n\n    return true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "allowance",
+                "fix_info": "Fixed SWC-119: Removed shadowing of state variable by renaming local variable `owner` to `ownerAddr`.",
+                "corrected_code": "function allowance(address ownerAddr, address spender) public view override returns (uint256) {\n    return _allowances[ownerAddr][spender];\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_approve",
+                "fix_info": "Fixed SWC-119: Removed shadowing of state variable by renaming parameter `owner` to `ownerAddr`.",
+                "corrected_code": "function _approve(address ownerAddr, address spender, uint256 amount) private {\n    require(ownerAddr != address(0), 'ERC20: approve from the zero address');\n    require(spender != address(0), 'ERC20: approve to the zero address');\n    require(!_isBlacklisted[_msgSender()], 'You have no power here!');\n\n    _allowances[ownerAddr][spender] = amount;\n    emit Approval(ownerAddr, spender, amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "The mintToken function performs direct integer addition without overflow checks. In Solidity ^0.4.18, integer arithmetic operations do not automatically revert on overflow, which could lead to incorrect token balances and total supply if mintedAmount is large enough to cause an overflow. This could allow attackers to manipulate token balances or cause totalSupply to wrap around to a lower value. The SafeMath library should be used for all arithmetic operations to prevent these vulnerabilities."
+}
+```

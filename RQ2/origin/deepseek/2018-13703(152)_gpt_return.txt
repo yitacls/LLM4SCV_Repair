@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceOf[owner] += totalTokenToMint; and totalSupply += totalTokenToMint;",
+    "description": "In Solidity <0.8.0, integer arithmetic operations do not automatically check for overflow/underflow. The mintToken function uses unchecked addition (+=) which could allow the owner to overflow the balanceOf mapping and totalSupply variable if they mint an extremely large amount of tokens (specifically when balanceOf[owner] + totalTokenToMint > type(uint256).max or totalSupply + totalTokenToMint > type(uint256).max). This would wrap the values around to small numbers, corrupting the token economics. The vulnerability is compounded by using 'var' which infers uint8 for small constant numbers, though here tokensToMint is uint256 so totalTokenToMint becomes uint256. The issue exists due to the absence of SafeMath or built-in overflow checks in Solidity 0.4.21."
+}
+```

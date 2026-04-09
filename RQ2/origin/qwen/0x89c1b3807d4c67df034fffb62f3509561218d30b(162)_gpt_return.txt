@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(CANCELLATION_FEE);",
+        "description": "The send() function is used without checking its return value. If the call fails (e.g., due to gas issues or receiver contract logic), the failure will be silently ignored, which could lead to incorrect state updates and loss of funds."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(fee);",
+        "description": "The send() function is used without checking its return value. This can cause silent failures where the transfer does not occur but the contract continues execution, potentially leading to inconsistent state and loss of funds."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].requester.call.gas(2300).value(fee)();",
+        "description": "Low-level call is used without checking its return value. If the call fails, it will not be detected, which can result in incorrect state handling and potential loss of user funds during refunds."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);",
+        "description": "Low-level call to a callback function is made without verifying its success. This unchecked call can lead to unnoticed failures in executing intended post-delivery logic in the application contract."
+    }
+]
+```

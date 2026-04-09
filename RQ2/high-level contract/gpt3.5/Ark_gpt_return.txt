@@ -1,0 +1,17 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-102-Outdated Compiler Version",
+            "location": "pragma solidity 0.6.9;",
+            "description": "The compiler version 0.6.9 is outdated and may contain known vulnerabilities. It is recommended to use a newer and more secure version of the Solidity compiler."
+        },
+        {
+            "type": "SWC-113-DoS with Failed Call",
+            "location": "withdrawForLoss function, line 55",
+            "description": "There is a risk of DoS attack with a failed call in the withdrawForLoss function. The contract should handle the failure scenario appropriately to prevent a DoS attack."
+        }
+    ]
+}
+```
+```  

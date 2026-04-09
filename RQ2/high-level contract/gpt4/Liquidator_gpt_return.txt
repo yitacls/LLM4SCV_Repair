@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "TransferHelper.safeTransfer(collateral, pair, IERC20Minimal(collateral).balanceOf(address(this)));",
+    "description": "The safeTransfer function in this contract allows an Ether withdrawal to a specified 'pair' address without any checks, limits or protective measures. This may lead to unexpected behavior where an arbitrary caller could deplete the contract's funds."
+}
+```

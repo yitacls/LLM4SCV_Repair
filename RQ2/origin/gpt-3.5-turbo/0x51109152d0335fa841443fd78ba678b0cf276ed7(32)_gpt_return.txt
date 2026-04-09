@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountRaised);",
+    "description": "The beneficiary.send function is a low-level call which does not check the success of the operation. If the send operation fails due to out-of-gas or if the beneficiary address is a contract that has a fallback function consuming more than 2300 gas, the entire crowdsale will be blocked and the funds could be locked in the contract forever."
+}
+```  

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bancor.convert.value(value)(path, value, 1);",
+    "description": "The contract contains low-level calls that are not followed by checks for their return value or exceptions. If the convert function of the bancor object fails, the calling contract will not be aware since it does not check the return value. In Solidity, low-level calls return false instead of throwing an exception if something went wrong. This is particularly vulnerable in Ethereum as failing calls are very common due to the out-of-gas problem."
+}
+```

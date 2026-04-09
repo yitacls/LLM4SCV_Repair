@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-101",
+        "location": "latestVersion++;",
+        "description": "The increment operation on latestVersion is not checked for overflow. Since latestVersion is a uint16, it can overflow when it reaches the maximum value of 65535. Although there is a check `require(latestVersion < 65535, \"LayerZero: can not add new messaging library\");`, the increment happens after the check in the newVersion function, potentially leading to an overflow if not properly handled in other contexts."
+    },
+    {
+        "type": "SWC-101",
+        "location": "uint64 nonce = ++outboundNonce[_dstChainId][msg.sender];",
+        "description": "The increment operation on outboundNonce may lead to an overflow. Although unlikely due to the use of uint64, which has a large range, there is no explicit overflow check. If the nonce reaches its maximum value, it could wrap around to zero, leading to potential replay attacks or message ordering issues."
+    },
+    {
+        "type": "SWC-101",
+        "location": "require(_nonce == ++inboundNonce[_srcChainId][_srcAddress], \"LayerZero: wrong nonce\");",
+        "description": "The increment operation on inboundNonce may lead to an overflow. Similar to outboundNonce, while unlikely, there is no explicit overflow check. An overflow could cause the nonce to reset, potentially allowing replay attacks or disrupting message ordering."
+    }
+]
+```

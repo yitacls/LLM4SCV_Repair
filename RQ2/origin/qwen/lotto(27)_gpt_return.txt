@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(this.balance);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.18, send() returns false on failure but does not revert the transaction. This means if the send() call fails (e.g., due to gas stipend exhaustion or recipient contract fallback function failure), the function will continue execution without handling the error, potentially leading to loss of funds or incorrect contract state. The return value should be checked and handled appropriately."
+}
+```

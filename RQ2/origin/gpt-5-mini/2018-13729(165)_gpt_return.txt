@@ -1,0 +1,12 @@
+[
+  {
+    "type": "Arithmetic",
+    "location": "var totalTokenToMint = tokensToMint * (10 ** 18);",
+    "description": "Multiplication overflow: the expression tokensToMint * (10 ** 18) can overflow silently under Solidity ^0.4.17 (no built-in overflow checks). If tokensToMint is large enough, the product will wrap modulo 2**256 and produce a much smaller value than expected. An attacker or misconfigured owner input could cause totalTokenToMint to be incorrect, enabling creation of an unexpectedly small or wrapped amount of tokens and breaking accounting invariants. Recommended mitigation: use a checked math library (e.g., SafeMath.mul) or explicitly require tokensToMint <= UINT256_MAX / (10**18) before performing the multiplication."
+  },
+  {
+    "type": "Arithmetic",
+    "location": "balanceOf[owner] += totalTokenToMint;\\ntotalSupply += totalTokenToMint;",
+    "description": "Addition overflow: the increments to balanceOf[owner] and totalSupply are performed without overflow checks. Even if totalTokenToMint is computed correctly, adding it to an existing large balance or totalSupply can overflow and wrap around, resulting in incorrect balances/total supply (potentially allowing duplicate minting or loss of supply accounting). This can be exploited to reset balances or totalSupply to small values. Recommended mitigation: use SafeMath.add for additions (or Solidity >=0.8.0 built-in checked arithmetic), and validate that balance and totalSupply will not exceed UINT256_MAX before the addition (e.g., require(totalSupply + totalTokenToMint >= totalSupply))."
+  }
+]

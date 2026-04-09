@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(_am)()",
+    "description": "The use of the function call.value in this context creates a potential reentrancy vulnerability where an attacker contract could call back into this contract's Collect function before the state changes are finalized, potentially causing unexpected behavior and loss of funds."
+}
+```

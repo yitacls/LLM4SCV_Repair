@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function _massUpdatePools() private {",
+    "description": "The _massUpdatePools function iterates through all pools in the poolInfo array and updates reward variables for each pool. This means if the number of pools (poolInfo.length) becomes large, the gas required to execute this function may exceed the block gas limit. Consequently, this function could become unexecutable, leading to a denial of service for updates across all pools."
+}
+```

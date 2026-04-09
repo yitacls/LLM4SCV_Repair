@@ -1,0 +1,5 @@
+{
+  "type": "Arithmetic",
+  "location": "        //checking for allowance\n        if( allowed[from][msg.sender] >= value ) return false;\n\n        // ... later ...\n        allowed[from][msg.sender] -= value;",
+  "description": "The allowance check is inverted: it returns false when the spender's allowance is greater than or equal to the requested value, allowing execution to continue only when allowance < value. As a result, when allowed[from][msg.sender] < value the code proceeds and then executes allowed[from][msg.sender] -= value, causing an unsigned integer underflow (wraparound). For example, if allowance == 0 and value == 1, subtraction wraps to 2^256-1, effectively granting the spender a huge allowance and enabling unauthorized transfers or token theft. Fix by using the correct comparison (if (allowed[from][msg.sender] < value) return false;), and protect arithmetic with SafeMath (or Solidity 0.8+ built-in checks) or require(...) to prevent underflow/overflow." 
+}

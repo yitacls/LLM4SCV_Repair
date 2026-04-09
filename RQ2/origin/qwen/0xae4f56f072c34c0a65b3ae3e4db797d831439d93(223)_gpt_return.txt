@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == _from);",
+    "description": "The use of tx.origin for authentication is vulnerable to phishing attacks. In Solidity ^0.4.11, tx.origin refers to the original external account that initiated the transaction, not necessarily the caller of the function. A malicious contract can trick a user into calling a function that eventually calls transferGIM, making tx.origin point to the user while msg.sender points to the malicious contract. This allows the malicious contract to bypass the intended access control and transfer tokens on behalf of the user without their direct consent."
+}
+```

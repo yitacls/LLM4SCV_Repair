@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[msg.sender] -= _value;",
+    "description": "The contract contains an integer overflow vulnerability due to the repeated subtraction of _value in a loop. In Solidity <0.8.0, arithmetic operations do not automatically check for overflow/underflow. When the loop iterates multiple times, subtracting _value from balances[msg.sender] repeatedly could cause an underflow if the sender's balance becomes less than addresses.length * _value, resulting in an incorrectly high balance for msg.sender instead of reverting. Additionally, the initial require check only validates that _value (not total amount) is less than the sender's balance, allowing them to transfer more tokens than they own when sending to multiple addresses."
+}
+```

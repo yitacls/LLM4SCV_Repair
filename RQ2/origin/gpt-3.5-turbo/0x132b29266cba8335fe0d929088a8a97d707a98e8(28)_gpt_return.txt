@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This line can lead to an arithmetic overflow vulnerability. If the value of _value is very large, adding it to balances[_to] may exceed the maximum value that can be stored in a uint256 data type, causing unexpected behavior or vulnerabilities. Consider using a safe math library to prevent arithmetic overflow."
+}
+```

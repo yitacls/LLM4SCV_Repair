@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PoCGame",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "donateToWhale",
+                "fix_info": "Added proper error handling for low-level call with check for success and reverted if call fails. Also added check for reentrancy protection and amount validation.",
+                "corrected_code": "function donateToWhale(uint256 amount) internal {\n    require(amount > 0, \"Amount must be greater than zero\");\n    require(address(this).balance >= amount, \"Insufficient contract balance\");\n    \n    // Set reentrancy guard\n    require(!isDonating, \"Reentrancy detected\");\n    isDonating = true;\n    \n    // Make the low-level call with proper error handling\n    (bool success, ) = whale.call.value(amount)(bytes4(keccak256(\"donate()\")));\n    require(success, \"Donation to whale failed\");\n    \n    // Only update state after successful call\n    totalDonated += amount;\n    emit Donate(amount, whale, msg.sender);\n    \n    // Reset reentrancy guard\n    isDonating = false;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

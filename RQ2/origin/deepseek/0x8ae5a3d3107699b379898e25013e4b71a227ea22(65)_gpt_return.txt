@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authentication creates a vulnerability where malicious contracts can trick the owner into executing this function. If the owner interacts with a malicious contract, that contract can call unsoldTokensBack() and pass the tx.origin check, allowing unauthorized transfer of all token balances from the contract to the owner's address. This violates the principle that msg.sender should be used for access control, as tx.origin returns the original EOA that initiated the transaction chain, not the immediate caller. In Solidity 0.4.13, this pattern enables phishing attacks where owners are deceived into interacting with attacker-controlled contracts."
+}
+```

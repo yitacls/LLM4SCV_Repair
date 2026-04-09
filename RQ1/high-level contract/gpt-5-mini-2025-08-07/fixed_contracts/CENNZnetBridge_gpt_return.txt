@@ -1,0 +1,33 @@
+[{
+    "contract_name": "CENNZnetBridge",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "accumulatedFees",
+            "fix_info": "Added a dedicated accumulator to track verification fees so rewards are distributed from this accounting variable instead of blindly sending the entire contract balance (prevents unprotected withdrawal of unrelated funds).",
+            "variable_code": "uint public accumulatedFees;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "verifyMessage",
+            "fix_info": "Require the caller to supply the verification fee and credit it to accumulatedFees. Delegate verification logic to an internal function to avoid using external self-calls (which previously allowed bypassing the fee check).",
+            "corrected_code": "function verifyMessage(bytes memory message, CENNZnetEventProof memory proof) payable external {\n    require(active, \"bridge inactive\");\n    // Caller must pay the verification fee for public verification calls\n    require(msg.value >= verificationFee, \"must supply verification fee\");\n\n    // collect fee for later reward distribution\n    accumulatedFees += msg.value;\n\n    // perform the actual verification (internal call avoids external self-call bypass)\n    _verifyMessage(message, proof);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_verifyMessage",
+            "fix_info": "Internalized verification logic previously present in verifyMessage. Added bounds checks for the sparse signature arrays to avoid out-of-bounds errors and preserved original validation semantics. Sets eventIds upon successful verification.",
+            "corrected_code": "function _verifyMessage(bytes memory message, CENNZnetEventProof memory proof) internal {\n    uint256 eventId = proof.eventId;\n    require(!eventIds[eventId], \"eventId replayed\");\n    uint32 validatorSetId = proof.validatorSetId;\n    require(validatorSetId <= activeValidatorSetId, \"future validator set\");\n    require(activeValidatorSetId - validatorSetId <= proofTTL, \"expired proof\");\n\n    address[] memory _validators = validators[validatorSetId];\n    require(_validators.length > 0, \"invalid validator set\");\n\n    bytes32 digest = keccak256(message);\n    uint acceptanceTreshold = (_validators.length * thresholdPercent / 100);\n    uint witnessCount;\n    bytes32 ommited;\n\n    // ensure loops over validator length but protect against malformed proof arrays\n    for (uint i = 0; i < _validators.length; i++) {\n        if (proof.r.length <= i) {\n            // no signature entry for this validator in sparse arrays\n            continue;\n        }\n        if (proof.r[i] != ommited) {\n            require(proof.v.length > i && proof.s.length > i, \"invalid signature arrays\");\n            require(_validators[i] == ecrecover(digest, proof.v[i], proof.r[i], proof.s[i]), \"signature invalid\");\n            witnessCount += 1;\n            if (witnessCount >= acceptanceTreshold) {\n                break;\n            }\n        }\n    }\n\n    require(witnessCount >= acceptanceTreshold, \"not enough signatures\");\n    // mark event as consumed\n    eventIds[eventId] = true;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "setValidators",
+            "fix_info": "Prevented unprotected withdrawal by: (1) requiring the caller to pay the verification fee for this operation, (2) collecting fees into accumulatedFees, (3) distributing only accumulatedFees as the reward (not the entire contract balance), and (4) using checks-effects-interactions pattern by zeroing the accumulatedFees before performing the external transfer. Also replaced external self-call with internal verification to avoid bypass of fee requirement.",
+            "corrected_code": "function setValidators(\n    address[] memory newValidators,\n    uint32 newValidatorSetId,\n    CENNZnetEventProof memory proof\n) external payable {\n    require(newValidators.length > 0, \"empty validator set\");\n    require(newValidatorSetId > activeValidatorSetId , \"validator set id replayed\");\n\n    // Require caller pays the verification fee for this operation\n    require(msg.value >= verificationFee, \"must supply verification fee\");\n    accumulatedFees += msg.value;\n\n    bytes memory message = abi.encode(newValidators, newValidatorSetId, proof.validatorSetId, proof.eventId);\n\n    // Use internal verification to avoid external self-call bypass\n    _verifyMessage(message, proof);\n\n    // update validator set state\n    validators[newValidatorSetId] = newValidators;\n    activeValidatorSetId = newValidatorSetId;\n\n    // compute reward from accumulated fees only and reset before external call\n    uint reward = accumulatedFees;\n    accumulatedFees = 0;\n\n    // transfer reward using call; checks-effects-interactions applied\n    (bool sent, ) = msg.sender.call{value: reward}(\"\");\n    require(sent, \"Failed to send Ether\");\n\n    emit SetValidators(newValidators, reward, newValidatorSetId);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

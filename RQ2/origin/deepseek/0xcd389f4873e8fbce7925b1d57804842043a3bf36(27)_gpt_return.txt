@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to])",
+    "description": "The contract uses Solidity version ^0.4.25, which lacks built-in overflow/underflow protection. The check 'balances[_to] + _value > balances[_to]' is intended to prevent overflow by ensuring the sum is greater than the original balance, but this is insufficient. When balances[_to] + _value exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to a very small number, causing the check to incorrectly pass. This allows an attacker to overflow the recipient's balance to a small amount while transferring a large _value, leading to loss of tokens and incorrect accounting. The subsequent operations 'balances[msg.sender] -= _value' and 'balances[_to] += _value' are also vulnerable to underflow and overflow, respectively. Use SafeMath library or Solidity >=0.8.0 to mitigate this vulnerability."
+}
+```

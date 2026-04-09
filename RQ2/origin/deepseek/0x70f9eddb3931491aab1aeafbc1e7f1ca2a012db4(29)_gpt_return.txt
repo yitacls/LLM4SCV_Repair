@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call to an external address does not check the return value. In Solidity versions before 0.4.19, the 'call' method returns a boolean indicating success/failure, but this return value is ignored. This can lead to silent failures where transferred funds are lost or state changes occur despite the external call failing. An attacker could cause the contract to interact with a malicious contract that intentionally fails, potentially leading to loss of funds or inconsistent contract state. The recommended fix is to check the return value: require(adr.call.value(msg.value)(data)); or handle the return value appropriately."
+}
+```

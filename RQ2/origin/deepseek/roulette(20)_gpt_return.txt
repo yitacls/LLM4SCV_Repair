@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "TIME_MANIPULATION",
+            "location": "require(now != pastBlockTime); // only 1 transaction per block",
+            "description": "Using block timestamp (now) for transaction ordering is vulnerable to miner manipulation. Miners can adjust timestamps within a small range (~900 seconds) when mining blocks, allowing them to influence the outcome of the game."
+        },
+        {
+            "type": "TIME_MANIPULATION",
+            "location": "if(now % 15 == 0) { // winner",
+            "description": "Using block timestamp modulo operation for determining winners creates a predictable outcome that miners can game. Since miners control block timestamps to some degree, they can strategically mine blocks when the timestamp satisfies the winning condition, giving them unfair advantage."
+        }
+    ]
+}
+```

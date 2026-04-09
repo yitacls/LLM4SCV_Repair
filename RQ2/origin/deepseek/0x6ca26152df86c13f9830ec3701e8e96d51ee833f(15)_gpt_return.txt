@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "This line contains an integer overflow vulnerability in Solidity version ^0.4.19, which uses unchecked arithmetic operations by default. If the sum of balanceOf[_from] and balanceOf[_to] exceeds the maximum value that can be stored in a uint (2^256 - 1), it will wrap around to zero. This overflow can bypass the subsequent assertion check (balanceOf[_from] + balanceOf[_to] == previousBalances) since both calculations would overflow in the same way, allowing tokens to be incorrectly transferred while appearing to maintain total supply integrity."
+}
+```

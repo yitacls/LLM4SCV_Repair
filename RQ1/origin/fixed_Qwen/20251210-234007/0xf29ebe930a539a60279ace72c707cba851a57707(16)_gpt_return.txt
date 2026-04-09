@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "B",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "go",
+            "fix_info": "Added check for successful low-level call to prevent unchecked return value",
+            "corrected_code": "function go() public payable {\n        address target = 0xC8A60C51967F4022BF9424C337e9c6F0bD220E1C;\n        // Fixed unchecked low-level call by checking return value\n        require(target.call.value(msg.value)());\n        owner.transfer(address(this).balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

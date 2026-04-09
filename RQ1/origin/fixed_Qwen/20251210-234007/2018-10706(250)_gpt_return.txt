@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferMulti",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by using SafeMath for multiplication and addition operations. Added overflow checks for decimal multiplication and amount calculation.",
+            "corrected_code": "function transferMulti(address[] _to, uint256[] _value) public returns (uint256 amount){\n        require(_to.length == _value.length);\n        uint8 len = uint8(_to.length);\n        for(uint8 j; j<len; j++){\n            uint256 valueWithDecimals = safeMul(_value[j], 10**uint256(decimals));\n            amount = safeAdd(amount, valueWithDecimals);\n        }\n        require(balanceOf[msg.sender] >= amount);\n        for(uint8 i; i<len; i++){\n            address _toI = _to[i];\n            uint256 _valueI = safeMul(_value[i], 10**uint256(decimals));\n            balanceOf[_toI] = safeAdd(balanceOf[_toI], _valueI);\n            balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _valueI);\n            emit Transfer(msg.sender, _toI, _valueI);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

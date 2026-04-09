@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "DosNumber",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "numElements",
+            "fix_info": "Kept as is - tracks current number of elements",
+            "variable_code": "uint public numElements;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "array",
+            "fix_info": "Changed to dynamic array with manual resizing to prevent unbounded growth",
+            "variable_code": "uint[] public array;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "limitNumbers",
+            "fix_info": "Added modifier to limit the number of iterations and prevent DoS",
+            "modifier_code": "modifier limitNumbers(uint numbers) {\n        require(numbers > 0, \"Numbers must be greater than 0\");\n        require(numbers <= 100, \"Cannot insert more than 100 numbers at once\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "insertNnumbers",
+            "fix_info": "Added number limit to prevent unbounded gas consumption, optimized array resizing, removed vulnerability",
+            "corrected_code": "function insertNnumbers(uint value, uint numbers) public limitNumbers(numbers) {\n        // Pre-calculate final size to reduce gas costs\n        uint targetSize = numElements + numbers;\n        \n        // Ensure array has enough capacity with single resize operation\n        if (targetSize > array.length) {\n            uint newSize = targetSize;\n            array.length = newSize;\n        }\n        \n        // Batch assignment in single loop with bounded iterations\n        for (uint i = 0; i < numbers; i++) {\n            array[numElements + i] = value;\n        }\n        \n        // Update numElements once after all insertions\n        numElements = targetSize;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

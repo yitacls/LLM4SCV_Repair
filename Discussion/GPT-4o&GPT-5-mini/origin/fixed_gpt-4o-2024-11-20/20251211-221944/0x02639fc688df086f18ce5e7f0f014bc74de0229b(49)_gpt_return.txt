@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "The state variable `owner` is added to track the contract owner for proper access control.",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a custom modifier `onlyOwner` to restrict access to certain functions to the contract owner.",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced `tx.origin` check with a secure `onlyOwner` modifier to properly restrict minting functionality to the contract owner.",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner {\n    require(amount > 0); // Ensures the amount is positive\n    balances[msg.sender] += amount;\n    totalSupply += amount;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added a constructor to initialize the contract owner to the deployer of the contract.",
+            "corrected_code": "constructor() public {\n    owner = msg.sender;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

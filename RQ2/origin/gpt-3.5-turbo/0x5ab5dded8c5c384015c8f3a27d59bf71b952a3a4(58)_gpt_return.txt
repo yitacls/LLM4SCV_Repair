@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "director.transfer(this.balance - partnerShare);",
+    "description": "The vulnerability arises from the potential for an overflow in the subtraction operation 'this.balance - partnerShare' as the division operation to calculate partnerShare truncates the decimal points. If 'this.balance' is not significantly greater than 'partnerShare', the subtraction could result in an overflow and lead to unexpected behavior."
+}
+```

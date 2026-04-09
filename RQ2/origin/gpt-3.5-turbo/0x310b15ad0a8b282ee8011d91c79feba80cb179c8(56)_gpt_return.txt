@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(balance);",
+    "description": "The code allows anyone to withdraw funds, lacking proper access control. This could lead to unauthorized withdrawals and potential loss of funds."
+}
+```

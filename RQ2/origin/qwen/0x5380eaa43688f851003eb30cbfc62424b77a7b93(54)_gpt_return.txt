@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.send(_value);",
+    "description": "The send() function is a low-level call that returns a boolean indicating success or failure, but the return value is not checked. In Solidity ^0.4.13, if the send() fails (e.g., receiver is a contract that runs out of gas in its fallback function), the function will continue execution without reverting, potentially leading to loss of funds. The contract assumes the transfer succeeded without verifying the return value."
+}
+```

@@ -1,0 +1,70 @@
+pragma solidity ^0.8.0;
+
+contract FidgETHSpinner {
+    string public name = "FidgETHSpinner";
+    string public symbol = "FDGTHSPNNR";
+    uint public decimals = 18;
+    address public wallet;
+    uint public startBlock;
+    uint public endBlock;
+    uint public totalSupply;
+    mapping(address => uint) public balanceOf;
+    uint public normalRate = 10;
+    uint public juicyBonus = 1000;
+    uint public weiRaised;
+    event Fidget(address indexed purchaser, address indexed to, uint value, uint juicyBananas, uint rate, uint tokens);
+    event Spin(address indexed to, uint tokens);
+    event Transfer(address indexed from, address indexed to, uint tokens);
+
+    constructor(){
+        wallet = msg.sender;
+        startBlock = block.number;
+        endBlock = startBlock + 150000; 
+    }
+
+    function changeWallet(address _wallet) public {
+        require(msg.sender == wallet);
+        wallet = _wallet;
+    }
+
+    function balanceOf(address _address) public view returns (uint) {
+        return balanceOf[_address];
+    }
+
+    function icoActive() public view returns (bool) {
+        return block.number <= endBlock;
+    }
+
+    receive() external payable {
+        fidget(msg.sender);
+    }
+
+    function fidget(address _to) public payable {
+        require(_to != address(0)); 
+        require(block.number <= endBlock);
+        require(msg.value >= 0.03 ether);
+        uint rate = normalRate * juicyBonus--;
+        uint tokens = msg.value * rate;
+        require(balanceOf[_to] + tokens >= balanceOf[_to]); // Check for overflow
+        weiRaised += msg.value;
+        juicyBonus = (juicyBonus < 1) ? 1 : juicyBonus;
+        spin(_to, tokens);
+        emit Fidget(msg.sender, _to, msg.value, juicyBonus, rate, tokens);
+        wallet.transfer(msg.value);
+    }
+
+    function spin(address _to, uint _tokens) internal {
+        totalSupply += _tokens; 
+        balanceOf[_to] += _tokens; 
+        emit Spin(_to, _tokens); 
+    }
+
+    function transfer(address _to, uint _tokens) public {
+        require(_to != address(0));
+        require(balanceOf[msg.sender] >= _tokens); 
+        require(balanceOf[_to] + _tokens >= balanceOf[_to]); // Check for overflow
+        balanceOf[msg.sender] -= _tokens; 
+        balanceOf[_to] += _tokens; 
+        emit Transfer(msg.sender, _to, _tokens);
+    }
+}

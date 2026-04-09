@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.6.0;",
+            "description": "The contract uses a floating pragma (^0.6.0) which allows compilation with any version from 0.6.0 to 0.7.0 (excluding 0.7.0). This can lead to unexpected behavior when compiled with different compiler versions, as bugs or security vulnerabilities might be introduced. It is recommended to use a fixed pragma like 'pragma solidity 0.6.12;' to ensure consistent compilation across all environments."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 62-66: for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) { totalDistributedValue += _harvest(i); }",
+            "description": "The massHarvest() function contains an unbounded loop that iterates through epochs from the user's last harvested epoch up to the current epoch. If many epochs have passed without harvesting, the gas cost could exceed the block gas limit, making the function uncallable and potentially locking user rewards. This can be exploited by malicious actors to cause denial-of-service for users with many unharvested epochs."
+        }
+    ]
+}
+```

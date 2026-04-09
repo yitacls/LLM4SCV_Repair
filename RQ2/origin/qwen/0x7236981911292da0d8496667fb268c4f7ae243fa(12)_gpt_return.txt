@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint amount = invested[msg.sender] * 5 / 100 * (block.number - atBlock[msg.sender]) / 5900;",
+    "description": "The arithmetic operation involves multiple multiplications and divisions that can cause integer overflow in Solidity 0.4.24, especially when calculating the reward amount. The multiplication of invested[msg.sender] * 5 could overflow if the investment amount is large, and subsequent operations may also cause overflow issues. This can lead to incorrect reward calculations or unexpected behavior."
+}
+```

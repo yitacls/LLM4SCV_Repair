@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PENNY_BY_PENNY",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "Collect",
+                "fix_info": "The reentrancy vulnerability is mitigated by using the checks-effects-interactions pattern. State changes are made before the external call, and 'msg.sender.call.value' is replaced with 'transfer' for safer ether handling.",
+                "corrected_code": "function Collect(uint _am) public payable {\n    var acc = Acc[msg.sender];\n    require(acc.balance >= MinSum, \"Minimum sum not met\");\n    require(acc.balance >= _am, \"Insufficient balance\");\n    require(now > acc.unlockTime, \"Account is still locked\");\n\n    acc.balance -= _am; // State change comes first\n\n    msg.sender.transfer(_am); // Safer method for ether transfer\n\n    Log.AddMessage(msg.sender, _am, \"Collect\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

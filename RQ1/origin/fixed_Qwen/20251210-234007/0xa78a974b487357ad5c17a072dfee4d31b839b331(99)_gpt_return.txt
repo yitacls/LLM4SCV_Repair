@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HOT",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sendAll",
+            "fix_info": "Fixed access control vulnerability by adding explicit ownership check and improved parameter validation to prevent unauthorized transfers",
+            "corrected_code": "function sendAll(address[] _users,uint[] _prices,uint _allPrices) public onlyOwner{\n        require(_users.length>0);\n        require(_prices.length>0);\n        require(_users.length == _prices.length);\n        require(address(this).balance>=_allPrices);\n        uint totalCalculated = 0;\n        for(uint256 i =0;i<_users.length;i++){\n            require(_users[i]!=address(0));\n            require(_prices[i]>0);\n            totalCalculated = totalCalculated + _prices[i];\n        }\n        require(totalCalculated == _allPrices);\n        for(uint256 j =0;j<_users.length;j++){\n            _users[j].transfer(_prices[j]);\n            transferLogs(_users[j],'转账',_prices[j]);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.call(_value);",
+    "description": "The contract uses a low-level call to transfer ETH without checking its return value. In Solidity versions before 0.4.13, low-level calls like `call()` do not propagate exceptions and always return false on failure, but the return value is ignored here. This can lead to silent failures where ETH transfer fails (e.g., due to insufficient gas, recipient contract reverting, or out-of-gas errors) but the contract state updates as if the transfer succeeded, breaking the contract's logic. Additionally, this code does not forward any gas (no gas stipend specified), which can cause transfers to fail when sending to合约. The vulnerability should be fixed by checking the return value and handling failures appropriately, or using higher-level transfer functions like `transfer()` or `send()` with proper gas management."
+}
+```

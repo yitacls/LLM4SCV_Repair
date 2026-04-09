@@ -1,0 +1,18 @@
+```json
+{
+    "contract_name": "BSB_StakingSmartStakers",
+    "solidity_version": ">=0.8.0",
+    "vulnerabilities": [
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "function end(), lines: 393-401",
+            "description": "The for loop in the end() function iterates over all holders stored in an EnumerableSet, which can grow indefinitely as more holders interact with the contract. This can result in a gas limit issue, leading to the contract being unable to execute the function when the holders set gets too large."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "function getRewardsLeft(), lines: 416-418",
+            "description": "The for loop in the getRewardsLeft() function calculates the total pending rewards by iterating over all holders in the EnumerableSet. If the number of holders is very large, this function could consume excessive gas and fail to execute."
+        }
+    ]
+}
+```

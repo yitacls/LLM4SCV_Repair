@@ -1,0 +1,21 @@
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "wallet",
+            "fix_info": "Ensure 'wallet' is declared as an address and used as the recipient for forwarded funds. Use a throwing transfer instead of unchecked low-level send to avoid silent failures.",
+            "variable_code": "address wallet;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Replace unchecked low-level call (send) with transfer which reverts on failure, preventing silent loss of funds. Preserves original functionality of forwarding received Ether to wallet.",
+            "corrected_code": "function () external payable {\n\t// Forward all received Ether to the wallet. transfer throws on failure to avoid unchecked low-level call.\n\twallet.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

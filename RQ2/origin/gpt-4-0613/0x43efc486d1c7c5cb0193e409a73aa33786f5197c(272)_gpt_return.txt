@@ -1,0 +1,12 @@
+```json
+{
+    "contractName": "Tubigo",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function withdraw() onlyOwner public",
+            "description": "The function withdraw() transfers the entire contract balance to the contract owner. This function does not have proper access control implemented. It should include checks to ensure only authorized parties can execute the function and possibly limit the amount that can be withdrawn at once."
+        }
+    ]
+}
+```

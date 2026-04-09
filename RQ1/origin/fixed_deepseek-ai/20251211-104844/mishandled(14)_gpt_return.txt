@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "SendBack",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "userBalances",
+            "fix_info": "Made state variable internal for better encapsulation and added visibility specifier",
+            "variable_code": "mapping(address => uint) internal userBalances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "",
+            "modifier_code": "",
+            "change_type": ""
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding require() to check send() return value, changed to call.value for gas control, and added reentrancy guard",
+            "corrected_code": "function withdrawBalance() public {\n    require(userBalances[msg.sender] > 0, \"No balance to withdraw\");\n    uint amountToWithdraw = userBalances[msg.sender];\n    userBalances[msg.sender] = 0;\n    bool success = msg.sender.call.value(amountToWithdraw).gas(2300)();\n    require(success, \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

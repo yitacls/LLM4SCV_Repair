@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "TransferHelper.safeTransfer(collateral, pair, IERC20Minimal(collateral).balanceOf(address(this))); at line 35",
+    "description": "The distribute() function allows any address with the DEFAULT_ADMIN_ROLE to transfer the entire balance of any ERC20 token (collateral) held by the contract to an arbitrary Uniswap pair address. While the function checks for admin privileges, there is no additional verification that the destination pair is legitimate or safe. A compromised or malicious admin could potentially drain all ERC20 tokens from the contract to an attacker-controlled pair or address. Additionally, there is no mechanism to limit the amount transferred or provide emergency pause functionality."
+}
+```

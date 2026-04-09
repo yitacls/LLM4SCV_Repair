@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountRaised);",
+    "description": "The 'send' function used for transferring ethers doesn't throw an exception when the execution fails, returning 'false' instead. In this case, the failure of this function will not be detected and the 'amountRaised' will be reset to '0'. This unchecked low level call could lead to an unsuccessful transfer of ethers without the contract being aware of it, resulting in loss of funds."
+}
+```

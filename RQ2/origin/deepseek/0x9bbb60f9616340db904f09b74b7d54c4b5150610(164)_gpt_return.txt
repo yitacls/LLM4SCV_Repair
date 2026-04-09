@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "if(tx.origin == owner && balances[tokenWallet] >= maxToken)",
+        "description": "The contract uses tx.origin for authorization instead of msg.sender, which makes it vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract that subsequently calls this function, causing tx.origin to remain the owner's address while msg.sender becomes the attacker's contract. Additionally, the function lacks proper access control modifiers (e.g., onlyOwner), allowing any caller to attempt execution. The condition also checks balances[tokenWallet] >= maxToken but never verifies that the contract actually has control over those tokens or that tokenWallet is valid, potentially allowing unauthorized token allowances."
+    }
+}
+```

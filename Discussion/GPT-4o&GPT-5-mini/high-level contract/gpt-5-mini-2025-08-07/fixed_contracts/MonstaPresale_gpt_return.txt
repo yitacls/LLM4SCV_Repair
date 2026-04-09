@@ -1,0 +1,34 @@
+[{
+    "contract_name": "MonstaPresale",
+    "contract_version": "0.6.0",
+    "state_variables": [
+        {
+            "variable_name": "_locked",
+            "fix_info": "Added a reentrancy guard state variable to prevent reentrant calls on functions that perform external interactions (refunds and withdrawals).",
+            "variable_code": "bool private _locked;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a simple nonReentrant modifier (checks-effects-interactions + reentrancy guard) to protect functions that perform external calls/transfers.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!_locked, \"Reentrant call\");\n    _locked = true;\n    _;\n    _locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "adoptMonsta",
+            "fix_info": "Reordered operations to follow checks-effects-interactions pattern and protected the function with nonReentrant. Used low-level call for refund and explicit require on transfer result. Also updated time reference to block.timestamp and preserved original behavior.",
+            "corrected_code": "function adoptMonsta() public payable whenNotPaused nonReentrant {\n    require(block.timestamp <= PRESALE_END_TIMESTAMP, \"Presale ended\");\n    require(!_adopters[msg.sender], \"Only can adopt once\");\n    require(_totalAdoptedMonstas.add(1) <= MAX_TOTAL_ADOPTED_MONSTA, \"Max adopted reached\");\n    require(msg.value >= _currentPrice, \"Insufficient payment\");\n\n    uint value = msg.value.sub(_currentPrice);\n\n    // Effects (update state before external interaction)\n    _adopters[msg.sender] = true;\n    _totalAdoptedMonstas = _totalAdoptedMonstas.add(1);\n    _currentPrice = _currentPrice.add(PRICE_INCREMENT);\n\n    // Interaction: refund any excess payment\n    if (value > 0) {\n      (bool sent, ) = msg.sender.call{value: value}(\"\");\n      require(sent, \"Refund failed\");\n    }\n\n    emit MonstaAdopted(msg.sender);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "reclaimBNB",
+            "fix_info": "Replaced transfer with a safe call pattern and protected the function with nonReentrant. Also guards against zero balance and checks the call success to avoid silent failures.",
+            "corrected_code": "function reclaimBNB() external onlyOwner nonReentrant {\n    uint256 amount = address(this).balance;\n    if (amount == 0) {\n      return;\n    }\n\n    // Use call to forward all gas and bubble up failure explicitly\n    (bool success, ) = owner.call{value: amount}(\"\");\n    require(success, \"BNB transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

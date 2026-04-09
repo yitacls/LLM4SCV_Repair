@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _depositAngel(address user, IAngel angel, uint256 amount) internal nonReentrant",
+    "description": "This function is susceptible to reentrancy attacks as it calls the external function 'angel.deposit()' before updating the total balance in 'info.totalBalance'. An attacker can potentially exploit this by recursively calling the deposit function before the total balance is updated, resulting in unexpected behavior."
+},
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _withdrawAngel(address user, IAngel angel, uint256 amount) internal nonReentrant",
+    "description": "Similar to the _depositAngel function, this function is also vulnerable to reentrancy attacks as it calls the external function 'angel.withdraw()' before updating the total balance in 'info.totalBalance'. An attacker can recursively call the withdraw function before the balance is updated, leading to unexpected outcomes."
+}
+```
+```

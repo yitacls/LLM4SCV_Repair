@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "if (tot==2) andTheWinnerIs();",
+    "description": "The contract uses a predictable condition (when total players reaches 2) to determine when to execute the game logic (andTheWinnerIs()). This allows a malicious actor to monitor the mempool for the first player's transaction, then front-run it by submitting their own transaction with a higher gas price to become the second player. Since the game outcome may depend on transaction order rather than fair play, this creates an unfair advantage where the attacker can manipulate the game's timing and potentially influence the result."
+}
+```

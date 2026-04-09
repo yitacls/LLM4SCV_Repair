@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract": "ERC20Standard",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for authorization, which represents the originator of the transaction. The code implys only the 'owner' is allowed to execute this function, yet using 'tx.origin' is a common security anti-pattern in Solidity. If the contract interacts with another contract, the 'owner' can be manipulated as 'tx.origin' refers to the signer of the transaction and not the contract that initated the call. This makes it vulnerable in complex interactions. It is generally safer to use 'msg.sender' for checks as it always refers to the immediate sender of the message."
+}
+```

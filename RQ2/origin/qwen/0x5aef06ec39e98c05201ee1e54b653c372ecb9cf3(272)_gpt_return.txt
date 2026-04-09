@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public {\n        uint256 etherBalance = this.balance;\n        owner.transfer(etherBalance); // <LEAKING_VUL>\n    }",
+    "description": "The withdraw function uses the deprecated .transfer() method which can be vulnerable to reentrancy attacks and gas stipend limitations. In Solidity ^0.4.19, .transfer() forwards only 2300 gas, which may cause the transaction to fail if the owner's address is a smart contract that requires more gas to process the received funds. Additionally, this pattern is susceptible to reentrancy vulnerabilities where the receiving contract could potentially call back into the withdraw function before the balance is updated."
+}
+```

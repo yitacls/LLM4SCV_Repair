@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "ApeVaultWrapperImplementation",
+    "contract_version": "^0.8.2",
+    "state_variables": [
+        {
+            "variable_name": "hasAccess",
+            "fix_info": "Added visibility specifier to make it private.",
+            "variable_code": "mapping(address => bool) private hasAccess;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "apeRegistry",
+            "fix_info": "Added visibility specifier to make it private.",
+            "variable_code": "address private apeRegistry;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "vault",
+            "fix_info": "Added visibility specifier to make it private.",
+            "variable_code": "VaultAPI private vault;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "allowanceModule",
+            "fix_info": "Added visibility specifier to make it private.",
+            "variable_code": "ApeAllowanceModule private allowanceModule;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "underlyingValue",
+            "fix_info": "Added visibility specifier to make it private.",
+            "variable_code": "uint256 private underlyingValue;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyRouter",
+            "fix_info": "Modified the modifier to use require with an appropriate condition.",
+            "modifier_code": "modifier onlyRouter() { require(msg.sender == ApeRegistry(apeRegistry).router(), 'Caller is not the router'); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "apeWithdrawSimpleToken",
+            "fix_info": "Added visibility specifier to make it public and added a require statement to check the amount of tokens being withdrawn.",
+            "corrected_code": "function apeWithdrawSimpleToken(uint256 _amount) public { require(_amount > 0, 'Amount must be greater than 0'); simpleToken.safeTransfer(msg.sender, _amount); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

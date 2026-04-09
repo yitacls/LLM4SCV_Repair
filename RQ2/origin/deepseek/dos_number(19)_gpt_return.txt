@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "Line 3: for(uint i=0;i<numbers;i++) {",
+    "description": "The insertNnumbers function contains an unbounded loop where the iteration count 'numbers' is user-controlled. When 'numbers' is sufficiently large (over 382 iterations based on the comment), the transaction may consume all available gas, causing it to revert and potentially preventing legitimate transactions. This is exacerbated by the dynamic array expansion (array.length += 1) inside the loop, which adds significant gas costs per iteration. Attackers can exploit this by calling the function with large 'numbers' values to make the function unusable or block contract operations."
+}
+```

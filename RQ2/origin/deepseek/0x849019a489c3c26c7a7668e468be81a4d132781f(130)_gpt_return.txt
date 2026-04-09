@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "_addr.send(_wei);",
+        "description": "The send() method returns a boolean value indicating success or failure, but this return value is not checked. In Solidity 0.4.16 and earlier, send() forwards only 2,300 gas to the recipient, which may be insufficient for complex fallback functions, potentially causing the transfer to fail silently. The contract continues execution regardless of whether the transfer succeeded, incorrectly updating Available and emitting Withdrew event even if no funds were actually transferred. This violates the 'checks-effects-interactions' pattern and leads to inconsistent state. The vulnerability is also related to improper error handling since the return value of the low-level call is ignored."
+    }
+}
+```

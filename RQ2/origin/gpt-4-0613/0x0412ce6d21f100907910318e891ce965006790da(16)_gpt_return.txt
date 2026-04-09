@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "In this line of code, there is no check for overflow. This means if the value added to the balanceOf[to] is so large that it exceeds the MAX_UINT256, the balance would reset to 0, potentially leading to loss of funds."
+}
+```

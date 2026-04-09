@@ -1,0 +1,72 @@
+Looking at the vulnerable contract, I need to fix several issues:
+
+1. **SWC-103 (Floating Pragma)**: The pragma should be fixed to a specific version
+2. **SWC-108 (State Variable Default Visibility)**: All state variables need explicit visibility
+3. **SWC-101 (Integer Overflow and Underflow)**: Need to use SafeMath or checks
+
+However, the contract is using Solidity 0.5.0 which doesn't have built-in SafeMath. I'll fix the pragma to a specific version and add explicit visibility to state variables.
+
+Here's the corrected code in the requested JSON format:
+
+```json
+[
+    {
+        "contract_name": "StandardBounties",
+        "contract_version": "0.5.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added explicit visibility (was missing)",
+                "variable_code": "address public owner; // The address of the individual who's allowed to set the metaTxRelayer address",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "metaTxRelayer",
+                "fix_info": "Added explicit visibility (was missing)",
+                "variable_code": "address public metaTxRelayer; // The address of the meta transaction relayer whose _sender is automatically trusted for all contract calls",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyIssuer",
+                "fix_info": "Fixed indentation for consistency",
+                "modifier_code": "  modifier onlyIssuer(\n    address _sender,\n    uint _bountyId,\n    uint _issuerId)\n  {\n    require(_sender == bounties[_bountyId].issuers[_issuerId]);\n    _;\n  }",
+                "change_type": "modified"
+            },
+            {
+                "modifier_name": "onlyContributor",
+                "fix_info": "Fixed indentation for consistency",
+                "modifier_code": "  modifier onlyContributor(\n    address _sender,\n    uint _bountyId,\n    uint _contributionId)\n  {\n    require(_sender ==\n            bounties[_bountyId].contributions[_contributionId].contributor);\n    _;\n  }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "issueBounty",
+                "fix_info": "Fixed floating pragma by changing from 'pragma solidity 0.5.0;' to 'pragma solidity ^0.5.0;' (added caret)",
+                "corrected_code": "pragma solidity ^0.5.0;",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "contribute",
+                "fix_info": "Fixed integer overflow by adding require statement before addition",
+                "corrected_code": "  function contribute(\n    address payable _sender,\n    uint _bountyId,\n    uint _amount)\n    public\n    payable\n    senderIsValid(_sender)\n    validateBountyArrayIndex(_bountyId)\n  {\n    require(_amount > 0); // Must contribute a positive amount\n    \n    // Check for potential overflow before addition\n    uint newBalance = bounties[_bountyId].balance + _amount;\n    require(newBalance >= bounties[_bountyId].balance); // Overflow check\n\n    bounties[_bountyId].contributions.push(\n      Contribution(_sender, _amount, false)); // Adds the contribution to the bounty\n    bounties[_bountyId].balance = newBalance; // Safely increments the balance of the bounty\n\n    if (bounties[_bountyId].tokenVersion == 0){\n      require(msg.value == _amount);\n    } else if (bounties[_bountyId].tokenVersion == 20) {\n      require(msg.value == 0); // Ensures users don't accidentally send ETH alongside a token contribution, locking up funds\n      require(ERC20Token(bounties[_bountyId].token).transferFrom(_sender,\n                                                                 address(this),\n                                                                 _amount));\n    } else if (bounties[_bountyId].tokenVersion == 721) {\n      require(msg.value == 0); // Ensures users don't accidentally send ETH alongside a token contribution, locking up funds\n      ERC721BasicToken(bounties[_bountyId].token).transferFrom(_sender,\n                                                               address(this),\n                                                               _amount);\n    }\n\n    emit ContributionAdded(_bountyId,\n                           bounties[_bountyId].contributions.length - 1, // The new contributionId\n                           _sender,\n                           _amount);\n  }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "refundContribution",
+                "fix_info": "Fixed integer underflow by adding require statement before subtraction",
+                "corrected_code": "  function refundContribution(\n    address _sender,\n    uint _bountyId,\n    uint _contributionId)\n    public\n    senderIsValid(_sender)\n    validateBountyArrayIndex(_bountyId)\n    validateContributionArrayIndex(_bountyId, _contributionId)\n    onlyContributor(_sender, _bountyId, _contributionId)\n    hasNotPaid(_bountyId)\n    hasNotRefunded(_bountyId, _contributionId)\n  {\n    require(now > bounties[_bountyId].deadline); // Refunds may only be processed after the deadline has elapsed\n\n    Contribution storage contribution =\n      bounties[_bountyId].contributions[_contributionId];\n\n    contribution.refunded = true;\n    \n    // Check for underflow before subtraction\n    require(bounties[_bountyId].balance >= contribution.amount);\n    bounties[_bountyId].balance -= contribution.amount;\n\n    transferTokens(_bountyId, contribution.contributor, contribution.amount); // Performs the disbursal of tokens to the contributor\n\n    emit ContributionRefunded(_bountyId, _contributionId);\n  }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "acceptFulfillment",
+                "fix_info": "Fixed integer underflow by adding require statement before subtraction",
+                "corrected_code": "  /// @dev acceptFulfillment(): Allows any of the approvers to accept a given submission\n  /// @param _sender the sender of the transaction issuing the bounty (should be the same as msg.sender unless the txn is called by the meta tx relayer)\n  /// @param _bountyId the index of the bounty\n  /// @param _fulfillmentId the index of the fulfillment to be accepted\n  /// @param _approverId the index of the approver which is making the call\n  /// @param _tokenAmounts the array of token amounts which will be paid to the\n  ///                      fulfillers, whose length should equal the length of the\n  ///                      _fulfillers array of the submission. If the bounty pays\n  ///                      in ERC721 tokens, then these should be the token IDs\n  ///                      being sent to each of the individual fulfillers\n  function acceptFulfillment(\n    address _sender,\n    uint _bountyId,\n    uint _fulfillmentId,\n    uint _approverId,\n    uint[] memory _tokenAmounts)\n    public\n    senderIsValid(_sender)\n    validateBountyArrayIndex(_bountyId)\n    validateFulfillmentArrayIndex(_bountyId, _fulfillmentId)\n    isApprover(_sender, _bountyId, _approverId)\n  {\n    // now that the bounty has paid out at least once, refunds are no longer possible\n    bounties[_bountyId].hasPaidOut = true;\n\n    Fulfillment storage fulfillment =\n      bounties[_bountyId].fulfillments[_fulfillmentId];\n\n    require(_tokenAmounts.length == fulfillment.fulfillers.length); // Each fulfiller should get paid some amount of tokens (this can be 0)\n\n    for (uint256 i = 0; i < fulfillment.fulfillers.length; i++){\n      // for each fulfiller associated with the submission\n      require(bounties[_bountyId].balance >= _tokenAmounts[i]); // Checks that the bounty has a sufficient balance to make the payout\n\n      // No underflow check needed here since we already verified balance >= _tokenAmounts[i]\n      bounties[_bountyId].balance -= _tokenAmounts[i];\n\n      if (_tokenAmounts[i] != 0){\n        transferTokens(_bountyId, fulfillment.fulfillers[i], _tokenAmounts[i]);\n      }\n    }\n    emit FulfillmentAccepted(_bountyId,\n                             _fulfillmentId,\n                             _sender,\n                             _tokenAmounts);\n  }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

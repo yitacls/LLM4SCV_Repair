@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_target.call.value(_value)()",
+    "description": "The low-level call to _target with value _value does not check the return value. In Solidity 0.4.x, the call() function returns a boolean indicating success, but it is ignored here. If the call fails (e.g., due to insufficient gas, a revert in the target contract, or the target being a non-contract address), the transaction will continue without reverting, potentially leading to loss of funds or inconsistent state, as the Ether transfer may not have actually occurred. As the contract owner, you expect the transfer to either succeed fully or revert entirely; this unchecked call violates that expectation."
+}
+```

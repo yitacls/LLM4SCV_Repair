@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Sale",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "safeSendGasLimit",
+            "fix_info": "Added constant to specify gas limit for low-level calls to prevent out-of-gas attacks",
+            "variable_code": "uint256 private constant safeSendGasLimit = 2300;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed low-level call vulnerability by adding success check and gas limits, improved calculation logic to avoid repetitive calculations, and structured bonuses using if-else",
+            "corrected_code": "function() external payable {\n    require(msg.value > 0, \"Must send ETH\");\n    \n    // Calculate base tokens\n    uint256 baseTokens = msg.value / cost1token;\n    uint256 bonusTokens = baseTokens;\n    \n    // Apply bonus tiers (using if-else to ensure only one bonus applies)\n    if (msg.value >= 20 ether) {\n        bonusTokens = baseTokens * 200 / 100;\n    } else if (msg.value >= 15 ether) {\n        bonusTokens = baseTokens * 175 / 100;\n    } else if (msg.value >= 10 ether) {\n        bonusTokens = baseTokens * 150 / 100;\n    } else if (msg.value >= 5 ether) {\n        bonusTokens = baseTokens * 125 / 100;\n    }\n    \n    // Transfer tokens\n    require(tokenReward.transferFrom(owner, msg.sender, bonusTokens), \"Token transfer failed\");\n    \n    // Calculate ether distributions\n    uint256 ethersum8 = msg.value * 8 / 100;\n    uint256 ethersum6 = msg.value * 6 / 100;\n    uint256 ethersum = msg.value - ethersum8 - ethersum6;\n    \n    // Safe low-level call with gas limit and success check\n    (bool success8, ) = owner8.call.gas(safeSendGasLimit).value(ethersum8)(\"\");\n    require(success8, \"Transfer to owner8 failed\");\n    \n    // Transfer to owner6 (safer than low-level call)\n    owner6.transfer(ethersum6);\n    \n    // Transfer remaining to owner\n    owner.transfer(ethersum);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

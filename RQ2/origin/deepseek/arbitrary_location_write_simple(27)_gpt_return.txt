@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function PopBonusCode() public {\n    require(0 <= bonusCodes.length);\n    bonusCodes.length--;\n}",
+    "description": "The function lacks access control modifiers (like 'onlyOwner'), allowing any user to call it. This, combined with the underflow vulnerability on line 'bonusCodes.length--;' (when bonusCodes.length is 0), enables unauthorized users to cause an integer underflow. In Solidity 0.4.25, 'bonusCodes.length' is a 'uint' that can underflow to 2^256-1, potentially corrupting contract state or leading to denial of service."
+}
+```

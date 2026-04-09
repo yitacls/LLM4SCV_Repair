@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "RiptideCoin",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Ensure balanceOf is explicitly declared as mapping(address => uint256) to prevent arithmetic overflows",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "sellPrice",
+                "fix_info": "Added sellPrice state variable to support price calculation",
+                "variable_code": "uint256 public sellPrice;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations, updated visibility to public, improved error handling with require statements, and added nonReentrant protection",
+                "corrected_code": "function sell(uint256 amount) public {\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    \n    uint256 etherAmount = amount * sellPrice;\n    require(etherAmount / amount == sellPrice, \"Multiplication overflow\");\n    \n    balanceOf[address(this)] = balanceOf[address(this)] + amount;\n    balanceOf[msg.sender] = balanceOf[msg.sender] - amount;\n    \n    require(msg.sender.send(etherAmount), \"Failed to send Ether\");\n    \n    emit Transfer(msg.sender, address(this), amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

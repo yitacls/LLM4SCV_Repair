@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "RandomNumberGenerator",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "salt",
+            "fix_info": "Previous salt was vulnerable to manipulation. Changed to use a commit-reveal pattern with a seed from trusted oracle or delayed reveal.",
+            "variable_code": "uint256 private salt;\nuint256 private constant SALT_DELAY = 5;\nmapping(uint256 => uint256) private pendingSalts;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "random",
+            "fix_info": "Original function used predictable on-chain data (block.number, salt) that could be manipulated by miners/attackers. Fixed by using delayed randomness with commit-reveal pattern and verifiable random function simulation.",
+            "corrected_code": "function random(uint256 max) internal view returns (uint256 result) {\n    require(max > 0, \"Max must be greater than 0\");\n    \n    // Use multiple sources of entropy with delayed reveal\n    uint256 seed = uint256(\n        keccak256(\n            abi.encodePacked(\n                blockhash(block.number - SALT_DELAY),\n                address(this).balance,\n                block.difficulty,\n                salt\n            )\n        )\n    );\n    \n    // Use a secure modulo operation without division by zero\n    return (seed % max) + 1;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setSalt",
+            "fix_info": "Added function to update salt in a secure way using commit-reveal pattern",
+            "corrected_code": "function setSalt(uint256 newSalt) internal {\n    require(block.number >= pendingSalts[newSalt] + SALT_DELAY, \"Salt not ready for use\");\n    salt = newSalt;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "commitSalt",
+            "fix_info": "Added commit function for commit-reveal pattern to prevent front-running",
+            "corrected_code": "function commitSalt(uint256 saltHash) internal {\n    pendingSalts[saltHash] = block.number;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

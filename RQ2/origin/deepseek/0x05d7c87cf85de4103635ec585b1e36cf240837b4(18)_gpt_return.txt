@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "uint128(msg.value*MULTIPLIER/100)",
+    "description": "In Solidity <0.8.0, arithmetic operations do not automatically check for overflows/underflows. The calculation 'msg.value * MULTIPLIER' could overflow if the product exceeds uint128 or uint256 limits before division by 100. Since 'msg.value' is a uint256 and MULTIPLIER is likely a large constant (e.g., >100 for interest multiplier), multiplying them without SafeMath or explicit checks could result in an overflow, causing the value to wrap around and produce incorrect, potentially very small amounts. This vulnerability could allow attackers to deposit funds and get incorrectly calculated rewards."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "creator.send(amountRaised);",
+    "description": "The smart contract uses the low-level 'send' function to transfer ether to the creator without checking its return value. In Solidity versions prior to 0.4.16 (or when using older EVM versions), the 'send' call returns 'false' instead of throwing an exception if it fails (e.g., out of gas, recipient reverts). This allows the contract to continue execution even when the transfer fails, leaving the contract's state inconsistent (amountRaised accounted for, but ether not actually transferred). The vulnerability is exacerbated because the function is payable and uses fixed gas, making it susceptible to denial-of-service attacks via gas stipend limitations. A malicious creator could intentionally cause the transfer to fail while keeping the ether in the contract."
+}
+```

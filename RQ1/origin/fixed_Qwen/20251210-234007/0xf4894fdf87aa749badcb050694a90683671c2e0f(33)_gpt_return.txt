@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "PropertyClubICO",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed balanceOf mapping to use SafeMath for arithmetic operations",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalRaised",
+            "fix_info": "Changed totalRaised to use SafeMath for arithmetic operations",
+            "variable_code": "uint256 public totalRaised;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Added SafeMath protection to prevent integer overflow when updating balanceOf and totalRaised",
+            "corrected_code": "function deposit() public payable {\n        require(msg.value >= minLimit && !isFinished);\n        owner.transfer(msg.value);\n        balanceOf[msg.sender] = balanceOf[msg.sender].add(msg.value);\n        totalRaised = totalRaised.add(msg.value);  \n        emit Deposit(msg.sender, msg.value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

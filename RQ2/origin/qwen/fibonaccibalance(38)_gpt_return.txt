@@ -1,0 +1,7 @@
+```json
+{
+    "type": "ACCESS_CONTROL",
+    "location": "require(fibonacciLibrary.delegatecall(msg.data));",
+    "description": "The contract uses delegatecall without proper access control, allowing any external caller to execute arbitrary code in the context of this contract. This can lead to unauthorized access to contract storage and funds."
+}
+```

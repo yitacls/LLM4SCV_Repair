@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PandaCore",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low level call by checking the return value of send() and handling failure cases properly",
+            "corrected_code": "function withdrawBalance() external onlyCFO {\n        uint256 balance = this.balance;\n        // Subtract all the currently pregnant kittens we have, plus 1 of margin.\n        uint256 subtractFees = (pregnantPandas + 1) * autoBirthFee;\n\n        if (balance > subtractFees) {\n            uint256 amountToSend = balance - subtractFees;\n            require(cfoAddress.send(amountToSend), \"Failed to send Ether to CFO\");\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

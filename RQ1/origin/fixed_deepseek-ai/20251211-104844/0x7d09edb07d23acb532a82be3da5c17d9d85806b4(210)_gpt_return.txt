@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PoCGame",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "loseWager",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking return value and using proper error handling. Also updated call syntax for older Solidity version.",
+            "corrected_code": "function loseWager(uint256 amount) internal {\n    (bool success, ) = whale.call.value(amount)(bytes4(keccak256(\"donate()\")));\n    require(success, \"Donation failed\");\n    totalDonated += amount;\n    emit Lose(amount, msg.sender);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

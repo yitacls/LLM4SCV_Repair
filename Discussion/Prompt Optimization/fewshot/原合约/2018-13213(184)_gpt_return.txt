@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "TravelCoinToken",
+        "contract_version": "^0.4.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Add overflow check before updating balances.",
+                "corrected_code": "function sell(uint256 amount) {
+        require(balanceOf[msg.sender] >= amount); // checks if the sender has enough to sell
+        balanceOf[this] += amount;                // adds the amount to owner's balance
+        balanceOf[msg.sender] -= amount;          // subtracts the amount from seller's balance
+        require(msg.sender.send(amount * sellPrice)); // sends ether to the seller. It's important to do this last to avoid recursion attacks
+        Transfer(msg.sender, this, amount);       // executes an event reflecting on the change
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

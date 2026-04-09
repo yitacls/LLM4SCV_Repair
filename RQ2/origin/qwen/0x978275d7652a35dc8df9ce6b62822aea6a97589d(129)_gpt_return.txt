@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function newTicket() external restricted {",
+    "description": "The function uses 'restricted' modifier but still allows external calls. More importantly, it uses tx.origin for authorization which is vulnerable to phishing attacks. An attacker can trick a legitimate user into calling this function through a malicious contract, causing the ticket count to increase for the attacker's benefit. Additionally, the referrer reward logic can be exploited by manipulating the ticket count through repeated calls."
+}
+```

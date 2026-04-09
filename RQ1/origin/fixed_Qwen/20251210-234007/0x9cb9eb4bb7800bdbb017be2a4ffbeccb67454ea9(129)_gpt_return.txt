@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "blockoptions",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "drain",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding return value check and using recommended transfer method",
+            "corrected_code": "function drain() onlyOwner {\n    owner.transfer(this.balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

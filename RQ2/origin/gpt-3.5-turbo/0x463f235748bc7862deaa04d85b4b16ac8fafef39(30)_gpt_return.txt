@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { // fault line",
+    "description": "This code is vulnerable to reentrancy attacks. Malicious contracts can exploit this by calling the fallback function of the calling contract multiple times before the state changes are completed, potentially affecting the contract's logic and balance. The state should be updated before sending funds to prevent reentrancy vulnerabilities."
+}
+```

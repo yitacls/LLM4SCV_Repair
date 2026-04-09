@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "End the staking pool - end() function",
+    "description": "The loop iterating through holders in the end() function may consume excessive gas when there are a large number of holders, potentially leading to a DoS attack as the gas cost exceeds the block gas limit"
+}
+```

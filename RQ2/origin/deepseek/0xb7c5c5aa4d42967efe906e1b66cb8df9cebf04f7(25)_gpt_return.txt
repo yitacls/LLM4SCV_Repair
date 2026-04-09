@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.call.value(balances[msg.sender])();",
+    "description": "The contract performs a low-level call via `call.value()` without checking the return value. In Solidity 0.4.23, `call.value()` returns a boolean indicating success, but this return value is ignored. If the external call fails (e.g., due to out-of-gas, revert in a fallback function, or intentional rejection by the recipient), the transaction will not revert, and `balances[msg.sender] = 0;` will still execute, allowing users to lose their Ether without receiving it. Additionally, this pattern is susceptible to reentrancy attacks because state updates occur after the external call. The recommended fix is to check the return value and revert on failure (e.g., `require(msg.sender.call.value(balances[msg.sender])());`) and/or use the Checks-Effects-Interactions pattern to prevent reentrancy."
+}
+```

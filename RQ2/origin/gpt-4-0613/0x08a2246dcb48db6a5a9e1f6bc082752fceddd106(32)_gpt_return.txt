@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This line checks whether the person trying to call the function is the owner of the contract by comparing the address where the current call originated with the contract owner's address (using tx.origin). However, tx.origin can be potentially unsafe to use for authorization checks because if the contract receives a call from another contract, it could be false to assume that the original sender control the behavior of the calling contract. The safer way to handle authorization checks is to use msg.sender, which is the address of the person or smart contract that directly initiated the call."
+}
+```

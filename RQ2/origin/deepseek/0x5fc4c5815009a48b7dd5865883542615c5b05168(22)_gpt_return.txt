@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract uses `tx.origin` for ownership validation, which is a dangerous pattern for authorization. `tx.origin` returns the original external account that started the transaction chain, not the immediate caller. This makes the contract vulnerable to phishing attacks where a malicious contract could trick the owner into calling a function that then calls `transferOwnership()`, and the authorization check would pass because `tx.origin` would still be the owner's address. Additionally, the contract uses Solidity v0.4.25, which lacks important security features and updates. The recommended fix is to use `msg.sender` for authorization and upgrade to at least Solidity 0.8.x."
+}
+```

@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "OddsAndEvens",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "entryState",
+                "fix_info": "Added to prevent double submission and front-running by tracking submission state",
+                "variable_code": "mapping(address => bool) public entryState;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "validEntry",
+                "fix_info": "Added modifier to validate entry requirements and prevent replay",
+                "modifier_code": "modifier validEntry(uint number) {\n    require(msg.value == 1 ether, \"Must send exactly 1 ether\");\n    require(!entryState[msg.sender], \"Already entered\");\n    require(tot < 2, \"Game is full\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "play",
+                "fix_info": "Fixed front-running vulnerability by adding state validation, using require instead of throw, and preventing duplicate submissions",
+                "corrected_code": "function play(uint number) external payable validEntry(number) {\n    players[tot] = Player(msg.sender, number);\n    entryState[msg.sender] = true;\n    tot++;\n    \n    if (tot == 2) {\n        andTheWinnerIs();\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

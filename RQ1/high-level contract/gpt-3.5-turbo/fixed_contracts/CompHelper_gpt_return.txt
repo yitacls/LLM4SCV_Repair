@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "CompHelper",
+        "contract_version": "0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getUnderlyingAddr",
+                "fix_info": "Handled return value check for cToken address",
+                "corrected_code": "function getUnderlyingAddr(address _cTokenAddr) internal view returns (address tokenAddr) {\n        if (_cTokenAddr == C_ETH_ADDR) {\n            return TokenUtils.WETH_ADDR;\n        }\n        tokenAddr = ICToken(_cTokenAddr).underlying();\n        return tokenAddr;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "enterMarket",
+                "fix_info": "Added return value check for enterMarkets function",
+                "corrected_code": "function enterMarket(address _cTokenAddr) public {\n        address[] memory markets = new address[](1);\n        markets[0] = _cTokenAddr;\n\n        (bool success, ) = COMPTROLLER_ADDR.call(abi.encodeWithSignature(\"enterMarkets(address[])\", markets));\n        require(success, \"CompHelper: Failed to enter market\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "exitMarket",
+                "fix_info": "No change needed, function already safe.",
+                "corrected_code": "function exitMarket(address _cTokenAddr) public {\n        IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

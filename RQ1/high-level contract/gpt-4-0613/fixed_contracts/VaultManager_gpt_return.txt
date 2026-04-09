@@ -1,0 +1,36 @@
+【```json
+[
+    {
+        "contract_name": "VaultManager",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "isValidCDP",
+                "fix_info": "Added SafeMath library to prevent integer overflow and underflow and fixed issue by using a SafeMath library to perform arithmetic operation to avoid integer overflow error (SWC-101).",
+                "corrected_code": "function isValidCDP(address collateral_, address debt_, uint256 cAmount_, uint256 dAmount_) public view override returns (bool) {\n\t(uint256 collateralValueTimes100Point00000, uint256 debtValue) = _calculateValues(collateral_, debt_, cAmount_, dAmount_);\n\tuint mcr = getMCR(collateral_);\n\tuint cDecimals = IERC20Minimal(collateral_).decimals();\n\tuint256 debtValueAdjusted = debtValue.div(10 ** cDecimals);\n\t// if the debt become obsolete\n\treturn debtValueAdjusted == 0 ? true : collateralValueTimes100Point00000 / debtValueAdjusted >= mcr;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_calculateValues",
+                "fix_info": "Added SafeMath library to prevent integer overflow and underflow. Also, fixed the function by using safe arithmetic operations for calculations to avoid integer overflow or underflow.",
+                "corrected_code": "function _calculateValues(address collateral_, address debt_, uint256 cAmount_, uint256 dAmount_) internal view returns (uint256, uint256) {\n\tuint256 collateralValue = getAssetValue(collateral_, cAmount_);\n\tuint256 debtValue = getAssetValue(debt_, dAmount_);\n\tuint256 collateralValueTimes100Point00000 = collateralValue.mul(10000000);\n\trequire(collateralValueTimes100Point00000 >= collateralValue, \"Overflow occured\"); // overflow check\n\treturn (collateralValueTimes100Point00000, debtValue);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "isValidSupply",
+                "fix_info": "Added SafeMath library to prevent integer overflow and underflow and fixed issue by using safe arithmetic operations (addition in this case) to avoid integer overflow or underflow.",
+                "corrected_code": "function isValidSupply(uint256 issueAmount_) public view override returns (bool) {\n\tif (rebaseActive) {\n\t\treturn IERC20Minimal(stablecoin).totalSupply().add(issueAmount_) <= desiredSupply;\n\t} else {\n\t\treturn true;\n\t}\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getAssetValue",
+                "fix_info": "Added SafeMath library to prevent integer overflow and underflow and fixed issue by using safe arithmetic operations (multiplication in this case) to avoid integer overflow.",
+                "corrected_code": "function getAssetValue(address asset_, uint256 amount_) public view override returns (uint256) {\n\tuint price = getAssetPrice(asset_);\n\tuint256 value = price.mul(amount_);\n\trequire(value / amount_ == price, \"Overflow occurred\"); // overflow box\n\treturn value;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```】

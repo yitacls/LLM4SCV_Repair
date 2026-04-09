@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "lottopollo",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "timestamp",
+            "fix_info": "Renamed from 'rand' to 'timestamp' for clarity and proper time tracking",
+            "variable_code": "uint public timestamp;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "leader",
+            "fix_info": "Ensure leader variable exists for proper functionality",
+            "variable_code": "address public leader;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "payOut",
+            "fix_info": "Fixed time manipulation vulnerability by using secure time comparison and proper timestamp management. Replaced 'now - rand > 24 hours' with 'now - timestamp > 24 hours' and ensured timestamp is set to 'now' instead of user input.",
+            "corrected_code": "function payOut(uint rand) internal {\n    if ( rand > 0 && now - timestamp > 24 hours ) {\n      msg.sender.send( msg.value );\n\n      if ( this.balance > 0 ) {\n        leader.send( this.balance );\n      }\n    }\n    else if ( msg.value >= 1 ether ) {\n      leader = msg.sender;\n      timestamp = now;\n    }\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

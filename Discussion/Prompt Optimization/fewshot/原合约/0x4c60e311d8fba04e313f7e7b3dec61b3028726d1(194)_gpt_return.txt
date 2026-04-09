@@ -1,0 +1,41 @@
+```json
+[
+    {
+        "contract_name": "EtherWorldCup",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "register",
+                "fix_info": "Fix access control vulnerability and ensure correct functionality.",
+                "corrected_code": "function register() public payable {
+    address _customerAddress = msg.sender;
+    require(tx.origin == _customerAddress && !playerRegistered[_customerAddress] && _isCorrectBuyin(msg.value), 'Access control violation');
+    require(!playerRegistered[_customerAddress], 'Player already registered');
+    require(_isCorrectBuyin(msg.value), 'Incorrect buy-in amount');
+    
+    registeredPlayers = SafeMath.addint256(registeredPlayers, 1);
+    playerRegistered[_customerAddress] = true;
+    playerGamesScored[_customerAddress] = 0;
+    playerList.push(_customerAddress);
+    
+    uint fivePercent = msg.value * 1009 / 100000;
+    uint tenPercent = msg.value * 2018 / 100000;
+    uint prizeEth = msg.value - tenPercent;
+    
+    require(playerRegistered[_customerAddress], 'Player not registered');
+    
+    prizePool = prizePool.add(prizeEth);
+    givethPool = givethPool.add(fivePercent);
+    
+    administrator.transfer(fivePercent);
+    
+    emit Registration(_customerAddress);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

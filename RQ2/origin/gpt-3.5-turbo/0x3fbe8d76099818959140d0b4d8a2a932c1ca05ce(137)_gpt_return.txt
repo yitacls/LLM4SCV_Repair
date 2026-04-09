@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require (tx.origin == owner);",
+    "description": "The 'tx.origin' is used for checking the sender of the transaction, which can be manipulated in a contract hierarchy. It is recommended to use 'msg.sender' for access control checks instead to prevent potential vulnerabilities."
+}
+```

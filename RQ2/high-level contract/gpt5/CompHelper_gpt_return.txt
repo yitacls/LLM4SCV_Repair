@@ -1,0 +1,12 @@
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function enterMarket(address _cTokenAddr) public {\n    address[] memory markets = new address[](1);\n    markets[0] = _cTokenAddr;\n\n    IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);\n}",
+        "description": "The call to IComptroller(COMPTROLLER_ADDR).enterMarkets(markets) is an external call that returns a uint[] (error codes for each market entered). The returned array is ignored, so any non-zero error code (indicating failure) will be silently ignored and the contract will continue execution as if entering the market succeeded. This can lead to incorrect assumptions about collateral/market membership and create safety issues (e.g., deposits/borrows expected to be allowed but actually are not). Remediation: capture and validate the return value and revert on error. Example: uint[] memory results = IComptroller(COMPTROLLER_ADDR).enterMarkets(markets); require(results.length == 1 && results[0] == 0, \"enterMarkets failed\");"
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function exitMarket(address _cTokenAddr) public {\n    IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);\n}",
+        "description": "The call to IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr) returns a uint error code, but the code ignores the return value. If exitMarket fails (non-zero return), the failure is ignored and the caller will assume the market was exited when it was not. This may lead to incorrect state assumptions and downstream errors. Remediation: capture the returned uint and require it equals 0, reverting on failure. Example: uint result = IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr); require(result == 0, \"exitMarket failed\");"
+    }
+]

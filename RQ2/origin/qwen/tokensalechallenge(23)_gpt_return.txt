@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "require(msg.value == numTokens * PRICE_PER_TOKEN);",
+    "description": "The multiplication operation 'numTokens * PRICE_PER_TOKEN' can cause an integer overflow in Solidity version ^0.4.21 which does not have built-in overflow protection. If the result exceeds the maximum value that can be stored in a uint256, it will wrap around to a smaller value, potentially allowing an attacker to bypass the value check and purchase tokens for less than the intended price."
+}
+```

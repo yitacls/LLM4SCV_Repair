@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "timelock",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and adding explicit success check",
+            "corrected_code": "function withdraw() public {\n        locker storage l = lockers[msg.sender];\n        require (block.number > l.freedom && l.bal > 0);\n        uint value = l.bal;\n        l.bal = 0;\n        require(msg.sender.send(value));\n        Released(msg.sender, value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

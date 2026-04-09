@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; and totalSupply += mintedAmount;",
+    "description": "The mintToken function performs integer addition without overflow checks. In Solidity versions prior to 0.8.0, uint256 variables can overflow without reverting, allowing attackers to manipulate token balances. For example, if balanceOf[target] + mintedAmount exceeds type(uint256).max, the value will wrap around to a small number, potentially giving the target an unexpectedly large effective balance after the wrap. The same risk applies to totalSupply. This violates the ERC-20 standard's expectation of monotonically increasing totalSupply and can break external systems relying on accurate supply data. Use SafeMath or upgrade to Solidity >=0.8.0 with built-in overflow protection."
+}
+```

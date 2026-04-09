@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "DosOneFunc",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "MAX_BATCH_SIZE",
+            "fix_info": "Added constant to limit batch size for gas efficiency and DoS prevention",
+            "variable_code": "uint256 public constant MAX_BATCH_SIZE = 150;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "TOTAL_CAPACITY",
+            "fix_info": "Added constant to define maximum array capacity",
+            "variable_code": "uint256 public constant TOTAL_CAPACITY = 1500;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "ifillArray",
+            "fix_info": "Fixed DoS vulnerability by adding gas limit checks, limiting batch size, and preventing unbounded loops",
+            "corrected_code": "function ifillArray() public returns (bool) {\n    if (listAddresses.length < TOTAL_CAPACITY) {\n        uint256 remainingCapacity = TOTAL_CAPACITY - listAddresses.length;\n        uint256 batchSize = remainingCapacity < MAX_BATCH_SIZE ? remainingCapacity : MAX_BATCH_SIZE;\n        \n        require(batchSize > 0, \"No capacity available\");\n        \n        for (uint256 i = 0; i < batchSize; i++) {\n            listAddresses.push(msg.sender);\n        }\n        return true;\n    } else {\n        listAddresses = new address[](0);\n        return false;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

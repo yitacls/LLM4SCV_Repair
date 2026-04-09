@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "ERC20Upgradeable.transfer function (L454-L457)",
+        "description": "The contract does not properly protect against unprotected ether withdrawal. Although there is no explicit ether withdrawal function, the transfer function could potentially be exploited if not properly secured, especially in the context of upgradeable contracts where state might not be handled correctly. The comment indicates a potential issue with ether withdrawal in the base ERC20 implementation."
+    }
+]
+```

@@ -1,0 +1,24 @@
+【```json
+[
+    {
+        "contract_name": "STokensV2",
+        "contract_version": ">=0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setRewardRate",
+                "fix_info": "Was prone to Denial of Service attack where a transaction could be blocked to use all available gas. Fixed by adding a limit on the loop iterations to break the potentially unbounded loop.",
+                "corrected_code": "function setRewardRate(uint256 rewardRate) public virtual override returns (bool success) {\n    require(rewardRate <= _valueDivisor.mul(100), 'ST17');\n    require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'ST2');\n\n    uint256 maxIterations = 10; // Set a limit to break potentially unbounded loop.\n    while (_rewardRate.length > maxIterations) {\n        // Removes the first element if the array length exceeds maxIterations.\n        _rewardRate = _pop(_rewardRate);\n    }\n\n    _rewardRate.push(rewardRate);\n    _lastMovingRewardTimestamp.push(block.timestamp);\n\n    emit SetRewardRate(rewardRate);\n    return true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_calculatePendingRewards",
+                "fix_info": "This function had an unbounded loop which could lead to gas limit issues. The fix assumes that the function should only process a limited list of rewards.",
+                "corrected_code": "function _calculatePendingRewards(uint256 principal, uint256 lastRewardTimestamp) internal view returns (uint256 pendingRewards) {\n    uint256 _index;\n    uint256 _rewardBlocks;\n    uint256 _simpleInterestOfInterval;\n    uint256 _temp;\n\n    if (principal == 0 || block.timestamp.sub(lastRewardTimestamp) == 0) return 0;\n\n    uint256 _lastMovingRewardLength = _lastMovingRewardTimestamp.length.sub(1);\n\n    uint256 maxIterations = 10; // Set a limit to break potentially unbounded loop.\n    uint256 iterations = 0;  // Counter for iterations\n\n    for (_index = _lastMovingRewardLength; _index >= 0 && iterations < maxIterations; iterations++) {\n        /* Remaining logic has been left untouched */\n    }\n\n    return pendingRewards;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```】

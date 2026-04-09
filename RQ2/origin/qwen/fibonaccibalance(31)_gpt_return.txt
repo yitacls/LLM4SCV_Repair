@@ -1,0 +1,7 @@
+```json
+{
+    "type": "ACCESS_CONTROL",
+    "location": "require(fibonacciLibrary.delegatecall(fibSig, withdrawalCounter));",
+    "description": "The contract uses delegatecall to execute functions in the fibonacciLibrary contract. This can lead to access control vulnerabilities because delegatecall executes the called contract's code in the context of the calling contract, potentially allowing the library contract to modify the calling contract's storage variables and state. If the fibonacciLibrary contract is malicious or compromised, it could drain all contract funds or manipulate critical state variables."
+}
+```

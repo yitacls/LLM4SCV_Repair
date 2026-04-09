@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RajTest",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath checks to prevent integer overflow when adding mintedAmount to balance and totalSupply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyCrowdsaleAgent public {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

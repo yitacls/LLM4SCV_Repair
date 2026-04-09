@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function forwardTransaction( address destination, uint amount, uint gasLimit, bytes data) internal",
+    "description": "The Solidity smart contract function forwardTransaction has a potential vulnerability in which the 'owner' can be easily impersonated. The usage of 'tx.origin' instead of 'msg.sender' for authenticity checking presents a security risk. In Ethereum, tx.origin refers to the original sender of the transaction, whereas msg.sender refers to the immediate sender of the message. Malicious contracts can trick tx.origin into sending a transaction, thus successfully gaining illegal access by impersonating the 'owner'. It is recommended to use 'msg.sender' to check for permissions and not 'tx.origin'."
+}
+```

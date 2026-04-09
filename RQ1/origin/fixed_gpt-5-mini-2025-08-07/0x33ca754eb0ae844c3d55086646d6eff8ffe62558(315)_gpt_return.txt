@@ -1,0 +1,28 @@
+[{
+    "contract_name": "TokenSale",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Ensure access control is based on msg.sender (owner) instead of tx.origin. Declare owner as an address and assume it's set in the contract's constructor.",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a standard onlyOwner modifier to restrict access to the contract owner using msg.sender (prevents tx.origin phishing attacks).",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only owner can call\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier to prevent access-control bypass via intermediate contracts. Preserves original functionality by allowing only the owner to mark their address in rc.",
+            "corrected_code": "function addMeByRC() public onlyOwner {\n    rc[msg.sender] = true;\n    emit NewRC(msg.sender);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

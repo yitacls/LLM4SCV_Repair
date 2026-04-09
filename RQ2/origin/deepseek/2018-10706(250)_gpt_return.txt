@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint8 len = uint8(_to.length);",
+    "description": "The contract casts the array length to uint8, which has a maximum value of 255. If _to.length exceeds 255, the cast will wrap around, causing incorrect loop iterations. This can lead to incomplete transfers, silent truncation of recipient lists, or out-of-bounds access if the loop attempts to process fewer elements than actually exist in the arrays."
+}
+```

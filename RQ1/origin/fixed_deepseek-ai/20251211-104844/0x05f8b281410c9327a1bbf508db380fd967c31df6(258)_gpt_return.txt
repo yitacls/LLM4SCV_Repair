@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "MyAdvancedToken",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Owner variable should be explicitly defined if not already present, but assuming it exists in the contract. For robustness, we should mark as payable address.",
+                "variable_code": "address payable public owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added an onlyOwner modifier to restrict selfdestruct to the contract owner only, preventing unauthorized access.",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "selfdestructs",
+                "fix_info": "Added onlyOwner modifier to the selfdestruct function to ensure only the contract owner can destroy the contract, and changed to selfdestruct(address payable) to send remaining ether to owner.",
+                "corrected_code": "    function selfdestructs() payable public onlyOwner {\n        selfdestruct(owner);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

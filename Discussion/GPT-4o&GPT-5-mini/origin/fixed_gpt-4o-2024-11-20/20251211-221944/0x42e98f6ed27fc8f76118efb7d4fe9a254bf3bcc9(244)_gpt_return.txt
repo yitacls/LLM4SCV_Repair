@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "GAWToken",
+        "contract_version": "0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "isClosed",
+                "fix_info": "Added a state variable to track contract's closed status to prevent further actions post selfdestruct.",
+                "variable_code": "bool public isClosed;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "notClosed",
+                "fix_info": "Added a modifier to ensure all functions are inaccessible after close is called and the contract is destructed.",
+                "modifier_code": "modifier notClosed() { require(!isClosed, \"Contract already closed\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "close",
+                "fix_info": "Added a check to prevent accidental or unauthorized self-destruct and updated the contract's state to mark it as closed. Used the new modifier to ensure proper access control.",
+                "corrected_code": "function close() public onlyOwner notClosed {\n    isClosed = true; // Mark the contract as closed\n    selfdestruct(owner);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

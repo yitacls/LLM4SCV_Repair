@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Virgo_ZodiacToken",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Fixed arithmetic overflow and underflow vulnerabilities",
+                "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) returns (bool success) { require(_value > 0); require(balances[_from] >= _value); require(allowed[_from][msg.sender] >= _value); require(balances[_to] + _value >= balances[_to]); balances[_to] += _value; balances[_from] -= _value; allowed[_from][msg.sender] -= _value; Transfer(_from, _to, _value); return true; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 amount = uint256(cnt) * _value;",
+    "description": "The multiplication of `cnt` and `_value` can cause an integer overflow prior to Solidity 0.8.x where SafeMath is not used on all arithmetic operations. This could result in an incorrect `amount` value that bypasses the subsequent `require` statement, allowing unintentional or malicious transfers."
+}
+```

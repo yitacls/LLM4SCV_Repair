@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ENT",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for send() function and reverting transaction on failure",
+            "corrected_code": "function () payable public {\n    require(owner.send(msg.value), \"Transfer to owner failed\");\n    uint amount = msg.value * buyPrice;\n    _transfer(owner, msg.sender, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

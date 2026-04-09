@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Delta",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Assumed existing onlyOwner modifier remains unchanged",
+            "modifier_code": "modifier onlyOwner {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unchecked low level call vulnerability, fixed logic error where any positive _amount would override balance calculation, and added proper error handling for send failure",
+            "corrected_code": "function withdraw(uint256 _amount) onlyOwner returns (bool result) {\n    uint256 balance;\n    balance = this.balance;\n    \n    if (_amount > 0 && _amount <= balance) {\n        balance = _amount;\n    }\n    \n    // Convert to address payable for Solidity 0.4.23 compatibility\n    address payable ownerPayable = address(uint160(owner));\n    \n    // Check if transfer succeeded and revert if it failed\n    require(ownerPayable.send(balance));\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

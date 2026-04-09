@@ -1,0 +1,10 @@
+```json
+{
+	"type": "unchecked_low_level_calls",
+	"contract_name": "CYBRPurchaseAddress",
+	"vulnerabilities": [{
+		"location": "wallet.call(msg.value);",
+		"description": "This line of code is a low-level call that directly interacts with EVM. This line does not check the return value of the call. If the call fails due to out-of-gas, Solidity will not throw an exception, rather it will return false. This could lead to unexpected behaviours and makes the contract vulnerable to security threats."	
+	}]
+}
+```

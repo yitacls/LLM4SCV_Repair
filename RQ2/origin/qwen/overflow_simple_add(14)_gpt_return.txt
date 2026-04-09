@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balance += deposit;",
+    "description": "The addition operation is vulnerable to integer overflow. In Solidity 0.4.25, arithmetic operations do not have built-in overflow protection. When the sum of balance and deposit exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to zero, causing unexpected behavior and potential loss of funds. This vulnerability can be exploited by an attacker who can manipulate the deposit amount to cause an overflow and corrupt the balance storage variable."
+}
+```

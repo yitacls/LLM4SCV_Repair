@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "function () external payable {\n\t\twallet.send(msg.value);  // fault line\n\t}",
+    "description": "The fallback function uses the low-level send() function without checking its return value. In Solidity 0.4.x, send() returns a boolean indicating success (true) or failure (false). The send() function is limited to 2300 gas, which may be insufficient if the receiving wallet is a contract that implements a fallback function. If send() fails (returns false), the transaction will not revert, potentially causing funds to be trapped in the contract as the payment will not have been successfully forwarded to the wallet. This violates the check-effects-interactions pattern and should be replaced with transfer() (which automatically reverts on failure) or by explicitly checking send()'s return value and handling failures appropriately."
+}
+```

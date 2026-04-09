@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "TokenDrop",
+    "contract_version": ">=0.7.0 <0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "factory",
+            "fix_info": "Added access control modifier to protect initialization",
+            "variable_code": "address public factory;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyFactory",
+            "fix_info": "Added modifier to restrict access to factory contract only",
+            "modifier_code": "modifier onlyFactory() {\n    require(msg.sender == factory, \"TokenDrop/only-factory\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Added onlyFactory modifier to prevent unauthorized initialization and reentrancy guard",
+            "corrected_code": "function initialize(address _measure, address _asset) external onlyFactory {\n    require(address(measure) == address(0) && address(asset) == address(0), \"TokenDrop/already-initialized\");\n    measure = IERC20Upgradeable(_measure);\n    asset = IERC20Upgradeable(_asset);\n\n    // Set Factory Deployer\n    factory = msg.sender;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Added reentrancy guard by updating state before external call and using transfer instead of call",
+            "corrected_code": "function claim(address user) external returns (uint256) {\n    drop();\n    _captureNewTokensForUser(user);\n    uint256 balance = userStates[user].balance;\n    userStates[user].balance = 0;\n    totalUnclaimed = uint256(totalUnclaimed).sub(balance).toUint112();\n\n    // Transfer asset/reward token to user\n    require(asset.transfer(user, balance), \"TokenDrop/transfer-failed\");\n\n    // Emit Claimed\n    emit Claimed(user, balance);\n\n    return balance;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "addAssetToken",
+            "fix_info": "Added checks to ensure amount is valid and transfer succeeds",
+            "corrected_code": "function addAssetToken(uint256 amount) external returns (bool) {\n    require(amount > 0, \"TokenDrop/invalid-amount\");\n    // Transfer asset/reward token from msg.sender to TokenDrop\n    require(asset.transferFrom(msg.sender, address(this), amount), \"TokenDrop/transfer-failed\");\n\n    // Update TokenDrop asset balance\n    drop();\n\n    // Return BOOL for transaction gas savings\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

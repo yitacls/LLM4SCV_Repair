@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "GAWToken",
+    "contract_version": "0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function access to owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawEther",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier and improved security by using transfer() instead of send()",
+            "corrected_code": "function withdrawEther() public onlyOwner {\n    if (address(this).balance > 0)\n        owner.transfer(address(this).balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

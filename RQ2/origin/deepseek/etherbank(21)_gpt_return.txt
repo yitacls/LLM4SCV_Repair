@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Reentrancy",
+            "location": "if (!(msg.sender.call.value(amountToWithdraw)())) { throw; }",
+            "description": "The contract performs an external call (msg.sender.call.value()) before updating the user's balance (userBalances[msg.sender] = 0). This allows a malicious contract to recursively call withdrawBalance() multiple times before the balance is cleared, enabling reentrancy attacks where funds can be drained. The use of Solidity ^0.4.0 with 'throw' for error handling (instead of revert()) and the lack of reentrancy guards exacerbate this vulnerability."
+        }
+    ]
+}
+```

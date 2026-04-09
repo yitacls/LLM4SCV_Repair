@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Line 53-64, function transfer",
+        "description": "In the 'transfer' function, the contract calls the 'tokenFallback' method of another contract. This could lead to a re-entrancy attack where the called contract could call back into the vulnerable contract before the first function call is finished, potentially causing unexpected state changes or stealing funds."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "Line 67, function allowance",
+        "description": "The 'allowance' function shadows the state variable '_allowances'. This could lead to a confusion in coding and might lead to bugs or the misinterpretation of the code. It is generally advisable to avoid shadowing of state variables to maintain the clarity of the code."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "Line 194, function _approve",
+        "description": "The '_approve' function shadows the state variable '_allowances'. This could lead to a confusion in coding and might lead to bugs or the misinterpretation of the code. It is generally advisable to avoid shadowing of state variables to maintain the clarity of the code."
+    }
+]
+```

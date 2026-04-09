@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "token.transfer(msg.sender, tokens);",
+    "description": "The transfer function of the IERC20 token contract is called without checking its return value. If the transfer fails (returns false or reverts due to issues such as insufficient balance or allowance), the contract will not detect the failure, which could result in accounting discrepancies. This can lead to vulnerabilities where users believe tokens are transferred successfully while the operation has actually failed."
+}
+```

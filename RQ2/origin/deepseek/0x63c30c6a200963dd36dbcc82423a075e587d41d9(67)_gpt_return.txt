@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability / Integer Overflow",
+    "location": "pay_user__ += msg.value; raised += msg.value;",
+    "description": "In Solidity version ^0.4.25, integer arithmetic operations do not automatically check for overflow/underflow. The variables 'pay_user__' and 'raised' are likely unsigned integers (uint), and repeatedly adding msg.value without bounds checking can cause these variables to overflow (wrap around to zero or small values). This could allow attackers to manipulate contract state, lead to incorrect accounting of funds, and enable unauthorized withdrawals or other logical errors. The vulnerability is compounded by the version's lack of built-in SafeMath operations, which were commonly introduced in later versions or via libraries."
+}
+```

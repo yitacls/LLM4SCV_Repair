@@ -1,0 +1,52 @@
+[{
+    "contract_name": "ImpossibleWrappedToken",
+    "contract_version": "0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "_status",
+            "fix_info": "Add reentrancy guard status variable to prevent reentrant calls during external token interactions.",
+            "variable_code": "uint256 private _status = 1;\nuint256 private constant _NOT_ENTERED = 1;\nuint256 private constant _ENTERED = 2;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Standard reentrancy guard modifier to prevent reentrant entry into protected functions.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deposit(address dst, uint256 wad)",
+            "fix_info": "Protect transferFrom external call with nonReentrant; update internal underlyingBalance as an effect after successful external transfer but before state changes that could be reentered (nonReentrant prevents reentry). Preserves original behavior and return value.",
+            "corrected_code": "function deposit(address dst, uint256 wad) public nonReentrant returns (uint256 transferAmt) {\n    // calculate required underlying amount\n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n\n    // perform the external transferFrom interaction\n    bool success = IERC20(underlying).transferFrom(msg.sender, address(this), transferAmt);\n    require(success, 'ImpossibleWrapper: TRANSFERFROM_FAILED');\n\n    // Effects: update underlyingBalance and wrapped balances/total supply\n    underlyingBalance = underlyingBalance.add(transferAmt);\n    _deposit(dst, wad);\n\n    // Emit as originally implemented\n    emit Transfer(address(0), msg.sender, wad);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "deposit(address dst)",
+            "fix_info": "Protects view call to underlying.balanceOf from reentrancy using nonReentrant and updates internal underlyingBalance before minting wrapped tokens to maintain consistent state and avoid TOCTOU issues.",
+            "corrected_code": "function deposit(address dst) public override nonReentrant returns (uint256 transferAmt) {\n    uint256 balance = IERC20(underlying).balanceOf(address(this));\n    require(balance >= underlyingBalance, 'ImpossibleWrapper: UNDERFLOW');\n\n    transferAmt = balance.sub(underlyingBalance);\n    require(transferAmt > 0, 'ImpossibleWrapper: NO_UNDERLYING_TRANSFERRED');\n\n    uint256 wad = transferAmt.mul(ratioNum).div(ratioDenom);\n\n    // update underlyingBalance to the observed balance before updating token state\n    underlyingBalance = balance;\n\n    _deposit(dst, wad);\n    emit Transfer(address(0), dst, wad);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw(address dst, uint256 wad)",
+            "fix_info": "Adds nonReentrant modifier and moves underlyingBalance update before external transfer in _withdraw to follow checks-effects-interactions pattern and prevent reentrancy/TOCTOU issues.",
+            "corrected_code": "function withdraw(address dst, uint256 wad) public override nonReentrant returns (uint256 transferAmt) {\n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(wad);\n    emit Transfer(msg.sender, address(0), wad);\n    return _withdraw(dst, wad);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw(address src, address dst, uint256 wad)",
+            "fix_info": "Adds nonReentrant modifier and relies on updated _withdraw behavior to update underlyingBalance before external transfer, preserving allowance checks and functionality.",
+            "corrected_code": "function withdraw(\n    address src,\n    address dst,\n    uint256 wad\n) public nonReentrant returns (uint256 transferAmt) {\n    allowance[src][msg.sender] = allowance[src][msg.sender].sub(wad);\n    balanceOf[src] = balanceOf[src].sub(wad);\n    emit Transfer(src, address(0), wad);\n    return _withdraw(dst, wad);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_withdraw(address dst, uint256 wad)",
+            "fix_info": "Reordered state updates: reduce totalSupply, compute transfer amount, update underlyingBalance before external transfer, then perform safe external transfer. This follows checks-effects-interactions and prevents reentrancy issues while preserving functionality.",
+            "corrected_code": "function _withdraw(address dst, uint256 wad) internal returns (uint256 transferAmt) {\n    // burn wrapped tokens\n    totalSupply = totalSupply.sub(wad);\n\n    // calculate underlying amount to transfer\n    transferAmt = wad.mul(ratioDenom).div(ratioNum);\n\n    // Effects: update underlyingBalance before external interaction\n    underlyingBalance = underlyingBalance.sub(transferAmt);\n\n    // Interaction: transfer underlying out\n    bool success = IERC20(underlying).transfer(dst, transferAmt);\n    require(success, 'IF Wrapper: UNDERLYING_TRANSFER_FAIL');\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

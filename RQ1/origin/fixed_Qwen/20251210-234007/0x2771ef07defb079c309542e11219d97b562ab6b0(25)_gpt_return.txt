@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "AVL",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow/underflow when updating balances",
+            "corrected_code": "function transfer(address _to, uint _value) public returns (bool success)\n    {\n        uint gas = msg.gas;\n        if (balances[msg.sender] >= _value && _value > 0)\n        {\n            balances[msg.sender] = balances[msg.sender].sub(_value);\n            balances[_to] = balances[_to].add(_value);\n            Transfer(msg.sender, _to, _value);\n            refund(gas+1158);\n            return true;\n        } \n        else\n        {\n            revert();\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

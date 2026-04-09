@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "Using tx.origin for authentication introduces a significant security risk in Solidity 0.4.13. tx.origin returns the original EOA (externally owned account) that initiated the transaction chain, not the immediate caller. This can be exploited through phishing attacks where a malicious contract calls this function, making tx.origin the victim's address (if they initiated the transaction). Additionally, future changes in ownership won't be properly enforced as old owners' transactions can still be relayed. This should be replaced with msg.sender checking against an authorized mapping or role-based access control, and ownership transfers should be properly managed through a dedicated function with two-step verification."
+        }
+    ]
+}
+```

@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "Denial of Service (DoS)",
+        "location": "creditorAddresses = new address[](0);",
+        "description": "The reinitialization of the `creditorAddresses` array to an empty array can lead to loss of information about previous creditors. This abrupt clearing without additional safeguards can be exploited to freeze key contract functionalities, causing a denial of service to other creditors."
+    },
+    {
+        "type": "Denial of Service (DoS)",
+        "location": "creditorAmounts = new uint[](0);",
+        "description": "The reinitialization of the `creditorAmounts` array to an empty array can lead to wiping out all records of creditor amounts. This can result in a denial of service by preventing the payout of creditors in future interactions."
+    },
+    {
+        "type": "Denial of Service (DoS)",
+        "location": "if (creditorAmounts[lastCreditorPayedOut] <= address(this).balance - profitFromCrash) { ... }",
+        "description": "If the contract's balance is insufficient to pay the next creditor (due to insufficient funds or manipulation), the payout process could get stuck at a particular creditor, preventing subsequent creditors from being paid."
+    },
+    {
+        "type": "Denial of Service (DoS)",
+        "location": "creditorAddresses[lastCreditorPayedOut].send(creditorAmounts[lastCreditorPayedOut]);",
+        "description": "The use of `send` can fail if the creditor is a contract with a fallback function that consumes more than 2300 gas, causing a denial of service and blocking further creditor payouts."
+    }
+]
+```

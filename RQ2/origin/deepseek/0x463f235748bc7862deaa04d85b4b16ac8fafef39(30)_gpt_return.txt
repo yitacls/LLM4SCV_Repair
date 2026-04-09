@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "This contract uses the deprecated low-level call.value()() method without implementing any reentrancy protection mechanism (e.g., checks-effects-interactions pattern or reentrancy guard). This allows a malicious contract to re-enter the CashOut function within its fallback function before the balance update (balances[msg.sender]-=_am) occurs. This can drain funds from the contract by repeatedly calling CashOut before the sender's balance is decremented. The vulnerability is exacerbated because: 1) Solidity 0.4.x uses default gas forwarding with call.value()(), 2) the state update happens after the external call, and 3) TransferLog.AddMessage occurs after the state update."
+}
+```

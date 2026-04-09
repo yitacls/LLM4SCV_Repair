@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "revenue = amount * sellPrice;",
+    "description": "The multiplication of amount * sellPrice is vulnerable to integer overflow. As this contract uses Solidity 0.4.18, it does not have built-in overflow protection (which was introduced in Solidity 0.8.0). An attacker could provide large values for amount or sellPrice could be set to a large value, causing revenue to overflow and wrap around to a very small number. This would result in the seller receiving significantly less ether than intended, potentially only a tiny fraction of the correct value. The vulnerability is particularly dangerous because it directly impacts financial calculations."
+}
+```

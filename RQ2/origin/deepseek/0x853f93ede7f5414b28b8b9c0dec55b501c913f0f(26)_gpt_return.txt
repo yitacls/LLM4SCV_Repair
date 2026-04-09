@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "uint PreviousBalances = balances[_from] + balances[_to];",
+    "description": "In Solidity 0.4.25, there is no built-in overflow protection. The addition of two unsigned integers (balances[_from] + balances[_to]) can overflow if their sum exceeds the maximum value of uint (2^256 - 1), causing the contract to behave unexpectedly. An attacker could exploit this by making the sum wrap around to a lower value, potentially bypassing the subsequent assertion check. This vulnerability is compounded by the lack of SafeMath library usage. The assertion check could fail even for legitimate transfers if an overflow occurs during the initial sum calculation."
+}
+```

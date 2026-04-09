@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "benefit.send(amount);",
+    "description": "The contract is vulnerable to reentrancy attack because it calls an external contract (benefit.send(amount)) before updating its own state. In Solidity ^0.4.16, the send() function forwards 2300 gas which is enough for the receiving contract to call back into the getFunds function before the state is updated. This allows an attacker to repeatedly withdraw funds before the balance check (amount <= this.balance) is properly enforced. The Raise event and state changes should occur after the external call to prevent reentrancy."
+}
+```

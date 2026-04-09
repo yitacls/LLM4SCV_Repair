@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "L1795 in whitelistAddresses function",
+    "description": "The loop in whitelistAddresses function could potentially lead to a denial of service (DoS) attack if the array _newAddressesToWhitelist is extremely large. Processing a large array inside a loop can exceed the block gas limit, causing the function to be unable to complete within a single block."
+}
+```

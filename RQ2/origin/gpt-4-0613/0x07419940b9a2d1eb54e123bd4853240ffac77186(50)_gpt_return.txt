@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract_name": "PowhCoin4",
+    "location": "msg.sender.transfer(balance);",
+    "description": "Anyone who calls the 'withdraw' function can extract the 'balance' from the contract. Without any restriction on the msg.sender, the specified amount of tokens can be withdrawn from any account without any checks or authorization, which results in Ether leak. This exposes the contract to a significant security risk. There should be a modifier or a function which checks if the msg.sender is authorized to call this function."
+}
+```

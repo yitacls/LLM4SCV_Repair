@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "DosNumber",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "array",
+                "fix_info": "Converted to dynamic array with proper visibility",
+                "variable_code": "uint256[] private array;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "numElements",
+                "fix_info": "Changed type from uint to uint256 and made private",
+                "variable_code": "uint256 private numElements;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "insertNnumbers",
+                "fix_info": "Fixed gas limit vulnerability by adding number limit check and gas estimation, preventing unbounded loops",
+                "corrected_code": "function insertNnumbers(uint256 value, uint256 numbers) public {\n    require(numbers > 0, \"Number must be greater than 0\");\n    require(numbers <= 100, \"Cannot insert more than 100 numbers at once\");\n    \n    // Calculate required gas and prevent excessive consumption\n    uint256 estimatedGas = numbers * 30000 + 21000;\n    require(gasleft() > estimatedGas, \"Insufficient gas for operation\");\n    \n    // Calculate total elements after insertion\n    uint256 totalElements = numElements + numbers;\n    \n    // Ensure array has enough capacity\n    if (totalElements > array.length) {\n        // Reserve space efficiently\n        uint256 newLength = ((totalElements - 1) / 100 + 1) * 100; // Reserve in chunks of 100\n        array.resize(newLength);\n    }\n    \n    // Batch assignment to minimize gas costs\n    for (uint256 i = 0; i < numbers; i++) {\n        array[numElements + i] = value;\n    }\n    \n    // Update counter once\n    numElements = totalElements;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "resize",
+                "fix_info": "Added helper function to resize array efficiently",
+                "corrected_code": "function resize(uint256 newSize) private {\n    require(newSize >= array.length, \"New size must be larger than current size\");\n    uint256[] memory newArray = new uint256[](newSize);\n    for (uint256 i = 0; i < array.length; i++) {\n        newArray[i] = array[i];\n    }\n    array = newArray;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

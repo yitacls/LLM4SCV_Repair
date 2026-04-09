@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "unchecked_low_level_calls",
+        "location": "sender.send(amount);",
+        "description": "The contract uses address.send() to transfer ether without checking the return value. In Solidity 0.4.24, send() returns false if the transfer fails (e.g., if the recipient is a contract with a fallback function that uses more than 2300 gas or runs out of gas), but the return value is not verified. This can lead to silent failures where the contract assumes the payment succeeded when it actually failed. The vulnerability is compounded by the lack of a withdrawal pattern, allowing failed transfers to permanently lock funds. In this specific context, the fallback function (which lacks a function name) is invoked via low-level transfers, and because it recalculates rewards before processing new investments, a failed send() could allow users to receive credit for investments without actually collecting their due rewards."
+    }
+}
+```

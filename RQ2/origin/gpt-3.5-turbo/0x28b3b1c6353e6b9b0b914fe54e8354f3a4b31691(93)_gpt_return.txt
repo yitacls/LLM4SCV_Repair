@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract is using tx.origin for access control check in the burn function, which can be exploited by a malicious contract that calls the function on behalf of an authorized user."
+}
+```   

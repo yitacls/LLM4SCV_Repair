@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(balance)",
+    "description": "The 'withdraw' function sends the balance of dividends to the caller without proper control or restrictions on who can call the function. This allows unintended users to potentially withdraw tokens, leading to a possible loss of dividends. The contract can be more secure if it controls the access to the 'withdraw' function, for example by limiting access to only the contract owner or specific approved addresses."
+}
+```

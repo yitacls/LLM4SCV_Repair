@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "tokenContract",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly check contract ownership instead of using tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setCrowdsale",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and using onlyOwner modifier. Also improved the logic to properly set allowance.",
+            "corrected_code": "function setCrowdsale(address tokenWallet, uint maxToken) public onlyOwner returns (bool) {\n    if(balances[tokenWallet] >= maxToken){\n        allowed[tokenWallet][msg.sender] = maxToken;\n        emit Approval(tokenWallet, msg.sender, maxToken);\n        return true;\n    }else{\n        return false;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

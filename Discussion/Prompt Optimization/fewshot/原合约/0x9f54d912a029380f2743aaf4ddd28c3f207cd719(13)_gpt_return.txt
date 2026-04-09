@@ -1,0 +1,20 @@
+```json
+[
+    {
+        "contract_name": "Giveaway",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "kill",
+                "fix_info": "Add onlyOwner modifier to restrict access to owner only.",
+                "corrected_code": "function kill() public onlyOwner {
+    selfdestruct(msg.sender);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

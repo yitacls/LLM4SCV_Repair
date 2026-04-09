@@ -1,0 +1,68 @@
+```json
+[
+    {
+        "contract_name": "AniaLottery",
+        "contract_version": "^0.8.19",
+        "state_variables": [
+            {
+                "variable_name": "decimals",
+                "fix_info": "Renamed and made constant to reflect a fixed nature.",
+                "variable_code": "uint internal constant DECIMALS = 1e18;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyAdmin",
+                "fix_info": "Added an error message to improve error clarity for failed condition.",
+                "modifier_code": "modifier onlyAdmin { require(msg.sender == owner || admins[msg.sender], 'Caller is not an admin'); _; }",
+                "change_type": "modified"
+            },
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added an error message to improve error clarity for failed condition.",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner, 'Caller is not the owner'); _; }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "setAdmin",
+                "fix_info": "Improved checks to ensure admin cannot be set to the zero address.",
+                "corrected_code": "function setAdmin(address _admin, bool isAdmin) public onlyOwner { require(_admin != address(0), 'Admin address cannot be the zero address'); admins[_admin] = isAdmin; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Added SafeMath-like handling to prevent unprotected Ether withdrawal, and used checks-effects-interactions pattern.",
+                "corrected_code": "function withdraw() public onlyOwner { uint256 balance = address(this).balance; require(balance > 0, 'No Ether available for withdrawal'); (bool success, ) = msg.sender.call{value: balance}(''); require(success, 'Withdraw failed'); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawTokens",
+                "fix_info": "Added checks to ensure token transfer calls succeed, using SafeERC20 for safer transfers.",
+                "corrected_code": "function withdrawTokens(uint projectId, address recipient) public onlyAdmin { require(recipient != address(0), 'Recipient cannot be zero address'); address contractAddress = projects[projectId].contractAddress; require(contractAddress != address(0), 'Invalid project contract address'); IERC20 token = IERC20(contractAddress); uint256 tokenBalance = token.balanceOf(address(this)); require(tokenBalance > 0, 'No tokens available for withdrawal'); bool success = token.transfer(recipient, tokenBalance); require(success, 'Token transfer failed'); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "buy",
+                "fix_info": "Improved conditions to handle SafeERC20-safe transfers and prevent accidental loss of funds.",
+                "corrected_code": "function buy(uint projectId, uint pay, address tokenForPayContractAddress) external { require(stableCoins[tokenForPayContractAddress], 'This token is not available for payment'); require(pay > 0, 'You need to send some ether'); require(getUserTicketValue(msg.sender) == pay * DECIMALS, 'Incorrect payment amount'); uint256 tokensToBuy = DECIMALS * (pay * DECIMALS) / projects[projectId].tokenPrice * projects[projectId].firstPayoutInPercent / 100; checkBuy(projectId, tokensToBuy); IERC20 stableCoin = IERC20(tokenForPayContractAddress); require(stableCoin.allowance(msg.sender, address(this)) >= pay * DECIMALS, 'Allowance not sufficient'); bool success = stableCoin.transferFrom(msg.sender, projects[projectId].billingAddress, pay * DECIMALS); require(success, 'StableCoin transfer failed'); IERC20 token = IERC20(projects[projectId].contractAddress); token.transfer(msg.sender, tokensToBuy); setLotteryWinnerClaimedStatus(projectId, msg.sender); projectRaisedAmount[projectId] += pay; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_removeUserFromProject",
+                "fix_info": "Modified to ensure that removed users cannot leave undeleted references in mappings.",
+                "corrected_code": "function _removeUserFromProject(uint256 projectId, address userAddress) internal { uint256 index = projectUserIndex[projectId][userAddress]; if (projectsWhitelist[projectId][index].userAddress == userAddress) { projectStakeCap[projectId] -= getUserTicketValue(projectsWhitelist[projectId][index].userAddress); projectsWhitelist[projectId][index] = projectsWhitelist[projectId][projectsWhitelist[projectId].length - 1]; projectsWhitelist[projectId].pop(); delete projectUserIndex[projectId][userAddress]; projectUserCount[projectId]--; } }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_removeWhitelist",
+                "fix_info": "Ensured safe deletion of mappings and reduced vulnerability for storage writes.",
+                "corrected_code": "function _removeWhitelist(uint projectId) internal { delete projectsWhitelist[projectId]; projectStakeCap[projectId] = 0; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

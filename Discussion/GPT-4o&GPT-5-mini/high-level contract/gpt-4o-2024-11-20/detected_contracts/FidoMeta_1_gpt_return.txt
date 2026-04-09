@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity 0.8.11;",
+        "description": "The contract uses a fixed pragma version (0.8.11), which may cause dependency issues when trying to use libraries that have different solidity pragma requirements. Consider using a floating pragma to ensure compatibility with newer versions."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "function _approve(address owner, address spender, uint256 amount) private { ... }",
+        "description": "The variable 'owner' inside the _approve function shadows the global state variable named '_owner'. This could lead to unintended behavior or confusion when maintaining the code. Consider renaming one of them."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function setCharges(...) { ... }",
+        "description": "Some of the code inside the `setCharges` function performs no effective changes or is redundant. For instance, setting certain percentages without any logic to handle or apply these charges makes the code ineffective. Remove or refactor such unnecessary code."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < cacheLength; i++) { ... }",
+        "description": "The for-loop iterates through the '_excluded' array, which could cause gas consumption to grow as the array increases in size, potentially making certain calls fail due to exceeding the block gas limit. Refactor the code to avoid looping through dynamic arrays in this manner."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "require(initialLock >= 0, \"timeindays should be greater than or equal to 0\");",
+        "description": "The condition 'initialLock >= 0' in the require statement has no effect since unsigned integers (uint256) are always non-negative. Consider removing this redundant validation to save gas."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 timePassed = block.timestamp - (startTime + (initialLock * 1 days));",
+        "description": "Potential integer underflow due to subtraction, which can occur if 'startTime + initialLock * 1 days' exceeds 'block.timestamp'. Use 'require' or 'SafeMath' to prevent such scenarios."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "delete locks[target_];",
+        "description": "The 'delete' statement here has no practical effect since the contract does not depend on this action afterward. Consider removing it for clarity and gas savings."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "_previousCommunityCharge = _community_charge; _community_charge = 0; if (!takeCommunityCharge) _community_charge = _previousCommunityCharge;",
+        "description": "The code redundantly sets and resets '_community_charge' even when 'takeCommunityCharge' is false. Refactor to avoid unnecessary state changes."
+    }
+]
+```

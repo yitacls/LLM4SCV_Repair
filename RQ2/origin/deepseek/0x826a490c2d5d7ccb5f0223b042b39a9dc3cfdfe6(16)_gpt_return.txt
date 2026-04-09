@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "trustee.send((this.balance + mainDAO.balanceOf(this)) - mainDAO.totalSupply())",
+    "description": "The send() function has a return value (bool success) that is not checked, which can lead to silent failures. In Solidity 0.4.25, send() forwards only 2,300 gas to the recipient and returns false if the transfer fails (e.g., if the trustee is a contract with a fallback function requiring more gas). The transaction continues execution despite the failed transfer, potentially leaving the contract's ETH balance locked or causing inconsistent state. This should be replaced with transfer() (which automatically reverts on failure) or the return value should be explicitly checked and handled with a revert or other error handling."
+}
+```

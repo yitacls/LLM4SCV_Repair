@@ -1,0 +1,47 @@
+```json
+[{
+    "contract_name": "YieldFarm",
+    "contract_version": "0.6.12",
+    "state_variables": [
+        {
+            "variable_name": "pragma solidity ^0.6.0;",
+            "fix_info": "Updates the floating pragma to a fixed version to avoid compatibility issues.",
+            "variable_code": "pragma solidity 0.6.12;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "massHarvest",
+            "fix_info": "Mitigates gas limit DoS vulnerability by introducing a cap on the number of epochs processed in a single call, ensuring an upper gas limit.",
+            "corrected_code": "function massHarvest() external returns (uint) {\n    uint totalDistributedValue;\n    uint epochId = _getEpochId().sub(1); // fails in epoch 0\n\n    // Restrict the number of epochs processed in one transaction to avoid hitting the gas limit (cap of 100 epochs).\n    uint maxEpochsToHarvest = 100;\n    uint finalEpochId = lastEpochIdHarvested[msg.sender] + maxEpochsToHarvest;\n\n    if (epochId > NR_OF_EPOCHS) {\n        epochId = NR_OF_EPOCHS;\n    }\n\n    if (finalEpochId < epochId) {\n        epochId = finalEpochId;\n    }\n\n    for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) {\n        totalDistributedValue = totalDistributedValue.add(_harvest(i));\n    }\n\n    emit MassHarvest(msg.sender, epochId.sub(lastEpochIdHarvested[msg.sender]), totalDistributedValue);\n\n    if (totalDistributedValue > 0) {\n        require(_bond.transferFrom(_communityVault, msg.sender, totalDistributedValue), \"Transfer failed\");\n    }\n\n    return totalDistributedValue;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "harvest",
+            "fix_info": "Adds safety checks, error messaging, and ensures proper use of SafeMath.",
+            "corrected_code": "function harvest(uint128 epochId) external returns (uint) {\n    uint128 currentEpoch = _getEpochId();\n    require(currentEpoch > epochId, \"This epoch is in the future\");\n    require(epochId <= NR_OF_EPOCHS, \"Maximum number of epochs is 25\");\n    require(lastEpochIdHarvested[msg.sender].add(1) == epochId, \"Harvest in order\");\n\n    uint userReward = _harvest(epochId);\n    if (userReward > 0) {\n        require(_bond.transferFrom(_communityVault, msg.sender, userReward), \"Transfer failed\");\n    }\n\n    emit Harvest(msg.sender, epochId, userReward);\n    return userReward;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getEpochId",
+            "fix_info": "Ensures the function handles edge cases with precise casting and returns precise uint128.",
+            "corrected_code": "function _getEpochId() internal view returns (uint128 epochId) {\n    if (block.timestamp < epochStart) {\n        return 0;\n    }\n\n    uint256 elapsed = block.timestamp.sub(epochStart);\n    epochId = uint128(elapsed.div(epochDuration).add(1));\n    return epochId;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_harvest",
+            "fix_info": "Simplifies and adds explicit checks and SafeMath to handle calculations and event consistency.",
+            "corrected_code": "function _harvest(uint128 epochId) internal returns (uint) {\n    if (lastInitializedEpoch < epochId) {\n        _initEpoch(epochId);\n    }\n\n    lastEpochIdHarvested[msg.sender] = epochId;\n\n    // Exit early if no stake exists for the epoch.\n    if (epochs[epochId] == 0) {\n        return 0;\n    }\n\n    uint256 userBalance = _getUserBalancePerEpoch(msg.sender, epochId);\n    uint reward = _totalAmountPerEpoch.mul(userBalance).div(epochs[epochId]);\n\n    return reward;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_initEpoch",
+            "fix_info": "Enforces SafeMath and ensures valid initialization while improving readability.",
+            "corrected_code": "function _initEpoch(uint128 epochId) internal {\n    require(lastInitializedEpoch.add(1) == epochId, \"Epoch can only be initiated sequentially\");\n    lastInitializedEpoch = epochId;\n\n    uint poolSize = _getPoolSize(epochId);\n\n    // Ensure valid pool size to avoid zero division later.\n    require(poolSize > 0, \"Pool size must be greater than zero\");\n\n    epochs[epochId] = poolSize;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

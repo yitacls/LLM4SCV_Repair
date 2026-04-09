@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_dst.call.value(_value)(_data)",
+    "description": "This low-level call does not check the return value, which could lead to silent failures. In Solidity 0.4.x, .call() returns a boolean indicating success/failure. If this is not checked and the call fails (e.g., due to out-of-gas, non-existent contract, or revert), funds may be lost and the caller may not be aware. Additionally, the called contract could execute arbitrary code in the context of the caller, posing security risks. Consider using require() to validate the call's success or implementing a withdrawal pattern."
+}
+```

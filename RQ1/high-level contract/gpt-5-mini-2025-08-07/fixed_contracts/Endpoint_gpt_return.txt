@@ -1,0 +1,33 @@
+[{
+    "contract_name": "Endpoint",
+    "contract_version": "0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "MAX_UINT64",
+            "fix_info": "Added a constant to guard against uint64 overflow when incrementing nonces.",
+            "variable_code": "uint64 private constant MAX_UINT64 = 2**64 - 1;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "send",
+            "fix_info": "Replaced unchecked pre-increment of outboundNonce with explicit checked arithmetic to prevent uint64 overflow.",
+            "corrected_code": "function send(uint16 _dstChainId, bytes calldata _destination, bytes calldata _payload, address payable _refundAddress, address _zroPaymentAddress, bytes calldata _adapterParams) external payable override sendNonReentrant {\n        LibraryConfig storage uaConfig = uaConfigLookup[msg.sender];\n        // use checked increment to avoid uint64 overflow\n        uint64 current = outboundNonce[_dstChainId][msg.sender];\n        require(current < MAX_UINT64, \"LayerZero: outbound nonce overflow\");\n        uint64 nonce = current + 1;\n        outboundNonce[_dstChainId][msg.sender] = nonce;\n        _getSendLibrary(uaConfig).send{value: msg.value}(msg.sender, nonce, _dstChainId, _destination, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "receivePayload",
+            "fix_info": "Replaced unchecked pre-increment of inboundNonce with explicit checked arithmetic to prevent uint64 overflow while preserving nonce assertion logic.",
+            "corrected_code": "function receivePayload(uint16 _srcChainId, bytes calldata _srcAddress, address _dstAddress, uint64 _nonce, uint _gasLimit, bytes calldata _payload) external override receiveNonReentrant {\n        // assert and increment the nonce using checked arithmetic. no message shuffling\n        uint64 current = inboundNonce[_srcChainId][_srcAddress];\n        require(current < MAX_UINT64, \"LayerZero: inbound nonce overflow\");\n        uint64 newNonce = current + 1;\n        inboundNonce[_srcChainId][_srcAddress] = newNonce;\n        require(_nonce == newNonce, \"LayerZero: wrong nonce\");\n\n        LibraryConfig storage uaConfig = uaConfigLookup[_dstAddress];\n\n        // authentication to prevent cross-version message validation\n        // protects against a malicious library from passing arbitrary data\n        if (uaConfig.receiveVersion == DEFAULT_VERSION) {\n            require(defaultReceiveLibraryAddress == msg.sender, \"LayerZero: invalid default library\");\n        } else {\n            require(uaConfig.receiveLibraryAddress == msg.sender, \"LayerZero: invalid library\");\n        }\n\n        // block if any message blocking\n        StoredPayload storage sp = storedPayload[_srcChainId][_srcAddress];\n        require(sp.payloadHash == bytes32(0), \"LayerZero: in message blocking\");\n\n        try ILayerZeroReceiver(_dstAddress).lzReceive{gas: _gasLimit}(_srcChainId, _srcAddress, _nonce, _payload) {\n            // success, do nothing, end of the message delivery\n        } catch (bytes memory reason) {\n            // revert nonce if any uncaught errors/exceptions if the ua chooses the blocking mode\n            storedPayload[_srcChainId][_srcAddress] = StoredPayload(uint64(_payload.length), _dstAddress, keccak256(_payload));\n            emit PayloadStored(_srcChainId, _srcAddress, _dstAddress, _nonce, _payload, reason);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "newVersion",
+            "fix_info": "Avoids potential overflow when incrementing latestVersion by computing the new value explicitly after bounds check (uint16).",
+            "corrected_code": "function newVersion(address _newLayerZeroLibraryAddress) external onlyOwner {\n        require(_newLayerZeroLibraryAddress != address(0x0), \"LayerZero: new version cannot be zero address\");\n        // ensure we don't exceed BLOCK_VERSION (65535)\n        require(latestVersion < BLOCK_VERSION, \"LayerZero: can not add new messaging library\");\n        uint16 newVer = latestVersion + 1;\n        latestVersion = newVer;\n        libraryLookup[newVer] = ILayerZeroMessagingLibrary(_newLayerZeroLibraryAddress);\n        emit NewLibraryVersionAdded(newVer);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

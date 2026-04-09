@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "amountRaised += amount;",
+    "description": "In Solidity version ^0.4.25, integer arithmetic operations are unchecked, meaning that when 'amountRaised += amount;' is executed, if the sum exceeds the maximum value of uint (2^256 - 1), it will overflow and wrap around to a small number. This can occur if the contract receives a large amount of ether, either in a single transaction or cumulatively, leading to incorrect accounting of 'amountRaised' and potential fund loss or miscalculations in contract logic."
+}
+```

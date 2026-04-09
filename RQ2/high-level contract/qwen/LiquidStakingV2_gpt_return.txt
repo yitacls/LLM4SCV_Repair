@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LiquidStakingV2",
+    "contract_version": ">=0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawUnstakedTokens",
+            "fix_info": "Fixed SWC-128 DoS with block gas limit by implementing chunked processing with a reasonable maximum iterations per call to prevent exceeding block gas limits",
+            "corrected_code": "function withdrawUnstakedTokens(address staker)\n\t\tpublic\n\t\tvirtual\n\t\toverride\n\t\twhenNotPaused\n\t{\n\t\trequire(staker == _msgSender(), \"LQ20\");\n\t\tuint256 _withdrawBalance;\n\t\tuint256 _unstakingExpirationLength = _unstakingExpiration[staker]\n\t\t\t.length;\n\t\tuint256 _counter = _withdrawCounters[staker];\n\t\tuint256 _processedCount = 0;\n\t\tuint256 _maxIterations = 50; // Limit iterations to prevent gas exhaustion\n\n\t\tfor (\n\t\t\tuint256 i = _counter;\n\t\t\ti < _unstakingExpirationLength && _processedCount < _maxIterations;\n\t\t\ti = i.add(1)\n\t\t) {\n\t\t\t_processedCount = _processedCount.add(1);\n\t\t\t//get getUnstakeTime and compare it with current timestamp to check if 21 days + epoch difference has passed\n\t\t\t(uint256 _getUnstakeTime, , ) = getUnstakeTime(\n\t\t\t\t_unstakingExpiration[staker][i]\n\t\t\t);\n\t\t\tif (block.timestamp >= _getUnstakeTime) {\n\t\t\t\t//if 21 days + epoch difference has passed, then add the balance and then mint uTokens\n\t\t\t\t_withdrawBalance = _withdrawBalance.add(\n\t\t\t\t\t_unstakingAmount[staker][i]\n\t\t\t\t);\n\t\t\t\t_unstakingExpiration[staker][i] = 0;\n\t\t\t\t_unstakingAmount[staker][i] = 0;\n\t\t\t\t_withdrawCounters[staker] = _withdrawCounters[staker].add(1);\n\t\t\t}\n\t\t}\n\n\t\trequire(_withdrawBalance > 0, \"LQ21\");\n\t\temit WithdrawUnstakeTokens(staker, _withdrawBalance, block.timestamp);\n\t\t_uTokens.mint(staker, _withdrawBalance);\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

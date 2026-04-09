@@ -1,0 +1,28 @@
+```json
+[{
+    "contract_name": "SpaceMonkey",
+    "contract_version": "^0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer(address,uint256,bytes)",
+            "fix_info": "Fixed reentrancy vulnerability by reordering operations to follow checks-effects-interactions pattern and added nonReentrant modifier. Moved the external call to tokenFallback after all state changes.",
+            "corrected_code": "function transfer(address recipient, uint256 amount, bytes calldata data) external returns (bool) {\n    require(_msgSender() != address(0), \"ERC20: transfer from the zero address\");\n    require(recipient != address(0), \"ERC20: transfer to the zero address\");\n    \n    _transfer(_msgSender(), recipient, amount);\n    \n    if (recipient.isContract()) {\n        IERC223Recipient(recipient).tokenFallback(_msgSender(), amount, data);\n    }\n    \n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "allowance",
+            "fix_info": "Fixed shadowing of parameter 'owner' by renaming parameter to avoid conflict with parent contract's owner() function.",
+            "corrected_code": "function allowance(address ownerAddr, address spender)\n    public\n    view\n    override\n    returns (uint256)\n{\n    return _allowances[ownerAddr][spender];\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_approve",
+            "fix_info": "Fixed shadowing of parameter 'owner' by renaming parameter to avoid conflict with parent contract's owner() function.",
+            "corrected_code": "function _approve(\n    address ownerAddr,\n    address spender,\n    uint256 amount\n) private {\n    require(ownerAddr != address(0), 'ERC20: approve from the zero address');\n    require(spender != address(0), 'ERC20: approve to the zero address');\n    require(!_isBlacklisted[_msgSender()], 'You have no power here!');\n\n    _allowances[ownerAddr][spender] = amount;\n    emit Approval(ownerAddr, spender, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "recipients[i].send(amounts[i]) inside the payout function loop",
+    "description": "The low-level call `.send()` is used without checking its return value. In Solidity 0.4.17, `.send()` returns a boolean indicating success (true) or failure (false), but this return value is only used as the last parameter to the `Payout` event, not validated. If a send fails (e.g., due to out-of-gas, recipient being a contract with a fallback function that reverts, or lack of gas), the transaction will not revert, and the loop will continue processing subsequent recipients. This can lead to silent failures where some recipients do not receive funds, while the event log incorrectly records the send as successful (since the return value is passed directly to the event). The vulnerability can be mitigated by either using `transfer()` (which reverts on failure in Solidity 0.4.17) or explicitly checking the return value of `.send()` and reverting on failure."
+}
+```

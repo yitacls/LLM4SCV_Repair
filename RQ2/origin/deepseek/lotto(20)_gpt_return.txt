@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "winner.send(winAmount);",
+    "description": "The contract uses call.value()() via .send() without checking the return value. In Solidity 0.4.18, .send() returns false on failure, but this return value is not verified. If the winner is a smart contract that uses too much gas (exceeds 2300 gas stipend) or reverts, the send may fail silently. This can cause the payedOut state to be set to true even though the winner never received the funds, permanently locking the winnings in the contract."
+}
+```

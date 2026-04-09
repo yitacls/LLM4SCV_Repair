@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function disperseEther(address[] recipients, uint256[] values) external payable",
+    "description": "The function lacks access control modifiers, allowing any user to call it and potentially drain ETH from the contract by specifying themselves as the sender in the balance refund logic (msg.sender.transfer(balance)). While the refund mechanism itself isn't inherently vulnerable, the complete absence of access control means any malicious actor could exploit this function to disperse the contract's ETH to arbitrary addresses of their choice. In the context of typical disperse functions intended for batch payments, this should be restricted to the contract owner or trusted parties."
+}
+```

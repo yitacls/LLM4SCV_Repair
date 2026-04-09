@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(msg.value);",
+    "description": "The `send()` function returns a boolean indicating success or failure, but this return value is not checked. If the `beneficiary` address is a contract that rejects payments (via revert in fallback function) or runs out of gas, the ether transfer will fail silently. This could lead to a loss of funds, as the contract state has already been updated (balanceOf, amountRaised, check) before this transfer, creating an inconsistent state where the sender appears to have contributed but the funds never reached the beneficiary. In Solidity 0.4.26, `send()` forwards only 2300 gas, which is insufficient for most contract operations. The vulnerability should be fixed by either using `transfer()` (which automatically reverts on failure) or checking the return value and handling the failure appropriately."
+}
+```

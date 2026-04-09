@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "HODLWallet",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "MAX_WITHDRAWAL",
+            "fix_info": "Assuming this constant exists but wasn't shown in the provided code snippet",
+            "variable_code": "uint256 public constant MAX_WITHDRAWAL = ...;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "doWithdraw",
+            "fix_info": "Fixed vulnerabilities: 1) Added reentrancy guard using checks-effects-interactions pattern 2) Replaced unsafe low-level call with transfer() 3) Added boolean success check for the transfer 4) Moved withdrawalCount increment before external call",
+            "corrected_code": "function doWithdraw(address from, address to, uint256 amount) internal {\n    require(amount <= MAX_WITHDRAWAL, \"Amount exceeds maximum withdrawal\");\n    require(balances[from] >= amount, \"Insufficient balance\");\n    require(withdrawalCount[from] < 3, \"Withdrawal limit exceeded\");\n    \n    // Checks-Effects-Interactions pattern\n    balances[from] = balances[from].sub(amount);\n    withdrawalCount[from] = withdrawalCount[from].add(1);\n    \n    // Safe transfer using transfer() instead of low-level call\n    // In 0.4.25, transfer() automatically reverts on failure\n    to.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

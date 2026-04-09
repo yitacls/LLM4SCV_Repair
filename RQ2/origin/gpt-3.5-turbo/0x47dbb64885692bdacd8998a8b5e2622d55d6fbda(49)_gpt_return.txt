@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' to check for ownership which is a security vulnerability. 'tx.origin' should not be used for authentication purposes as it can be manipulated in certain scenarios. It is recommended to use 'msg.sender' or implement proper access control mechanisms such as the OpenZeppelin's Ownable pattern."
+}
+```

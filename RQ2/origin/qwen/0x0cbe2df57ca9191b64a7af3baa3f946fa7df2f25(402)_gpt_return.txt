@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "recipient.call(abi.encodeWithSignature(\"tokenFallback(address,uint256,bytes)\", sender, amount, data));",
+    "description": "The low-level call to recipient does not check the return value, which can lead to silent failures. In Solidity ^0.4.24, failed calls return false but the code does not handle this case, potentially causing unexpected behavior when the tokenFallback function fails or when calling a non-existent contract."
+}
+```

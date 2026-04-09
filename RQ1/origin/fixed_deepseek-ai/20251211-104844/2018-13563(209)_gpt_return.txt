@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "UPayToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed for totalSupply variable declaration",
+            "variable_code": "uint256 totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed for balanceOf mapping declaration",
+            "variable_code": "mapping(address => uint256) balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Assuming onlyOwner modifier exists - no changes needed",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed potential arithmetic overflow/underflow by using SafeMath library, replaced deprecated 'this' with 'address(this)', and added require statements for input validation",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Minted amount must be positive\");\n    \n    // Safe addition to prevent overflow\n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Balance overflow\");\n    \n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Total supply overflow\");\n    \n    balanceOf[target] = newBalance;\n    totalSupply = newTotalSupply;\n    \n    // Using address(this) instead of deprecated 'this' keyword\n    Transfer(address(0), address(this), mintedAmount);\n    Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

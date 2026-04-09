@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MyEPPToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Implicitly used for overflow protection in the mintToken function",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Implicitly used for overflow protection in the mintToken function",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "deleted"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or explicit checks, addressed deprecated syntax, changed 'this' to 'address(this)' for clarity",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(balanceOf[target] + mintedAmount >= balanceOf[target], \"Addition overflow\");\n        require(totalSupply + mintedAmount >= totalSupply, \"Total supply overflow\");\n        \n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

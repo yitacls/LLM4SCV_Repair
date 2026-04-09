@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "The low-level 'call' function is used without checking the return value, which can lead to silent failures when transferring ETH. If the call fails (e.g., recipient contract reverts or runs out of gas), the transaction will continue executing without reverting, causing the state change 'Holders[_addr]-=_wei;' to occur even though the transfer failed. This violates the intended atomic behavior and allows holders to have their balance reduced without actually receiving funds. In Solidity 0.4.18, always check the return value of low-level calls or use transfer() for simple ETH sends."
+}
+```

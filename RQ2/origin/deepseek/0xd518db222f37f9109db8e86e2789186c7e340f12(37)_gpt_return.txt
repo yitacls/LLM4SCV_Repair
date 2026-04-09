@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){ balances[msg.sender]-=_am; }",
+    "description": "This function is vulnerable to a reentrancy attack due to the state update (balances[msg.sender] -= _am) occurring after the external call (msg.sender.call.value(_am)()). An attacker can create a malicious contract that calls Collect() and has a fallback function that recursively calls Collect() again before the balance deduction is executed. Since the balance check (balances[msg.sender] >= _am) uses the original balance that hasn't been reduced yet, the attacker can drain funds from the contract by repeatedly calling the function within a single transaction. This vulnerability is exacerbated by using the deprecated .call.value()() method without gas limits, and because the contract uses Solidity ^0.4.19 which doesn't include modern reentrancy guards."
+}
+```

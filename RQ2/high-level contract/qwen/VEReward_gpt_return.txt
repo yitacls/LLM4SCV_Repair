@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "Reward",
+        "contract_version": "0.8.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getBlockByTime",
+                "fix_info": "Fixed potential DoS by adding bounds check to prevent out-of-bounds memory access and limiting iterations",
+                "corrected_code": "function getBlockByTime(uint _time) public view returns (uint) {\n    if (point_history.length < 2) {\n        return block.number;\n    }\n    // Binary search\n    uint _min = 0;\n    uint _max = point_history.length - 1;\n    for (uint i = 0; i < 128; ++i) {\n        if (_min >= _max) {\n            break;\n        }\n        uint _mid = (_min + _max + 1) / 2;\n        if (point_history[_mid].ts <= _time) {\n            _min = _mid;\n        } else {\n            _max = _mid - 1;\n        }\n    }\n\n    if (_min >= point_history.length - 1) {\n        _min = point_history.length - 2;\n    }\n\n    Point memory point0 = point_history[_min];\n    Point memory point1 = point_history[_min + 1];\n    \n    if (point1.ts <= point0.ts) {\n        return point0.blk;\n    }\n    \n    uint block_slope;\n    block_slope = (BlockMultiplier * (point1.blk - point0.blk)) / (point1.ts - point0.ts);\n    uint dblock = (block_slope * (_time - point0.ts)) / BlockMultiplier;\n    return point0.blk + dblock;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimRewardMany",
+                "fix_info": "Added gas optimization by limiting batch processing size to prevent block gas limit DoS",
+                "corrected_code": "function claimRewardMany(uint[] calldata tokenIds, Interval[][] calldata intervals) public returns (uint[] memory rewards) {\n    require(tokenIds.length <= 50, \"Too many tokens\");\n    rewards = new uint[] (tokenIds.length);\n    for (uint i = 0; i < tokenIds.length; i++) {\n        rewards[i] = claimReward(tokenIds[i], intervals[i]);\n    }\n    return rewards;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimReward",
+                "fix_info": "Added gas optimization by limiting the number of epochs processed in a single call",
+                "corrected_code": "function claimReward(uint tokenId, Interval[] calldata intervals) public returns (uint reward) {\n    require(intervals.length <= 20, \"Too many intervals\");\n    for (uint i = 0; i < intervals.length; i++) {\n        reward += claimReward(tokenId, intervals[i].startEpoch, intervals[i].endEpoch);\n    }\n    return reward;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimReward(uint tokenId, uint startEpoch, uint endEpoch)",
+                "fix_info": "Added validation to prevent processing too many epochs in one call which could exceed gas limits",
+                "corrected_code": "function claimReward(uint tokenId, uint startEpoch, uint endEpoch) public returns (uint reward) {\n    require(msg.sender == ve(_ve).ownerOf(tokenId));\n    require(endEpoch < epochInfo.length, \"claim out of range\");\n    require(endEpoch - startEpoch < 50, \"Too many epochs\");\n    EpochInfo memory epoch;\n    uint lastPointTime = point_history[point_history.length - 1].ts;\n    for (uint i = startEpoch; i <= endEpoch; i++) {\n        epoch = epochInfo[i];\n        if (block.timestamp < epoch.startTime) {\n            break;\n        }\n        if (lastPointTime < epoch.startTime) {\n            lastPointTime = block.timestamp;\n            addCheckpoint();\n        }\n        checkEpoch(i);\n        (uint reward_i, bool finished) = _pendingRewardSingle(tokenId, userLastClaimTime[tokenId][i], epochInfo[i]);\n        if (reward_i > 0) {\n            reward += reward_i;\n            userLastClaimTime[tokenId][i] = block.timestamp;\n        }\n        if (!finished) {\n            break;\n        }\n    }\n    if (reward > 0) {\n        IERC20(rewardToken).safeTransfer(ve(_ve).ownerOf(tokenId), reward);\n    }\n    emit LogClaimReward(tokenId, reward);\n    return reward;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

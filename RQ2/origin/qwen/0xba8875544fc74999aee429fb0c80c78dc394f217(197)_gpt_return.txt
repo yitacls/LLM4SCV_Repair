@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(_value <= balances[tx.origin]);",
+    "description": "The function uses tx.origin for authorization instead of msg.sender, which is vulnerable to phishing attacks. An attacker can trick the legitimate user into calling this function through a malicious contract, allowing the attacker to transfer funds from the victim's account. tx.origin always refers to the original external caller, not the immediate caller, making it unsuitable for access control decisions."
+}
+```

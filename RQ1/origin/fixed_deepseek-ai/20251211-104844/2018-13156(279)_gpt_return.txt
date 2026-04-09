@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "bonusToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Mapping should be explicitly defined with SafeMath to prevent arithmetic overflow/underflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Total supply should use SafeMath operations to prevent overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Owner modifier should be properly implemented",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath to prevent arithmetic overflow in balanceOf and totalSupply calculations, fixed Transfer event parameters to match ERC20 standard in Solidity 0.4.x, and added explicit owner variable",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid target address\");\n        \n        // SafeMath operations to prevent overflow\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        \n        // Fixed Transfer event parameters for Solidity 0.4.x\n        Transfer(address(0), address(this), mintedAmount);\n        Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

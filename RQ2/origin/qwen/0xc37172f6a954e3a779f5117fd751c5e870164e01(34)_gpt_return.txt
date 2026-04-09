@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "beneficiary.send(currentBalance);",
+    "description": "The vulnerability occurs because currentBalance is set to 0 before the send() operation. Since send() is called with currentBalance (which is now 0), no ether is actually transferred to the beneficiary. The correct amount that should be sent is the amount that was accumulated in currentBalance before it was reset to 0. This represents a loss of funds for the beneficiary as they would not receive the intended ether balance."
+}
+```

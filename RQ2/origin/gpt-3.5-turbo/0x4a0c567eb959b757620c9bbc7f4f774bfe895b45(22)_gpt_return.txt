@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The vulnerability arises from unchecked addition, as it could potentially lead to overflow if the value added to 'balances[_to]' exceeds the maximum limit of uint256. This can result in funds being transferred incorrectly or cause unexpected behavior in the contract."
+}
+```

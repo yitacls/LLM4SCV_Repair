@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balanceOf[msg.sender] -= numTokens;",
+    "description": "The subtraction operation on balanceOf[msg.sender] is not checked for underflow. In Solidity ^0.4.21, arithmetic operations are not checked for overflow/underflow by default. If numTokens is greater than balanceOf[msg.sender], this could lead to an integer underflow, potentially setting the sender's balance to a very large number."
+}
+```

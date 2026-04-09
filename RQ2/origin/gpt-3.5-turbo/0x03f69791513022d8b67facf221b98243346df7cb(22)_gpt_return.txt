@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value * multiplier/100)));",
+    "description": "The vulnerability lies in the potential loss of precision due to implicit truncation of the result when calculating 'msg.value * multiplier/100' and then converting it to uint128. This can lead to rounding errors or unexpected behavior in calculations involving large values or fractional parts."
+}
+```  

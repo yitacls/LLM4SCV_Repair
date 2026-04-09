@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "deposit",
+        "fix_info": "Removed dangerous authorization check using tx.origin for source type 2 and added proper access control with a mapping of authorized address sources. Added input validation for _source parameter and removed duplicate profit source balance calculation.",
+        "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public {\n    require(_to != address(0x0), \"User address can not be empty\");\n    require(_deposited > 0, \"Package value must be > 0\");\n    require(_source >= 1 && _source <= 2, \"Invalid source type\");\n    \n    Balance storage balance = userWallets[_to];\n    bool firstDeposit = balance.deposited.length == 0;\n    \n    balance.deposited.push(_deposited);\n    uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n    uint profitSourceIncreaseAmount = _deposited * 8;\n    \n    balance.totalDeposited = balance.totalDeposited.add(_deposited);\n    balance.profitableBalance = balance.profitableBalance.add(profitableIncreaseAmount);\n    balance.profitSourceBalance = balance.profitSourceBalance.add(profitSourceIncreaseAmount);\n    \n    // Fixed access control issue: Store authorized source addresses instead of using tx.origin\n    if (_source == 2) {\n        require(authorizedSources[msg.sender], \"Not authorized for source type 2\");\n        \n        // Deduct profit from the authorized source address, not tx.origin\n        Balance storage sourceBalance = userWallets[msg.sender];\n        require(sourceBalance.profitBalance >= _deposited, \"Insufficient profit balance\");\n        sourceBalance.profitBalance = sourceBalance.profitBalance.sub(_deposited);\n        \n        emit ProfitBalanceChanged(msg.sender, _to, int(_deposited) * -1, 1);\n    }\n    \n    citizen.addF1DepositedToInviter(_to, _deposited);\n    addRewardToInviters(_to, _deposited, _source, _sourceAmount);\n    \n    if (firstDeposit) {\n        citizen.increaseInviterF1HaveJoinedPackage(_to);\n    }\n    \n    if (profitableIncreaseAmount > 0) {\n        emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n        emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n    }\n}",
+        "change_type": "modified"
+    }]
+}]
+```

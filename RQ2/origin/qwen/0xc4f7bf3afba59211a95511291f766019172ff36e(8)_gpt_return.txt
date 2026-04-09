@@ -1,0 +1,7 @@
+```json
+{
+    "type": "tx.origin Vulnerability",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authentication instead of msg.sender, which makes it vulnerable to phishing attacks. tx.origin refers to the original external account that started the transaction, while msg.sender refers to the immediate caller. This allows attackers to trick users into calling malicious contracts that forward calls to this contract, bypassing the owner check since tx.origin will still be the legitimate owner."
+}
+```

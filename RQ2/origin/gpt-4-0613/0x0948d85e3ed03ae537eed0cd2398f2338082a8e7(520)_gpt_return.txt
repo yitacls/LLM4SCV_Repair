@@ -1,0 +1,9 @@
+```json
+{
+    "type": "access_control",
+    "contract_name": "VetCoin",
+    "location": "require(tx.origin == owner);",
+    "version": "^0.4.18",
+    "description": "The 'require(tx.origin == owner);' line can lead to a serious security vulnerability in that the check is done against tx.origin, which returns the sender of the transaction, and not msg.sender, which returns the caller of the current contract. Malicious contracts could exploit this disparity (between msg.sender and tx.origin) by getting an unsuspecting user to perform a transaction, allowing them to satisfy this check and giving them unauthorized control."
+}
+```

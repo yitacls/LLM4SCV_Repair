@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "DonQuixoteToken.balanceOf(_user);",
+    "description": "The contract lacks proper access control mechanisms. Any public user is allowed to call the 'tokenOf' function to view the token balance of any other address. This could potentially expose sensitive information about the wallet balances of other users in the system. Furthermore, this code can be utilized by malicious entities to track user's balances and perform manipulation."
+}
+```

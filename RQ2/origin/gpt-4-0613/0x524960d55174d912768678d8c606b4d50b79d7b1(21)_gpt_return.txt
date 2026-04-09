@@ -1,0 +1,7 @@
+```json
+{
+   "type": "unchecked_low_level_calls",
+   "location": "contract_address.call(\"register\", \"CentraToken\");\n if(!contract_address.call(bytes4(keccak256(\"transfer(address,uint256)\")),c2,k)) return false;",
+   "description": "The contract makes low level call without checking the return value for success. If the call fails for external reasons (e.g., callee does not exist, callee runs out of gas), the contract will silently ignore the error which may not be the desired behavior. Also, the low level call can potentially interact with malicious contracts. Particularly, in the provided source code, the calls to 'register' and 'transfer' functions are not followed by a check for their return value."
+}
+```

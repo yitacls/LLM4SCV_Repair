@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This line can potentially lead to an overflow vulnerability if the total balance of the receiver exceeds the maximum value that can be represented by uint256 data type. It is important to handle arithmetic operations with caution to prevent unintended behavior."
+}
+```

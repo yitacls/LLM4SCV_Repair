@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "The loop in lines 119 to 134 at the getBlockByTime function",
+        "description": "If calls inside this loop fail, all gas would be consumed, making it a potential point for denial-of-service attacks."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "The loop in lines 269 to 275 at the claimRewardMany function",
+        "description": "In cases where the size of the input arrays are very large, it is possible to exhaust the gas limit, which causes the transaction to fail and renders the contract useless."
+    }
+]
+```

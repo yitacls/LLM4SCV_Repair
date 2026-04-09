@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "TravelZediToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Ensure arithmetic overflows/underflows are prevented using SafeMath.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Explicitly declare as mapping with uint256 to prevent misuse.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Retain original functionality without modification.",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Use SafeMath to prevent arithmetic overflow/underflow in both `balanceOf` and `totalSupply` updates.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0), \"Invalid address\");\n    require(mintedAmount > 0, \"Minted amount must be greater than zero\");\n\n    balanceOf[target] = SafeMath.add(balanceOf[target], mintedAmount);\n    totalSupply = SafeMath.add(totalSupply, mintedAmount);\n\n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

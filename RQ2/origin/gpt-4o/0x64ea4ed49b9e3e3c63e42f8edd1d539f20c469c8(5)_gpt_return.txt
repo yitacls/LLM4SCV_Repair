@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The code uses the low-level `send` function to transfer Ether without checking the return value, making it prone to failure due to execution issues in the recipient contract (e.g., out-of-gas errors, reentrancy). This may lead to loss of Ether as the error is not handled properly."
+}
+```

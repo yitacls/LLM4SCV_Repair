@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Lines 101-109 in getSellRate function",
+            "description": "The code performs arithmetic operations directly on rate values without proper overflow/underflow protection. In Solidity 0.7.0, unchecked arithmetic operations can still overflow/underflow, potentially causing incorrect rate calculations. Specifically, the operations 'rate = rate * (10**(18 - getDecimals(_srcAddr)))' and 'rate = rate / (10**(18 - getDecimals(_destAddr)))' could overflow if the intermediate result exceeds uint256 limits. Additionally, '18 - getDecimals()' could underflow if token decimals exceed 18, though unlikely in practice."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Line 114 in getBuyRate function",
+            "description": "The calculation 'rate = rate + (rate / 30)' could potentially overflow if rate is close to type(uint).max. While less likely than the multiplication overflow, it still represents an arithmetic operation without overflow protection."
+        }
+    ]
+}
+```

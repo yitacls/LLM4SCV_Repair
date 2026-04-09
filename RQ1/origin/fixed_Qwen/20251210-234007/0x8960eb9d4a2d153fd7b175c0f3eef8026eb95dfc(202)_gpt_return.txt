@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LGM",
+    "contract_version": "^0.4.22",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by ensuring only owner can call withdraw and added reentrancy protection",
+            "corrected_code": "function withdraw() onlyOwner public {\n        uint256 etherBalance = address(this).balance;\n        require(etherBalance > 0, \"No ether to withdraw\");\n        owner.transfer(etherBalance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

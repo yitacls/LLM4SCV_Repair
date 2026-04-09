@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(valueToken.allowance(tx.origin, address(this)) >= _amountST);",
+    "description": "The contract uses `tx.origin` for authorization checks, which is vulnerable to phishing attacks. A malicious contract can trick the user into calling this function, causing `tx.origin` to refer to the legitimate user, while `msg.sender` is the malicious contract. This bypasses intended access controls. Additionally, the allowance check uses `tx.origin`, making it possible for a malicious contract to spend the user's tokens if the user has approved the malicious contract separately."
+}
+```

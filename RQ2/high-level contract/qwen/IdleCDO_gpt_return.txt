@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "IdleCDO",
+    "contract_version": "0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_deposit",
+            "fix_info": "Applied reentrancy guard by moving state changes before external calls. The original function was vulnerable to reentrancy because it called external transferFrom after minting tokens and updating state.",
+            "corrected_code": "  function _deposit(uint256 _amount, address _tranche) internal returns (uint256 _minted) {\n    // check that we are not depositing more than the contract available limit\n    _guarded(_amount);\n    // set _lastCallerBlock hash\n    _updateCallerBlock();\n    // check if strategyPrice decreased\n    _checkDefault();\n    // interest accrued since last mint/redeem/harvest is splitted between AA and BB\n    // according to trancheAPRSplitRatio. NAVs of AA and BB are so updated and tranche\n    // prices adjusted accordingly\n    _updatePrices();\n    // get underlyings from sender BEFORE minting shares to prevent reentrancy\n    IERC20Detailed(token).safeTransferFrom(msg.sender, address(this), _amount);\n    // NOTE: mint of shares should be done after transferring funds\n    // mint tranches tokens according to the current prices\n    _minted = _mintShares(_amount, msg.sender, _tranche);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

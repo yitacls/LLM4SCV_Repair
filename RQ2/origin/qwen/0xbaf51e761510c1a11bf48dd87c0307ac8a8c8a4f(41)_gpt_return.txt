@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())\n{\n    balances[msg.sender]-=_am;\n    TransferLog.AddMessage(msg.sender,_am,\"CashOut\");\n}",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call (msg.sender.call.value(_am)()) before updating the contract state (balances[msg.sender]-=_am). In Solidity version 0.4.19, the external call can recursively call back into the CashOut function before the balance is reduced, allowing an attacker to withdraw more funds than they should be able to. The balance update should occur before the external call to prevent this vulnerability."
+}
+```

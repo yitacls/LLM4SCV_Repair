@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.send(amount);",
+    "description": "The contract is vulnerable to reentrancy attack because it sends Ether to an external address (msg.sender) before updating all relevant state variables. The send() function can trigger a fallback function in the recipient contract, which could potentially call the fallback function again before presaleClosed is set to true, allowing an attacker to withdraw more funds than they should be able to. The state variable 'presaleClosed' is only set to true after the external call, creating a window for reentrancy."
+}
+```

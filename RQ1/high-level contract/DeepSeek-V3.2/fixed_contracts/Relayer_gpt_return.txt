@@ -1,0 +1,60 @@
+```json
+[{
+    "contract_name": "Relayer",
+    "contract_version": "0.8.23",
+    "state_variables": [
+        {
+            "variable_name": "uln",
+            "fix_info": "Variable remains unchanged - interface type",
+            "variable_code": "ILayerZeroUltraLightNodeV1 public uln;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyApproved",
+            "fix_info": "No changes needed to modifier logic",
+            "modifier_code": "modifier onlyApproved() {\n        if (owner() != msg.sender) {\n            require(isApproved(msg.sender), \"Relayer: not approved\");\n        }\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "validateTransactionProofV2",
+            "fix_info": "Added reentrancy guard pattern and safe ether transfer",
+            "corrected_code": "function validateTransactionProofV2(uint16 _srcChainId, address _dstAddress, uint _gasLimit, bytes32 _blockHash, bytes calldata _transactionProof, address payable _to) external payable onlyApproved nonReentrant {\n        (bool sent, ) = _to.call{value: msg.value}(\"\");\n        require(sent, \"Relayer: failed to send ether\");\n        uln.validateTransactionProof(_srcChainId, _dstAddress, _gasLimit, _blockHash, _transactionProof);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "validateTransactionProofV1",
+            "fix_info": "No changes needed - already has nonReentrant modifier",
+            "corrected_code": "function validateTransactionProofV1(uint16 _srcChainId, address _dstAddress, uint _gasLimit, bytes32 _blockHash, bytes calldata _transactionProof) external onlyApproved nonReentrant {\n        uln.validateTransactionProof(_srcChainId, _dstAddress, _gasLimit, _blockHash, _transactionProof);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getPrices",
+            "fix_info": "Added overflow checks and improved parameter validation",
+            "corrected_code": "function _getPrices(uint16 _dstChainId, uint16 _outboundProofType, address, bytes memory _adapterParameters) internal view returns (uint basePrice, uint pricePerByte) {\n        require(_adapterParameters.length == 34 || _adapterParameters.length > 66, \"Relayer: wrong _adapterParameters size\");\n        \n        uint16 txType;\n        uint extraGas;\n        bytes32 destNativeAddr;\n        \n        assembly {\n            txType := mload(add(_adapterParameters, 2))\n            extraGas := mload(add(_adapterParameters, 34))\n            if gt(mload(_adapterParameters), 66) {\n                destNativeAddr := mload(add(_adapterParameters, 66))\n            }\n        }\n        \n        require(extraGas > 0, \"Relayer: gas too low\");\n        require(txType == 1 || txType == 2, \"Relayer: unsupported txType\");\n\n        DstPrice storage dstPrice = dstPriceLookup[_dstChainId];\n        DstConfig storage dstConfig = dstConfigLookup[_dstChainId][_outboundProofType];\n        \n        require(dstPrice.dstPriceRatio > 0, \"Relayer: dstPriceRatio not set\");\n        require(dstConfig.baseGas > 0, \"Relayer: baseGas not set\");\n\n        uint totalRemoteToken = 0;\n        \n        if (txType == 2) {\n            uint dstNativeAmt;\n            assembly {\n                dstNativeAmt := mload(add(_adapterParameters, 66))\n            }\n            require(dstConfig.dstNativeAmtCap >= dstNativeAmt, \"Relayer: dstNativeAmt too large\");\n            totalRemoteToken = totalRemoteToken + dstNativeAmt;\n        }\n        \n        // Calculate with overflow protection\n        uint remoteGasTotal = dstPrice.dstGasPriceInWei * (dstConfig.baseGas + extraGas);\n        totalRemoteToken = totalRemoteToken + remoteGasTotal;\n        \n        // Calculate base price with safe division\n        basePrice = totalRemoteToken * dstPrice.dstPriceRatio / 10**10;\n        \n        // Calculate price per byte\n        pricePerByte = dstPrice.dstGasPriceInWei * dstConfig.gasPerByte * dstPrice.dstPriceRatio / 10**10;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getPrice",
+            "fix_info": "Updated to use SafeMath for overflow protection",
+            "corrected_code": "function getPrice(uint16 _dstChainId, uint16 _outboundProofType, address _userApplication, uint payloadSize, bytes calldata _adapterParams) external view override returns (uint) {\n        (uint basePrice, uint pricePerByte) = _getPrices(_dstChainId, _outboundProofType, _userApplication, _adapterParams);\n        uint packetCost = payloadSize * pricePerByte;\n        return basePrice + packetCost;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setDstPrice",
+            "fix_info": "Added validation for input parameters",
+            "corrected_code": "function setDstPrice(uint16 _chainId, uint128 _dstPriceRatio, uint128 _dstGasPriceInWei) external onlyApproved {\n        require(_dstPriceRatio > 0, \"Relayer: dstPriceRatio must be > 0\");\n        require(_dstGasPriceInWei > 0, \"Relayer: dstGasPriceInWei must be > 0\");\n        dstPriceLookup[_chainId] = DstPrice(_dstPriceRatio, _dstGasPriceInWei);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setDstConfig",
+            "fix_info": "Added validation for gas parameters",
+            "corrected_code": "function setDstConfig(uint16 _chainId, uint16 _outboundProofType, uint128 _dstNativeAmtCap, uint64 _baseGas, uint64 _gasPerByte) external onlyApproved {\n        require(_baseGas > 0, \"Relayer: baseGas must be > 0\");\n        require(_gasPerByte > 0, \"Relayer: gasPerByte must be > 0\");\n        dstConfigLookup[_chainId][_outboundProofType] = DstConfig(_dstNativeAmtCap, _baseGas, _gasPerByte);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

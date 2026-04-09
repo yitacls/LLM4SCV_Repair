@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "HeroToken",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable to implement proper access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "migrationDeadline",
+            "fix_info": "Added migration deadline as a configurable state variable instead of hardcoded timestamp",
+            "variable_code": "uint256 public migrationDeadline;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Caller is not the owner\");\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "beforeDeadline",
+            "fix_info": "Added modifier to check migration deadline",
+            "modifier_code": "modifier beforeDeadline() {\n    require(block.timestamp < migrationDeadline, \"Migration period has ended\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "migrateHero",
+            "fix_info": "Fixed access control vulnerability by removing tx.origin dependency and replacing with proper owner-based access control with modifiers",
+            "corrected_code": "function migrateHero(uint256 _genes, address _owner) external onlyOwner beforeDeadline {\n    _createHero(_genes, _owner);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize contract owner and migration deadline",
+            "corrected_code": "constructor(uint256 _migrationDeadline) public {\n    owner = msg.sender;\n    migrationDeadline = _migrationDeadline;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

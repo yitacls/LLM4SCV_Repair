@@ -1,0 +1,12 @@
+[
+    {
+        "type": "Arithmetic",
+        "location": "for (uint a = 0; a < _amounts.length; a++) {\n            totalAmount += _amounts[a];\n        }",
+        "description": "totalAmount is accumulated using plain uint arithmetic on Solidity ^0.4.8 where integer overflow wraps around. An attacker can supply _amounts whose sum exceeds the maximum uint value so that totalAmount wraps to a much smaller value. The subsequent check require(totalAmount > 0 && balances[msg.sender] >= totalAmount) can then succeed even though the true intended sum is far larger. This lets the attacker avoid deducting the real total from the sender while still crediting recipients, effectively creating tokens out of thin air (inflation) or bypassing balance checks."
+    },
+    {
+        "type": "Arithmetic",
+        "location": "balances[msg.sender] -= totalAmount;\n...\nif (_amounts[b] > 0) {\n    balances[_addresses[b]] += _amounts[b];\n    Transfer(msg.sender, _addresses[b], _amounts[b]);\n}",
+        "description": "The contract updates balances using plain subtraction and addition without overflow/underflow protection. If totalAmount has been manipulated via overflow, balances[msg.sender] may be decremented by a small wrapped value while recipients are incremented by the full (possibly large) _amounts, causing a net increase in total on‑chain balances. Also, additions to recipient balances themselves can overflow and wrap, corrupting balances. The contract lacks SafeMath or explicit overflow checks before applying balance updates."
+    }
+]

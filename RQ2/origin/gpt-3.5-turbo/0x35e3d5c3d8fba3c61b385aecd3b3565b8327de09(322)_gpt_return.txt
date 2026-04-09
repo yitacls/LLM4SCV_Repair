@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "bancor.convert.value(value)(path, value, 1);  // fault line",
+            "description": "The use of unchecked low-level call in the bancor.convert.value function makes the contract vulnerable to re-entrancy attacks and unexpected behavior."
+        }
+    ]
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No adjustment needed as SafeMath will be used for arithmetic operations",
+            "variable_code": "mapping(address => uint256) balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for subtraction and addition operations. Added explicit uint256 type for _value parameter. Maintained onlyPayloadSize modifier but recommended to remove it as it's not a standard ERC20 requirement.",
+            "corrected_code": "function transfer(address _recipient, uint256 _value) public onlyPayloadSize(2 * 32) {\n    require(balances[msg.sender] >= _value && _value > 0, \"Insufficient balance or invalid amount\");\n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_recipient] = balances[_recipient].add(_value);\n    emit Transfer(msg.sender, _recipient, _value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

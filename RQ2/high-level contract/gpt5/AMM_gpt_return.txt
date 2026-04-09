@@ -1,0 +1,12 @@
+[
+    {
+        "type": "SWC-131-Presence of unused variables",
+        "location": "pragma solidity ^0.5.2;\n...\n    // SWC-131-Presence of unused variables: L17\n    uint256 private constant ONE_WAD_U = 10**18;\n    int256 private constant ONE_WAD_S = 10**18;\n...",
+        "description": "The constant ONE_WAD_U (uint256 private constant ONE_WAD_U = 10**18;) is declared but never used anywhere in the contract. Unused variables increase bytecode size and gas costs for deployment and cause confusion for maintainers. While this is not directly exploitable, it is dead code and should be removed or used. Keeping unused state/constants can also hide developer intent and complicate audits."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "    // SWC-104-Unchecked Call Return Value: L500-502\n    function mintShareTokenTo(address guy, uint256 amount) internal {\n        shareToken.mint(guy, amount);\n    }\n\n    function burnShareTokenFrom(address guy, uint256 amount) internal {\n        shareToken.burn(guy, amount);\n    }",
+        "description": "The contract calls external token functions shareToken.mint(...) and shareToken.burn(...) without checking their return values or handling failures. If the ShareToken implementation returns a boolean success flag (instead of reverting on failure) or behaves unexpectedly, these calls may fail silently, leaving the AMM contract in an inconsistent state (e.g., funds/transfers completed while mint/burn did not). Additionally, unguarded external calls increase the attack surface (e.g., malicious token contract could revert or perform reentrancy). Recommended mitigations: (1) Verify the token's interface and use require(...) on return values when the token returns bool; (2) use a trusted token implementation that reverts on failure; (3) consider OpenZeppelin's SafeERC20-style wrappers; (4) minimize state changes around external calls or use checks-effects-interactions pattern where applicable."
+    }
+]

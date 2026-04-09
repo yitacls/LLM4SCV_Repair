@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "EthereuMMM",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "investments",
+                "fix_info": "Ensure proper mapping structure for investor data",
+                "variable_code": "mapping(address => Investment) public investments;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "allInvestments",
+                "fix_info": "Ensure uint256 type for arithmetic safety",
+                "variable_code": "uint256 public allInvestments;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyActiveInvestor",
+                "fix_info": "Added modifier to check investor status before withdrawal",
+                "modifier_code": "modifier onlyActiveInvestor() {\n        require(investments[msg.sender].amount > 0, \"No active investment\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed arithmetic overflow, reentrancy vulnerability, and gas limit issues. Added overflow-safe subtraction, balance check before transfer, and used transfer() instead of call() for security.",
+                "corrected_code": "function withdraw() public onlyActiveInvestor {\n    uint256 investorAmount = investments[msg.sender].amount;\n    require(investorAmount > 0, \"No funds to withdraw\");\n    \n    // Reset investor balance before transfer (reentrancy protection)\n    investments[msg.sender].amount = 0;\n    \n    // Safe subtraction to prevent underflow\n    require(allInvestments >= investorAmount, \"Underflow protection\");\n    allInvestments = allInvestments - investorAmount;\n    \n    // Check contract balance\n    require(address(this).balance >= investorAmount, \"Insufficient contract balance\");\n    \n    // Use transfer with gas stipend for security\n    msg.sender.transfer(investorAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

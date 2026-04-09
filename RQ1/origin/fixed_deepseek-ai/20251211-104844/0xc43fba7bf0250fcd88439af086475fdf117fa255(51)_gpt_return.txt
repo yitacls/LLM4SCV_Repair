@@ -1,0 +1,56 @@
+```json
+[
+    {
+        "contract_name": "Crowdsale",
+        "contract_version": "^0.4.19",
+        "state_variables": [
+            {
+                "variable_name": "fundingGoalReached",
+                "fix_info": "Added to ensure proper state tracking for withdrawal logic",
+                "variable_code": "bool public fundingGoalReached;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "beneficiary",
+                "fix_info": "Added to identify contract beneficiary for successful funding scenario",
+                "variable_code": "address public beneficiary;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "deadline",
+                "fix_info": "Added to support afterDeadline modifier functionality",
+                "variable_code": "uint public deadline;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "amountRaised",
+                "fix_info": "Added to track total raised funds for beneficiary withdrawal",
+                "variable_code": "uint public amountRaised;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Added mapping to track individual investor balances",
+                "variable_code": "mapping(address => uint) public balanceOf;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "afterDeadline",
+                "fix_info": "Modified to properly check deadline condition",
+                "modifier_code": "modifier afterDeadline() { require(now >= deadline); _; }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "safeWithdrawal",
+                "fix_info": "Fixed vulnerability by replacing unsafe low-level calls with transfer(), added proper amount variable declaration, and refactored for clarity and security",
+                "corrected_code": "function safeWithdrawal() afterDeadline public {\n        if (!fundingGoalReached) {\n            uint amount = balanceOf[msg.sender];\n            require(amount > 0, \"No balance to withdraw\");\n            \n            balanceOf[msg.sender] = 0;\n            \n            msg.sender.transfer(amount);\n            FundTransfer(msg.sender, amount, false);\n        }\n        \n        if (fundingGoalReached && beneficiary == msg.sender) {\n            require(amountRaised > 0, \"No funds raised\");\n            uint amountToSend = amountRaised;\n            amountRaised = 0;\n            \n            beneficiary.transfer(amountToSend);\n            FundTransfer(beneficiary, amountToSend, false);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

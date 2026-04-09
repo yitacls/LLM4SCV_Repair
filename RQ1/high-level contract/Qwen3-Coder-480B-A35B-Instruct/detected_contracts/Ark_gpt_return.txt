@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity 0.6.9;",
+        "description": "The contract is using Solidity version 0.6.9, which is outdated and may contain known security vulnerabilities or bugs that have been fixed in newer versions. It is recommended to use a more recent version of Solidity to ensure better security and access to the latest features and improvements."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \"insufficient funds\");",
+        "description": "This requirement check can cause a denial of service if the balanceOf function call fails or returns an unexpected value. An attacker might manipulate the token's balance reporting mechanism or exploit edge cases in the decimal conversion logic to make this requirement always fail, thus preventing legitimate withdrawals from the contract."
+    }
+]
+```

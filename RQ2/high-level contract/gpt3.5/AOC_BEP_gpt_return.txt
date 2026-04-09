@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-118-Incorrect Constructor Name",
+            "location": "Lines 61-63",
+            "description": "The `initialize` function is being used as a constructor, but the correct constructor name should be `constructor` instead of `initialize` to comply with best practices."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 362",
+            "description": "Function `withdrawToken` has a comment stating 'require amount greter than 0' but there is no actual check for an amount greater than zero, which makes this comment useless and the function lacks the intended effect."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Line 362",
+            "description": "The function `withdrawBNBFromContract` allows the owner to withdraw BNB without proper checks, such as ensuring the recipient address is not the zero address and checking if the contract balance is sufficient before transferring. This can lead to unauthorized BNB withdrawals."
+        }
+    ]
+}
+```

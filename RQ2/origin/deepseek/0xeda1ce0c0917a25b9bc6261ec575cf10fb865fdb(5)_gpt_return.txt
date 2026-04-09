@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The fallback function uses `wallet.send(msg.value)` without checking the return value. In Solidity versions prior to 0.5.0, the `send()` function returns a boolean indicating success (true) or failure (false). If the send fails (e.g., if the recipient wallet is a contract that runs out of gas or throws an exception), the transaction will NOT revert, and the contract will continue execution without handling the failure. This means funds could be locked or lost, as the contract may behave as if the transfer succeeded when it actually failed. Recommendation: Always check the return value of `send()` and revert on failure, or use `transfer()` which automatically reverts on failure (though `transfer()` has gas limitations)."
+}
+```

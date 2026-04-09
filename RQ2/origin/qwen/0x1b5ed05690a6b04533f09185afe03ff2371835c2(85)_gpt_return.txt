@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint256 tokensIssued = (msg.value * 1000) + nextBonusPayout;",
+    "description": "The multiplication operation (msg.value * 1000) can cause an arithmetic overflow if msg.value is large enough, leading to unexpected token issuance. In Solidity 0.4.19, arithmetic operations do not automatically check for overflow conditions, which can result in integer wraparound and minting of incorrect token amounts."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This condition uses 'tx.origin' for authorization, which is vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract, which then calls 'vestToAddressEx'. Since 'tx.origin' returns the original externally owned account (EOA) that initiated the transaction, the check would pass if the owner was tricked, granting the attacker unauthorized access. Additionally, the function lacks the 'onlyOwner' modifier or similar access control, relying solely on this insecure check. This could allow any contract or EOA that deceives the owner to create vesting schedules and drain 'availableSupply'."
+}
+```

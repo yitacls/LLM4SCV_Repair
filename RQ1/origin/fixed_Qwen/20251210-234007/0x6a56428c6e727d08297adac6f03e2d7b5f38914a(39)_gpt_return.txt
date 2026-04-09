@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Register",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "convert",
+            "fix_info": "Replaced insecure tx.origin check with secure msg.sender check using onlyOwner modifier",
+            "corrected_code": "function convert(string _zilaccount, uint256 _value) public onlyOwner {\n    convertedRecords[_zilaccount]+=_value;\n    totalConverted+=_value;\n    if(claimRecords[_zilaccount] >= _value){\n        claimRecords[_zilaccount]-=_value;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

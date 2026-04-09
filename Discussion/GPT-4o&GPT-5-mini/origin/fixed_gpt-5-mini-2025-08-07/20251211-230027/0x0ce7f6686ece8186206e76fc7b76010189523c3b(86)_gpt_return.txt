@@ -1,0 +1,14 @@
+[{
+    "contract_name": "MakeYourBet",
+    "contract_version": ">=0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getLeader",
+            "fix_info": "Avoids reading bets[0x0] when players is empty by returning early; initializes winner from players[0] and tracks highestBet to prevent incorrect comparisons against a zero-address entry. This preserves functionality while preventing an unintended mapping access and potential failure.",
+            "corrected_code": "function getLeader() public view returns (address payable, uint256) {\n    // If there are no players, return zero values immediately\n    if (players.length == 0) {\n        return (payable(address(0)), 0);\n    }\n\n    // Initialize winner to the first player and use a local highestBet for comparisons\n    address payable winnerAddress = players[0];\n    uint256 highestBet = bets[winnerAddress].totalBet;\n\n    // Start loop from index 1 since index 0 is used for initialization\n    for (uint256 index = 1; index < players.length; index++) {\n        address payable currentAddress = players[index];\n        if (bets[currentAddress].gameId == gameId) {\n            uint256 currentBet = bets[currentAddress].totalBet;\n            if (currentBet > highestBet) {\n                highestBet = currentBet;\n                winnerAddress = currentAddress;\n            }\n        }\n    }\n\n    return (winnerAddress, highestBet);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

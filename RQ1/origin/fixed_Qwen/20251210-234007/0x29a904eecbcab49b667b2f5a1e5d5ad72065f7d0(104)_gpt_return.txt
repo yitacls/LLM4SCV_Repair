@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Proxy",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_emit",
+            "fix_info": "Fixed DoS vulnerability by preventing gas griefing through memory copying optimization. The original code copied callData to memory which could be expensive. The fix uses callData directly in assembly to avoid unnecessary memory operations.",
+            "corrected_code": "function _emit(bytes callData, uint numTopics, bytes32 topic1, bytes32 topic2, bytes32 topic3, bytes32 topic4)\n        external\n        onlyTarget\n    {\n        uint size = callData.length;\n        assembly {\n            switch numTopics\n            case 0 {\n                log0(add(callData, 32), size)\n            } \n            case 1 {\n                log1(add(callData, 32), size, topic1)\n            }\n            case 2 {\n                log2(add(callData, 32), size, topic1, topic2)\n            }\n            case 3 {\n                log3(add(callData, 32), size, topic1, topic2, topic3)\n            }\n            case 4 {\n                log4(add(callData, 32), size, topic1, topic2, topic3, topic4)\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

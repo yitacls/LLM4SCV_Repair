@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "liquidator",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "distribute",
+                "fix_info": "Added a withdrawal pattern to protect against the SWC-105 vulnerability.",
+                "corrected_code": "function distribute(address collateral) public {\n    require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'IA');\n    /* check the pair if it exists */\n    address pair = IUniswapV2FactoryMinimal(v2Factory).getPair(\n      collateral,\n      debt\n    );\n    require(pair != address(0), 'Vault: Liquidating pair not supported');\n    uint256 balance = IERC20Minimal(collateral).balanceOf(address(this));\n    require(balance > 0, 'Insufficient balance for withdrawal');\n    TransferHelper.safeTransfer(collateral, pair, balance);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

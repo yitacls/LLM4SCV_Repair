@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "includeInReward function, lines 809-817",
+        "description": "The includeInReward function contains a loop that iterates over the _excluded array to find and remove an account. If the _excluded array becomes very large, this loop could consume excessive gas, potentially causing the transaction to fail due to out-of-gas errors, leading to a denial of service."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "_getCurrentSupply function, lines 898-902",
+        "description": "The _getCurrentSupply function contains a loop that iterates over the _excluded array to calculate the current supply. If the _excluded array becomes very large, this loop could consume excessive gas, potentially causing the transaction to fail due to out-of-gas errors, leading to a denial of service."
+    }
+]
+```

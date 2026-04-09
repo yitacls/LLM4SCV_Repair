@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "Accounts",
+        "contract_version": "0.5.14",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getDepositETH",
+                "fix_info": "Optimized the loop to reduce the risk of exceeding the block gas limit by introducing a batch processing mechanism where only a limited number of iterations can be processed at once.",
+                "corrected_code": "function getDepositETH(address _accountAddr, uint256 _batchSize, uint256 _startIndex) public view returns (uint256 depositETH, uint256 lastProcessedIndex) {\n    uint256 tokenNum = globalConfig.tokenInfoRegistry().getCoinLength();\n    if(_startIndex >= tokenNum) {\n        return (0, tokenNum); // Return the full length if start index is out of range.\n    }\n\n    uint256 endIndex = _startIndex.add(_batchSize);\n    if (endIndex > tokenNum) {\n        endIndex = tokenNum;\n    }\n\n    for (uint256 i = _startIndex; i < endIndex; i++) {\n        if (isUserHasDeposits(_accountAddr, uint8(i))) {\n            address tokenAddress = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n            uint256 divisor = tokenAddress != ETH_ADDR ? 10**uint256(globalConfig.tokenInfoRegistry().getTokenDecimals(tokenAddress)) : INT_UNIT;\n            depositETH = depositETH.add(getDepositBalanceCurrent(tokenAddress, _accountAddr).mul(globalConfig.tokenInfoRegistry().priceFromIndex(i)).div(divisor));\n        }\n    }\n    return (depositETH, endIndex);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getBorrowETH",
+                "fix_info": "Optimized the loop to reduce the risk of exceeding the block gas limit by introducing a batch processing mechanism where only a limited number of iterations can be processed at once.",
+                "corrected_code": "function getBorrowETH(address _accountAddr, uint256 _batchSize, uint256 _startIndex) public view returns (uint256 borrowETH, uint256 lastProcessedIndex) {\n    uint256 tokenNum = globalConfig.tokenInfoRegistry().getCoinLength();\n    if(_startIndex >= tokenNum) {\n        return (0, tokenNum); // Return the full length if start index is out of range.\n    }\n\n    uint256 endIndex = _startIndex.add(_batchSize);\n    if (endIndex > tokenNum) {\n        endIndex = tokenNum;\n    }\n\n    for (uint256 i = _startIndex; i < endIndex; i++) {\n        if (isUserHasBorrows(_accountAddr, uint8(i))) {\n            address tokenAddress = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n            uint256 divisor = tokenAddress != ETH_ADDR ? 10**uint256(globalConfig.tokenInfoRegistry().getTokenDecimals(tokenAddress)) : INT_UNIT;\n            borrowETH = borrowETH.add(getBorrowBalanceCurrent(tokenAddress, _accountAddr).mul(globalConfig.tokenInfoRegistry().priceFromIndex(i)).div(divisor));\n        }\n    }\n    return (borrowETH, endIndex);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "isAccountLiquidatable",
+                "fix_info": "Added rate-based batch processing for updating collateral tokens. This avoids the possibility of exceeding gas limits when there are too many tokens.",
+                "corrected_code": "function isAccountLiquidatable(address _borrower, uint256 _batchSize, uint256 _startIndex) external returns (bool, uint256 lastProcessedIndex) {\n    uint256 tokenNum = globalConfig.tokenInfoRegistry().getCoinLength();\n\n    if(_startIndex >= tokenNum) {\n        return (false, tokenNum); // Return the full length if start index is out of range.\n    }\n\n    uint256 endIndex = _startIndex.add(_batchSize);\n    if (endIndex > tokenNum) {\n        endIndex = tokenNum;\n    }\n\n    for (uint8 i = uint8(_startIndex); i < uint8(endIndex); i++) {\n        if (isUserHasDeposits(_borrower, i) || isUserHasBorrows(_borrower, i)) {\n            address token = globalConfig.tokenInfoRegistry().addressFromIndex(i);\n            globalConfig.bank().newRateIndexCheckpoint(token);\n        }\n    }\n\n    uint256 liquidationThreshold = globalConfig.liquidationThreshold();\n    uint256 liquidationDiscountRatio = globalConfig.liquidationDiscountRatio();\n\n    uint256 totalBorrow = getBorrowETH(_borrower, _batchSize, _startIndex);\n    uint256 totalCollateral = getDepositETH(_borrower, _batchSize, _startIndex);\n\n    bool isLiquidatable = (totalBorrow.mul(100) > totalCollateral.mul(liquidationThreshold)) && (totalBorrow.mul(100) <= totalCollateral.mul(liquidationDiscountRatio));\n    return (isLiquidatable, endIndex);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

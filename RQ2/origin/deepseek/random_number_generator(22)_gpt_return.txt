@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 x = salt * 100 / max;",
+            "description": "The randomness calculation uses a predictable salt value and arithmetic operations that don't provide cryptographically secure randomness. Attackers can potentially predict or manipulate the outcome by analyzing the contract state and blockchain data."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 y = salt * block.number / (salt % 5);",
+            "description": "Using block.number and predictable arithmetic with salt creates deterministic randomness that miners can influence. Division by (salt % 5) can also cause division by zero if salt % 5 equals 0, leading to reverts."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 seed = block.number / 3 + (salt % 300) + y;",
+            "description": "The seed generation relies entirely on predictable blockchain parameters (block.number) and contract state (salt). This allows attackers to compute future random numbers by monitoring the blockchain, especially since block numbers are public and sequential."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint256 h = uint256(blockhash(seed));",
+            "description": "blockhash() is only usable for the most recent 256 blocks in Ethereum, making it unreliable for randomness. Using a computed seed value further compounds the issue, as the seed may point to old blocks with unretrievable blockhashes (returning 0)."
+        }
+    ]
+}
+```

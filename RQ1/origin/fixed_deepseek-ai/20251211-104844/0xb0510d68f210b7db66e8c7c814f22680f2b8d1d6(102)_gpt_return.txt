@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Puppet",
+        "contract_version": "^0.4.23",
+        "state_variables": [
+            {
+                "variable_name": "success",
+                "fix_info": "To track the success/failure of low-level calls",
+                "variable_code": "bool private success;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Added check for low-level call success and handling failure case; prevented reentrancy by following checks-effects-interactions pattern",
+                "corrected_code": "function() public payable {\n    if (msg.sender != target[0]) {\n        success = target[0].call.value(msg.value).gas(600000)();\n        \n        if (!success) {\n            revert(\"Low-level call failed\");\n        }\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

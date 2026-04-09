@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "In Solidity ^0.4.18, integer arithmetic operations do not automatically check for overflow/underflow. The unchecked addition operations 'balances[target] += mintedAmount' and 'totalSupply += mintedAmount' could overflow if the resulting values exceed the maximum uint256 value (2^256 - 1). This could allow malicious or accidental minting to create incorrect token balances and supply. The vulnerability is particularly critical in a minting function as it directly controls token creation. SafeMath library should be used for all arithmetic operations, or the contract should be upgraded to Solidity 0.8.x or higher with built-in overflow checks."
+}
+```

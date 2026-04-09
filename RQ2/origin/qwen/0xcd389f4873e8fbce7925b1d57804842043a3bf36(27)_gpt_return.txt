@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] + _value > balances[_to]",
+    "description": "The addition operation balances[_to] + _value can cause an integer overflow when the sum exceeds the maximum value of uint256. In Solidity version ^0.4.25, there is no built-in overflow protection, which means that if balances[_to] + _value overflows, it will wrap around to a smaller value, potentially making the condition false when it should be true. This can lead to unexpected behavior in the transfer function where valid transfers might be rejected due to overflow in the overflow check."
+}
+```

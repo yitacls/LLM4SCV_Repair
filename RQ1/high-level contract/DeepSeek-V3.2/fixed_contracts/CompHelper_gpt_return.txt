@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "CompHelper",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "enterMarket",
+                "fix_info": "Added check for return value of enterMarkets call to handle potential failure",
+                "corrected_code": "    /// @notice Enters the Compound market so it can be deposited/borrowed\n    /// @dev Markets can be entered multiple times, without the code reverting\n    /// @param _cTokenAddr CToken address of the token\n    function enterMarket(address _cTokenAddr) public {\n        address[] memory markets = new address[](1);\n        markets[0] = _cTokenAddr;\n\n        uint[] memory results = IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);\n        require(results[0] == 0, \"enterMarket failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "exitMarket",
+                "fix_info": "Added check for return value of exitMarket call to handle potential failure",
+                "corrected_code": "    /// @notice Exits the Compound market\n    /// @param _cTokenAddr CToken address of the token\n    function exitMarket(address _cTokenAddr) public {\n        uint result = IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);\n        require(result == 0, \"exitMarket failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getUnderlyingAddr",
+                "fix_info": "No changes required - this function already handles the call return value properly",
+                "corrected_code": "    // @notice Returns the underlying token address of the given cToken\n    function getUnderlyingAddr(address _cTokenAddr) internal returns (address tokenAddr) {\n        // cEth has no .underlying() method\n        if (_cTokenAddr == C_ETH_ADDR) return TokenUtils.WETH_ADDR;\n\n        tokenAddr = ICToken(_cTokenAddr).underlying();\n    }",
+                "change_type": "unchanged"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking for success, using transfer for limited gas, and implementing reentrancy protection",
+            "corrected_code": "function () external payable {\n    address payable receiver = wallet;\n    // Use transfer instead of call to limit gas and automatically revert on failure\n    receiver.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

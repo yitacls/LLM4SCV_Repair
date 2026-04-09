@@ -1,0 +1,28 @@
+[{
+    "contract_name": "MetaTransactionsFeature",
+    "contract_version": "1.1.0",
+    "state_variables": [
+        {
+            "variable_name": "_pendingEtherRefunds",
+            "fix_info": "Added a withdrawal-pull pattern to avoid sending ETH to msg.sender inside a modifier (prevents reentrancy via ETH refunds). The modifier now credits refunds to this mapping instead of transferring immediately.",
+            "variable_code": "mapping(address => uint256) private _pendingEtherRefunds;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "refundsAttachedEth",
+            "fix_info": "Modified to record refundable ETH in a pending refunds mapping instead of transferring via `msg.sender.transfer(...)`. This converts the push-refund into a pull-refund to mitigate reentrancy (and avoids gas stipend assumptions).",
+            "modifier_code": "modifier refundsAttachedEth() {\n    _;\n    // Compute remaining refundable ETH without transferring it.\n    uint256 remainingBalance = LibSafeMathV06.min256(msg.value, address(this).balance);\n    if (remainingBalance > 0) {\n        // Record refund for the sender to withdraw later (pull pattern).\n        _pendingEtherRefunds[msg.sender] = _pendingEtherRefunds[msg.sender] + remainingBalance;\n        emit MetaTransactionRefundRecorded(msg.sender, remainingBalance);\n    }\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawPendingRefund",
+            "fix_info": "Added new external function to allow users to withdraw pending ETH refunds. Uses checks-effects-interactions (zero-out before external call) and nonReentrant guard to prevent reentrancy during withdrawal.",
+            "corrected_code": "function withdrawPendingRefund()\n    external\n    nonReentrant(REENTRANCY_MTX)\n    returns (bool success)\n{\n    uint256 amount = _pendingEtherRefunds[msg.sender];\n    if (amount == 0) {\n        return false;\n    }\n    // Effects: zero out before external interaction\n    _pendingEtherRefunds[msg.sender] = 0;\n    // Interactions: transfer funds using call and bubble revert on failure\n    (success, ) = msg.sender.call{value: amount}(\"\");\n    if (!success) {\n        // restore on failure\n        _pendingEtherRefunds[msg.sender] = amount;\n        revert(\"MetaTransactionsFeature: refund transfer failed\");\n    }\n    emit MetaTransactionRefundWithdrawn(msg.sender, amount);\n    return true;\n}",
+            "change_type": "added"
+        }
+    ]
+}]

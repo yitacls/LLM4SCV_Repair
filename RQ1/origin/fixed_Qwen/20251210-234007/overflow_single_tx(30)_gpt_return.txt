@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowSingleTransaction",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Added safe math library to prevent arithmetic underflow",
+            "variable_code": "using SafeMath for uint256;\nuint256 public count;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "underflowtostate",
+            "fix_info": "Fixed arithmetic underflow vulnerability by using SafeMath subtraction",
+            "corrected_code": "function underflowtostate(uint256 input) public {\n    count = count.sub(input);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

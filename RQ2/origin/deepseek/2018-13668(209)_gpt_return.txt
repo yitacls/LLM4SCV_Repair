@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "balanceOf[target] += mintedAmount; and totalSupply += mintedAmount;",
+    "description": "In Solidity version ^0.4.18, there is no built-in protection against integer overflows/underflows. The operations 'balanceOf[target] += mintedAmount' and 'totalSupply += mintedAmount' could overflow if the resulting value exceeds the maximum uint256 value (2^256 - 1), causing values to wrap around to 0. An attacker could exploit this to mint an extremely large amount of tokens, manipulating their balances or the total supply."
+}
+```

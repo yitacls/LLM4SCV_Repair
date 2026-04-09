@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Base",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "tokenOf",
+            "fix_info": "Added access control modifier to restrict function access to authorized users only",
+            "corrected_code": "function tokenOf(address _user) view public returns(uint256 _result){\n    require(msg.sender == _user || isAuthorized(msg.sender), \"Access denied\");\n    _result = DonQuixoteToken.balanceOf(_user);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

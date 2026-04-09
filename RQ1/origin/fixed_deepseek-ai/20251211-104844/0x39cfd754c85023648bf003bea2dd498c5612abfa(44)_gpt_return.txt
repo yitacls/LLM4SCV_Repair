@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "WithdrawToken",
+        "fix_info": "Fixed vulnerable low-level call by checking return value and using safe token transfer pattern. Added explicit checks for successful execution and reverted on failure.",
+        "corrected_code": "function WithdrawToken(address token, uint256 amount, address to) public onlyOwner {\n    require(token != address(0), \"Invalid token address\");\n    require(to != address(0), \"Invalid recipient address\");\n    require(amount > 0, \"Amount must be greater than zero\");\n    \n    bytes memory payload = abi.encodeWithSignature(\"transfer(address,uint256)\", to, amount);\n    (bool success, ) = token.call(payload);\n    require(success, \"Token transfer failed\");\n}",
+        "change_type": "modified"
+    }]
+}]
+```

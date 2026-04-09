@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Arithmetic/Overflow",
+        "location": "`balanceOf[target] += mintedAmount;` and `totalSupply += mintedAmount;`",
+        "description": "Using the addition operator `+=` without overflow protection (SafeMath) on Solidity versions prior to 0.8.0 allows an attacker to mint tokens maliciously if `balanceOf[target] + mintedAmount` or `totalSupply + mintedAmount` exceeds the maximum value for `uint256` (2^256 - 1). The operations would silently wrap around, potentially granting the target an unexpectedly small balance or creating an incorrect total supply."
+    }
+]
+```

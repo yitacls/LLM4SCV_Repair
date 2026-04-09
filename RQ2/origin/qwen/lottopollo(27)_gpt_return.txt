@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "return block.timestamp;",
+    "description": "The randomGen() function uses block.timestamp as a source of randomness, which is vulnerable to manipulation by miners. In Solidity version ^0.4.0, block.timestamp can be influenced by miners within a certain range (typically up to 15 seconds), making it an unreliable source for generating random numbers. This can allow malicious actors to predict or influence the random number generation, compromising the fairness and security of the lottopollo contract's random number generation mechanism."
+}
+```

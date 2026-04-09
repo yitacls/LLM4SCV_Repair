@@ -1,0 +1,14 @@
+[{
+    "contract_name": "PausableToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "batchTransfer",
+            "fix_info": "Prevent arithmetic overflow/underflow by using SafeMath, cast length to uint256, validate inputs before multiplication, and use local variables for clarity.",
+            "corrected_code": "function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {\n    // ensure length is handled as uint256 and within safe bounds\n    uint256 cnt = _receivers.length;\n    require(cnt > 0 && cnt <= 20);\n    require(_value > 0);\n\n    // use SafeMath to prevent overflow in multiplication and underflow in subtraction\n    uint256 amount = _value.mul(cnt);\n    require(balances[msg.sender] >= amount);\n\n    balances[msg.sender] = balances[msg.sender].sub(amount);\n    for (uint256 i = 0; i < cnt; i++) {\n        address receiver = _receivers[i];\n        balances[receiver] = balances[receiver].add(_value);\n        Transfer(msg.sender, receiver, _value);\n    }\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

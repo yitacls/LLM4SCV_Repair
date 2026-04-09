@@ -1,0 +1,5 @@
+{
+  "type": "Arithmetic",
+  "location": "function () payable {\n        balanceOf[msg.sender] += msg.value;  // fault line\n    }",
+  "description": "The fallback function performs an unchecked addition: balanceOf[msg.sender] += msg.value. Under Solidity ^0.4.11 this uses raw uint256 arithmetic without automatic overflow checks. An attacker can supply a carefully chosen msg.value that causes the sum to wrap around (integer overflow), reducing or resetting the recorded balance for that address. This can be exploited to manipulate account balances and enable unauthorized or excessive withdrawals. Mitigations include using SafeMath's add (or other checked arithmetic), validating that balanceOf[msg.sender] + msg.value >= balanceOf[msg.sender] before assignment, or upgrading to Solidity >=0.8.0 where overflows revert by default."
+}

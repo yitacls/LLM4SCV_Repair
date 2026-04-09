@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "The send() function returns a boolean value indicating success or failure, but this return value is not properly checked. In Solidity 0.4.11, if the send() call fails (e.g., due to gas limitations or recipient contract execution failure), it will return false silently without reverting the transaction. This can lead to funds being locked or unexpected behavior. The result is assigned to 'res' but not validated, making the contract vulnerable to failed transfers."
+}
+```

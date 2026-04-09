@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function borrowFresh(address payable borrower, address payable payee, uint borrowAmount) internal sameBlock",
+    "description": "The borrowFresh function allows reentrancy by letting a borrower borrow assets from the protocol to their own address. Since the borrow is allowed before checking if the protocol has sufficient underlying cash, it opens up the possibility of a reentrancy attack if the borrower re-enters and borrows more than what is available. This can lead to unexpected behavior and potential loss of funds."
+}
+```

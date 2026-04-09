@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "addr.call.value(0 wei)();",
+    "description": "The low-level call to addr does not check its return value. In Solidity 0.4.19, .call() returns a boolean indicating success/failure. If the call fails (e.g., out of gas, reverted, or target is a contract without fallback function), it will return false but execution will continue. This can lead to silent failures where important state changes or error handling should occur. Additionally, repeated calls in a loop without gas limits could cause out-of-gas errors. The code should store and verify the return value, e.g., `bool success = addr.call.value(0 wei)(); require(success);`."
+}
+```

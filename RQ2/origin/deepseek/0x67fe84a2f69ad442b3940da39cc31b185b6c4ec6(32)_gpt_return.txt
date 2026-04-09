@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, which creates a security vulnerability. The tx.origin variable returns the original sender of the entire transaction chain, not the immediate caller (msg.sender). This allows for phishing attacks where a malicious contract could trick the owner into calling the malicious contract, which then calls CompanyFunding.clear(). The authorization would pass since tx.origin would still be the owner, even though the immediate caller (msg.sender) is the malicious contract. Additionally, using selfdestruct(owner) when the owner is a contract account using tx.origin could result in irreversible fund loss if the owner contract isn't prepared to receive ETH via selfdestruct."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "wallet",
+            "fix_info": "Added to store the receiving address for payments",
+            "variable_code": "address payable public wallet;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and checking return value. Added require statement to ensure successful transfer.",
+            "corrected_code": "function() external payable {\n    require(wallet != address(0), \"Wallet address not set\");\n    wallet.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

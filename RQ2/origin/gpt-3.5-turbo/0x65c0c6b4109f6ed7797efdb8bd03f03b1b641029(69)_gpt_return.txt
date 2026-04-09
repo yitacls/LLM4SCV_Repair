@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.call.value(value)()",
+    "description": "The use of msg.sender.call.value(value)() for sending Ether in the fallback function can be risky as it allows the callee to execute arbitrary code. This can lead to reentrancy and other security vulnerabilities. It is recommended to avoid using low-level call functions and instead use higher-level interfaces like transfer or send."
+}
+```

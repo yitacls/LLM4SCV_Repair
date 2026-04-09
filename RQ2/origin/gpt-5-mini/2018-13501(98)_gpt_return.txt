@@ -1,0 +1,5 @@
+{
+  "type": "Arithmetic (Integer Overflow/Underflow)",
+  "location": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n      balanceOf[target] += mintedAmount; // <IO_VUL>\n      totalSupply += mintedAmount;\n      Transfer(0, this, mintedAmount);\n      Transfer(this, target, mintedAmount);\n  }",
+  "description": "The function performs unchecked additions on balanceOf[target] and totalSupply. In Solidity ^0.4.13 arithmetic operations wrap on overflow/underflow, so calling mintToken with a sufficiently large mintedAmount (or when balanceOf[target] is already near the uint256 max) can cause these values to wrap to a much smaller number. This enables creating arbitrary tokens, corrupting balances and totalSupply, and breaking token accounting and invariants. Mitigation: use safe arithmetic (e.g., SafeMath.add) or explicit checks such as require(balanceOf[target] + mintedAmount >= balanceOf[target]) and require(totalSupply + mintedAmount >= totalSupply) before updating state."
+}

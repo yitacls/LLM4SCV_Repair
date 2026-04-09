@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "In the Solidity smart contract of X_BANK, there exists a reentrancy vulnerability. This issue arises from the function 'Collect' wherein the contract calls an external contract (specified by 'msg.sender') and subsequently decreases the balance. Reentrancy vulnerability allows recursive function calls before the state variable ('acc.balance') is updated. As a result, an attacker can drain more Ether before the original function call completes and updates the balance."
+}
+```

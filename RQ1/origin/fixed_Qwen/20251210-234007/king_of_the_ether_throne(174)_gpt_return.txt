@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "KingOfTheEtherThrone",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sweepCommission",
+            "fix_info": "Fixed unchecked low-level call by checking the return value of send() and reverting on failure",
+            "corrected_code": "function sweepCommission(uint amount) onlywizard {\n        if (!wizardAddress.send(amount)) {\n            revert();\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

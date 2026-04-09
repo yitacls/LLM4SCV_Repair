@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "to.call.value(amount)();",
+    "description": "This line might contain a critical security issue called 'unchecked low level call'. In Solidity, the low-level .call() function is used to interact with other contracts. However, if the destination contract contains a bug, or if the contract call consumes all available gas or throws an exception, the transaction fails but the DAO contract will carry on without throwing an error. As a result, it could be used to cause unanticipated effects such as allowing multiple withdrawals in the HODLWallet contract."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.send(withdrawAmount);",
+    "description": "The send() function is used without checking its return value. In Solidity versions >=0.4.22 <0.7.0, send() returns false if the transfer fails, but the code does not handle this case. This could lead to a situation where the transaction continues executing even when the Ether transfer fails, potentially causing unexpected behavior or loss of funds. The function should check the return value of send() and handle failures appropriately, such as reverting the transaction or implementing proper error handling."
+}
+```

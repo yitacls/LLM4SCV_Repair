@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(_am)()",
+    "description": "The contract uses a low-level call to transfer Ether before updating the sender's balance in `balances[msg.sender]-=_am`. If the caller is a malicious contract, its fallback function can re-enter the `CashOut` function multiple times before the balance is deducted, allowing repeated withdrawals that exceed the original balance. This occurs because the state change happens after the external call. The vulnerability is compounded by the use of Solidity ^0.4.19, which lacks built-in reentrancy protections and the `transfer` or `send` methods (which limit gas) are not used. In this version, `call.value()` forwards all remaining gas by default, enabling the reentrancy attack."
+}
+```

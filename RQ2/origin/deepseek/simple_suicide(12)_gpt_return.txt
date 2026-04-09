@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "function sudicideAnyone()",
+        "description": "The function 'sudicideAnyone()' is missing an access control modifier, allowing any external caller to trigger the contract's self-destruct operation. This will forcibly send all remaining Ether stored in the contract to the caller's address (msg.sender) and delete the contract from the blockchain, leading to irreversible loss of funds and contract functionality."
+    }
+}
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "creator",
+            "fix_info": "Added state variable to track contract creator for access control",
+            "variable_code": "address public creator;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOnce",
+            "fix_info": "Added modifier to ensure initialization can only happen once",
+            "modifier_code": "modifier onlyOnce() {\n    require(creator == address(0), \"Wallet already initialized\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initWallet",
+            "fix_info": "Fixed access control vulnerability by adding onlyOnce modifier to prevent re-initialization and ensure only one creator",
+            "corrected_code": "function initWallet() public onlyOnce {\n    creator = msg.sender;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

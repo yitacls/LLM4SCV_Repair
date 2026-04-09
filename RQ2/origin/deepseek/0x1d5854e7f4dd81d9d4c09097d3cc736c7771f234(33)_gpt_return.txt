@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The function uses tx.origin for authorization instead of msg.sender. This allows phishing attacks where an intermediate malicious contract can call this function, bypassing the intended access control, as tx.origin refers to the original end-user's address (EOA) that initiated the transaction chain, not the immediate caller. Combined with selfdestruct, this could allow an attacker to trick the owner into interacting with a malicious contract that calls clear(), destroying the contract and sending its funds to the owner's address (not the attacker's). This pattern is also considered poor practice for access control in general."
+        },
+        {
+            "type": "access_control",
+            "location": "function clear() public",
+            "description": "The function lacks an explicit ownership modifier or a more robust, commonly used access control pattern (such as OpenZeppelin's Ownable). The use of tx.origin is a flawed implementation of ownership verification. A standard approach would be to use a state variable (owner) and the msg.sender for checks."
+        }
+    ]
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Lines 125-140: setRewardRate function",
+    "description": "The setRewardRate function pushes new reward rates and timestamps to arrays _rewardRate and _lastMovingRewardTimestamp without any upper bound on array size. As these arrays grow indefinitely with each reward rate change, the _calculatePendingRewards function (lines 161-209) will iterate through all historical reward rates when calculating rewards. This creates a gas cost that increases linearly with the number of reward rate changes, potentially exceeding the block gas limit and making reward calculations impossible for users after many rate updates."
+}
+```

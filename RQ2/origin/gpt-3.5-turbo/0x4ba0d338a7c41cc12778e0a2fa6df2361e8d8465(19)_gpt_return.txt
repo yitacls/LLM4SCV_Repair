@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "deposits[msg.sender] += msg.value;",
+    "description": "The addition operation deposits[msg.sender] += msg.value; could potentially lead to an arithmetic overflow vulnerability if the total amount exceeds the maximum limit that can be stored in the data type used for storing deposits."
+}
+```

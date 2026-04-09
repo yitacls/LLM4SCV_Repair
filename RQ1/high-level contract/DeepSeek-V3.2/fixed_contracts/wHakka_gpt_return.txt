@@ -1,0 +1,72 @@
+```json
+[{
+    "contract_name": "wHakka",
+    "contract_version": "0.5.17",
+    "state_variables": [
+        {
+            "variable_name": "vaults",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => mapping(uint256 => vault)) public vaults;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "vaultCount",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint256) public vaultCount;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "stakedHakka",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint256) public stakedHakka;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "votingPower",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint256) public votingPower;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed - modifier already exists in Ownable contract",
+            "modifier_code": "modifier onlyOwner() {\n        require(isOwner(), \"Ownable: caller is not the owner\");\n        _;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+            "modifier_code": "bool private _notEntered;\n    \n    modifier nonReentrant() {\n        require(_notEntered, \"ReentrancyGuard: reentrant call\");\n        _notEntered = false;\n        _;\n        _notEntered = true;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Added initialization of reentrancy guard",
+            "corrected_code": "constructor() public {\n        symbol = \"wHAKKA\";\n        name = \"Wrapped Hakka\";\n        decimals = 18;\n        _balances[address(this)] = uint256(-1);\n        _balances[address(0)] = uint256(-1);\n        _notEntered = true;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "stakingRateMax",
+            "fix_info": "Fixed block timestamp dependency by using a timestamp caching pattern",
+            "corrected_code": "function stakingRateMax() public returns (uint256 rate) {\n        uint256 currentTimestamp = block.timestamp;\n        uint256 timeElapsed = currentTimestamp.sub(lastUpdateTimestamp);\n        if(timeElapsed > 0) {\n            lastUpdateTimestamp = currentTimestamp;\n            rate = timeElapsed.mul(ratePerSecond).add(1e18).mul(stakingRateStored).div(1e18);\n            stakingRateStored = rate;\n        }\n        else {\n            rate = stakingRateStored;\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "stake",
+            "fix_info": "Fixed reentrancy vulnerability by applying nonReentrant modifier and following checks-effects-interactions pattern",
+            "corrected_code": "function stake(address to, uint256 amount, uint256 time) public nonReentrant returns (uint256 wAmount) {\n        require(amount > 0, \"Cannot stake 0\");\n        require(time == 30 days || time == 90 days || time == 180 days || time == 360 days, \"Invalid lock time\");\n        \n        uint256 rate = getStakingRate(time);\n        wAmount = rate.mul(amount).div(1e18);\n        require(wAmount > 0, \"invalid lockup\");\n        \n        vault storage v = vaults[to][vaultCount[to]];\n        \n        v.hakkaAmount = amount;\n        v.wAmount = wAmount;\n        v.unlockTime = block.timestamp.add(time);\n        \n        vaultCount[to]++;\n        stakedHakka[to] = stakedHakka[to].add(amount);\n        votingPower[to] = votingPower[to].add(wAmount);\n        \n        _mint(to, wAmount);\n        \n        Hakka.safeTransferFrom(msg.sender, address(this), amount);\n        \n        emit Stake(to, msg.sender, amount, wAmount, time);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "unstake",
+            "fix_info": "Fixed reentrancy vulnerability by applying nonReentrant modifier and following checks-effects-interactions pattern, fixed block timestamp dependency",
+            "corrected_code": "function unstake(address to, uint256 index, uint256 wAmount) public nonReentrant returns (uint256 amount) {\n        require(to != address(0), \"Cannot unstake to zero address\");\n        require(wAmount > 0, \"Cannot unstake 0\");\n        \n        vault storage v = vaults[msg.sender][index];\n        \n        uint256 currentTimestamp = block.timestamp;\n        require(currentTimestamp >= v.unlockTime, \"locked\");\n        require(wAmount <= v.wAmount, \"exceed locked amount\");\n        \n        amount = wAmount.mul(v.hakkaAmount).div(v.wAmount);\n        \n        v.hakkaAmount = v.hakkaAmount.sub(amount);\n        v.wAmount = v.wAmount.sub(wAmount);\n        \n        stakedHakka[msg.sender] = stakedHakka[msg.sender].sub(amount);\n        votingPower[msg.sender] = votingPower[msg.sender].sub(wAmount);\n        \n        _burn(msg.sender, wAmount);\n        \n        Hakka.safeTransfer(to, amount);\n        \n        emit Unstake(msg.sender, to, amount, wAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

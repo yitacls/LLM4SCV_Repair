@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "RandomNumberGenerator",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "requestId",
+            "fix_info": "Added to track requests for Chainlink VRF",
+            "variable_code": "uint256 public requestId;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "randomResult",
+            "fix_info": "Added to store the random number obtained from Chainlink VRF",
+            "variable_code": "uint256 public randomResult;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getRandomNumber",
+            "fix_info": "Added new function to request random number from Chainlink VRF",
+            "corrected_code": "function getRandomNumber() public returns (bytes32 requestId) {\n    require(LINK.balanceOf(address(this)) >= fee, \"Not enough LINK\");\n    return requestRandomness(keyHash, fee);\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "fulfillRandomness",
+            "fix_info": "Added callback function to handle the random number response from Chainlink VRF",
+            "corrected_code": "function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {\n    require(msg.sender == vrfCoordinator, \"Only VRFCoordinator can fulfill\");\n    randomResult = _randomness;\n    requestId = uint256(_requestId);\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "random",
+            "fix_info": "Complete rewrite to use Chainlink VRF for secure randomness instead of block variables",
+            "corrected_code": "function random(uint256 max) public view returns (uint256) {\n    require(randomResult != 0, \"Random number not generated yet\");\n    require(max > 0, \"Max must be greater than 0\");\n    \n    // Use the pre-generated secure random number\n    uint256 result = (randomResult % max) + 1;\n    \n    return result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

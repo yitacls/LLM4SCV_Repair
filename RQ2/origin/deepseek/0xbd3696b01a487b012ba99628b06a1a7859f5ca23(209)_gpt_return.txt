@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses tx.origin for authorization, which is vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract that then calls addMeByRC() on the vulnerable contract, passing the attacker's desired parameters. Since tx.origin would be the owner (the original transaction sender), the require statement would pass, allowing the attacker to set arbitrary ambassador addresses for any msg.sender. Additionally, there's no reentrancy guard, though this function doesn't transfer funds. The vulnerability allows unauthorized modification of ambassadorAddressOf mappings through social engineering/phishing."
+}
+```

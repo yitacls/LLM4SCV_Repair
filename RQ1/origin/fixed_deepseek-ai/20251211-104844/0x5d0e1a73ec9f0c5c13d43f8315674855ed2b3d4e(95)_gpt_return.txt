@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "ERC20Token",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Add explicit visibility (public/private) and potentially make it internal/private to follow best practices. Currently assuming it's public for access control.",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "tokenState",
+            "fix_info": "Add explicit visibility (public/private) and document its purpose. Currently assuming it's public.",
+            "variable_code": "bool public tokenState;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "allowed",
+            "fix_info": "Add explicit visibility (public/private). This is a mapping for ERC20 allowance. Assuming it's public to follow ERC20 standard.",
+            "variable_code": "mapping(address => mapping(address => uint256)) public allowed;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "approve",
+            "fix_info": "Replaced 'tx.origin == owner' with 'msg.sender == owner' to prevent phishing attacks and follow best practices. No other changes to functionality.",
+            "corrected_code": "function approve(address _spender, uint256 _value) external returns (bool success) {\n    require(tokenState == true);\n    require(_spender != address(0));\n    require(msg.sender == owner);  // Fixed line\n    allowed[msg.sender][_spender] = mul(_value, 100000000);\n    Approval(msg.sender, _spender, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This line of code in the smart contract is susceptible to an overflow error. In Solidity, numerical operations can potentially overflow without an error being thrown, which can lead to unexpected behavior. It is recommended to use SafeMath libraries or similar to ensure safe arithmetic operations."
+}
+```

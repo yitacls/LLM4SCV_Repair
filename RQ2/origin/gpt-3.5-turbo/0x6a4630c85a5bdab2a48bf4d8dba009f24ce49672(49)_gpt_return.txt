@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin for authentication in the mint function allows any contract calling the function on behalf of the owner to mint tokens. This exposes the contract to potential attacks and bypasses the intended access control, as the check should ideally be against the msg.sender instead of tx.origin."
+}
+```

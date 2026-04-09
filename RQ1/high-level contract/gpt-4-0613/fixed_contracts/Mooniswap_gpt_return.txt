@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Mooniswap",
+        "contract_version": "^0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "rescueFunds",
+                "fix_info": "A check has been added to ensure that the contract balance is not reduced in the process of transferring funds, preventing unauthorized withdrawal of tokens. Only tokens that have no relation to the functionality of the smart contract can be recovered.",
+                "corrected_code": "function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyOwner {\n require(token != token0 && token != token1, 'Mooniswap: cannot withdraw pool tokens');\n token.uniTransfer(msg.sender, amount);\n }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

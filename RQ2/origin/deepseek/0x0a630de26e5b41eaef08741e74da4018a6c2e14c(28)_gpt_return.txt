@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "players[currentGamenumber][winner].send(this.balance);",
+    "description": "The contract uses `send()` without checking the return value. In Solidity 0.4.x, `send()` forwards a fixed amount of gas (2300) and returns `false` on failure rather than throwing an exception. If the winner is a contract with a fallback function requiring more than 2300 gas, or if the winner address cannot receive ETH (e.g., address without payable fallback in ≥0.4.x), the `send()` may fail silently. The contract will proceed to reset state (endRegisterTime = 0; numPlayers = 0; gameNumber++), but the winner will not receive the prize, effectively locking the contract's balance permanently."
+}
+```

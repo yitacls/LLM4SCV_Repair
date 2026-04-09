@@ -1,0 +1,12 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[this] += amount;",
+    "description": "The addition operation on `balanceOf[this]` is vulnerable to an integer overflow if `balanceOf[this] + amount` exceeds the maximum value of a uint256 variable. This could lead to unintended behavior or exploitation of contract state."
+},
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[msg.sender] -= amount;",
+    "description": "The subtraction operation on `balanceOf[msg.sender]` is vulnerable to an integer underflow if `balanceOf[msg.sender]` is less than `amount`. This could allow the value to wrap around, resulting in incorrect state changes or potential exploitation."
+}
+```

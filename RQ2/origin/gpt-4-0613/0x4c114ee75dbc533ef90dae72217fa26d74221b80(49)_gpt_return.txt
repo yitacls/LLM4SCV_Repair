@@ -1,0 +1,11 @@
+```json
+{
+    "contract_name": "ERC20Standard",
+    "vulnerability_type": "access_control",
+    "vulnerabilities": [{
+        "type": "tx.origin usage",
+        "location": "require(tx.origin == owner);",
+        "description": "The usage of 'tx.origin' for access control is considered a vulnerability. 'tx.origin' represents the original external account that instantiated the transaction. Using 'tx.origin' for authorization can allow an attacker to create a malicious contract that interacts with your contract, tricking a user into initiating a transaction that calls the vulnerable contract. If the original user is the owner, the attacker can mint tokens increasing total supply and causing inflation. This can therefore be manipulated in a way that the owner of the contract might not have intended. Instead, use 'msg.sender' for access control, as it represents the account that is currently interacting with the contract, reducing the risk of such attacks."
+    }]
+}
+```

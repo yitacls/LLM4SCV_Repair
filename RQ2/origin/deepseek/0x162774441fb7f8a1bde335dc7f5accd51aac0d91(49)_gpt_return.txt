@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (cbAddresses[tx.origin] != 0) { _cbAddress = tx.origin; }",
+    "description": "The function returns `tx.origin` as the callback address without proper validation, allowing any caller to potentially impersonate the legitimate callback address. Additionally, the function relies on `tx.origin` (the original sender of the transaction), which is vulnerable to phishing attacks where malicious contracts could manipulate the return value. The condition only checks if `cbAddresses[tx.origin]` is non-zero, but does not verify that the caller is authorized, leading to improper access control."
+}
+```

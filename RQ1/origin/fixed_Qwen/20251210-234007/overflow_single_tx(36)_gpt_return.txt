@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "IntegerOverflowSingleTransaction",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "overflowlocalonly",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow when adding input to count",
+            "corrected_code": "function overflowlocalonly(uint256 input) public {\n        // Using SafeMath to prevent overflow\n        uint res = count.add(input);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.call.value(value)()",
+    "description": "The low-level call method 'msg.sender.call.value(value)()' is not checked for success or failure. In Solidity ^0.4.23, low-level calls return a boolean indicating success, but this return value is not being verified. This could lead to scenarios where the withdrawal operation proceeds even if the ETH transfer fails, potentially causing inconsistent state or loss of funds. The call should be checked for success, for example: 'require(msg.sender.call.value(value)());'"
+}
+```

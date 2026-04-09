@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "Channels[_lcID].partyAddresses[0].transfer(Channels[_lcID].ethBalances[0]);",
+    "description": "The contract is vulnerable to reentrancy attacks because it makes an external call (transfer) to a user-controlled address before updating the contract state. In Solidity ^0.4.23, the transfer function can trigger a fallback function in the recipient contract, which could potentially call back into the LCOpenTimeout function before the state is deleted, allowing an attacker to withdraw funds multiple times. The state variable Channels[_lcID] is only deleted after the transfers, making it possible for a malicious contract to reenter and exploit the function."
+}
+```

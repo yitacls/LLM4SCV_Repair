@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "for (uint256 i = 0; i < _ids.length; i++) { ... }",
+        "description": "The multiFill function is vulnerable to a Denial of Service (DoS) attack due to the use of external calls within a loop. If one of the transfers or operations fails, the entire transaction will revert, preventing the processing of subsequent orders in the array. An attacker could intentionally cause a failure in one of the iterations, thereby halting the execution for all remaining orders."
+    }
+]
+```

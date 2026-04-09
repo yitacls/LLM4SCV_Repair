@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "NetkillerToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Implicit fix through updated mintToken function - no direct modification needed",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Implicit fix through updated mintToken function - no direct modification needed",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "decimals",
+            "fix_info": "Implicit fix through updated mintToken function - no direct modification needed",
+            "variable_code": "uint8 public decimals;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No modifications needed to the modifier",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner, \"Caller is not the owner\"); _; }",
+            "change_type": "deleted"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath and upgraded Solidity version. Added overflow/underflow protection for multiplication and addition operations. Added input validation.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    // Use SafeMath for all arithmetic operations\n    uint256 multiplier = 10 ** uint256(decimals);\n    uint256 _amount = mintedAmount.mul(multiplier);\n    \n    // Check for overflow in balance update\n    uint256 newBalance = balanceOf[target].add(_amount);\n    uint256 newTotalSupply = totalSupply.add(_amount);\n    \n    // Update state variables\n    balanceOf[target] = newBalance;\n    totalSupply = newTotalSupply;\n    \n    emit Transfer(address(0), target, _amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

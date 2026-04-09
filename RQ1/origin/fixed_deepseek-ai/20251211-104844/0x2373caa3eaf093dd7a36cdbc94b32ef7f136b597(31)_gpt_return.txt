@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "StorageBase",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdrawBalance",
+                "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and handling the potential failure properly. Added require() statement to ensure transfer succeeds, and changed to transfer() which automatically reverts on failure in Solidity 0.4.21.",
+                "corrected_code": "function withdrawBalance() external onlyOwner returns (bool) {\n    address owner = msg.sender;\n    uint256 balance = address(this).balance;\n    require(balance > 0, \"No balance to withdraw\");\n    owner.transfer(balance);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

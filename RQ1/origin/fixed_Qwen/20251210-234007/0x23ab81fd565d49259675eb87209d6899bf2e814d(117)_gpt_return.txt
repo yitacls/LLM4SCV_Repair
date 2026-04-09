@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "NomToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a secure modifier to replace the vulnerable tx.origin check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced vulnerable tx.origin check with secure msg.sender check using onlyOwner modifier",
+            "corrected_code": "function mint() public onlyOwner returns (bool) {\n\t\tuint256 tokensToMint = 0;\n\t\tif (now > initialIssueMintingDate && !initialIssueMinted) {\n\t\t\t\ttokensToMint = tokensToMint.add(initialIssueMinting);\n\t\t\t\tinitialIssueMinted = true;\n\t\t}\n\t\tif (now > firstStageMintingDate && !firstStageMinted) {\n\t\t\t\ttokensToMint = tokensToMint.add(firstStageMinting);\n\t\t\t\tfirstStageMinted = true;\n\t\t}\n\t\tif (now > secondStageMintingDate && !secondStageMinted) {\n\t\t\t\ttokensToMint = tokensToMint.add(secondStageMinting);\n\t\t\t\tsecondStageMinted = true;\n\t\t}\n\t\tif (now > thirdStageMintingDate && !thirdStageMinted) {\n\t\t\t\ttokensToMint = tokensToMint.add(thirdStageMinting);\n\t\t\t\tthirdStageMinted = true;\n\t\t}\n\t\tif (now > fourthStageMintingDate && !fourthStageMinted) {\n\t\t\t\ttokensToMint = tokensToMint.add(fourthStageMinting);\n\t\t\t\tfourthStageMinted = true;\n\t\t}\n\t\trequire(tokensToMint > 0);\n\t\tuint256 newTotalSupply = totalSupply_.add(tokensToMint);\n\t\trequire(newTotalSupply <= totalTokens);\n\t\ttotalSupply_ = totalSupply_.add(tokensToMint);\n\t\tbalances[owner] = balances[owner].add(tokensToMint);\n\t\temit Mint(owner, tokensToMint);\n\t\temit Transfer(0x0, owner, tokensToMint);\n\t\treturn true;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

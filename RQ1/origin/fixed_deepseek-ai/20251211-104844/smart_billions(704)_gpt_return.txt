@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "commitmentSeed",
+            "fix_info": "Added commitment seed variable to store initial entropy from a secure source",
+            "variable_code": "bytes32 private commitmentSeed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced blockhash-based randomness with commitment-reveal pattern using keccak256 hash of combined inputs including a secure seed",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta, bytes32 _userCommitment) constant private returns (uint) {\n    // Use a commitment-reveal pattern with keccak256 for secure randomness\n    // Combine multiple sources including a stored seed, user commitment, and blockhash for finality\n    bytes32 combinedHash = keccak256(\n        abi.encodePacked(\n            commitmentSeed,\n            _userCommitment,\n            blockhash(_lastb),\n            _delta,\n            hashesSize\n        )\n    );\n    \n    // Extract first 32 bytes of the hash as the random value\n    return uint(combinedHash);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "initializeCommitmentSeed",
+            "fix_info": "Added function to initialize commitment seed with secure initial entropy (restricted access recommended)",
+            "corrected_code": "function initializeCommitmentSeed(bytes32 _seed) external {\n    // This should have proper access control in production (onlyOwner or similar)\n    require(commitmentSeed == 0, \"Seed already initialized\");\n    commitmentSeed = _seed;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

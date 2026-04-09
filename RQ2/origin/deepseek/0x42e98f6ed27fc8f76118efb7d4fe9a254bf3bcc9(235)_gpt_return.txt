@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdrawEther() public { ... owner.send(address(this).balance); }",
+    "description": "The `withdrawEther` function is missing an access control modifier, allowing any caller (not just the owner) to withdraw all Ether from the contract. In Solidity 0.4.18, the `send` method returns a boolean and does not automatically revert on failure, which could lead to funds being inaccessible if the send fails. Additionally, the lack of `onlyOwner` or equivalent modifier exposes the contract to unauthorized fund drainage."
+}
+```

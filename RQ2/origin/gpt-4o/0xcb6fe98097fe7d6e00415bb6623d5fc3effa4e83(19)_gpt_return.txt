@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "The contract is vulnerable to reentrancy because it makes an external call to msg.sender using call.value(_am)() before updating the state variable (acc.balance). If the recipient (msg.sender) is a malicious contract, it can exploit this by recursively calling the Collect function before the state variable gets updated. This allows the attacker to drain funds from the contract."
+}
+```

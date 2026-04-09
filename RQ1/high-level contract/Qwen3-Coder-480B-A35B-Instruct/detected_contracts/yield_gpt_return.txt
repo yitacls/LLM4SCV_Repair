@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.5.12;",
+        "description": "The contract uses a floating pragma '^0.5.12' which allows compilation with newer compiler versions within the same minor version range. This can introduce risks if newer versions have introduced vulnerabilities or changed semantics."
+    },
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": "uint256 beginDepositTime;\nuint256 endDepositTime;\naddress yieldWallet;\naddress kickerWallet;\nuint256 kickerDeadline;\nuint256 kickerPromille;\nuint256 public threeMonthPromille;\nuint256 public sixMonthPromille;\nuint256 public nineMonthPromille;",
+        "description": "Some state variables like beginDepositTime, endDepositTime, yieldWallet, kickerWallet, kickerDeadline, kickerPromille lack explicit visibility modifiers and default to internal, potentially leading to unintended access control."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < lockBoxStructs.length; ++i) {\n    if (lockBoxStructs[i].releaseTime <= now && lockBoxStructs[i].balance > 0) {\n        withdraw(i);\n    }\n}",
+        "description": "The triggerWithdrawAll function iterates over all lock boxes in a loop. If the number of lock boxes becomes too large, this operation may exceed the block gas limit, causing a denial of service."
+    }
+]
+```

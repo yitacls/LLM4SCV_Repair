@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "TownCrier",
+    "contract_version": "^0.4.9",
+    "state_variables": [
+        {
+            "variable_name": "failedDeliveries",
+            "fix_info": "Added to track failed low-level calls for proper refunds/transfer handling",
+            "variable_code": "mapping(uint64 => bool) public failedDeliveries;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deliver",
+            "fix_info": "Fixed unchecked low-level calls by adding proper error handling and state tracking for failed transfers",
+            "corrected_code": "function deliver(uint64 requestId, bytes32 paramsHash, uint64 error, bytes32 respData) public {\n    if (msg.sender != SGX_ADDRESS ||\n            requestId <= 0 ||\n            requests[requestId].requester == 0 ||\n            requests[requestId].fee == DELIVERED_FEE_FLAG) {\n        return;\n    }\n\n    uint fee = requests[requestId].fee;\n    if (requests[requestId].paramsHash != paramsHash) {\n        return;\n    } else if (fee == CANCELLED_FEE_FLAG) {\n        // Handle cancellation with proper error checking\n        bool success = SGX_ADDRESS.send(CANCELLATION_FEE);\n        if (success) {\n            requests[requestId].fee = DELIVERED_FEE_FLAG;\n            unrespondedCnt--;\n        } else {\n            failedDeliveries[requestId] = true;\n        }\n        return;\n    }\n\n    requests[requestId].fee = DELIVERED_FEE_FLAG;\n    unrespondedCnt--;\n    \n    bool transferSuccess;\n    \n    if (error < 2) {\n        // Send fee to SGX account with success check\n        transferSuccess = SGX_ADDRESS.send(fee);\n    } else {\n        // Refund requester with success check\n        externalCallFlag = true;\n        transferSuccess = requests[requestId].requester.call.gas(2300).value(fee)();\n        externalCallFlag = false;\n    }\n    \n    // Track failed transfers\n    if (!transferSuccess) {\n        failedDeliveries[requestId] = true;\n        return;\n    }\n\n    uint callbackGas = (fee - MIN_FEE) / tx.gasprice;\n    DeliverInfo(requestId, fee, tx.gasprice, msg.gas, callbackGas, paramsHash, error, respData);\n    \n    if (callbackGas > msg.gas - 5000) {\n        callbackGas = msg.gas - 5000;\n    }\n    \n    externalCallFlag = true;\n    bool callbackSuccess = requests[requestId].callbackAddr.call.gas(callbackGas)(\n        requests[requestId].callbackFID, \n        requestId, \n        error, \n        respData\n    );\n    externalCallFlag = false;\n    \n    // Track failed callbacks\n    if (!callbackSuccess) {\n        failedDeliveries[requestId] = true;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

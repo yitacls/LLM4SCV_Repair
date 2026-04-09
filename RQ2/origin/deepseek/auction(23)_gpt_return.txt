@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "require(currentFrontrunner.send(currentBid));",
+    "description": "The contract uses `send()` to refund the previous highest bidder before updating the auction state. If the recipient is a smart contract with a fallback function designed to always fail (e.g., via `revert()` or an expensive operation that exceeds the gas stipend of 2300 provided by `send()`), the refund will fail, causing the entire `bid()` transaction to revert. This allows a malicious frontrunner to intentionally make their address unable to receive Ether, thereby blocking all subsequent bids and creating a permanent denial-of-service condition where the auction cannot progress."
+}
+```

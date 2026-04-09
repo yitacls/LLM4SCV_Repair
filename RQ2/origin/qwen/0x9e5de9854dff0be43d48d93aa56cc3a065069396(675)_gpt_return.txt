@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "cfoAddress.send(balance);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.25, send() returns false if the transfer fails, but the code does not handle this case. This could lead to silent failures where the withdrawal appears to succeed but the funds are not actually transferred, potentially causing loss of funds or unexpected behavior."
+}
+```

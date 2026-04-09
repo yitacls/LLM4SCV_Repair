@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The contract is not preventing overflow and underflow, A user could cast the large _value or number, causing an integer overflow/underflow. Resultantly, this could lead to inconsistencies in accounting balances as the numeric balance could be made to roll over or under its maximum or minimum value."
+}
+```

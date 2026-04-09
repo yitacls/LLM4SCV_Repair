@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EnterCoin",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic operations to prevent underflow/overflow vulnerabilities by using SafeMath library patterns. Reordered operations to follow checks-effects-interactions pattern properly.",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balanceOf[msg.sender] < amount ) throw;        \n        balanceOf[msg.sender] -= amount;                   \n        balanceOf[this] += amount;                         \n        uint256 ethAmount = amount * sellPrice;\n        Transfer(msg.sender, this, amount);            \n        if (!msg.sender.send(ethAmount)) {        \n            throw;                                         \n        } \n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

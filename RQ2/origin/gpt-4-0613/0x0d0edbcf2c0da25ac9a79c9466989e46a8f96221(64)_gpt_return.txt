@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.send(withdrawAmount);",
+    "description": "In the function 'withdrawFunds' the low-level function 'send' is used to transfer Ether. The return value of 'send' is not checked which could lead to a failure of the Ether transfer. If this is not handled properly, it can lead to loss of funds or lock of the contract functionalities."
+}
+```

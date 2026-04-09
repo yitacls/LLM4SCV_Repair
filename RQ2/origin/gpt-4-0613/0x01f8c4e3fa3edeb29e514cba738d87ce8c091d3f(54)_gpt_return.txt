@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "In the PERSONAL_BANK contract, within the Collect function there is a susceptible call value. Reentrancy vulnerability issue occurs when the same function can be called again before the first execution finishes, potentially allowing unauthorized withdrawals from the account. An attacker can drain the contract of Ether before the 'balances[msg.sender]-=_am;' gets a chance to execute. This contract does not use a modifier to prevent reentrancy attacks. The state variable 'balances[msg.sender]' should be reduced before actually transferring the Ether."
+}
+```

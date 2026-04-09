@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "Pragma solidity ^0.6.0;",
+        "description": "The Solidity pragma is fixed at a version that is not the latest one, which might result in the contract not utilizing the updated features and security patches. It is considered best practice to use a version range instead of specifying a single version."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "_bond.approve(spender, amount);",
+        "description": "This line of code is vulnerable to reentrant function calls, as it allows external contract calls before the internal state (in this case, approval of bond tokens) is finalized. An attacker could exploit this vulnerability to take control over a user's funds."
+    }
+]
+```

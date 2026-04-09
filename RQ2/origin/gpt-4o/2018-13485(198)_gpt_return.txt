@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; // <IO_VUL>",
+    "description": "The use of the `+=` operator in this line introduces a potential integer overflow vulnerability. In Solidity versions prior to 0.8.0, arithmetic operations do not perform implicit overflow checks. If the value of `balanceOf[target]` or `mintedAmount` is sufficiently large, the addition can result in an overflow, leading to incorrect balances and potentially compromising the integrity of the contract. This vulnerability could be exploited by malicious actors to mint more tokens than expected or manipulate token balances."
+}
+```

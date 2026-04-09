@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "betOf",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by removing dependency on block.blockhash which is predictable and can be manipulated by miners. The function now relies on a secure hash retrieval mechanism or returns funds if hash generation fails.",
+            "corrected_code": "function betOf(address _who) constant external returns (uint)  {\n        Bet memory player = bets[_who];\n        if( (player.value==0) ||\n            (player.blockNum<=1) ||\n            (block.number<player.blockNum) ||\n            (block.number>=player.blockNum + (10 * hashesSize))){\n            return(0);\n        }\n        if(block.number<player.blockNum+256){\n            // Removed vulnerable block.blockhash usage\n            // Return 0 to force use of the secure hash mechanism\n            return(0);\n        }\n        if(hashFirst>0){\n            uint32 hash = getHash(player.blockNum);\n            if(hash == 0x1000000) { // load hash failed :-(, return funds\n                return(uint(player.value));\n            }\n            else{\n                return(betPrize(player,uint24(hash)));\n            }\n\t}\n        return(0);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Line 275-282 in depositTo() function",
+            "description": "The depositTo() function calls the internal _deposit() function which mints share tokens before transferring user funds via transferFrom. This violates the checks-effects-interactions pattern and creates a reentrancy vulnerability where an attacker could re-enter the function through a malicious token contract before the funds are transferred."
+        },
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Line 279 in depositTo() function",
+            "description": "The return value of IERC20Upgradeable(token).transferFrom() is not checked. If the token transfer fails (returns false), the function will continue execution, allowing users to receive share tokens without actually depositing funds. This should use safeTransferFrom() or check the return value."
+        }
+    ]
+}
+```

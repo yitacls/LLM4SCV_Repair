@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout)",
+    "description": "The low-level send() call is not checked for success or failure. In Solidity 0.5.8, send() returns a boolean indicating success but this return value is ignored. If the send() fails (e.g., due to gas limitations or recipient contract rejection), the payment will not be processed but the contract state will still be updated as if it was successful. This can lead to funds being locked or payments being skipped while the payment index continues to increment, potentially causing loss of funds for depositors."
+}
+```

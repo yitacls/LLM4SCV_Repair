@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "In the SaleAuction contract, the '.send()' function is used to send ether from a contract to an address without checking the return value of the '.send()' method. This is unsafe as it may fail silently, resulting in funds being locked in the contract.  '.send()' only provides 2300 gas which might not be enough for more complex operations causing the .send() to fail but the contract execution to continue. Since the return value is not checked, the contract cannot respond to the failure. The version of solidity used, 0.4.11, does not yet automatically revert state changes on a failed '.send()' or '.call()' due to low level calls not reverting before solidity 0.4.13"
+}
+```

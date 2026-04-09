@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[msg.sender] += amount;",
+    "description": "The addition operation on balanceOf[msg.sender] is vulnerable to integer overflow. In Solidity version ^0.4.16, there is no automatic overflow protection. If msg.sender's balance is close to the maximum value of the uint type and a large amount is added, it could cause an overflow, resulting in the balance being wrapped around to a much smaller value. This could allow an attacker to manipulate their token balance."
+}
+```

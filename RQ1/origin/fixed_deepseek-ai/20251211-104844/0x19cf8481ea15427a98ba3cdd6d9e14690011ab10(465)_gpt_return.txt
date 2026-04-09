@@ -1,0 +1,47 @@
+```json
+[{
+    "contract_name": "daoPOLSKAtokens",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "refundstate",
+            "fix_info": "Added declaration for refundstate variable used in finalize function",
+            "variable_code": "bool public refundstate;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "funding",
+            "fix_info": "Added declaration for funding variable used in finalize function",
+            "variable_code": "bool public funding;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "fundingEndBlock",
+            "fix_info": "Added declaration for fundingEndBlock variable used in finalize function",
+            "variable_code": "uint256 public fundingEndBlock;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "oneweek",
+            "fix_info": "Added declaration for oneweek variable used in finalize function",
+            "variable_code": "uint256 public constant oneweek = 40320; // 1 week in blocks (assuming 15 sec block time)",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Added declaration for owner variable used in finalize function",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "finalize",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking send() return value, replaced deprecated throw with revert(), and added require() for access control",
+            "corrected_code": "function finalize() external {\n        require(block.number > fundingEndBlock + 8 * oneweek, \"Funding period plus grace period has not ended\");\n        \n        // Switch to Operational state. This is the only place this can happen.\n        funding = false;\n        refundstate = !refundstate;\n        \n        // Transfer ETH to theDAO Polska Token network Storage address.\n        require(msg.sender == owner, \"Only owner can finalize\");\n        \n        // Check return value of send() and handle failure\n        bool success = owner.send(address(this).balance);\n        require(success, \"ETH transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

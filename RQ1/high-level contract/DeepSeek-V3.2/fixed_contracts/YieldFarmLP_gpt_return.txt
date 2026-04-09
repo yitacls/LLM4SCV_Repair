@@ -1,0 +1,53 @@
+```json
+[{
+    "contract_name": "YieldFarmLP",
+    "contract_version": "0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "epochDuration",
+            "fix_info": "Changed visibility to immutable to save gas and prevent modification",
+            "variable_code": "uint public immutable epochDuration;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "epochStart",
+            "fix_info": "Changed visibility to immutable to save gas and prevent modification",
+            "variable_code": "uint public immutable epochStart;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "_totalAmountPerEpoch",
+            "fix_info": "Changed visibility to immutable to save gas and prevent modification",
+            "variable_code": "uint private immutable _totalAmountPerEpoch;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Updated to use SafeMath from OZ v4, changed pragma version to 0.8.0, made epoch variables immutable",
+            "corrected_code": "constructor(address bondTokenAddress, address uniLP, address stakeContract, address communityVault) public {\n    require(bondTokenAddress != address(0), \"Bond token address cannot be zero\");\n    require(uniLP != address(0), \"UniLP address cannot be zero\");\n    require(stakeContract != address(0), \"Stake contract address cannot be zero\");\n    require(communityVault != address(0), \"Community vault address cannot be zero\");\n    \n    _bond = IERC20(bondTokenAddress);\n    _uniLP = uniLP;\n    _staking = IStaking(stakeContract);\n    _communityVault = communityVault;\n    epochDuration = _staking.epochDuration();\n    epochStart = _staking.epoch1Start() + epochDuration;\n    _totalAmountPerEpoch = TOTAL_DISTRIBUTED_AMOUNT * 10**18 / NR_OF_EPOCHS;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "massHarvest",
+            "fix_info": "Fixed gas limit DoS vulnerability by limiting max number of harvestable epochs per transaction and adding safe gas checks",
+            "corrected_code": "function massHarvest() external returns (uint) {\n    uint totalDistributedValue;\n    uint epochId = _getEpochId();\n    \n    // Check if we're in epoch 0\n    if (epochId == 0) {\n        return 0;\n    }\n    \n    epochId = epochId - 1; // Harvest up to previous epoch\n    \n    // Force max number of epochs\n    if (epochId > NR_OF_EPOCHS) {\n        epochId = NR_OF_EPOCHS;\n    }\n    \n    uint128 startEpoch = lastEpochIdHarvested[msg.sender] + 1;\n    uint128 maxHarvestableEpochs = 20; // Limit to prevent gas exhaustion\n    \n    require(startEpoch <= epochId, \"No epochs to harvest\");\n    \n    // Limit the number of epochs that can be harvested in one transaction\n    uint128 endEpoch = uint128(startEpoch + maxHarvestableEpochs - 1);\n    if (endEpoch > epochId) {\n        endEpoch = uint128(epochId);\n    }\n    \n    // Check gas to prevent out-of-gas errors\n    uint256 initialGas = gasleft();\n    \n    for (uint128 i = startEpoch; i <= endEpoch; i++) {\n        // Check remaining gas periodically\n        if ((i - startEpoch) % 5 == 0 && gasleft() < 50000) {\n            break;\n        }\n        totalDistributedValue += _harvest(i);\n    }\n    \n    uint256 epochsHarvested = (lastEpochIdHarvested[msg.sender] - (startEpoch - 1));\n    emit MassHarvest(msg.sender, epochsHarvested, totalDistributedValue);\n    \n    if (totalDistributedValue > 0) {\n        // Use safeTransferFrom for security\n        bool success = _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n        require(success, \"Token transfer failed\");\n    }\n    \n    return totalDistributedValue;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "harvest",
+            "fix_info": "Added input validation and safe token transfer",
+            "corrected_code": "function harvest(uint128 epochId) external returns (uint) {\n    // Validate epochId\n    require(epochId > 0, \"Epoch ID must be greater than 0\");\n    require(_getEpochId() > epochId, \"This epoch is in the future\");\n    require(epochId <= NR_OF_EPOCHS, \"Maximum number of epochs is 100\");\n    require(lastEpochIdHarvested[msg.sender] + 1 == epochId, \"Harvest in order\");\n    \n    uint userReward = _harvest(epochId);\n    \n    if (userReward > 0) {\n        // Use safe transfer pattern\n        bool success = _bond.transferFrom(_communityVault, msg.sender, userReward);\n        require(success, \"Token transfer failed\");\n    }\n    \n    emit Harvest(msg.sender, epochId, userReward);\n    return userReward;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_harvest",
+            "fix_info": "Added require statements to prevent underflow and division by zero",
+            "corrected_code": "function _harvest(uint128 epochId) internal returns (uint) {\n    require(epochId > 0, \"Invalid epoch ID\");\n    \n    // Initialize epoch if needed\n    if (lastInitializedEpoch < epochId) {\n        _initEpoch(epochId);\n    }\n    \n    // Set user state for last harvested\n    lastEpochIdHarvested[msg.sender] = epochId;\n    \n    // Exit if there is no stake on the epoch\n    uint epochPoolSize = epochs[epochId];\n    if (epochPoolSize == 0) {\n        return 0;\n    }\n    \n    uint userBalance = _getUserBalancePerEpoch(msg.sender, epochId);\n    if (userBalance == 0) {\n        return 0;\n    }\n    \n    // Calculate reward with safe math (Solidity 0.8.x has built-in overflow checks)\n    return (_totalAmountPerEpoch * userBalance) / epochPoolSize;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

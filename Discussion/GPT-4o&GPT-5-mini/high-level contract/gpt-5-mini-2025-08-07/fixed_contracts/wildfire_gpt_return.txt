@@ -1,0 +1,29 @@
+[
+    {
+        "contract_name": "SAFECOVID",
+        "contract_version": "^0.6.12",
+        "state_variables": [
+            {
+                "variable_name": "_excludedIndex",
+                "fix_info": "Added mapping to track each excluded address index in the _excluded array. This allows O(1) removal from the array in includeInReward and prevents an owner-triggered DoS by avoiding an unbounded loop search.",
+                "variable_code": "mapping(address => uint256) private _excludedIndex;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "excludeFromReward",
+                "fix_info": "Modified to record the index of the excluded account in _excludedIndex when pushing to the _excluded array. This makes later removal O(1) and prevents an owner-callable DoS when includeInReward previously looped over the whole array to find the account.",
+                "corrected_code": "function excludeFromReward(address account) public onlyOwner() {\n    require(!_isExcluded[account], \"Account is already excluded\");\n    if (_rOwned[account] > 0) {\n        _tOwned[account] = tokenFromReflection(_rOwned[account]);\n    }\n    _isExcluded[account] = true;\n    // store index and push into array\n    _excludedIndex[account] = _excluded.length;\n    _excluded.push(account);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "includeInReward",
+                "fix_info": "Rewrote to remove the account from _excluded in O(1) using the _excludedIndex mapping. This replaces the previous linear search loop which could lead to gas exhaustion / DoS for the owner calling the function when the array grew large.",
+                "corrected_code": "function includeInReward(address account) external onlyOwner() {\n    require(_isExcluded[account], \"Account is not excluded\");\n    uint256 index = _excludedIndex[account];\n    uint256 lastIndex = _excluded.length.sub(1);\n\n    if (index != lastIndex) {\n        // move last element into the place to delete\n        address lastAccount = _excluded[lastIndex];\n        _excluded[index] = lastAccount;\n        _excludedIndex[lastAccount] = index;\n    }\n\n    // pop and cleanup\n    _excluded.pop();\n    _tOwned[account] = 0;\n    _isExcluded[account] = false;\n    delete _excludedIndex[account];\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

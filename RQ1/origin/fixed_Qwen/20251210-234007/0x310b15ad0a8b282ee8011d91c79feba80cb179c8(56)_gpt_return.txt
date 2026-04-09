@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "NumbersToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict sensitive functions to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier to prevent unauthorized withdrawals",
+            "corrected_code": "function withdraw(uint tokenCount) \n      public\n      onlyOwner\n      returns (bool)\n    {\n\t\tvar balance = dividends(msg.sender);\n\t\tpayouts[msg.sender] += (int256) (balance * PRECISION);\n\t\ttotalPayouts += (int256) (balance * PRECISION);\n\t\tmsg.sender.transfer(balance);\n\t\treturn true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

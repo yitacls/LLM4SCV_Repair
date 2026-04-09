@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "BasicToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "impl",
+            "fix_info": "Made internal or private to prevent direct access and added setter function",
+            "variable_code": "address private impl;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyImpl",
+            "fix_info": "Added modifier to centralize the implementation address check",
+            "modifier_code": "modifier onlyImpl() {\n    require(msg.sender == impl, \"Caller is not the implementation address\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferOrigin",
+            "fix_info": "Replaced tx.origin with msg.sender for proper authentication and added onlyImpl modifier",
+            "corrected_code": "function transferOrigin(address _to, uint256 _value) public onlyImpl returns (bool) {\n    require(!locked, \"Contract is locked\");\n    require(_to != address(0), \"Cannot transfer to zero address\");\n    require(_value <= balances[msg.sender], \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setImplementation",
+            "fix_info": "Added function to securely update the implementation address",
+            "corrected_code": "function setImplementation(address _newImpl) public onlyOwner {\n    require(_newImpl != address(0), \"Invalid implementation address\");\n    address oldImpl = impl;\n    impl = _newImpl;\n    emit ImplementationUpdated(oldImpl, _newImpl);\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

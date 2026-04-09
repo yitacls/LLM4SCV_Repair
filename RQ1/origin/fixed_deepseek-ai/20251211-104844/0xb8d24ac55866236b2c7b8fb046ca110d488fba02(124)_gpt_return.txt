@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "ZiberToken",
+        "contract_version": "^0.4.13",
+        "state_variables": [
+            {
+                "variable_name": "ico",
+                "fix_info": "Changed from uint to uint256 for explicit type and added SafeMath protection",
+                "variable_code": "uint256 public ico = 0;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "developer_address",
+                "fix_info": "Explicitly declared as address type",
+                "variable_code": "address public developer_address;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "kill_switch",
+                "fix_info": "Explicitly declared as bool type",
+                "variable_code": "bool public kill_switch = false;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "bought_tokens",
+                "fix_info": "Explicitly declared as bool type",
+                "variable_code": "bool public bought_tokens = false;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "add_to_ico",
+                "fix_info": "Replaced arithmetic vulnerability with SafeMath addition, added proper require statements instead of throw, and prevented overflow/underflow",
+                "corrected_code": "function add_to_ico() public payable {\n    require(msg.sender == developer_address, \"Only developer can add to ICO\");\n    require(!kill_switch, \"ICO has been killed\");\n    require(!bought_tokens, \"Tokens already purchased\");\n    require(msg.value > 0, \"Must send ETH to add to ICO\");\n    \n    // Using SafeMath to prevent overflow\n    ico = ico.add(msg.value);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

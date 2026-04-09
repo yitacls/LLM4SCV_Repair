@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BestMultiplier",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "send",
+            "fix_info": "Added check for return value of low-level send call to prevent silent failures",
+            "corrected_code": "function send(address _receiver, uint _amount) internal {\n        if (_amount > 0 && address(_receiver) != 0) {\n            require(_receiver.send(_amount));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

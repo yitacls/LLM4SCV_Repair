@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.gas(gasToForward)(msg.data);",
+    "description": "The code makes a low-level call to the target address using 'call.gas()' without verifying if the call was successful. Low-level calls do not revert the transaction on failure, and there is no check for the return value, which can lead to unexpected behavior or security vulnerabilities if the call fails."
+}
+```

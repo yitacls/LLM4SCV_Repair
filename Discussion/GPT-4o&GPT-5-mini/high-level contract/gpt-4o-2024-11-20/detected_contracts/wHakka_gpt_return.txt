@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-116-Block values as a proxy for time",
+        "location": "Line 509: uint256 timeElapsed = block.timestamp.sub(lastUpdateTimestamp);",
+        "description": "The contract uses the block.timestamp value to measure time elapsed since the last update. However, block timestamps can be manipulated by miners to some extent, leading to potential exploitation of the staking rate calculation logic."
+    },
+    {
+        "type": "SWC-116-Block values as a proxy for time",
+        "location": "Line 580: require(block.timestamp >= v.unlockTime, \"locked\");",
+        "description": "The staking logic relies on block.timestamp to verify lockup period completion. Block timestamps can be manipulated within a limited range, creating potential vulnerabilities if attackers seek to unlock funds prematurely or delay unlocking."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Lines 556-573 (stake method)",
+        "description": "The stake function features updates to contract state variables both before and after executing an external token transfer. If the external call re-enters into the contract (potentially via malicious token contracts), it may result in inconsistent state. Proper reentrancy protection should be in place."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Lines 576-592 (unstake method)",
+        "description": "The unstake function transfers tokens back to the user after modifying state variables. However, these modifications occur post external transfer, creating a potential reentrancy vulnerability if a malicious actor uses a reentrant call to manipulate or exploit contract state."
+    }
+]
+```

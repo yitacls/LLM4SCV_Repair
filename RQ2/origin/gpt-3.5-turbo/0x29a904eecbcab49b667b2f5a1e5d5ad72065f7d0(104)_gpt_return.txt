@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "bytes memory _callData = callData;  // fault line",
+    "description": "The vulnerability lies in storing the entire callData in memory before passing it to log functions. This can lead to a potential denial-of-service (DoS) attack by consuming excessive gas when dealing with large callData sizes. It is recommended to avoid copying large amounts of data into memory in a single operation to prevent DoS attacks."
+}
+```

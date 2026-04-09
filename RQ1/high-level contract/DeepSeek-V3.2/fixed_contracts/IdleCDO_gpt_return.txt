@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "IdleCDO",
+    "contract_version": "0.8.4",
+    "state_variables": [
+        {
+            "variable_name": "_depositLock",
+            "fix_info": "Added reentrancy guard state variable to prevent deposit/reentrancy attacks",
+            "variable_code": "bool private _depositLock;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrantDeposit",
+            "fix_info": "Added reentrancy guard modifier for deposit functions",
+            "modifier_code": "modifier nonReentrantDeposit() {\n        require(!_depositLock, \"IDLE:REENTRANT_DEPOSIT\");\n        _depositLock = true;\n        _;\n        _depositLock = false;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "depositAA",
+            "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+            "corrected_code": "function depositAA(uint256 _amount) external whenNotPaused nonReentrantDeposit returns (uint256) {\n    return _deposit(_amount, AATranche);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "depositBB",
+            "fix_info": "Added reentrancy guard modifier to prevent reentrancy attacks",
+            "corrected_code": "function depositBB(uint256 _amount) external whenNotPaused nonReentrantDeposit returns (uint256) {\n    return _deposit(_amount, BBTranche);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_deposit",
+            "fix_info": "Fixed reentrancy vulnerability by following CEI pattern and removing SWC-107 vulnerability",
+            "corrected_code": "function _deposit(uint256 _amount, address _tranche) internal returns (uint256 _minted) {\n    // check that we are not depositing more than the contract available limit\n    _guarded(_amount);\n    // set _lastCallerBlock hash\n    _updateCallerBlock();\n    // check if strategyPrice decreased\n    _checkDefault();\n    // interest accrued since last mint/redeem/harvest is splitted between AA and BB\n    // according to trancheAPRSplitRatio. NAVs of AA and BB are so updated and tranche\n    // prices adjusted accordingly\n    _updatePrices();\n    \n    // CEI PATTERN: Transfer funds first before minting\n    // get underlyings from sender\n    IERC20Detailed(token).safeTransferFrom(msg.sender, address(this), _amount);\n    \n    // mint tranches tokens according to the current prices\n    _minted = _mintShares(_amount, msg.sender, _tranche);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

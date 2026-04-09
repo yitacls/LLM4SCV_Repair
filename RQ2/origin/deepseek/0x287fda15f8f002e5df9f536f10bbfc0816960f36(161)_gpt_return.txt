@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function () payable public {\n    owner.send(msg.value);\n    uint amount = msg.value * buyPrice;\n    _transfer(owner, msg.sender, amount);\n}",
+    "description": "The fallback function has no access control modifiers, allowing anyone to send Ether and trigger token transfers at a fixed buyPrice. This bypasses any intended purchase restrictions or KYC checks, potentially enabling unlimited token minting to any sender. The lack of require statements or owner-only restrictions makes the token sale mechanism completely public and unprotected."
+}
+```

@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "L321 - L351",
+        "description": "The `closeTrove` function sends ETH back to the borrower without proper access control or validation, potentially allowing unauthorized withdrawal of ETH if the function is manipulated or called under unexpected conditions. The function should ensure that only the rightful owner can claim the collateral and that all conditions for closing the trove are properly met."
+    }
+]
+```

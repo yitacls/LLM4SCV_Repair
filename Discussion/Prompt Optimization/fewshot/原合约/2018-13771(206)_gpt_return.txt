@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "ExacoreContract",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Add overflow check before updating balanceOf and totalSupply.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {
+    require(balanceOf[target] + mintedAmount >= balanceOf[target]);
+    require(totalSupply + mintedAmount >= totalSupply);
+    balanceOf[target] += mintedAmount;
+    totalSupply += mintedAmount;
+    emit Transfer(0, this, mintedAmount);
+    emit Transfer(this, target, mintedAmount);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

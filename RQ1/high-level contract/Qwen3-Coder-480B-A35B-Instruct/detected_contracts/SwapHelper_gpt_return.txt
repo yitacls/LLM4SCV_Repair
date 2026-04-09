@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 valueX96 = (amount0In * ((uint256(sqrtPriceX96)**2) >> FixedPoint96.RESOLUTION)) + (amount1In << FixedPoint96.RESOLUTION);",
+        "description": "Potential overflow in the calculation of valueX96 due to multiplication and bit-shifting operations without explicit overflow checks in Solidity 0.7.6. The multiplication of amount0In with a large shifted value and the left shift of amount1In can exceed uint256 limits."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint256 amount1PostX96 = (ratioE18 * valueX96) / (ratioE18 + 1e18);",
+        "description": "Risk of overflow when multiplying ratioE18 with valueX96, especially since both can be very large numbers. Solidity 0.7.6 does not have default overflow protection, making this operation vulnerable."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "amountToSwap = (((amount1PostX96 - (amount1In << FixedPoint96.RESOLUTION)) / sqrtPriceX96) << FixedPoint96.RESOLUTION) / sqrtPriceX96;",
+        "description": "Multiple arithmetic operations including subtraction, division, and left shifts are performed without checks. If amount1PostX96 is less than the shifted amount1In, it could underflow, and subsequent operations may cause unexpected behavior."
+    }
+]
+```

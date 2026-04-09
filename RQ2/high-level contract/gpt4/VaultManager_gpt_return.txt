@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 156-166 function isValidCDP",
+    "description": "The risk of overflow occurs when the calculated variables debtValueAdjusted and collateralValueTimes100Point00000 exceeds the limit of type uint256 leading to the values resetting to zero and computation of the rest of the code being affected, it's important to consider and mitigate this risk."
+}
+```

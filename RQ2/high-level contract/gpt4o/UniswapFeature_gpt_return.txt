@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L203-206: Call pair.getReserves(), store the results at `0xC00`",
+    "description": "The `getReserves` function in the Uniswap pair contract is called using `staticcall` on line 203 of the assembly block. If a malicious token pair is used, it can manipulate the behavior of the call or return unexpected data that could affect subsequent calculations and interactions, potentially allowing reentrancy attacks. This vulnerability can be mitigated by validating the addresses or ensuring secure calls to external contracts."
+}
+```

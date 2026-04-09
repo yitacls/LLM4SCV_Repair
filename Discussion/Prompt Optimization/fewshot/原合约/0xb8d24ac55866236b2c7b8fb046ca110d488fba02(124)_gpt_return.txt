@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "ZiberToken",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "add_to_ico",
+                "fix_info": "Add overflow check before increasing ico balance.",
+                "corrected_code": "function add_to_ico() payable {
+    require(msg.sender == developer_address);
+    require(!kill_switch);
+    require(!bought_tokens);
+    require(ico + msg.value >= ico);
+    ico += msg.value;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

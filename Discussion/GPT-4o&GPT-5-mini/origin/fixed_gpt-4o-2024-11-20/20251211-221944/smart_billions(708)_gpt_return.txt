@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced use of block.blockhash for randomness to mitigate BAD_RANDOMNESS issue with more secure pseudo-random number generation based on keccak256 and added input validation.",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) private view returns (uint) {\n    require(_lastb <= block.number && _lastb + 9 <= block.number, \"Invalid block range\");\n    uint randomHash = uint(keccak256(abi.encodePacked(\n        block.timestamp,\n        block.difficulty,\n        _delta,\n        _lastb\n    )));\n\n    uint result = (randomHash & 0xFFFFFF) |\n                  ((randomHash >> 24 & 0xFFFFFF) << 24) |\n                  ((randomHash >> 48 & 0xFFFFFF) << 48) |\n                  ((randomHash >> 72 & 0xFFFFFF) << 72) |\n                  ((randomHash >> 96 & 0xFFFFFF) << 96) |\n                  ((randomHash >> 120 & 0xFFFFFF) << 120) |\n                  ((randomHash >> 144 & 0xFFFFFF) << 144) |\n                  ((randomHash >> 168 & 0xFFFFFF) << 168) |\n                  ((randomHash >> 192 & 0xFFFFFF) << 192) |\n                  ((randomHash >> 216 & 0xFFFFFF) << 216) |\n                  (_delta / hashesSize << 240);\n    return result;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

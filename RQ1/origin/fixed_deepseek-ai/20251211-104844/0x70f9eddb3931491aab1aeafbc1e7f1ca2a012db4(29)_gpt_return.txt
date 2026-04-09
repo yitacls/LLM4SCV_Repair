@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "HomeyJar",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to replace inline require check and improve code reusability",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == Owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value and handling potential failures.\nAdded onlyOwner modifier to replace inline require.\nChanged function name to follow Solidity naming conventions (lowercase start).",
+            "corrected_code": "function command(address adr, bytes data) payable public onlyOwner {\n        bool success = adr.call.value(msg.value)(data);\n        require(success, \"Low-level call failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

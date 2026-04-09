@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "NomToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced insecure tx.origin check with secure onlyOwner modifier to prevent unauthorized access",
+            "corrected_code": "function mint() public onlyOwner returns (bool) {\n    uint256 tokensToMint = 0;\n    if (now > initialIssueMintingDate && !initialIssueMinted) {\n        tokensToMint = tokensToMint.add(initialIssueMinting);\n        initialIssueMinted = true;\n    }\n    if (now > firstStageMintingDate && !firstStageMinted) {\n        tokensToMint = tokensToMint.add(firstStageMinting);\n        firstStageMinted = true;\n    }\n    if (now > secondStageMintingDate && !secondStageMinted) {\n        tokensToMint = tokensToMint.add(secondStageMinting);\n        secondStageMinted = true;\n    }\n    if (now > thirdStageMintingDate && !thirdStageMinted) {\n        tokensToMint = tokensToMint.add(thirdStageMinting);\n        thirdStageMinted = true;\n    }\n    require(tokensToMint > 0);\n    uint256 newTotalSupply = totalSupply.add(tokensToMint);\n    require(newTotalSupply <= totalTokens);\n    totalSupply = totalSupply.add(tokensToMint);\n    balances[owner] = balances[owner].add(tokensToMint);\n    Mint(owner, tokensToMint);\n    Transfer(address(0), owner, tokensToMint);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

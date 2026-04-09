@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(_recipient, _value);",
+    "description": "The low-level call method does not check the return value, which means the transaction will continue even if the call fails. In Solidity version ^0.4.24, the call method returns a boolean indicating success or failure, but this return value is not checked, potentially leading to unexpected behavior when the external call fails."
+}
+```

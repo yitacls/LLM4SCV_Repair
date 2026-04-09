@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "ETHDice",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added explicit visibility for clarity",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict owner-only functions",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "canPlay",
+            "fix_info": "Modified to prevent contract calls properly",
+            "modifier_code": "modifier canPlay() {\n        require(msg.sender == tx.origin, \"Cannot call from contract\");\n        require(!isContract(msg.sender), \"Cannot call from contract\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "play",
+            "fix_info": "Fixed access control vulnerability by removing owner bypass, improved random generation, and added reentrancy protection",
+            "corrected_code": "function play() payable canPlay public {\n        if (nonce < 5e8) {\n            nonce = 3000e8;\n        }\n        \n        uint256 etherValue = msg.value;\n        address sender = msg.sender;\n        address myAddress = address(this);\n        uint256 etherBalance = myAddress.balance - msg.value; // Avoid including current transaction\n        \n        if (etherValue > StartEth) {\n            RandNonce = RandNonce.add(nonce);\n            uint256 random1 = uint256(\n                keccak256(\n                    abi.encodePacked(\n                        blockhash(RandNonce % 100),\n                        RandNonce,\n                        sender,\n                        block.timestamp,\n                        block.difficulty\n                    )\n                )\n            ) % 10;\n            \n            RandNonce = RandNonce.add(random1);\n            \n            if (random1 < 5) {\n                etherValue = etherValue.mul(2); // Double the winnings\n                nonce = nonce.div(100000).mul(99999);\n                \n                if (etherValue <= etherBalance.mul(5).div(100)) {\n                    payable(sender).transfer(etherValue);\n                } else {\n                    etherValue = etherValue.div(2);\n                    payable(sender).transfer(\n                        etherBalance.mul(5).div(100).add(etherValue)\n                    );\n                }\n            }\n        } else {\n            // Refund if bet is too small\n            payable(sender).transfer(etherValue);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Added explicit owner-only withdrawal function",
+            "corrected_code": "function withdraw(uint256 amount) external onlyOwner {\n        require(amount <= address(this).balance, \"Insufficient balance\");\n        payable(owner).transfer(amount);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

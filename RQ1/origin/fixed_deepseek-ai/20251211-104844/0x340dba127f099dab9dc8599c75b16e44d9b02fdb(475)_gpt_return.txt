@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "TokenSale",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No change needed - variable already exists and is used properly",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added ownership modifier to replace tx.origin check",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced vulnerable tx.origin == owner check with secure msg.sender == owner using modifier. Removed tx.origin usage which can be manipulated by intermediate contracts. Added explicit ownership check.",
+            "corrected_code": "function addMeByRC() public onlyOwner {\n        rc[msg.sender] = true;\n        emit NewRC(msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "PredictTheBlockHashChallenge",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "guesses",
+            "fix_info": "Added commitBlock field to store the block number when the guess was committed",
+            "variable_code": "mapping(address => Guess) public guesses;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "settle",
+            "fix_info": "Fixed bad randomness vulnerability by using blockhash of a recent block (within 256 blocks) and adding proper validation",
+            "corrected_code": "function settle() public {\n        require(block.number > guesses[msg.sender].block);\n        require(block.number <= guesses[msg.sender].block + 256); // blockhash only works for last 256 blocks\n        \n        bytes32 answer = blockhash(guesses[msg.sender].block);\n        require(answer != 0); // Ensure blockhash is available\n\n        Guess storage guess = guesses[msg.sender];\n        guess.block = 0;\n        \n        if (guess.guess == answer) {\n            msg.sender.transfer(2 ether);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

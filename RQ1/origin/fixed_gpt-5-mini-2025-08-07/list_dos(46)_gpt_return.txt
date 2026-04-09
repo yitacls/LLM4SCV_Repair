@@ -1,0 +1,33 @@
+[{
+    "contract_name": "Government",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "pendingWithdrawals",
+            "fix_info": "Added pull-payment mapping to avoid DoS from external transfers; replaces direct .send/.transfer calls by queuing amounts for withdrawal.",
+            "variable_code": "mapping(address => uint) public pendingWithdrawals;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "LogWithdrawal",
+            "fix_info": "Added event for withdrawals so clients can track when funds are withdrawn.",
+            "variable_code": "event LogWithdrawal(address indexed to, uint amount);",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "lendGovernmentMoney",
+            "fix_info": "Replaced all external immediate transfers with the withdraw/pull pattern (queued payments via pendingWithdrawals). Added bounds checks to avoid out-of-bounds array access. Preserved original logic and accounting while preventing DoS via failing external calls.",
+            "corrected_code": "function lendGovernmentMoney(address buddy) public payable returns (bool) {\n    uint amount = msg.value;\n    // check if the system already broke down. If for 12h no new creditor gives new credit to the system it will break down.\n    if (lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp) {\n        // queue refund to sender\n        pendingWithdrawals[msg.sender] += amount;\n\n        // queue profitFromCrash to last creditor (if any)\n        if (creditorAddresses.length > 0) {\n            address lastCreditor = creditorAddresses[creditorAddresses.length - 1];\n            pendingWithdrawals[lastCreditor] += profitFromCrash;\n        }\n\n        // compute remaining funds that should go to corruptElite (preserve original ordering semantics)\n        // original did: msg.sender.send(amount); lastCreditor.send(profitFromCrash); corruptElite.send(this.balance);\n        // therefore corruptElite received contract balance after the two previous sends. We reproduce that by deducting those queued amounts.\n        uint corruptAmount = 0;\n        uint bal = address(this).balance;\n        // bal includes msg.value (amount). Deduct queued sender refund and profitFromCrash to match original behavior.\n        if (bal > amount + profitFromCrash) {\n            corruptAmount = bal - amount - profitFromCrash;\n        }\n        if (corruptAmount > 0) {\n            pendingWithdrawals[corruptElite] += corruptAmount;\n        }\n\n        // Reset contract state\n        lastCreditorPayedOut = 0;\n        lastTimeOfNewCredit = block.timestamp;\n        profitFromCrash = 0;\n        // clearing arrays by setting length to 0 (cheaper and safe)\n        creditorAddresses.length = 0;\n        creditorAmounts.length = 0;\n        round += 1;\n        return false;\n    } else {\n        // the system needs to collect at least 1% of the profit from a crash to stay alive\n        if (amount >= 10 ** 18) {\n            // the System has received fresh money, it will survive at least 12h more\n            lastTimeOfNewCredit = block.timestamp;\n\n            // register the new creditor and his amount with 10% interest rate\n            creditorAddresses.push(msg.sender);\n            creditorAmounts.push(amount * 110 / 100);\n\n            // queue corrupt elite's 5% fee\n            uint corruptFee = amount * 5 / 100;\n            pendingWithdrawals[corruptElite] += corruptFee;\n\n            // 5% are going into the economy (they will increase the value for the person seeing the crash coming)\n            if (profitFromCrash < 10000 * 10**18) {\n                profitFromCrash += corruptFee;\n            }\n\n            // if you have a buddy in the government (and he is in the creditor list) he can get 5% of your credits.\n            if (buddies[buddy] >= amount) {\n                pendingWithdrawals[buddy] += amount * 5 / 100;\n            }\n\n            buddies[msg.sender] += amount * 110 / 100;\n\n            // 90% of the money will be used to pay out old creditors\n            if (creditorAddresses.length > lastCreditorPayedOut) {\n                uint toPay = creditorAmounts[lastCreditorPayedOut];\n                // ensure we don't touch the reserved profitFromCrash\n                if (toPay <= address(this).balance - profitFromCrash) {\n                    address creditor = creditorAddresses[lastCreditorPayedOut];\n                    pendingWithdrawals[creditor] += toPay;\n                    // update buddy accounting safely\n                    if (buddies[creditor] >= toPay) {\n                        buddies[creditor] -= toPay;\n                    } else {\n                        buddies[creditor] = 0;\n                    }\n                    lastCreditorPayedOut += 1;\n                }\n            }\n            return true;\n        } else {\n            // refund small amounts by queuing refund\n            pendingWithdrawals[msg.sender] += amount;\n            return false;\n        }\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Added withdraw function implementing the pull pattern so recipients can collect queued funds. Uses transfer to forward funds after zeroing the queued amount to avoid re-entrancy issues. Emits LogWithdrawal event.",
+            "corrected_code": "function withdraw() public returns (bool) {\n    uint amount = pendingWithdrawals[msg.sender];\n    if (amount == 0) {\n        return false;\n    }\n    // zero before sending to prevent re-entrancy\n    pendingWithdrawals[msg.sender] = 0;\n    msg.sender.transfer(amount);\n    emit LogWithdrawal(msg.sender, amount);\n    return true;\n}",
+            "change_type": "added"
+        }
+    ]
+}]

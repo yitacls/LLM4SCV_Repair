@@ -1,0 +1,23 @@
+```json
+[
+    {
+        "contract_name": "ERC20Standard",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mint",
+                "fix_info": "Fixed access control vulnerability by using msg.sender instead of tx.origin",
+                "corrected_code": "function mint(uint256 amount) public {
+        require(amount >= 0);
+        require(msg.sender == owner);
+        balances[msg.sender] += amount;
+        totalSupply += amount;
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

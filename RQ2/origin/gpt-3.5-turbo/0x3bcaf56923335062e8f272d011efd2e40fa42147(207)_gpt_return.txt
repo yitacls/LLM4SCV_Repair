@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function admin() external",
+    "description": "The admin function lacks proper access control which allows anyone to trigger selfdestruct and end the contract, posing a serious security risk as unauthorized users could potentially destroy the contract and its funds."
+}
+```

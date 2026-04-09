@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for authorization which is a security risk. tx.origin is the address of the account that originally sent the transaction, which can be different from msg.sender if another contract forwarded the transaction. If a contract relies on tx.origin for authentication, it can potentially be compromised by any contract that is directly called by the original sender."
+}
+```

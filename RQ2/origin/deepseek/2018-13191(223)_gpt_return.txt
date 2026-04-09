@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "The function mintToken performs unsigned integer addition without overflow checks. In Solidity versions prior to 0.8.0, arithmetic operations wrap around on overflow/underflow without reverting. An overflow in either balanceOf[target] or totalSupply could result in the balances being set to incorrect, much lower values (due to wrap-around) or being manipulated to bypass intended token economics. This violates the ERC-20 standard's expectation that totalSupply accurately reflects the sum of all balances. While the contract inherits from a library that may have SafeMath, this specific function does not use SafeMath operations (e.g., .add()), leaving it vulnerable. An owner (or an attacker if ownership is compromised) could exploit this to mint an excessive amount, causing an overflow that drastically reduces the reported totalSupply or a user's balance."
+}
+```

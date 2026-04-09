@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "Arithmetic Overflow/Underflow",
+            "location": "totalSupply += _amount; and balances[owner] += _amount;",
+            "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflows or underflows. The lines `totalSupply += _amount;` and `balances[owner] += _amount;` could overflow if the new values exceed the maximum uint256 value (2^256 - 1). This could cause the state variables to wrap around to extremely small values, breaking the token's accounting logic. For example, if `totalSupply` is close to the maximum value and a large `_amount` is added, it would overflow instead of reaching the intended large value. This vulnerability could be exploited to mint an excessive number of tokens, manipulate balances, or cause denial-of-service conditions."
+        }
+    ]
+}
+```

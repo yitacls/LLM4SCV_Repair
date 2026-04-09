@@ -1,0 +1,7 @@
+```json
+{
+    "type": "REENTRANCY",
+    "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; ... }",
+    "description": "The contract follows the dangerous checks-effects-interactions pattern by making an external call to msg.sender before updating the internal state (balances). This allows a malicious contract to recursively call CashOut() in its fallback function, draining funds before the balance is deducted. The attack is enabled because: 1) call.value() forwards all remaining gas by default in Solidity 0.4.19, 2) there is no reentrancy guard, and 3) state update occurs after the external call. Use checks-effects-interactions pattern by updating balances before the external call, or implement OpenZeppelin's ReentrancyGuard."
+}
+```

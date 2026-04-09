@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function Constructor() public",
+    "description": "The constructor is named 'Constructor' instead of using the constructor keyword or having the same name as the contract. In Solidity versions prior to 0.4.22, constructors were defined as functions with the same name as the contract. In version 0.4.22 and later, the 'constructor' keyword was introduced. However, with version ^0.4.24, this function named 'Constructor' is just a regular public function that can be called by anyone after deployment, not a constructor. This allows anyone to become the owner by calling this function, resulting in improper access control."
+}
+```

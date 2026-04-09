@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ExtremeToken",
+        "contract_version": "^0.4.14",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for multiplication and balance operations, prevented reentrancy by withdrawing funds after state updates, and replaced deprecated 'throw' with 'revert()'",
+                "corrected_code": "function sell(uint256 amount) {\n        // Use SafeMath to prevent overflow/underflow\n        require(balances[msg.sender] >= amount, \"Insufficient balance\");\n        \n        // Update balances using SafeMath\n        balances[msg.sender] = balances[msg.sender].sub(amount);\n        balances[this] = balances[this].add(amount);\n        \n        // Calculate payment using SafeMath to prevent overflow\n        uint256 payment = amount.mul(sellPrice);\n        \n        // Transfer event before external call (Checks-Effects-Interactions pattern)\n        Transfer(msg.sender, this, amount);\n        \n        // Send payment - check for failure and revert if necessary\n        require(msg.sender.send(payment), \"Payment failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,29 @@
+Looking at the contract, I can identify the reentrancy vulnerability in the `_burn` function (lines 399-422). The issue is that `_callTokensToSend` is called before updating the state, which could allow a reentrant call if the `tokensToSend` callback is implemented by the `from` address and calls back into the contract.
+
+Here's the JSON with the corrected function:
+
+```json
+[{
+    "contract_name": "LockableERC777",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_burn",
+            "fix_info": "Fixed reentrancy vulnerability by applying Checks-Effects-Interactions pattern. State is updated before making external calls.",
+            "corrected_code": "function _burn(\n        address operator,\n        address from,\n        uint256 amount,\n        bytes memory data,\n        bytes memory operatorData\n    )\n        private\n    {\n        require(from != address(0), \"ERC777: burn from the zero address\");\n\n        // Update state variables FIRST (Checks-Effects-Interactions pattern)\n        _totalSupply = _totalSupply.sub(amount);\n        _balances[from] = _balances[from].sub(amount);\n\n        // THEN make external call\n        _callTokensToSend(\n            operator, from, address(0), amount, data, operatorData\n        );\n\n        emit Burned(\n            operator, from, amount, data, operatorData\n        );\n        emit Transfer(from, address(0), amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+Note: The fix follows the Checks-Effects-Interactions pattern:
+1. **Checks**: Validate inputs (require statement)
+2. **Effects**: Update state variables first (balances and total supply)
+3. **Interactions**: Make external calls last (to `_callTokensToSend`)
+
+This prevents reentrancy because if the `tokensToSend` callback tries to re-enter any function that reads `_balances[from]` or `_totalSupply`, it will see the already-updated values (0 or reduced amount), preventing double-spending or other reentrancy attacks.
+
+The `_move` function also has a similar pattern but it doesn't make external calls, so it's safe from reentrancy in that context.

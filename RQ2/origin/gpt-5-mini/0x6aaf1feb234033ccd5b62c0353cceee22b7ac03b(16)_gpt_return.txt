@@ -1,0 +1,5 @@
+{
+  "type": "Arithmetic",
+  "location": "function transfer(address to, uint256 value) public returns (bool success) {\n    require(balanceOf[msg.sender] >= value);\n    balanceOf[msg.sender] -= value;  \n    balanceOf[to] += value;            // fault line\n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+  "description": "The statement `balanceOf[to] += value;` can cause an integer overflow in Solidity ^0.4.21 because arithmetic operations are unchecked by the compiler in this version. Although the `require` prevents underflow on the sender's balance, there is no check that `balanceOf[to] + value` does not exceed the uint256 maximum. An overflow would wrap the recipient's balance, breaking invariants (e.g., total token accounting) and potentially enabling an attacker to manipulate balances or create tokens effectively. Remediation: use a safe math library (e.g., SafeMath) and replace the operation with a checked addition such as `balanceOf[to] = balanceOf[to].add(value);`, or add an explicit check like `require(balanceOf[to] + value >= balanceOf[to]);`. Alternatively, compile with Solidity >=0.8.0 where arithmetic is checked by default."
+}

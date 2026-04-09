@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(sender == tx.origin && !isContract(sender));",
+    "description": "The contract uses 'tx.origin' for authentication instead of 'msg.sender', which makes it vulnerable to phishing attacks. Malicious contracts can trick users into calling this function, and since 'tx.origin' refers to the original external caller (the user), the check will pass even though the call originated from a malicious contract. This bypasses the intended access control mechanism."
+}
+```

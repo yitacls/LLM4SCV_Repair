@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contract": "CYBRPurchaseAddress",
+    "location": "wallet.call(msg.value);",
+    "description": "This statement is vulnerable because it uses a low level call function without checking the return value. Low level calls in Solidity are liable to fail silently, meaning that they do not throw an exception, but instead return a false value. If not checked, this can lead to unexpected behavior and potential security issues. It is recommended to either use solidity's transfer or send functions, as these safer options will throw an error if the call fails."
+}
+```

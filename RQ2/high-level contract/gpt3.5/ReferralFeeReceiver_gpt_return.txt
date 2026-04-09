@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function updateReward(address referral, uint256 amount) external override",
+    "description": "The contract is vulnerable to reentrancy attacks in the `updateReward` function. An external call is made to `mooniswap` contract which can potentially trigger a reentrancy attack if the called contract performs a callback to the vulnerable contract before the state changes are completed."
+}
+```

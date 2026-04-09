@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "PornTokenV2Crowdsale",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "usingSafeMath",
+                "fix_info": "Added SafeMath library to prevent arithmetic overflow/underflow vulnerabilities",
+                "variable_code": "using SafeMath for uint256;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "Fallback function",
+                "fix_info": "Fixed multiple vulnerabilities: 1) Added SafeMath for arithmetic operations to prevent overflow/underflow, 2) Fixed logic error where currentBalance was set to zero before sending, 3) Improved token calculation with proper division order, 4) Added explicit returns and require statements for better security",
+                "corrected_code": "function() external payable {\n    require(!crowdsaleClosed, \"Crowdsale is closed\");\n    \n    if (beneficiary == msg.sender && currentBalance > 0) {\n        uint256 balanceToSend = currentBalance;\n        currentBalance = 0;\n        require(beneficiary.send(balanceToSend), \"Failed to send balance to beneficiary\");\n    } else if (msg.value > 0) {\n        uint256 amount = msg.value;\n        balanceOf[msg.sender] = balanceOf[msg.sender].add(amount);\n        amountRaised = amountRaised.add(amount);\n        currentBalance = currentBalance.add(amount);\n        \n        // Calculate tokens with proper division to avoid rounding issues\n        uint256 tokens = amount.div(price).mul(1 ether);\n        require(tokenReward.transfer(msg.sender, tokens), \"Token transfer failed\");\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

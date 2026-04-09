@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "TokenState",
+        "contract_version": "0.5.3",
+        "functions": [
+            {
+                "function_name": "getState",
+                "fix_info": "Fixed the getState function to prevent potential DoS with Block Gas Limit vulnerability by adding a return statement for the state variable.",
+                "corrected_code": "function getState(uint delegationId) public returns (State state) {\
+        DelegationController delegationController = DelegationController(contractManager.getContract('DelegationController'));\
+        require(delegationController.getDelegation(delegationId).holder != address(0), 'Delegation does not exists');\
+        state = _state[delegationId];\
+        if (state == State.PROPOSED) {\
+            if (_timelimit[delegationId] == 0) {\
+                initProposed(delegationId);\
+            }\
+            if (now >= _timelimit[delegationId]) {\
+                state = _cancel(delegationId, delegationController.getDelegation(delegationId));\
+            }\
+        } else if (state == State.ACCEPTED) {\
+            if (now >= _timelimit[delegationId]) {\
+                state = acceptedToDelegated(delegationId);\
+                uint validatorId = delegationController.getDelegation(delegationId).validatorId;\
+                uint amount = delegationController.getDelegation(delegationId).amount;\
+                delegationController.addDelegationsTotal(validatorId, amount);\
+            }\
+        } else if (state == State.ENDING_DELEGATED) {\
+            if (now >= _timelimit[delegationId]) {\
+                state = endingDelegatedToUnlocked(delegationId, delegationController.getDelegation(delegationId));\
+                uint validatorId = delegationController.getDelegation(delegationId).validatorId;\
+                uint amount = delegationController.getDelegation(delegationId).amount;\
+                delegationController.subDelegationsTotal(validatorId, amount);\
+            }\
+        }\
+        return state;\
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

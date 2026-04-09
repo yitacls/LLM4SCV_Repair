@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[msg.sender] += msg.value;",
+    "description": "The vulnerability arises because Solidity versions prior to 0.8.0 do not have built-in overflow or underflow protection for arithmetic operations. In this contract, if 'msg.value' is large enough, adding it to 'balanceOf[msg.sender]' could result in an integer overflow. This would cause 'balanceOf[msg.sender]' to wrap around to a smaller value, leading to incorrect balance tracking and potentially exploitable behavior."
+}
+```

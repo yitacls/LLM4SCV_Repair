@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "executeOperation function",
+    "description": "The executeOperation function is susceptible to reentrancy as it performs external calls before updating state variables. This could allow an attacker to re-enter the function before it completes, potentially leading to unexpected behavior or exploits."
+}
+```

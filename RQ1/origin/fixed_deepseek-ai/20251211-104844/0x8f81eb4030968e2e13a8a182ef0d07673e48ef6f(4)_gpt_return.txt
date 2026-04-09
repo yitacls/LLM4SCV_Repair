@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "DSSafeAddSub",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "safeToAdd",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library pattern. The original check 'a + b >= a' is vulnerable to overflow when a + b exceeds uint256 max value, causing wraparound. The corrected version checks overflow before addition.",
+            "corrected_code": "function safeToAdd(uint a, uint b) internal pure returns (bool) {\n    uint c = a + b;\n    return (c >= a);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

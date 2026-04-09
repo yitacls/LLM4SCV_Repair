@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(msg.sender == impl);",
+            "description": "The function transferOrigin uses tx.origin for authorization in line '_value <= balances[tx.origin]' and in the balance deduction, but enforces that msg.sender must equal the address 'impl'. This creates a contradiction: the function checks that the immediate caller (msg.sender) is a privileged contract (impl), but then performs balance operations on behalf of tx.origin (the original EOA that initiated the transaction chain). This allows the 'impl' contract to transfer tokens from any tx.origin that interacts with it, even if tx.origin did not intend to authorize that specific transfer. This is a dangerous authorization flaw because tx.origin can be tricked into interacting with a malicious contract that calls the vulnerable contract's transferOrigin function, resulting in unauthorized token transfers from the victim's account."
+        }
+    ]
+}
+```

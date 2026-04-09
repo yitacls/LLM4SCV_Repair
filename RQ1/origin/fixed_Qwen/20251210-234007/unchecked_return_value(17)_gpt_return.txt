@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ReturnValue",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "callnotchecked",
+            "fix_info": "Added check for low-level call return value to prevent unchecked call vulnerabilities",
+            "corrected_code": "function callnotchecked(address callee) public {\n    // Check return value of low-level call to prevent unchecked call vulnerabilities\n    require(callee.call());\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

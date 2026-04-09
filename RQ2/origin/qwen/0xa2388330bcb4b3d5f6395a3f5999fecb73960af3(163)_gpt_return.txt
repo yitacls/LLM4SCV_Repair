@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "ret = cur_coin.call(bytes4(keccak256(\"pay(address,uint256,uint256)\")), msg.sender, msg.value, price);",
+    "description": "The low-level call to cur_coin contract's pay function does not check the return value properly. In Solidity 0.4.19, call() returns false on failure, but the code only stores this in 'ret' variable without handling the failure case. This could lead to the function continuing execution even when the external call fails, potentially causing unexpected behavior or loss of funds."
+}
+```

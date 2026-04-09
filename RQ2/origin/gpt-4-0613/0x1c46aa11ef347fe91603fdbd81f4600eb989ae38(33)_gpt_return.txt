@@ -1,0 +1,9 @@
+Here is the JSON representation of the vulnerability details in the given smart contract:
+
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of 'tx.origin' for access control in the 'clear' function poses a security vulnerability. Attackers can exploit the lack of specific authentication mechanism by initiating transactions from the owner account, thus leading to potential unauthorized contract self-destruction. Instead of 'tx.origin', 'msg.sender' should be used which gives the immediate sender of the call, providing better access control."
+}
+```

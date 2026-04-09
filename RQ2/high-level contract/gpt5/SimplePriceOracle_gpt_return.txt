@@ -1,0 +1,5 @@
+{
+  "type": "SWC-101-Integer Overflow and Underflow",
+  "location": "function price(string calldata /*name*/, uint /*expires*/, uint duration) external view returns(uint) {\n        return duration * rentPrice;\n    }",
+  "description": "The multiplication duration * rentPrice uses unchecked arithmetic (Solidity ^0.5.0) and can overflow/underflow a uint256. If duration and rentPrice are large enough their product will wrap modulo 2^256, producing an incorrect (typically much smaller) price. An attacker or caller could request a very large duration such that the multiplication overflows, causing the returned price to be drastically reduced and enabling underpayment relative to the intended cost. Example: if rentPrice = 1e18 and duration is chosen so duration * rentPrice > 2^256-1 the result will wrap to a small value.\n\nMitigation: perform checked arithmetic (use SafeMath.mul from OpenZeppelin in Solidity 0.5.x) or upgrade to Solidity >=0.8.0 which has built-in overflow checks. Also validate limits on duration and/or rentPrice to ensure the product cannot exceed the uint256 range."
+}

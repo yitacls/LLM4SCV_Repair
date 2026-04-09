@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "extra[0].call.value(_share).gas(800000)();\nextra[1].call.value(_share).gas(800000)();\nextra[2].call.value(_share).gas(800000)();\nextra[3].call.value(_share).gas(800000)();",
+    "description": "The contract uses low-level call operations to send Ether to external addresses without checking the return value of these calls. In Solidity 0.4.23, low-level calls return a boolean indicating success or failure, but this return value is not being checked. If any of these calls fail (e.g., due to out-of-gas, recipient contract throwing an exception, or recipient being a contract that rejects Ether), the function will continue execution without reverting, potentially leading to loss of funds. The funds sent via .call.value() may be lost if the recipient address cannot receive them properly."
+}
+```

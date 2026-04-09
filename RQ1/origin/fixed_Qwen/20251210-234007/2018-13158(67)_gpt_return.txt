@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "AssetToken",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added overflow protection using SafeMath library to prevent arithmetic overflow vulnerabilities",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyAdmin{\n\t\tbalanceOf[target] = balanceOf[target].add(mintedAmount);\n\t\ttotalSupply = totalSupply.add(mintedAmount);\n\t\tTransfer(0, this, mintedAmount);\n\t\tTransfer(this, target, mintedAmount);\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

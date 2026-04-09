@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "VENJOCOIN",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath checks to prevent integer overflow and underflow vulnerabilities",
+            "corrected_code": "function transfer(address to, uint tokens) public returns (bool success){\n    require(balances[msg.sender] >= tokens && tokens > 0);\n    balances[to] = balances[to].add(tokens);\n    balances[msg.sender] = balances[msg.sender].sub(tokens);\n    emit Transfer(msg.sender, to, tokens);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

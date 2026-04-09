@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SYCPrivateEarlyPurchase",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "appendEarlyPurchase",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for purchaser.send() and handling the failure case appropriately",
+            "corrected_code": "function appendEarlyPurchase(address purchaser, uint amount, uint purchasedAt)\n        internal\n        onlyEarlyPurchaseTerm\n        returns (bool)\n    {\n        if (purchasedAt == 0 || purchasedAt > now) {\n            throw;\n        }\n        if(totalEarlyPurchaseRaised + amount >= WEI_MAXIMUM_EARLYPURCHASE){\n           bool success = purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);\n           if (!success) {\n               throw;\n           }\n           earlyPurchases.push(EarlyPurchase(purchaser, WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised, purchasedAt));\n           totalEarlyPurchaseRaised += WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised;\n        }\n        else{\n           earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));\n           totalEarlyPurchaseRaised += amount;\n        }\n        if(totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE || now >= ENDING_TIME){\n            earlyPurchaseClosedAt = now;\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

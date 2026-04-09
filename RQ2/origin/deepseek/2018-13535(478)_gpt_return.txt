@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "This function contains an integer overflow vulnerability. In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. When 'balanceOf[target] + mintedAmount' exceeds the maximum value representable by uint256 (2^256 - 1), the value will wrap around to zero or a very small number, potentially allowing an attacker to gain unintended token balances or corrupt account balances. The same vulnerability exists in 'totalSupply += mintedAmount;'. Additionally, the function lacks event emission for the minting operation (though Transfer events are present, they don't follow the standard ERC20 pattern where minting should emit Transfer from address(0))."
+}
+```

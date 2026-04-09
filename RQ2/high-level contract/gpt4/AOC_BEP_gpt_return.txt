@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-118-Incorrect Constructor Name",
+        "location": "function initialize() public initializer",
+        "description": "The contract uses a public initializer function instead of a constructor. This can cause issues. A constructor is a special function which is automatically triggered when a contract is created. If a contract uses an initialize function instead of a constructor, it could be initialized multiple times if not properly protected."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function withdrawBNBFromContract(address payable recipient, uint256 amount) external onlyOwner payable",
+        "description": "The function is marked as payable but it doesn't receive any ether. The payable modifier should only be used if the function is supposed to receive ether."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "recipient.transfer(amount);",
+        "description": "The transfer of ether is not protected. If an exception is thrown elsewhere in the contract, this transfer will be included in the transaction's gas costs. It must be protected by making sure it is the last action in the function."
+    }
+]
+```

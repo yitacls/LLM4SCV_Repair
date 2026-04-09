@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function claimFrozenEpoch(Mooniswap mooniswap)",
+        "description": "The function claimFrozenEpoch calls _transferTokenShare which transfers tokens to msg.sender before updating the state. This can allow a malicious contract to reenter and claim more funds."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _transferTokenShare(IERC20 token, uint256 balance, uint256 share, uint256 totalSupply)",
+        "description": "This function performs external calls (token.uniTransfer) before updating the contract's state, which can lead to reentrancy attacks if the receiver is a malicious contract."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function trade(Mooniswap mooniswap, IERC20[] memory path)",
+        "description": "The function trade performs external calls (_swap) that can potentially lead to reentrancy if not properly guarded. Although it has some checks, the external call before state updates poses a risk."
+    }
+]
+```

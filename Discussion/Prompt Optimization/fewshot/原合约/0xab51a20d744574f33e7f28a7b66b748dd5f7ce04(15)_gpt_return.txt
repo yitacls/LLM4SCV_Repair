@@ -1,0 +1,23 @@
+```json
+[
+    {
+        "contract_name": "EthDickMeasuringGame",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Prevent time manipulation by using block.timestamp instead of now.",
+                "corrected_code": "function () public payable {
+    require(largestPenis < msg.value);
+    largestPenis = msg.value;
+    withdrawDate = block.timestamp + 2 days;  
+    largestPenisOwner = msg.sender;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

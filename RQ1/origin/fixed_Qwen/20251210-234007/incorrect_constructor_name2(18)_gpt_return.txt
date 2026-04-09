@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Missing",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable to track contract ownership",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to restrict access to owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "missing",
+            "fix_info": "Added onlyOwner modifier to prevent unauthorized access to ownership transfer",
+            "corrected_code": "function missing()\n        public\n        onlyOwner\n    {\n        owner = msg.sender;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

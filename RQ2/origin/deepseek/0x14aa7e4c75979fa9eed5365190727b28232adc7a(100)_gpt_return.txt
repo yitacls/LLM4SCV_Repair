@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "This contract uses tx.origin for authorization in the withdrawEther function, which is vulnerable to phishing attacks. An attacker can create a malicious contract that tricks the owner (or a user with privileges) into calling it. When the owner interacts with the attacker's contract, that contract can then call CTS.withdrawEther(). Inside withdrawEther, tx.origin will be the original owner's address (since they initiated the transaction chain), passing the require check, but msg.sender will be the attacker's contract address. This allows the attacker to successfully drain funds. The proper authorization should use msg.sender == owner instead of tx.origin."
+        }
+    ]
+}
+```

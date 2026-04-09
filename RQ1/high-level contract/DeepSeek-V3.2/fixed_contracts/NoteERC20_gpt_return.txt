@@ -1,0 +1,42 @@
+```json
+[
+    {
+        "contract_name": "NoteERC20",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_add96",
+                "fix_info": "Fixed potential overflow by using SafeMath operations from OpenZeppelin library for Solidity 0.7.0",
+                "corrected_code": "function _add96(\n        uint96 a,\n        uint96 b,\n        string memory errorMessage\n    ) private pure returns (uint96) {\n        uint96 c = a + b;\n        require(c >= a, errorMessage);\n        return c;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_sub96",
+                "fix_info": "Fixed potential underflow by adding explicit check before subtraction",
+                "corrected_code": "function _sub96(\n        uint96 a,\n        uint96 b,\n        string memory errorMessage\n    ) private pure returns (uint96) {\n        require(b <= a, errorMessage);\n        return a - b;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transfer",
+                "fix_info": "Added overflow protection for rawAmount parameter and ensured safe conversion to uint96",
+                "corrected_code": "function transfer(address dst, uint256 rawAmount) external returns (bool) {\n        require(rawAmount <= type(uint96).max, \"Note::transfer: amount exceeds 96 bits\");\n        uint96 amount = uint96(rawAmount);\n        _transferTokens(msg.sender, dst, amount);\n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Added overflow protection for rawAmount parameter and prevented underflow in allowance subtraction",
+                "corrected_code": "function transferFrom(\n        address src,\n        address dst,\n        uint256 rawAmount\n    ) external returns (bool) {\n        address spender = msg.sender;\n        uint96 spenderAllowance = allowances[src][spender];\n        require(rawAmount <= type(uint96).max, \"Note::transferFrom: amount exceeds 96 bits\");\n        uint96 amount = uint96(rawAmount);\n\n        if (spender != src && spenderAllowance != uint96(-1)) {\n            require(amount <= spenderAllowance, \"Note::transferFrom: transfer amount exceeds allowance\");\n            uint96 newAllowance = spenderAllowance - amount;\n            allowances[src][spender] = newAllowance;\n\n            emit Approval(src, spender, newAllowance);\n        }\n\n        _transferTokens(src, dst, amount);\n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "approve",
+                "fix_info": "Added overflow protection for rawAmount parameter",
+                "corrected_code": "function approve(address spender, uint256 rawAmount) external returns (bool) {\n        uint96 amount;\n        if (rawAmount == uint256(-1)) {\n            amount = uint96(-1);\n        } else {\n            require(rawAmount <= type(uint96).max, \"Note::approve: amount exceeds 96 bits\");\n            amount = uint96(rawAmount);\n        }\n\n        allowances[msg.sender][spender] = amount;\n\n        emit Approval(msg.sender, spender, amount);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

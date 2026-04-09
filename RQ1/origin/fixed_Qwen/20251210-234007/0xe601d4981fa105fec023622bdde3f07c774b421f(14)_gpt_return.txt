@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath checks to prevent integer overflow/underflow in balance operations",
+            "corrected_code": "function transfer(address _to, uint _amount) {\n        if (balances[msg.sender] < _amount) {\n            throw;\n        }\n        balances[msg.sender] = balances[msg.sender] - _amount;\n        balances[_to] = balances[_to] + _amount;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

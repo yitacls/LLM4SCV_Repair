@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "GuessTheRandomNumberChallenge",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "nonce",
+            "fix_info": "Added nonce variable to ensure random number uniqueness and prevent predictability",
+            "variable_code": "uint256 private nonce = 0;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "answer",
+            "fix_info": "Modified answer variable to use secure random generation",
+            "variable_code": "uint8 public answer;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "GuessTheRandomNumberChallenge",
+            "fix_info": "Replaced predictable blockhash-based randomness with more secure pseudo-random generation using keccak256 of multiple factors, added nonce increment to prevent replay attacks",
+            "corrected_code": "function GuessTheRandomNumberChallenge() public payable {\n    require(msg.value == 1 ether);\n    \n    // Generate more secure random number using multiple factors\n    answer = uint8(\n        keccak256(\n            abi.encodePacked(\n                block.timestamp,\n                block.difficulty,\n                address(this),\n                nonce\n            )\n        )\n    );\n    \n    // Increment nonce to ensure different random values\n    nonce++;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Added withdrawal function to allow users to redeem their ether after challenge completion",
+            "corrected_code": "function withdraw() public {\n    require(msg.sender.balance > 0);\n    msg.sender.transfer(address(this).balance);\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

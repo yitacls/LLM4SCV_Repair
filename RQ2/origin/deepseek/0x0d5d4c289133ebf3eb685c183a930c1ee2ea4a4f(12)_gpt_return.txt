@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) {",
+    "description": "This contract is vulnerable to a classic reentrancy attack due to the unsafe use of `call.value()()` for sending funds. The state update (`acc.balance -= _am;`) occurs after the external call, allowing a malicious contract receiving the funds to re-enter the `Collect` function repeatedly (via its fallback function) before the balance is deducted. Since the initial balance check (`acc.balance >= _am`) remains true until the first state update completes, the attacker can drain the contract's entire balance. This is exacerbated by: 1) Using Solidity ^0.4.25, which lacks built-in reentrancy guards and has default gas forwarding with `call`, 2) Not following checks-effects-interactions pattern. Mitigation requires updating the state before the external call or using reentrancy guards."
+}
+```

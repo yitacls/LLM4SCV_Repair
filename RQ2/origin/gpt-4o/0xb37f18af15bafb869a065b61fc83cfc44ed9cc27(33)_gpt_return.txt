@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_target.call.value(_value)();",
+    "description": "The code uses a low-level `call` function to transfer Ether without checking for success or handling errors. This can result in loss of funds if the call fails. It also makes the contract vulnerable to reentrancy attacks because no safeguards are in place to prevent reentrant calls."
+}
+```

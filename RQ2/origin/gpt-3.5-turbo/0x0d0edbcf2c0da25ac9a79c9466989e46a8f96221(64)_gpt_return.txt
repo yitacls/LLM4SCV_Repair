@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.send(withdrawAmount);",
+    "description": "The use of 'send' to transfer funds in this contract can lead to vulnerabilities as it does not handle failure cases. If the destination address is a contract that has a fallback function with a significant amount of gas consumption, the transfer can fail, leaving the contract in an inconsistent state without completing required operations."
+}
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "HunterCoin",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed mapping to use SafeMath for uint256 to prevent overflow/underflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to restrict minting to contract owner",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Only owner can call\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath, added onlyOwner and address validation",
+            "corrected_code": "function mintToken(address target, uint256 amount) public onlyOwner returns (uint256 mintedAmount) {\n    require(target != address(0), \"Invalid target address\");\n    require(amount > 0, \"Amount must be greater than zero\");\n    \n    balanceOf[target] = balanceOf[target].add(amount);\n    totalSupply = totalSupply.add(amount);\n    \n    emit Transfer(owner, target, amount);\n    return amount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

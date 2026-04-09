@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "WhaleGiveaway2",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "Command",
+                "fix_info": "Add require statement to validate the call address.",
+                "corrected_code": "function Command(address adr, bytes data) payable public {
+    require(msg.sender == Owner);
+    require(adr != address(0));
+    adr.call.value(msg.value)(data);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

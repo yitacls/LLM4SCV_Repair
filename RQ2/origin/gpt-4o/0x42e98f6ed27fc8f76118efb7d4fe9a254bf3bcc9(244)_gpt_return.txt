@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "selfdestruct(owner);",
+    "description": "The function 'close()' allows the contract owner to call the 'selfdestruct' function. In Solidity version 0.4.18, the 'selfdestruct' operation transfers any remaining balance of the contract to the specified address (in this case, 'owner'). If the 'onlyOwner' modifier is incorrectly implemented, insufficiently verified, or overridden, it could allow unauthorized users to execute this function. This poses a risk of permanently destroying the contract and transferring all remaining funds."
+}
+```

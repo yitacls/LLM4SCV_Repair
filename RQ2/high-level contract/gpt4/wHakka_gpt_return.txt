@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-116-Block values as a proxy for time",
+        "location": "stakingRateModel function stakingRateMax() line 340, 341,  stakes() line 555, unstake() line 577",
+        "description": "In the stakingRateMax function, the timestamp is retrieved from the block.timestamp. This can potentially be manipulated by miners and may not accurately represent the passage of real time. The same issue is seen in the stake and unstake function, where the lock and unlock times use block.timestamp."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "staking function line 556 to 573, unstake function line 576 to 592",
+        "description": "There's a potential for reentrancy attack. The stake() and unstake() function update the user’s balance and at the same time perform external calls (SafeERC20.safeTransferFrom, _mint, Hakka.safeTransfer). An attacker could potentially leverage the external calls to their contract to call back into the original contract before the first call was finished."
+    }
+]
+```

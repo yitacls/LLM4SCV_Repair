@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function newTicket() external restricted { ... }",
+    "description": "The function has an access control vulnerability due to: 1) Relying solely on the 'restricted' modifier (implementation not shown) which may have insufficient validation; 2) Using 'tx.origin' for authorization and prize distribution instead of 'msg.sender', making it vulnerable to phishing attacks where malicious contracts could manipulate the transaction origin; 3) The condition '(players[tx.origin].tickets - players[tx.origin].checkpoint) % interval == 0' combined with prize distribution logic could potentially allow attackers to game the system if the 'restricted' modifier does not properly validate caller permissions."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(owner == tx.origin, \"!owner\");",
+    "description": "In the Solidity contract named 'Fund3Week', there is a misuse of tx.origin in place of msg.sender. The tx.origin attribute is more prone to security risks as it references the address of the account that started the transaction. Additionally, it may lead to unexpected transaction behavior as a smart contract invoked by another contract will be treated differently compared to one invoked directly by a user. Instead, using msg.sender is safer as it refers to the immediate invoker or sender of the contract call. This issue makes the contract vulnerable to unauthorized access and manipulation by potential attackers."
+}
+```

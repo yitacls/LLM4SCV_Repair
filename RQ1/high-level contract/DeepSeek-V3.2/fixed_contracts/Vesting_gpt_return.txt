@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "Vesting",
+        "contract_version": "0.8.10",
+        "state_variables": [
+            {
+                "variable_name": "MAX_LOCK_AMOUNT",
+                "fix_info": "Added overflow protection in constructor",
+                "variable_code": "uint256 private MAX_LOCK_AMOUNT;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Added MAX_LOCK_AMOUNT initialization to prevent arithmetic overflows",
+                "corrected_code": "    constructor(\n        address _token,\n        address _operator,\n        address _oracle\n    ) {\n        require(_token != address(0), \"token address is required\");\n        require(_operator != address(0), \"operator address is required\");\n        require(_oracle != address(0), \"oracle address is required\");\n        token = _token;\n        operator = _operator;\n        oracle = _oracle;\n        MAX_LOCK_AMOUNT = type(uint256).max / 100; // Safe initialization\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "updateScore",
+                "fix_info": "Fixed DoS vulnerability by separating distribution from batch iteration and added overflow protection",
+                "corrected_code": "    /// @notice This function it's executed by the oracle account to update the\n    /// Percentil Score value and release the funds if it is possible.\n    /// @param _newScore new percentile score value.\n    function updateScore(uint8 _newScore)\n        external\n        onlyOracle\n        isInitialized\n        notFinalized\n    {\n        require(_newScore <= 100, \"invalid score value\");\n        require(\n            _currentTime().sub(initializedAt) > EPOCH_SIZE,\n            \"scoring epoch 1 still not finished\"\n        );\n\n        uint256 timeFromLastEpoch = _currentTime().sub(initializedAt).mod(\n            EPOCH_SIZE\n        );\n\n        require(\n            timeFromLastEpoch > 0 && timeFromLastEpoch <= 1 days,\n            \"scoring epoch still not finished\"\n        );\n\n        require(\n            _currentTime().sub(updatedAt) > 1 days,\n            \"can not update score value twise in the same window\"\n        );\n\n        lastScore = _newScore;\n        updatedAt = _currentTime();\n\n        if (_newScore != 0) {\n            // Store releasable amounts first to avoid state changes during loop\n            address[] memory releaseBeneficiaries = new address[](beneficiaries.length);\n            uint256[] memory releaseAmounts = new uint256[](beneficiaries.length);\n            bool allBeneficiariesVested = true;\n            \n            for (uint256 i = 0; i < beneficiaries.length; i++) {\n                address beneficiary = beneficiaries[i];\n                LockVesting storage lock = locks[beneficiary];\n                \n                // Calculate amounts safely (Solidity 0.8.10 has built-in overflow protection)\n                uint256 remainingAmount = lock.totalAmount - lock.releasedAmount;\n                uint256 releasableAmount = (_newScore * remainingAmount) / 100;\n                \n                // Store release data\n                releaseBeneficiaries[i] = beneficiary;\n                releaseAmounts[i] = releasableAmount;\n                \n                // Update released amount\n                lock.releasedAmount += releasableAmount;\n                \n                // Check if this beneficiary is fully vested\n                if (lock.releasedAmount < lock.totalAmount) {\n                    allBeneficiariesVested = false;\n                }\n            }\n            \n            // Execute transfers separately to avoid DoS if one transfer fails\n            for (uint256 i = 0; i < releaseBeneficiaries.length; i++) {\n                if (releaseAmounts[i] > 0) {\n                    // Using safeTransfer with proper error handling\n                    bool success = IERC20(token).transfer(releaseBeneficiaries[i], releaseAmounts[i]);\n                    require(success, \"token transfer fail\");\n                }\n            }\n            \n            // Update finalized status\n            if (allBeneficiariesVested && beneficiaries.length > 0) {\n                finalized = true;\n            }\n        }\n\n        emit ScoreUpdated(_newScore, _epochNumber());\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "grantVesting",
+                "fix_info": "Added duplicate beneficiary check and overflow protection",
+                "corrected_code": "    /// @notice This function is executed by the operator and grants the vesting\n    /// for the beneficiary.\n    /// @param _beneficiary is the beneficiary address.\n    /// @param _amount the amount of tokens that will be locked in the vesting\n    function grantVesting(address _beneficiary, uint256 _amount)\n        external\n        onlyOperator\n        notInitialized\n    {\n        require(_amount <= MAX_LOCK_AMOUNT,\n            \"amount exceeds the maximum allowed value\"\n        );\n        require(_amount != 0, \"amount is required\");\n        require(_beneficiary != address(0), \"beneficiary address is required\");\n        require(\n            locks[_beneficiary].totalAmount == 0,\n            \"beneficiary already has a vesting\"\n        );\n        \n        // Check for overflow in totalVestingAmount addition\n        uint256 newTotal = totalVestingAmount + _amount;\n        require(newTotal > totalVestingAmount, \"addition overflow\");\n\n        locks[_beneficiary].totalAmount = _amount;\n        beneficiaries.push(_beneficiary);\n        totalVestingAmount = newTotal;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

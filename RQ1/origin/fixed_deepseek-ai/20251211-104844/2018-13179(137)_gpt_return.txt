@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "AirContactToken",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Using SafeMath library to prevent integer overflow",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Using SafeMath library to prevent integer overflow",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No changes needed",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+                "change_type": "none"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerabilities using SafeMath, added events for proper ERC20 compliance, and improved function visibility",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0), \"Invalid target address\");\n    \n    // Use SafeMath operations to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Emit Transfer events following ERC20 standard\n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

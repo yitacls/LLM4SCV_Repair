@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MetaTransactionsFeature",
+    "contract_version": "^0.6.5",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "refundsAttachedEth",
+            "fix_info": "Fixed reentrancy vulnerability by moving the ETH refund logic to after all state changes are complete, preventing potential reentrant calls from exploiting the refund mechanism.",
+            "modifier_code": "modifier refundsAttachedEth() {\n    _;\n    uint256 remainingBalance = LibSafeMathV06.min256(msg.value, address(this).balance);\n    if (remainingBalance > 0) {\n        msg.sender.transfer(remainingBalance);\n    }\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "_executeMetaTransactionPrivate",
+            "fix_info": "Reordered operations to follow the Check-Effects-Interactions pattern. Moved the executed block number storage update before the external calls to prevent reentrancy attacks. Also moved the fee transfer after the execution to maintain proper state consistency.",
+            "corrected_code": "function _executeMetaTransactionPrivate(ExecuteState memory state)\n    private\n    returns (bytes memory returnResult)\n{\n    _validateMetaTransaction(state);\n\n    // Mark the transaction executed by storing the block at which it was executed.\n    // Currently the block number just indicates that the mtx was executed and\n    // serves no other purpose from within this contract.\n    LibMetaTransactionsStorage.getStorage()\n        .mtxHashToExecutedBlockNumber[state.hash] = block.number;\n\n    // Execute the call based on the selector.\n    state.selector = state.mtx.callData.readBytes4(0);\n    if (state.selector == ITransformERC20Feature.transformERC20.selector) {\n        returnResult = _executeTransformERC20Call(state);\n    } else if (state.selector == INativeOrdersFeature.fillLimitOrder.selector) {\n        returnResult = _executeFillLimitOrderCall(state);\n    } else if (state.selector == INativeOrdersFeature.fillRfqOrder.selector) {\n        returnResult = _executeFillRfqOrderCall(state);\n    } else {\n        LibMetaTransactionsRichErrors\n            .MetaTransactionUnsupportedFunctionError(state.hash, state.selector)\n            .rrevert();\n    }\n\n    // Pay the fee to the sender.\n    if (state.mtx.feeAmount > 0) {\n        _transferERC20Tokens(\n            state.mtx.feeToken,\n            state.mtx.signer,\n            state.sender,\n            state.mtx.feeAmount\n        );\n    }\n\n    emit MetaTransactionExecuted(\n        state.hash,\n        state.selector,\n        state.mtx.signer,\n        state.mtx.sender\n    );\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

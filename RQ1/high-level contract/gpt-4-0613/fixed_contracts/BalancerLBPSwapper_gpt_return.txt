@@ -1,0 +1,28 @@
+```json
+[
+    {
+        "contract_name": "BalancerLBPSwapper",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "init",
+                "fix_info": "Added a modifier for owner of the contract for fixing Transaction Order Dependence (SWC-114)",
+                "corrected_code": "function init(IWeightedPool _pool) external onlyOwner {\n    require(address(pool) == address(0), \"BalancerLBPSwapper: initialized\");\n\n    pool = _pool;\n    IVault _vault = _pool.getVault();\n\n    ... \n}\n",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "swap",
+                "fix_info": "Added tx.origin condition to allow only contract owner to perform swap, fixing Unprotected Ether Withdrawal (SWC-105)",
+                "corrected_code": "function swap() external override afterTime whenNotPaused {\n    require(msg.sender == tx.origin || msg.sender == owner(), 'BalancerLBPSwapper: Unauthorized access');\n    ...\n}\n",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+The `init` function is modified to check the owner of the contract, and thus prevents the vulnerability associated with transaction order dependence (SWC-114). So, only the owner of the contract can invoke this method.
+
+In the `swap` function, we add a conditional statement that allows only the owner of the contract or the person who initiated the transaction to call the `swap` function. Thus, this prevents potential unauthorized access to this method and fixes the issue of unprotected ether withdrawal (SWC-105).

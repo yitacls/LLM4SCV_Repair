@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This is a serious security vulnerability as it gives complete control of the contract to the owner only. This requirement is dependent on 'tx.origin' which references the address of the account that initiated the contract execution. This means that even indirect calls initiated by a contract are considered as being made by the account creating them, allowing room for possible manipulation. The correct practice would be to use 'msg.sender' instead which only points to the direct caller of the function. This vulnerability may lead to unauthorised access and manipulation of the contract by the owner, failing the decentralization fundamental of blockchain."
+}
+```

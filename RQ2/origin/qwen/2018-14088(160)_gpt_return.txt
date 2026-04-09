@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint256 amount_to_withdraw = amount * 1000000000000000;",
+    "description": "The multiplication operation is vulnerable to arithmetic overflow. In Solidity version ^0.4.19, arithmetic operations do not have built-in overflow protection. If the 'amount' parameter is large enough, multiplying it by 1000000000000000 could result in an integer overflow, causing 'amount_to_withdraw' to wrap around to a much smaller value or even zero. This could lead to unexpected behavior in the withdrawal logic."
+}
+```

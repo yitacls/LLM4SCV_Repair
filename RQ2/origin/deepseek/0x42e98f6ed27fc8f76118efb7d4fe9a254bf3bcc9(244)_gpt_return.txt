@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function close() public onlyOwner { selfdestruct(owner); }",
+            "description": "The contract uses the deprecated selfdestruct opcode in Solidity 0.4.18, which allows the owner to permanently destroy the contract and send any remaining Ether to their address. This creates a central point of failure and violates the trustless principle of smart contracts. While protected by onlyOwner, if the owner's private key is compromised, an attacker could irreversibly destroy the contract. Additionally, in Solidity 0.4.x, selfdestruct was named suicide, making this code particularly outdated and risky."
+        }
+    ]
+}
+```

@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "data.amount = data.amount * (10 ** (uint(decimals) - 9)); (line 409)",
+        "description": "Arithmetic operations in Solidity may cause integer overflows and underflows. This line multiplies `data.amount` by a power of 10, which could lead to an overflow if `decimals` is large enough. Since Solidity 0.6.6 sets overflow checks by default, the actual runtime might catch this, but explicit safety mechanisms like `SafeMath` should be used to ensure robust code."
+    },
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "execute function (lines 513 - 548)",
+        "description": "The `execute` function depends on external interactions and modifies state variables like `withdrawRequests` and `totalDepositedToSCAmount` after performing a call to an external contract (`exchangeAddress`). This creates a possibility for a transaction order dependence vulnerability, where another transaction could manipulate state variables, affecting the behavior or outcome of the execution."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "execute function (lines 513 - 548)",
+        "description": "The `execute` function forwards ETH (`ethAmount`) to the provided `exchangeAddress` and relies on the external contract's behavior for a return. This could enable malicious recipients to drain or misuse the ETH without proper checks. Additional security mechanisms such as withdrawal limits or whitelists should be used to limit the scope of Ether transfers."
+    }
+]
+```

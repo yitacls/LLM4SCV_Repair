@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WeBuildWorldImplementation",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "addBrick",
+            "fix_info": "Replaced tx.origin with msg.sender for reliable access control and removed the insecure owner check that bypassed authentication",
+            "corrected_code": "function addBrick(uint _brickId, string _title, string _url, uint32 _expired, string _description, bytes32[] _tags, uint _value) \n    external onlyMain\n    returns (bool success)\n{\n    require(_value >= 10 ** 16);\n    require(bricks[_brickId].owner == address(0));\n    \n    Brick memory brick = Brick({\n        title: _title,\n        url: _url,\n        description: _description,   \n        tags: _tags,\n        owner: msg.sender,\n        status: BrickStatus.Active,\n        value: _value,\n        dateCreated: uint32(now),\n        dateCompleted: 0,\n        expired: _expired,\n        numBuilders: 0,\n        winners: new address[](0)\n    });\n    \n    brickIds.insertBeginning(_brickId, 0);\n    bricks[_brickId] = brick;\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

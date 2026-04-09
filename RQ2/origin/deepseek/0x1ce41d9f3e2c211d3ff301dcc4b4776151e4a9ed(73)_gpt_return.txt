@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "DonQuixoteToken.balanceOf(_user);",
+    "description": "The function 'tokenOf' directly calls 'DonQuixoteToken.balanceOf(_user)' without any access control or authentication. Since the function has 'public' visibility and is 'view', any external account or contract can query another user's token balance. This exposes sensitive financial information, breaks privacy expectations, and violates the principle of least privilege by allowing unauthorized read access to user holdings. While not a write vulnerability, this represents an access control flaw in information disclosure."
+}
+```

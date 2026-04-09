@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "calcHashes function using block.blockhash(_lastb), block.blockhash(_lastb+1), ..., block.blockhash(_lastb+9)",
+    "description": "The bad randomness vulnerability arises because the function relies on block.blockhash to calculate random values. The blockhash function can only return the hash of the most recent 256 blocks, and its output is predictable for miners. This means attackers (e.g., miners) can manipulate the block generation process to exploit the vulnerability and predict or control the 'random' outcomes. Additionally, this allows adversaries to exploit the system if it depends on unpredictability."
+}
+```

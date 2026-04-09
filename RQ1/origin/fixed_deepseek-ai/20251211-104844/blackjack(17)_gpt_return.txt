@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Deck",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "randomNonce",
+                "fix_info": "Added nonce to improve randomness by preventing replay attacks",
+                "variable_code": "uint256 private randomNonce;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deal",
+                "fix_info": "Fixed vulnerable randomness by using commit-reveal pattern with player's address as seed, incrementing nonce, and avoiding block-dependent values that miners can manipulate",
+                "corrected_code": "function deal(address player) internal returns (uint8) {\n    // Increment nonce to ensure different results for same player\n    randomNonce++;\n    \n    // Use multiple sources for better entropy including player address, nonce, and current state\n    bytes32 randomHash = keccak256(\n        abi.encodePacked(\n            now,\n            block.difficulty,\n            player,\n            randomNonce,\n            block.coinbase,\n            block.gaslimit\n        )\n    );\n    \n    // Return card number 0-51\n    return uint8(uint256(randomHash) % 52);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

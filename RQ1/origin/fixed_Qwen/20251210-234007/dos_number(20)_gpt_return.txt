@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "DosNumber",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "limitedNumbers",
+            "fix_info": "Added modifier to prevent gas DoS by limiting the number of iterations",
+            "modifier_code": "modifier limitedNumbers(uint numbers) {\n    require(numbers <= 100, \"Too many numbers\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "insertNnumbers",
+            "fix_info": "Fixed gas DoS vulnerability by adding a limit on numbers parameter and using more efficient array operations",
+            "corrected_code": "function insertNnumbers(uint value, uint numbers) public limitedNumbers(numbers) {\n    for(uint i = 0; i < numbers; i++) {\n        if(numElements == array.length) {\n            array.length += 1;\n        }\n        array[numElements++] = value;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

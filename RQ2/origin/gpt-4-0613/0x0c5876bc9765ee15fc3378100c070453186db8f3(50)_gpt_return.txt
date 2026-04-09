@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "robotCoin.serviceTransfer(msg.sender, msg.value * 1000 / salePrice );",
+    "description": "This contract is vulnerable to Arithmetic Overflow. The multiplication of msg.value with 1000 may overflow before the division by 'salePrice' is executed, thus leading to an inaccurate result and potentially leading to loss of funds or unexpected behavior. This can be mitigated by ensuring SafeMath library operations are used for all mathematical operations."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "wallet",
+            "fix_info": "This address variable is assumed to exist based on the context of the vulnerable function",
+            "variable_code": "address public wallet;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing .send() with .transfer() and added return value check. In Solidity 0.4.23, .transfer() automatically reverts on failure and has a gas limit of 2300. Also added non-payable check for empty calls.",
+            "corrected_code": "function () external payable {\n    require(msg.value > 0, \"No ether sent\");\n    wallet.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

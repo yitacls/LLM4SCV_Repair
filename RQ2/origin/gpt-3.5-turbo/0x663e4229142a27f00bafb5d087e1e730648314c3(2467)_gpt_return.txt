@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "cfoAddress.send(balance - subtractFees);",
+    "description": "The use of 'send' for transferring funds does not provide error handling mechanisms and can result in unchecked contract calls, allowing potential reentrancy exploits if the receiving contract has fallback functions that perform unexpected operations."
+}
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced usage of predictable blockhash function with a more secure approach using keccak256 hash incorporating a user-provided input (such as `_delta`) and block information.",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Using keccak256 for better randomness\n    return uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty, _delta)));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

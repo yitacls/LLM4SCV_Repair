@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "require (balanceOf[_to] + _value > balanceOf[_to]);",
+    "description": "This overflow check is incorrectly implemented. It only checks if balanceOf[_to] + _value > balanceOf[_to], which will always be true for positive values and doesn't actually prevent overflows. In Solidity 0.4.18, arithmetic operations can overflow/underflow without reverting, leading to potential manipulation of token balances. A proper overflow check should verify that balanceOf[_to] + _value >= balanceOf[_to] or use SafeMath library."
+}
+```

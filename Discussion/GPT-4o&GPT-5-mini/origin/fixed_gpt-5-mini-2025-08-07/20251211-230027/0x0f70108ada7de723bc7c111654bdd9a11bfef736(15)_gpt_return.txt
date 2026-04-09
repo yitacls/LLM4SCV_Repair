@@ -1,0 +1,14 @@
+[{
+    "contract_name": "theRelayer",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Replaced unchecked low-level call with a checked call and bubbled up returned data or revert reason. Preserves original gas forwarding logic and ownership check.",
+            "corrected_code": "function () public {\n        require(msg.sender == owner);\n        require(gasleft() > 400000);\n        uint256 gasToForward = 400000 - 200;\n        gasToForward -= gasToForward % 8191;\n        gasToForward += 388;\n\n        // Perform low-level call but check its success and propagate return data/revert reason\n        bool success = target.call.gas(gasToForward)(msg.data);\n\n        // Bubble up return data or revert with the same return data\n        assembly {\n            let ptr := mload(0x40)\n            let size := returndatasize\n            returndatacopy(ptr, 0, size)\n            switch success\n            case 0 { revert(ptr, size) }\n            default { return(ptr, size) }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

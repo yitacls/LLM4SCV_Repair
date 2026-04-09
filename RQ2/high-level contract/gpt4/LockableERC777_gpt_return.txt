@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "_burn function (Line 399-422)",
+    "description": "The _burn function in the given Solidity code is vulnerable to reentrancy attacks. Reentrancy is a fallback function that calls back into the contract, which could lead to unwanted effects such as withdrawals before updated balances. This can allow an attacker to repeatedly call your contract before the first call is finished, allowing for stealing of funds or causing other negative impact."
+}
+```

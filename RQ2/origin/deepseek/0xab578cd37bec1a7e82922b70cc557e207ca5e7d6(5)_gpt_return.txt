@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "In Solidity <0.8.0, the `send()` function returns a boolean indicating success (true) or failure (false). This return value is not checked, which could lead to silent failures when the transfer to `wallet` fails. Possible failure reasons include: the receiving contract running out of gas (send forwards only 2300 gas), throwing an exception, or the wallet address being a contract without a payable fallback function. Without checking the return value, the transaction proceeds as if the transfer succeeded, which may cause unexpected state inconsistencies and loss of funds. In Solidity ^0.4.23, it is recommended to use `require(wallet.send(msg.value))` or handle the failure explicitly."
+}
+```

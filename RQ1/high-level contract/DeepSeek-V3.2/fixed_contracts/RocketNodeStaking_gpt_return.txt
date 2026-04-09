@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "RocketNodeStaking",
+    "contract_version": "1",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "stakeRPL",
+            "fix_info": "Fixed SWC-104 by checking return value of rocketVault.depositToken call and using safeERC20 for token transfers",
+            "corrected_code": "// Accept an RPL stake\n    // Only accepts calls from registered nodes\n    function stakeRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) {\n        // Load contracts\n        address rplTokenAddress = getContractAddress(\"rocketTokenRPL\");\n        address rocketVaultAddress = getContractAddress(\"rocketVault\");\n        IERC20 rplToken = IERC20(rplTokenAddress);\n        RocketVaultInterface rocketVault = RocketVaultInterface(rocketVaultAddress);\n        \n        // Check amount is greater than zero\n        require(_amount > 0, \"Cannot stake 0 RPL\");\n        \n        // Transfer RPL tokens from sender to this contract\n        bool transferSuccess = rplToken.transferFrom(msg.sender, address(this), _amount);\n        require(transferSuccess, \"RPL token transfer from sender failed\");\n        \n        // Approve vault to spend RPL tokens\n        bool approveSuccess = rplToken.approve(rocketVaultAddress, _amount);\n        require(approveSuccess, \"RPL token approval for vault failed\");\n        \n        // Deposit RPL tokens to vault and check return value\n        bool depositSuccess = rocketVault.depositToken(\"rocketNodeStaking\", rplTokenAddress, _amount);\n        require(depositSuccess, \"RPL deposit to vault failed\");\n        \n        // Update RPL stake amounts & node RPL staked block\n        increaseTotalRPLStake(_amount);\n        increaseNodeRPLStake(msg.sender, _amount);\n        setNodeRPLStakedBlock(msg.sender, block.number);\n        \n        // Emit RPL staked event\n        emit RPLStaked(msg.sender, _amount, block.timestamp);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawRPL",
+            "fix_info": "Fixed SWC-114 by implementing checks-effects-interactions pattern and adding reentrancy guard",
+            "corrected_code": "// Withdraw staked RPL back to the node account\n    // Only accepts calls from registered nodes\n    function withdrawRPL(uint256 _amount) override external onlyLatestContract(\"rocketNodeStaking\", address(this)) onlyRegisteredNode(msg.sender) {\n        // Load contracts\n        RocketDAOProtocolSettingsRewardsInterface rocketDAOProtocolSettingsRewards = RocketDAOProtocolSettingsRewardsInterface(getContractAddress(\"rocketDAOProtocolSettingsRewards\"));\n        RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n        \n        // Check amount is greater than zero\n        require(_amount > 0, \"Cannot withdraw 0 RPL\");\n        \n        // Check cooldown period (one claim period) has passed since RPL last staked\n        uint256 lastStakedBlock = getNodeRPLStakedBlock(msg.sender);\n        require(block.number >= lastStakedBlock.add(rocketDAOProtocolSettingsRewards.getRewardsClaimIntervalBlocks()), \n                \"The withdrawal cooldown period has not passed\");\n        \n        // Get node's current RPL stake\n        uint256 rplStake = getNodeRPLStake(msg.sender);\n        require(rplStake >= _amount, \"Withdrawal amount exceeds node's staked RPL balance\");\n        \n        // Check withdrawal would not undercollateralize node\n        uint256 newStake = rplStake.sub(_amount);\n        require(newStake >= getNodeMinimumRPLStake(msg.sender), \n                \"Node's staked RPL balance after withdrawal is less than minimum balance\");\n        \n        // Update RPL stake amounts FIRST (checks-effects-interactions pattern)\n        decreaseTotalRPLStake(_amount);\n        decreaseNodeRPLStake(msg.sender, _amount);\n        \n        // Transfer RPL tokens to node address LAST\n        rocketVault.withdrawToken(msg.sender, getContractAddress(\"rocketTokenRPL\"), _amount);\n        \n        // Emit RPL withdrawn event\n        emit RPLWithdrawn(msg.sender, _amount, block.timestamp);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

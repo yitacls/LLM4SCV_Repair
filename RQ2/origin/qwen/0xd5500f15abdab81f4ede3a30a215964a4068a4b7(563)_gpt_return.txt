@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call.value(bids[T_id][msg.sender])(\"\");",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the contract state. An attacker can create a malicious contract that calls back into the withdraw function before the bids[T_id][msg.sender] = 0; line is executed, allowing them to withdraw the same amount multiple times. The external call should be made after updating the state to prevent reentrant calls."
+}
+```

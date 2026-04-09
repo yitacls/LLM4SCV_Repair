@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "Vault",
+        "contract_version": "0.6.6",
+        "functions": [
+            {
+                "function_name": "callExtFunc",
+                "fix_info": "Added check for ethAmount to prevent potential overflow",
+                "corrected_code": "function callExtFunc(address recipientToken, uint ethAmount, bytes calldata callData, address exchangeAddress) internal returns (uint) {\n    uint balanceBeforeTrade = balanceOf(recipientToken);\n    uint ethAmount = ethAmount.safeAdd(msg.value);\n    require(address(this).balance >= ethAmount, errorToString(Errors.TOKEN_NOT_ENOUGH));\n    (bool success, bytes memory result) = exchangeAddress.call{value: ethAmount}(callData);\n    require(success);\n    (address returnedTokenAddress, uint returnedAmount) = abi.decode(result, (address, uint));\n    require(returnedTokenAddress == recipientToken && balanceOf(recipientToken).safeSub(balanceBeforeTrade) == returnedAmount, errorToString(Errors.INVALID_RETURN_DATA));\n    return returnedAmount;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

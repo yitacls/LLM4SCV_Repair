@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function uses tx.origin for authentication instead of msg.sender, making it vulnerable to phishing attacks. An attacker can create a malicious contract that calls TRT.withdrawEther(). When the owner interacts with the malicious contract, the call will originate from the owner's address (tx.origin), allowing the attacker to bypass the authorization check. Additionally, the contract version (^0.4.24) is outdated and contains known security issues."
+}
+```

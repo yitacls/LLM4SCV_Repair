@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "TokenSale",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed from private to internal or removed visibility keyword to allow access to inheriting contracts, but no change needed if already correctly declared.",
+                "variable_code": "address internal owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added a modifier to replace tx.origin check for better security and access control.",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "addMeByRC",
+                "fix_info": "Replaced tx.origin with msg.sender in require statement and added onlyOwner modifier to enforce proper access control. This prevents phishing or man-in-the-middle attacks by ensuring direct caller is the owner.",
+                "corrected_code": "function addMeByRC() public onlyOwner {\n        rc[msg.sender] = true;\n        emit NewRC(msg.sender);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

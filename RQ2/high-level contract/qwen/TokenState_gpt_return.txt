@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "TokenState",
+    "contract_version": "^0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getLockedCount",
+            "fix_info": "Fixed SWC-128 DoS by limiting iteration through delegation IDs with a bounded loop and adding a limit parameter",
+            "corrected_code": "function getLockedCount(address holder) external returns (uint amount) {\n    amount = 0;\n    DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n    uint[] memory delegationIds = delegationController.getDelegationsByHolder(holder);\n    uint limit = delegationIds.length > 100 ? 100 : delegationIds.length; // Limit to 100 iterations\n    for (uint i = 0; i < limit; ++i) {\n        uint id = delegationIds[i];\n        if (isLocked(getState(id))) {\n            amount += delegationController.getDelegation(id).amount;\n        }\n    }\n    return amount + getPurchasedAmount(holder) + this.getSlashedAmount(holder);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "endingDelegatedToUnlocked",
+            "fix_info": "Fixed SWC-105 Unprotected Ether Withdrawal by ensuring proper handling of purchased delegations",
+            "corrected_code": "function endingDelegatedToUnlocked(uint delegationId, DelegationController.Delegation memory delegation) internal returns (State state) {\n    state = State.COMPLETED;\n    _state[delegationId] = state;\n    _timelimit[delegationId] = 0;\n\n    // remove delegationId from _ending array\n    uint endingLength = _endingDelegations[delegation.holder].length;\n    for (uint i = 0; i < endingLength; ++i) {\n        if (_endingDelegations[delegation.holder][i] == delegationId) {\n            for (uint j = i; j + 1 < endingLength; ++j) {\n                _endingDelegations[delegation.holder][j] = _endingDelegations[delegation.holder][j+1];\n            }\n            _endingDelegations[delegation.holder][endingLength - 1] = 0;\n            --_endingDelegations[delegation.holder].length;\n            break;\n        }\n    }\n    \n    if (_isPurchased[delegationId]) {\n        address holder = delegation.holder;\n        _totalDelegated[holder] += delegation.amount;\n        if (_totalDelegated[holder] >= _purchased[holder] && _purchased[holder] > 0) {\n            purchasedToUnlocked(holder);\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

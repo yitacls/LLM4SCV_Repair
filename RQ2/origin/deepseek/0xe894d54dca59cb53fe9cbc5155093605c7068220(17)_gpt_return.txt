@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "caddress.call(id,from,_tos[i],_value);",
+    "description": "The low-level 'call' to an external contract is not checked for success. If the token transfer fails (e.g., due to insufficient balance or an untrusted contract), the transaction will not revert, potentially causing the loop to continue executing despite failed transfers. This can lead to inconsistencies where users believe transfers succeeded when they actually failed."
+}
+```】

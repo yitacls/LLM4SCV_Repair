@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;",
+        "description": "The use of block.coinbase as a source of randomness is vulnerable to manipulation by miners who can choose which address to use as coinbase, allowing them to influence the winning ticket selection."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "address seed2 = contestants[uint(msg.sender) % totalTickets].addr;",
+        "description": "The use of msg.sender as a randomness source is predictable and controllable by participants, allowing malicious users to potentially influence or predict the outcome based on their sending address."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint seed3 = block.difficulty;",
+        "description": "Block difficulty can be somewhat predictable and may be manipulated by miners to a certain extent, making it an unreliable source of randomness for determining lottery winners."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "bytes32 randHash = keccak256(seed1, seed2, seed3);",
+        "description": "The keccak256 hash combines predictable and manipulable inputs (block.coinbase, msg.sender, block.difficulty) to generate randomness, which can be calculated and potentially exploited by attackers to predict or influence the winning result."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "blockNumber = block.number;",
+        "description": "Storing block.number for future randomness reference is predictable since it's a public, sequential value that can be known in advance, making any future random calculations based on it vulnerable to manipulation."
+    }
+]
+```

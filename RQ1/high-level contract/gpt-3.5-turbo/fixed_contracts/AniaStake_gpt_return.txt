@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "AniaStake",
+        "contract_version": "0.8.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "unstakeTokens",
+                "fix_info": "Added validation to prevent underflow when subtracting stake amount.",
+                "corrected_code": "function unstakeTokens(uint256 _amount) public {\n    uint256 index = stakes[msg.sender];\n    uint256 userStakes = stakers[index].address_stake.amount;\n    require(userStakes > 0, \"amount has to be more than 0\");\n    uint256 reward = calculateStakeReward(stakers[index].address_stake);\n    uint256 stakedWithRewards = userStakes + reward;\n    require(_amount <= stakedWithRewards, \"amount has to be less or equal than current stakes with rewards\");\n    aniaToken.transfer(msg.sender, _amount);\n    // Check for underflow when subtracting the stake amount\n    if (userStakes + reward < _amount) {\n        stakers[index].address_stake = Stake(stakers[index].user, 0, block.timestamp);\n    } else {\n        stakers[index].address_stake = Stake(stakers[index].user, userStakes + reward - _amount, block.timestamp);\n    }\n    if (userStakes < _amount) {\n        totalStaked -= userStakes;\n    } else {\n        totalStaked -= _amount;\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

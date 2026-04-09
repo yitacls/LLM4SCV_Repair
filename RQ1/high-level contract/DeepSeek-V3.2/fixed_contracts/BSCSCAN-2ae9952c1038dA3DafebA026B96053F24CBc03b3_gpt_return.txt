@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LinearFinance",
+    "contract_version": ">=0.6.0 <0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added require statement to prevent transfers to zero address",
+            "corrected_code": "    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {\n        require(recipient != address(0), \"ERC20: transfer to the zero address\");\n        _transfer(_msgSender(), recipient, amount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

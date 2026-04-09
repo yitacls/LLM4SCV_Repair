@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Splitter",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "extra",
+            "fix_info": "Assuming extra is an array of addresses that should be payable, but no changes needed to declaration",
+            "variable_code": "address payable[4] public extra;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fundPuppets",
+            "fix_info": "Fixed unchecked low-level calls by using transfer() for safer Ether transfers and checking results of calls if needed. Also added reentrancy protection and better access control.",
+            "corrected_code": "function fundPuppets() public payable onlyOwner {\n    require(msg.value >= 4, \"Insufficient funds to split\");\n    _share = SafeMath.div(msg.value, 4);\n    \n    for (uint i = 0; i < 4; i++) {\n        require(extra[i] != address(0), \"Invalid recipient address\");\n        extra[i].transfer(_share);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "owner",
+            "fix_info": "Added explicit owner variable and modifier for access control",
+            "corrected_code": "address public owner;\n\nmodifier onlyOwner() {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

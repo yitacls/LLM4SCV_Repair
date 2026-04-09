@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "totalBounty += ticketPrice;",
+    "description": "This line contains an integer overflow vulnerability because Solidity versions prior to 0.8.0 do not have built-in overflow checks. Specifically, if 'totalBounty + ticketPrice' exceeds the maximum value that can be stored in 'totalBounty' (2^256 - 1 for uint256), the value will wrap around to 0, causing incorrect accounting of funds. This could allow attackers to manipulate the contract's balance tracking, potentially leading to loss of funds or incorrect winner payouts. The vulnerability is compounded by the use of 'msg.value' which could be manipulated to trigger the overflow condition."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Denial of Service (DoS)",
+    "location": "The entire _emit function, specifically the assembly block using log0-log4 operations",
+    "description": "The _emit function is vulnerable to out-of-gas DoS attacks because it copies the entire callData parameter into memory before using it in log operations. In Solidity 0.4.25, when bytes memory _callData = callData is executed, it creates a full in-memory copy of the input data. If an attacker passes extremely large callData (approaching the block gas limit), the memory expansion and copy operations will consume excessive gas, potentially causing the transaction to run out of gas and revert. This can be exploited to block legitimate transactions or consume unnecessary gas. The vulnerability exists because the function doesn't limit the size of callData before copying it. Additionally, since onlyTarget modifier restricts access, this could be exploited through front-running attacks where malicious actors submit large transactions to consume gas before legitimate ones."
+}
+```

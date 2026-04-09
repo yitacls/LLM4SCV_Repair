@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint public blockNumber = block.number;",
+    "description": "The contract relies on block.number as a source of randomness, which is predictable and manipulable by miners. In Solidity v0.4.16, using block.number alone for randomness allows attackers to anticipate outcomes by knowing the exact block in which a transaction will be mined, enabling them to influence or exploit raffle results, games, or other chance-based logic."
+}
+```

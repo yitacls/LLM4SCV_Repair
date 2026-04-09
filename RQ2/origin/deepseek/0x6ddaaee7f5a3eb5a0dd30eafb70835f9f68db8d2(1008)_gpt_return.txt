@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require((tx.origin == owner && block.timestamp > jackpotTimestamp.add(DSHORT)) || block.timestamp > jackpotTimestamp.add(2629000));",
+    "description": "The function uses tx.origin for authorization instead of msg.sender, which makes it vulnerable to phishing attacks. An attacker could trick the owner into calling a malicious contract that calls this function, allowing the attacker to restart the game. Additionally, the use of onlyGamePaused modifier (implied) combined with this weak authorization check creates insufficient access control for game restart functionality."
+}
+```

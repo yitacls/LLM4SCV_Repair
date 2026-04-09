@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "to.call.value(amount)();",
+    "description": "The low-level call to address `to` does not check the return value or handle the possibility of failure. In Solidity 0.4.x, the `.call()` function returns a boolean success value, but it is ignored here. This can lead to loss of funds if the call fails (e.g., if the recipient is a contract with a fallback function that reverts or runs out of gas), because the state changes (balance deduction and withdrawal count increment) will still be executed. Additionally, this pattern is susceptible to reentrancy attacks, as the contract state is updated after the external call."
+}
+```

@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "Using tx.origin for authorization creates a phishing vulnerability. tx.origin returns the original sender of the transaction chain, not the immediate caller. A malicious contract could trick the owner into calling it, which then calls clear(), passing the authorization check since tx.origin is still the owner. The contract should use msg.sender for authentication. Additionally, selfdestruct will destroy the contract and send all remaining Ether to owner, which may be unintended if called by an attacker."
+    }
+}
+```

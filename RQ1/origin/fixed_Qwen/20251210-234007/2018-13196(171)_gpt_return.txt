@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TSwap",
+    "contract_version": "^0.4.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by adding SafeMath-style checks for all balance and ether calculations",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balanceOf[msg.sender] < amount ) throw;\n        balanceOf[this] = safeAdd(balanceOf[this], amount);\n        balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], amount);\n        uint256 etherAmount = safeMul(amount, sellPrice);\n        if (!msg.sender.send(etherAmount)) {\n            throw;\n        } else {\n            Transfer(msg.sender, this, amount);\n        }               \n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

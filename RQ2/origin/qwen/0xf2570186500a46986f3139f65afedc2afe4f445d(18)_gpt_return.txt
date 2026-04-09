@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "fuck.call(bytes4(sha3(\"giveBlockReward()\")))",
+    "description": "The low-level call to the 'fuck' contract using .call() is not checked for success or failure. In Solidity ^0.4.16, low-level calls return a boolean indicating success, but this return value is ignored here. If the call fails (e.g., due to out-of-gas, invalid opcode, or the target function reverting), the failure will not be detected and the loop will continue executing. This can lead to unexpected behavior where the intended operation is not performed but the contract continues as if it succeeded. The call should be checked for success, for example: 'require(fuck.call(bytes4(sha3(\"giveBlockReward()\"))))'."
+}
+```

@@ -1,0 +1,14 @@
+[{
+    "contract_name": "ChainlinkAdapter",
+    "contract_version": "^0.5.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "price",
+            "fix_info": "Prevent integer overflow during multiplication and ensure Chainlink answer is positive before casting to uint256. Perform multiplication in signed int and verify by division that no overflow occurred.",
+            "corrected_code": "function price() public view returns (uint256 newPrice, uint256 timestamp) {\n        int256 answer = feeder.latestAnswer();\n        // Require a positive answer to avoid negative-to-uint conversion\n        require(answer > 0, \"ChainlinkAdapter: non-positive answer\");\n\n        // Multiply in signed integers and check for overflow\n        int256 scaled = answer * chainlinkDecimalsAdapter;\n        require(scaled / chainlinkDecimalsAdapter == answer, \"ChainlinkAdapter: multiplication overflow\");\n\n        // Safe to cast to uint256 now\n        newPrice = uint256(scaled);\n        timestamp = feeder.latestTimestamp();\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

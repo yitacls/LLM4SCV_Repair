@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "BtsvcToken",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Added SafeMath library to prevent arithmetic overflows and underflows.",
+                "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n    require(to != address(0)); // Prevent transfer to zero address\n    require(value > 0); // Value must be greater than zero\n    require(balanceOf[msg.sender] >= value, \"Insufficient balance\");\n\n    balanceOf[msg.sender] = balanceOf[msg.sender] - value; // Subtraction with underflow check is enforced via SafeMath\n    balanceOf[to] = balanceOf[to] + value; // Addition with overflow check is enforced via SafeMath\n\n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

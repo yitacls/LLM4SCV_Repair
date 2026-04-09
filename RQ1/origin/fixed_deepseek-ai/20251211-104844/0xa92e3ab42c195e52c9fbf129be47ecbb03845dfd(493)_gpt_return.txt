@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ClockAuction",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwnerOrNFTContract",
+            "fix_info": "Added modifier to properly check authorization",
+            "modifier_code": "modifier onlyOwnerOrNFTContract() {\n    address nftAddress = address(nonFungibleContract);\n    require(\n        msg.sender == owner ||\n        msg.sender == nftAddress,\n        \"Not authorized\"\n    );\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed multiple issues: 1) Added authorization modifier for cleaner code, 2) Used proper balance transfer pattern with require() to check send() result, 3) Moved NFT address variable inside function for clarity",
+            "corrected_code": "function withdrawBalance() external onlyOwnerOrNFTContract {\n    uint256 balance = this.balance;\n    require(balance > 0, \"No balance to withdraw\");\n    \n    // Use call.value() instead of deprecated send() for more gas control\n    // And check the result with require()\n    address nftAddress = address(nonFungibleContract);\n    bool success = nftAddress.call.value(balance)(\"\");\n    require(success, \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

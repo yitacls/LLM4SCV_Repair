@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-126-Insufficient Gas Griefing",
+        "location": "Lines 66-79: handleProposalCancellation function",
+        "description": "The function iterates through epochProposals[epoch] array to find and remove a proposalId. An attacker could fill the array with many entries (up to MAX_PROPOSAL_PER_EPOCH = 10), making cancellation attempts run out of gas if the proposalId is at the end of the array. This prevents cancellation of proposals through gas griefing attacks."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 100-112: handleWithdrawal function",
+        "description": "When a user withdraws, governance.handleVotingPowerChanged() is called with epochProposals[currentEpoch] array. If MAX_PROPOSAL_PER_EPOCH (10) proposals exist in the epoch, this could push the transaction gas usage close to block limits when combined with other operations. While the array size is limited to 10, in combination with other contract logic it could contribute to block gas limit issues."
+    }
+]
+```

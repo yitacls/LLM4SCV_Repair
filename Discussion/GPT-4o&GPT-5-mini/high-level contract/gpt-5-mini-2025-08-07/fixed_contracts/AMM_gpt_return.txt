@@ -1,0 +1,29 @@
+[
+    {
+        "contract_name": "AMM",
+        "contract_version": "^0.5.2",
+        "state_variables": [
+            {
+                "variable_name": "ONE_WAD_U",
+                "fix_info": "Deleted unused constant to remove presence of unused variable (SWC-131). Functionality unchanged.",
+                "variable_code": "uint256 private constant ONE_WAD_U = 10**18;",
+                "change_type": "deleted"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintShareTokenTo",
+                "fix_info": "Checked return value of external token call using a low-level call. Accepts tokens that either return bool or revert/do not return value. Reverts on failure (fixes SWC-104).",
+                "corrected_code": "function mintShareTokenTo(address guy, uint256 amount) internal {\n    // Use low-level call to handle both types of token implementations (those that return bool and those that don't)\n    (bool success, bytes memory data) = address(shareToken).call(\n        abi.encodeWithSelector(shareToken.mint.selector, guy, amount)\n    );\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"mint failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "burnShareTokenFrom",
+                "fix_info": "Checked return value of external token call using a low-level call. Accepts tokens that either return bool or revert/do not return value. Reverts on failure (fixes SWC-104).",
+                "corrected_code": "function burnShareTokenFrom(address guy, uint256 amount) internal {\n    // Use low-level call to handle both types of token implementations (those that return bool and those that don't)\n    (bool success, bytes memory data) = address(shareToken).call(\n        abi.encodeWithSelector(shareToken.burn.selector, guy, amount)\n    );\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"burn failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

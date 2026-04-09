@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "This vulnerability is an access control issue, it is located in the 'require(msg.sender == impl);' statement. The msg.sender is assumed to be the implementation address (impl), however this control can be bypassed. An attacker can potentially evade this access control requirement by triggering the function as a different contract, where the malicious contract calls this vulnerable function. The vulnerability can allow an attacker to redirect funds to any address of their choice."
+}
+```

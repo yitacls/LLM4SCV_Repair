@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "var totalTokenToMint = tokensToMint * (10 ** 18);",
+    "description": "The multiplication operation is vulnerable to integer overflow. When tokensToMint is large enough, multiplying by 10^18 can exceed the maximum value of uint256, causing an overflow that wraps around to a much smaller value. This results in minting fewer tokens than intended. The 'var' keyword in Solidity 0.4.21 defaults to the smallest integer type that can hold the value, which may also contribute to overflow issues. Additionally, there's no overflow protection mechanism like SafeMath being used."
+}
+```

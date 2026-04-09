@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(msg.sender == impl);",
+            "description": "The function transferOrigin() uses tx.origin for authorization of token transfers but only checks that msg.sender == impl. This creates a critical vulnerability because any contract calling this function (with impl as the caller) can transfer tokens from any user's account (tx.origin) without their explicit approval, enabling phishing attacks where a malicious contract tricks users into interacting with it, resulting in unauthorized token transfers from the user's account."
+        },
+        {
+            "type": "access_control",
+            "location": "require(_value <= balances[tx.origin]);",
+            "description": "The balance check and deduction use tx.origin instead of msg.sender, allowing any approved caller (impl) to transfer tokens from any Ethereum account that originates the transaction, regardless of whether that account intended to authorize the transfer. This violates the principle of explicit token ownership and approval, as users' balances can be manipulated without their direct consent."
+        }
+    ]
+}
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "ICOBuyer",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyDeveloper",
+                "fix_info": "Added access control modifier to restrict function access to developer only",
+                "modifier_code": "modifier onlyDeveloper() {\n    require(msg.sender == developer);\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Added access control modifier to prevent unauthorized withdrawals",
+                "corrected_code": "function withdraw() onlyDeveloper {\n    developer.transfer(this.balance);\n    require(token.transfer(developer, token.balanceOf(address(this))));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

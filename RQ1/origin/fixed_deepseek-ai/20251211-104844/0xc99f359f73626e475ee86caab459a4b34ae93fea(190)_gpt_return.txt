@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "DungeonToken",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added ownership modifier to replace hardcoded address check and tx.origin vulnerability",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner, \"Only owner can call this function\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "migrateDungeon",
+            "fix_info": "Fixed access control vulnerability by: 1. Removing timestamp-based restriction 2. Replacing tx.origin with ownership pattern 3. Using msg.sender for authorization",
+            "corrected_code": "function migrateDungeon(uint _difficulty, uint _capacity, uint _floorNumber, uint _rewards, uint _seedGenes, uint _floorGenes, address _owner) external onlyOwner {\n    _createDungeon(_difficulty, _capacity, _floorNumber, _rewards, _seedGenes, _floorGenes, _owner);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

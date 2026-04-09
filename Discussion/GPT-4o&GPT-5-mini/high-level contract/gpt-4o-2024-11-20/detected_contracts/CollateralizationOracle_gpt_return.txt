@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "protocolControlledValue += _oraclePrice.mul(_totalTokenBalance).asUint256();",
+        "description": "The addition operation could lead to an integer overflow if _oraclePrice.mul(_totalTokenBalance).asUint256() results in a large value exceeding the bounds of uint256. While Solidity 0.8.x has built-in overflow checks, explicitly tracking large accumulations might enhance clarity."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "userCirculatingFei = fei().totalSupply() - _protocolControlledFei;",
+        "description": "The subtraction operation may lead to an integer underflow if _protocolControlledFei exceeds fei().totalSupply(). This could cause the resulting value of userCirculatingFei to throw if such a scenario accidentally or intentionally occurs. Built-in overflow checks in Solidity 0.8.x catch this, but ensuring valid relationships in data inputs might add further protection."
+    }
+]
+```

@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "Reward",
+        "contract_version": "0.8.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getBlockByTime",
+                "fix_info": "Added checks for underflow/overflow to ensure the loop ends and prevents DoS. Reduced iteration limit to a safe cap.",
+                "corrected_code": "function getBlockByTime(uint _time) public view returns (uint) {\n    require(point_history.length > 1, \"No sufficient checkpoints available\");\n\n    // Binary search\n    uint _min = 0;\n    uint _max = point_history.length - 1;\n    uint iterations = 0; // Cap iterations to prevent excessive gas.\n    while (_min < _max && iterations < 64) {\n        uint _mid = (_min + _max + 1) / 2;\n        if (point_history[_mid].ts <= _time) {\n            _min = _mid;\n        } else {\n            _max = _mid - 1;\n        }\n        iterations++;\n    }\n\n    Point memory point0 = point_history[_min];\n    Point memory point1 = point_history[_min + 1];\n    require(point1.ts > point0.ts, \"Invalid checkpoint timestamps\");\n\n    uint block_slope = (BlockMultiplier * (point1.blk - point0.blk)) / (point1.ts - point0.ts);\n    uint dblock = (block_slope * (_time - point0.ts)) / BlockMultiplier;\n    return point0.blk + dblock;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimRewardMany",
+                "fix_info": "Modified to limit the number of tokenIds and intervals to prevent exceeding the gas limit. Batch size is capped.",
+                "corrected_code": "function claimRewardMany(uint[] calldata tokenIds, Interval[][] calldata intervals) public returns (uint[] memory rewards) {\n    require(tokenIds.length <= 100, \"Too many tokenIds - limit the batch size\");\n    require(intervals.length == tokenIds.length, \"Mismatch between tokenIds and intervals length\");\n\n    rewards = new uint[](tokenIds.length);\n    for (uint i = 0; i < tokenIds.length; i++) {\n        rewards[i] = claimReward(tokenIds[i], intervals[i]);\n    }\n    return rewards;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimReward",
+                "fix_info": "Added appropriate gas checks and limited the number of epochs to be processed in a single transaction.",
+                "corrected_code": "function claimReward(uint tokenId, uint startEpoch, uint endEpoch) public returns (uint reward) {\n    require(msg.sender == ve(_ve).ownerOf(tokenId), \"Caller is not the token owner\");\n    require(endEpoch < epochInfo.length, \"Claim out of range\");\n    require(endEpoch - startEpoch <= 50, \"Too many epochs in range\"); // Ensure gas limit safety\n\n    uint lastPointTime = point_history[point_history.length - 1].ts;\n    for (uint i = startEpoch; i <= endEpoch; i++) {\n        EpochInfo memory epoch = epochInfo[i];\n        if (block.timestamp < epoch.startTime) {\n            break;\n        }\n        if (lastPointTime < epoch.startTime) {\n            addCheckpoint();\n            lastPointTime = block.timestamp;\n        }\n\n        checkEpoch(i);\n\n        (uint reward_i, bool finished) = _pendingRewardSingle(tokenId, userLastClaimTime[tokenId][i], epoch);\n        if (reward_i > 0) {\n            reward += reward_i;\n            userLastClaimTime[tokenId][i] = block.timestamp;\n        }\n        if (!finished) {\n            break;\n        }\n    }\n    require(reward > 0, \"No rewards to claim\");\n    IERC20(rewardToken).safeTransfer(ve(_ve).ownerOf(tokenId), reward);\n    emit LogClaimReward(tokenId, reward);\n    return reward;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

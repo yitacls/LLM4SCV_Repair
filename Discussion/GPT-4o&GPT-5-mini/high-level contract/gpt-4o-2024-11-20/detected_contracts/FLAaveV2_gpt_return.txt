@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "L106-137",
+    "description": "The `executeOperation` function potentially introduces a reentrancy vulnerability. After transferring assets to the user proxy (inside the for-loop) via function `withdrawTokens`, it calls the proxy's `execute` method before completing the required approvals for returning the flash loan. This could result in a situation where an attacker can reenter the contract and execute unintended operations by taking advantage of uncompleted loan settlement or setting manipulated states through the proxy call."
+}
+```

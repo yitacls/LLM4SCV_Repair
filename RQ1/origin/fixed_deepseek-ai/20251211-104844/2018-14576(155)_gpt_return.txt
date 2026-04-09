@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "SunContractToken",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "icoContractAddress",
+            "fix_info": "No change needed - variable exists but not shown in provided code",
+            "variable_code": "address public icoContractAddress;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "restrictedAddresses",
+            "fix_info": "No change needed - variable exists but not shown in provided code",
+            "variable_code": "mapping(address => bool) public restrictedAddresses;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "balances",
+            "fix_info": "No change needed - variable exists but not shown in provided code",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "supply",
+            "fix_info": "No change needed - variable exists but not shown in provided code",
+            "variable_code": "uint256 public supply;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyICO",
+            "fix_info": "Added modifier to check caller is ICO contract",
+            "modifier_code": "modifier onlyICO() {\n    require(msg.sender == icoContractAddress, \"Only ICO can mint\");\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "notRestricted",
+            "fix_info": "Added modifier to check address is not restricted",
+            "modifier_code": "modifier notRestricted(address _address) {\n    require(!restrictedAddresses[_address], \"Address is restricted\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintTokens",
+            "fix_info": "Fixed arithmetic overflow using SafeMath operations, replaced throw with require/revert, added modifiers, updated to Solidity 0.8.0",
+            "corrected_code": "function mintTokens(address _to, uint256 _amount) external onlyICO notRestricted(_to) {\n    require(_to != address(0), \"Mint to zero address\");\n    \n    // Update total supply using SafeMath from Solidity 0.8.0\n    supply += _amount;\n    \n    // Update balance using SafeMath from Solidity 0.8.0\n    balances[_to] += _amount;\n    \n    // Emit events\n    emit Mint(_to, _amount);\n    emit Transfer(address(0), _to, _amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "selfdestruct(owner);",
+    "description": "The close() function can only be called by the owner due to the onlyOwner modifier, but the selfdestruct() function will destroy the contract and transfer all remaining funds to the owner address. In Solidity 0.4.18, this creates a critical access control issue where the owner can arbitrarily destroy the contract and steal all funds, making it both a leaking vulnerability (funds can be drained) and a suicidal vulnerability (contract can be destroyed by owner)."
+}
+```

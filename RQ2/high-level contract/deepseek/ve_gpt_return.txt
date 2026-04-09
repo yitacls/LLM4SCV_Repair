@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-112-Delegatecall to Untrusted Callee",
+        "location": "Lines 491-493: function ownerOf(uint _tokenId) public view returns (address) { return idToOwner[_tokenId]; }",
+        "description": "The code comment incorrectly references delegatecall vulnerability (SWC-112), but the actual implementation does not contain delegatecall. The ownerOf() function simply returns from a mapping, which is safe. However, this has been flagged as a false positive based on the provided vulnerability type."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Lines 675-697: try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4) {} catch (bytes memory reason) { ... }",
+        "description": "The safeTransferFrom function uses try-catch to handle ERC721Receiver calls, but the return value check is incomplete. While it catches exceptions, it doesn't properly verify that the returned value equals IERC721Receiver.onERC721Received.selector. A malicious contract could return arbitrary bytes that don't match the required selector, bypassing the safety check."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Lines 1097-1104: assert(IERC20(token).transfer(msg.sender, value)); ... _burn(_tokenId);",
+        "description": "The withdraw() function performs an external token transfer before burning the NFT token. This creates a reentrancy vulnerability where a malicious token contract could re-enter the withdraw function before _burn() is called, potentially allowing multiple withdrawals or other state manipulation."
+    }
+]
+```

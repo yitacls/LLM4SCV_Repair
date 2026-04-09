@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = payable(msg.sender).call{ value: etherAmount }(\"\");",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to the user's address before updating the depositedEther balance. The user can implement a fallback function that recursively calls withdrawEtherInternal again before the balance is reduced, potentially draining the contract's funds. The vulnerability is marked by the <RE_ENT> and <RE_VUL> comments in the code."
+}
+```

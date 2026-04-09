@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EtherLotto",
+    "contract_version": "^0.4.15",
+    "state_variables": [
+        {
+            "variable_name": "randomSeed",
+            "fix_info": "Introduced a randomSeed variable to create a more secure source of randomness instead of relying on block.timestamp.",
+            "variable_code": "uint private randomSeed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "play",
+            "fix_info": "Fixed the 'TIME_MANIPULATION' vulnerability by replacing block.timestamp with a pseudo-random mechanism using keccak256, which incorporates the msg.sender and block data. Also updated syntax for compatibility with Solidity ^0.4.15.",
+            "corrected_code": "function play() public payable {\n    require(msg.value == TICKET_AMOUNT, \"Incorrect ticket amount.\");\n\n    // Update the pot with the received ether.\n    pot += msg.value;\n\n    // Generate a pseudo-random number using a combination of randomSeed, blockhash, and msg.sender.\n    randomSeed = uint(keccak256(abi.encodePacked(randomSeed, blockhash(block.number - 1), msg.sender))) % 2;\n\n    // 50% chance for the participant to win.\n    if (randomSeed == 0) {\n        require(address(this).balance >= pot, \"Insufficient contract balance for payout.\");\n\n        // Transfer the fee to the bank account.\n        bank.transfer(FEE_AMOUNT);\n\n        // Transfer the remaining pot to the winner.\n        msg.sender.transfer(pot - FEE_AMOUNT);\n\n        // Reset the pot to zero.\n        pot = 0;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

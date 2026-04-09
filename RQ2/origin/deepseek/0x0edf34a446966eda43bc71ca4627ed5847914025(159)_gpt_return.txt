@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(_owner == tx.origin, \"Ownable: caller is not the owner\");",
+    "description": "The modifier uses tx.origin for authorization instead of msg.sender, which creates a phishing vulnerability. While tx.origin returns the original external account that initiated the transaction, msg.sender returns the immediate caller (which could be a contract). An attacker can trick the legitimate owner into calling a malicious contract that then calls this contract, causing tx.origin to equal the owner's address while msg.sender would be the attacker's contract address, potentially bypassing intended access controls."
+}
+```

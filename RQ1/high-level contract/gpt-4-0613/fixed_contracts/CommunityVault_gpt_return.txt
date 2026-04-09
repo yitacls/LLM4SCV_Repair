@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "CommunityVault",
+        "contract_version": "^0.6.0",
+        "state_variables": [
+            {
+                "variable_name": "_bond",
+                "fix_info": "No change required",
+                "variable_code": "IERC20 private _bond;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No change required",
+                "modifier_code": "onlyOwner",
+                "change_type": "unchanged"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "setAllowance",
+                "fix_info": "Added a lock to prevent reentrancy attacks and upgraded the solidity version to fix the floating pragma vulnerability",
+                "corrected_code": "pragma solidity 0.7.6;\n\nbool private _notEntered;\n	constructor () public {\n		// Stating that the contract has not been entered yet\n		_notEntered = true;\n	}	fuIfunction setAllowance(address spender, uint amount) public onlyOwner {\n		// If the contract has not been entered, it is safe to enter\n		require(_notEntered, \"Reentrant call.\");\n		// Marking that the contract has been entered\n		_notEntered = false;\n		_bond.approve(spender, amount);\n		emit SetAllowance(msg.sender, spender, amount);\n		// Marking that the function execution is completed\n		_notEntered = true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

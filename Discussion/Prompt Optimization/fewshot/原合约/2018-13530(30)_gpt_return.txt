@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "HunterCoin",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Add overflow check before updating balanceOf and totalSupply.",
+                "corrected_code": "function mintToken(address target, uint256 amount) returns (uint256 mintedAmount) {
+    require(balanceOf[target] + amount >= balanceOf[target]);
+    balanceOf[target] += amount;
+    totalSupply += amount;
+    Transfer(owner, target, amount);
+    return amount;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

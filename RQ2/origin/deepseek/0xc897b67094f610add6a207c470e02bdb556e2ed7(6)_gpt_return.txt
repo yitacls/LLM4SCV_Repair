@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "0x0E0Fc7a0a4a4AB61080E22D602fc038759403F03.send(msg.value);",
+    "description": "The contract uses a low-level 'send' operation without checking the return value. In Solidity 0.5.1, 'send' returns a boolean indicating success or failure. If the external call fails (e.g., recipient contract reverts or runs out of gas with only 2300 gas stipend), it will return 'false' but the transaction will not automatically revert. This causes silent failures where ether transfer may fail but execution continues, potentially leaving the contract in an inconsistent state. The vulnerability should be mitigated by either using 'transfer()' (which automatically reverts on failure in Solidity <0.5.0), validating the return value with 'require(sendResult)', or using a withdrawal pattern."
+}
+```

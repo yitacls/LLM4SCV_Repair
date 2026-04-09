@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-101 Integer Overflow and Underflow",
+            "location": "Line 172-180: uint256 remainingAmount = lock.totalAmount.sub(lock.releasedAmount); uint256 releasableAmount = _newScore.mul(remainingAmount).div(100); lock.releasedAmount.add(releasableAmount)",
+            "description": "Although SafeMath is used, the multiplication _newScore.mul(remainingAmount) could potentially overflow if _newScore * remainingAmount exceeds 2^256 - 1. Given that _newScore can be up to 100 and remainingAmount can be up to MAX_LOCK_AMOUNT (which is close to the maximum uint256 value divided by 99), the multiplication could overflow in extreme cases. The contract sets MAX_LOCK_AMOUNT = uint256(2**256 - 1).div(99) to prevent this, but there's still a risk if the arithmetic operations interact in unexpected ways or if there are rounding issues."
+        },
+        {
+            "type": "SWC-113 DoS with Failed Call",
+            "location": "Line 139-199: The entire updateScore() function, particularly the token transfer loop from line 165-180",
+            "description": "The updateScore() function iterates through all beneficiaries in a loop and performs token transfers. If any single transfer fails (e.g., due to a beneficiary contract reverting, running out of gas, or being blacklisted), the entire function will revert. This makes the contract vulnerable to DoS attacks where a malicious beneficiary could deliberately cause their transfer to fail, preventing all beneficiaries from receiving their vested tokens for that epoch. Additionally, as the number of beneficiaries grows, the gas cost could exceed block gas limits."
+        }
+    ]
+}
+```

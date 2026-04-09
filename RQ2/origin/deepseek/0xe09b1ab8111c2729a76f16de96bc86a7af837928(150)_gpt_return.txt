@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(donate_amount)(bytes4(keccak256(\"donate()\")))",
+    "description": "This low-level call to the 'whale' address does not check the return value or handle potential failures. In Solidity 0.4.24, low-level calls like .call() always return a boolean success value that should be verified. If the external call fails (e.g., out of gas, revert in target contract), the contract will continue execution without reverting, potentially leaving the contract in an inconsistent state. This can cause donated funds to be lost while contract state variables (like totalAmountToWhale) have already been updated. The vulnerability is aggravated by using .call() with value transfer without proper error handling."
+}
+```

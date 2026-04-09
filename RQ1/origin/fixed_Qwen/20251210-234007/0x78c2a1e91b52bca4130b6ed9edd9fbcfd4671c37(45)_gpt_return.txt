@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WhaleGiveaway1",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Added return value check for the low-level call to prevent unchecked return values. The function now handles both successful and failed calls properly.",
+            "corrected_code": "function Command(address adr, bytes data)\n    payable\n    public\n    {\n        require(msg.sender == Owner);\n        // Fix: Check the return value of the low-level call\n        bool success;\n        assembly {\n            success := call(gas, adr, callvalue, add(data, 0x20), mload(data), 0, 0)\n        }\n        require(success);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

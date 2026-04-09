@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "NomToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed from public to private/internal to prevent direct visibility (optional but recommended)",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a modifier to replace tx.origin check with msg.sender for proper access control",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only owner can call this function\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced tx.origin check with onlyOwner modifier to prevent phishing attacks and improve access control, replaced deprecated 'now' with 'block.timestamp'",
+            "corrected_code": "function mint() public onlyOwner returns (bool) {\n    uint256 tokensToMint = 0;\n    if (block.timestamp > initialIssueMintingDate && !initialIssueMinted) {\n        tokensToMint = tokensToMint.add(initialIssueMinting);\n        initialIssueMinted = true;\n    }\n    if (block.timestamp > firstStageMintingDate && !firstStageMinted) {\n        tokensToMint = tokensToMint.add(firstStageMinting);\n        firstStageMinted = true;\n    }\n    if (block.timestamp > secondStageMintingDate && !secondStageMinted) {\n        tokensToMint = tokensToMint.add(secondStageMinting);\n        secondStageMinted = true;\n    }\n    if (block.timestamp > thirdStageMintingDate && !thirdStageMinted) {\n        tokensToMint = tokensToMint.add(thirdStageMinting);\n        thirdStageMinted = true;\n    }\n    if (block.timestamp > fourthStageMintingDate && !fourthStageMinted) {\n        tokensToMint = tokensToMint.add(fourthStageMinting);\n        fourthStageMinted = true;\n    }\n    require(tokensToMint > 0, \"No tokens available to mint at this stage\");\n    uint256 newTotalSupply = totalSupply_.add(tokensToMint);\n    require(newTotalSupply <= totalTokens, \"Minting would exceed total token supply\");\n    totalSupply_ = totalSupply_.add(tokensToMint);\n    balances[owner] = balances[owner].add(tokensToMint);\n    emit Mint(owner, tokensToMint);\n    emit Transfer(address(0), owner, tokensToMint);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

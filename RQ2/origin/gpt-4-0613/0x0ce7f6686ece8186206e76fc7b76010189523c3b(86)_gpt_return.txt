@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "for loop in the getLeader() function",
+    "description": "The getLeader function iterates over all players and their bets. This can be a potential Denial of Service (DoS) vulnerability if the number of players gets very high. It might consume all gas for transactions where the getLeader() function is called. Furthermore, if the number of players exceeds the block gas limit, it would be impossible to interact with the MakeYourBet contract through this function."
+}
+```

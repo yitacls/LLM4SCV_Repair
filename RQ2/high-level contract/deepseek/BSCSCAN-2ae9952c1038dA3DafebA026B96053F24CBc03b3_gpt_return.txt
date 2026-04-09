@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function transfer(address recipient, uint256 amount) public virtual override returns (bool)",
+    "description": "The transfer function in the ERC20Upgradeable contract (lines 454-457) does not implement any access controls or authorization checks beyond standard ERC20 balance validation. While this function doesn't directly handle Ether withdrawals, the vulnerability pattern refers to the lack of access control on critical functions. In the context of this LinearFinance contract, the mint() and burn() functions are properly protected with the onlyAdmin modifier, but the transfer() function inherits from the parent ERC20Upgradeable contract without additional restrictions. This could allow unauthorized transfers if the contract held valuable tokens, though the standard ERC20 transfer function is typically expected to be public. The main concern is that the admin privilege system doesn't restrict the standard transfer functionality, which is correct ERC20 behavior."
+}
+```

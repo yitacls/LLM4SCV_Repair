@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "unlockTime += now;",
+    "description": "The line 'unlockTime += now;' contains an arithmetic vulnerability due to integer overflow/underflow in Solidity versions prior to 0.8.0. Since 'unlockTime' is a state variable (likely of type uint256) and 'now' returns the current block timestamp (also uint256), repeated calls to the Put() function or a very large initial value of unlockTime could cause the addition to exceed the maximum value of uint256 (2^256 - 1). In Solidity ^0.4.22, this would wrap around to 0 (or a very small number) without throwing an error, potentially causing unexpected behavior in time-dependent logic. Additionally, using 'now' (deprecated alias for 'block.timestamp') for critical timing logic is insecure as miners can influence block timestamps within a small range."
+}
+```

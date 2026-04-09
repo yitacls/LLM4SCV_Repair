@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function emitVotingBalances(address[] calldata accounts) external",
+    "description": "The function `emitVotingBalances` allows any external account to call it. The function iterates over an array of user accounts and emits the `DelegateVotesChanged` event for each account. While this function does not withdraw Ether directly, the unrestricted access control means that malicious actors can spam this function, causing excessive gas costs for the contract and potentially creating denial-of-service (DoS) risks. Proper access controls should be employed to prevent abuse."
+}
+```

@@ -1,0 +1,40 @@
+[
+  {
+    "contract_name": "MasterChef",
+    "contract_version": "0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "_massUpdatePools",
+        "fix_info": "The vulnerability here is due to a potential DoS attack, since block gas limit might be reached if there are many pools. Instead of updating all pools at once, we can update each pool when some actions related to the pool are performed.",
+        "corrected_code": "function _massUpdatePools() private {\n\t// function removed as the update of each pool is handled individually\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "add",
+        "fix_info": "Updated the add function to update the pool right after it's added",
+        "corrected_code": "function add(uint32 _allocPoint, IBEP20 _lpToken, uint16 _depositFeeBP, uint32 _harvestInterval, bool _withRewards) public onlyOwner nonDuplicated(_lpToken) {\n\trequire(_depositFeeBP <= 1500, \"add: deposit fee can't be more than 15%\");\n\trequire(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"add: invalid harvest interval\");\n\tuint256 lastRewardBlock = block.number > startBlock ? block.number : startBlock;\n\ttotalAllocPoint = totalAllocPoint.add(_allocPoint);\n\tpoolExistence[_lpToken] = true;\n\tpoolInfo.push(PoolInfo({\n\t\tlpToken: _lpToken,\n\t\tallocPoint: _allocPoint,\n\t\tlastRewardBlock: lastRewardBlock,\n\t\taccBullPerShare: 0,\n\t\tdepositFeeBP: _depositFeeBP,\n\t\tharvestInterval: _harvestInterval,\n\t\ttotalStrength: 0\n\t}));\n\tif(_withRewards){\n\t\tuint16 pid = uint16(poolInfo.length - 1);\n\t\trewardDistribution.add(_lpToken, pid);\n\t// update pool info after being added\n\t\t_updatePool(pid);\n\t}\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "set",
+        "fix_info": "Updated the set function to update the pool right after it's modified",
+        "corrected_code": "function set(uint256 _pid, uint32 _allocPoint, uint16 _depositFeeBP, uint32 _harvestInterval) public onlyOwner {\n\trequire(_depositFeeBP <= 10000, \"set: invalid deposit fee basis points\");\n\trequire(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"set: invalid harvest interval\");\n\ttotalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);\n\tpoolInfo[_pid].allocPoint = _allocPoint;\n\tpoolInfo[_pid].depositFeeBP = _depositFeeBP;\n\tpoolInfo[_pid].harvestInterval = _harvestInterval;\n\t// update pool info after being modified\n\t_updatePool(_pid);\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "deposit",
+        "fix_info": "Updated the deposit function to update the pool before depositing",
+        "corrected_code": "function deposit(uint16 _pid, uint256 _amount, address _referrer) public nonReentrant {\n\t// update pool info before depositing\n\t_updatePool(_pid);\n\tPoolInfo storage pool = poolInfo[_pid];\n\tUserInfo storage user = userInfo[_pid][msg.sender];\n\tif (_amount > 0 && address(bullReferral) != address(0) && _referrer != address(0) && _referrer != msg.sender) {\n\t\tbullReferral.recordReferral(msg.sender, _referrer);\n\t}\n\tpayOrLockupPendingBull(_pid);\n\tif (_amount > 0) {\n\t\t// code omitted for brevity\n\t}\n\t_updateStrength(_pid);\n\tuser.rewardDebt = user.strength.mul(pool.accBullPerShare).div(1e12);\n\temit Deposit(msg.sender, _pid, _amount);\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "withdraw",
+        "fix_info": "Updated the withdraw function to update the pool before withdrawing",
+        "corrected_code": "function withdraw(uint16 _pid, uint256 _amount) public nonReentrant {\n\t// update pool info before withdrawing\n\t_updatePool(_pid);\n\tPoolInfo storage pool = poolInfo[_pid];\n\tUserInfo storage user = userInfo[_pid][msg.sender];\n\trequire(user.amount >= _amount, \"withdraw: not good\");\n\tpayOrLockupPendingBull(_pid);\n\tif (_amount > 0) {\n\t\t// code omitted for brevity\n\t}\n\t_updateStrength(_pid);\n\tuser.rewardDebt = user.strength.mul(pool.accBullPerShare).div(1e12);\n\temit Withdraw(msg.sender, _pid, _amount);\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]

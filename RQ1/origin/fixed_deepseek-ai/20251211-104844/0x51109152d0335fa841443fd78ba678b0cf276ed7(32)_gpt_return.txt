@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Crowdsale",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "beneficiary",
+                "fix_info": "Changed from address to address payable to enable safe ETH transfers",
+                "variable_code": "address payable public beneficiary;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed multiple vulnerabilities: 1) Replaced beneficiary.send() with beneficiary.transfer() for safer ETH transfers, 2) Added overflow protection for balanceOf and amountRaised, 3) Added check for beneficiary address, 4) Moved FundTransfer event before state changes, 5) Ensured amountRaised reset only after successful transfer",
+                "corrected_code": "function() external payable {\n    require(!crowdsaleClosed, \"Crowdsale is closed\");\n    require(msg.value > 0, \"No ETH sent\");\n    require(beneficiary != address(0), \"Beneficiary not set\");\n    \n    uint256 amount = msg.value;\n    \n    // Overflow protection for balanceOf\n    require(balanceOf[msg.sender] + amount >= balanceOf[msg.sender], \"Balance overflow\");\n    balanceOf[msg.sender] += amount;\n    \n    // Overflow protection for amountRaised\n    require(amountRaised + amount >= amountRaised, \"AmountRaised overflow\");\n    amountRaised += amount;\n    \n    // Calculate and transfer tokens\n    uint256 tokens = amount / price;\n    require(tokens > 0, \"Token amount too small\");\n    require(tokenReward.transfer(msg.sender, tokens), \"Token transfer failed\");\n    \n    // Emit event before state changes\n    emit FundTransfer(msg.sender, amount, true);\n    \n    // Transfer ETH to beneficiary using safer method\n    uint256 amountToSend = amountRaised;\n    amountRaised = 0;\n    beneficiary.transfer(amountToSend);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

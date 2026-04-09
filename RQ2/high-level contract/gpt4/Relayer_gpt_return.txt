@@ -1,0 +1,19 @@
+【```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The smart contract uses an outdated compiler version, which could be risky as older versions may contain unfixed bugs and security vulnerabilities. It is always recommended to use the latest solidity compiler version."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The smart contract uses a floating pragma statement, which could be risky as non-specific compiler versions can introduce unexpected behavior. It is recommended to use a specific compiler version to ensure contract reliability."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Lines 21-23: using SafeMath for uint; using SafeMath for uint128; using SafeMath for uint64;",
+        "description": "The smart contract uses arithmetic operations without a library for protected math function, which may lead to overflows and underflows. Although the contract uses SafeMath library for uint, uint128 and uint64, it’s a potential risk if new codes don’t make use of SafeMath for arithmetics."
+    }
+]
+```】

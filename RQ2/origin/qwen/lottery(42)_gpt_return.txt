@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "bool won = (block.number % 2) == 0;",
+    "description": "The contract uses block.number as a source of randomness to determine if a player wins the bet. This is a predictable and exploitable source of randomness because block numbers are publicly known and miners can potentially manipulate them. An attacker can predetermine the outcome by checking if the current block number is even or odd before making a bet, allowing them to only bet when they know they will win. This makes the lottery game completely unfair and exploitable."
+}
+```

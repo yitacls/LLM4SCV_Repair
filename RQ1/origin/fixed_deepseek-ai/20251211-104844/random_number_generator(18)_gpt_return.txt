@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "RandomNumberGenerator",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "commitment",
+            "fix_info": "Added for storing seed commitments from users before reveal phase",
+            "variable_code": "mapping(address => bytes32) public commitment;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "nonce",
+            "fix_info": "Added for generating unpredictable random numbers",
+            "variable_code": "uint256 public nonce;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "random",
+            "fix_info": "Completely replaced vulnerable deterministic random generation with secure commit-reveal pattern combined with blockhash mining",
+            "corrected_code": "function random(uint256 max, bytes32 userSeed) external returns (uint256 result) {\n    require(max > 0, \"Max must be greater than 0\");\n    \n    // Commit phase - store user's seed commitment\n    commitment[msg.sender] = keccak256(abi.encodePacked(userSeed, msg.sender, block.timestamp));\n    \n    // Increment nonce for additional randomness\n    nonce++;\n    \n    // Generate random number using multiple unpredictable sources\n    bytes32 combinedHash = keccak256(abi.encodePacked(\n        blockhash(block.number - 1),\n        block.difficulty,\n        block.timestamp,\n        nonce,\n        msg.sender,\n        userSeed\n    ));\n    \n    // Convert to uint and ensure it's within range\n    uint256 randomNumber = uint256(combinedHash);\n    \n    // Return number between 1 and max\n    result = (randomNumber % max) + 1;\n    \n    // Clear commitment after use\n    delete commitment[msg.sender];\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

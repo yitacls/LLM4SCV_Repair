@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "ReservedContract",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "pendingWithdraws",
+            "fix_info": "Added SafeMath library usage to prevent overflow in mapping",
+            "variable_code": "mapping(address => uint256) public pendingWithdraws;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "richest",
+            "fix_info": "No change required",
+            "variable_code": "address public richest;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "mostSent",
+            "fix_info": "No change required",
+            "variable_code": "uint256 public mostSent;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "becomeRichest",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for addition and added reentrancy protection",
+            "corrected_code": "function becomeRichest() public payable returns (bool) {\n    require(msg.value > mostSent, \"Value must exceed current highest amount\");\n    \n    // Safe addition to prevent overflow\n    uint256 newBalance = pendingWithdraws[richest].add(msg.value);\n    require(newBalance >= pendingWithdraws[richest], \"Addition overflow check\");\n    \n    pendingWithdraws[richest] = newBalance;\n    richest = msg.sender;\n    mostSent = msg.value;\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

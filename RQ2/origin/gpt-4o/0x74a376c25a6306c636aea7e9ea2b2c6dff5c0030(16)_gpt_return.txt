@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "The code does not check for overflows when incrementing 'balanceOf[to]' by 'value'. In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow or underflow. If 'balanceOf[to] + value' exceeds the maximum uint256 value, it will wrap around, leading to an inaccurate balance. This can be exploited to compromise the integrity of the system's accounting, resulting in a significant vulnerability."
+}
+```

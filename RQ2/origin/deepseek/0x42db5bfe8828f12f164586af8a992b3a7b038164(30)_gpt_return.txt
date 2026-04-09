@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.send(this.balance);",
+    "description": "The send() method returns a boolean indicating success or failure, but this return value is not checked. In Solidity 0.4.11, if the send() fails (e.g., due to insufficient gas, a reverted fallback function, or the recipient being a contract without a payable fallback), it returns false but does not throw an exception. This means the contract state changes preceding the send() are not reverted, and execution continues, potentially leaving funds trapped in the contract while the withdrawal logic considers the transfer successful. The vulnerability is exacerbated because the contract uses delegatecall for logging before the transfer, which could have already altered the contract's state. Best practice is to either use transfer() (which automatically throws on failure in versions <0.5.0) or check the return value of send() and handle failures appropriately."
+}
+```

@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Line 92-119 in function deposit",
+        "description": "The deposit function interacts with external contracts via `safeTransferFrom`, `mint`, and other methods without implementing any reentrancy protection, making it vulnerable to reentrancy attacks."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Line 579 in function flashLoan",
+        "description": "The call to `IERC20(asset).transferFrom` does not check the return value of the transfer. This may result in silent failures if the transfer is not successful."
+    }
+]
+```

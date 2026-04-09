@@ -1,0 +1,17 @@
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.5.12;",
+        "description": "The source uses a floating (caret) pragma: `pragma solidity ^0.5.12;`. This allows the contract to be compiled with any future 0.5.x compiler >=0.5.12 and <0.6.0. Compiler or language changes in patch/minor releases may introduce behavioral changes, incompatibilities, or different optimizations that could affect contract behavior or safety. Mitigation: lock the pragma to a specific compiler version that was used for testing (for example `pragma solidity 0.5.12;`) or use a well-defined range that you have audited and tested."
+    },
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": "uint256 beginDepositTime;\nuint256 endDepositTime;\naddress yieldWallet;\naddress kickerWallet;\nuint256 kickerDeadline;\nuint256 kickerPromille;",
+        "description": "Several state variables are declared without an explicit visibility specifier (for example `uint256 beginDepositTime;`). In Solidity the default visibility for state variables is internal, but omitting visibility reduces code clarity and can lead to accidental exposure or incorrect assumptions about accessibility. It also emits compiler warnings. Mitigation: explicitly declare the intended visibility for each state variable (e.g. `private`, `internal`, or `public`) and, where appropriate, provide accessor functions if external read access is required."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function triggerWithdrawAll() public {\n    for (uint256 i = 0; i < lockBoxStructs.length; ++i) {\n        if (lockBoxStructs[i].releaseTime <= now && lockBoxStructs[i].balance > 0) {\n            withdraw(i);\n        }\n    }\n}",
+        "description": "triggerWithdrawAll loops over the entire `lockBoxStructs` array and calls `withdraw(i)` for each releasable box. Because `withdraw` performs external token transfers and may revert (or consume substantial gas), a single failing transfer or the accumulated gas cost for many entries can cause the entire `triggerWithdrawAll` call to fail or run out of gas, preventing other withdrawals from being processed (Denial-of-Service). Additionally, calling an external token transfer inside a long loop is unsafe when the array can grow unbounded. Mitigations: avoid processing an unbounded dynamic array in a single transaction. Provide a pull-based design where each beneficiary withdraws their own funds, or implement batched processing with a bounded number of iterations per call (e.g., process N entries per transaction and keep an index to continue), or emit events to offload processing off-chain. Also ensure robust handling if a single transfer can fail (skip or mark failed and continue) rather than reverting the entire loop."
+    }
+]

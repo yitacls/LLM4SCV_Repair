@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "_addr.send(this.balance);",
+        "description": "In Solidity 0.4.11, the .send() function returns a boolean indicating success or failure. This return value is ignored, which can lead to silent failures when transferring Ether. If the send operation fails (e.g., if the recipient is a contract that runs out of gas in its fallback function or reverts), the transaction will not revert, and the contract state will remain unchanged, potentially leaving the funds locked in the contract. Additionally, the function should check that the admin has sufficient privileges (onlyadmin() is called but its implementation is not shown), and it interacts with the entire contract balance (this.balance), which could be risky if other funds are expected to remain."
+    }
+]
+```

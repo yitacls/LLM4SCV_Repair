@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256(\"donate()\")));",
+    "description": "The low-level call to 'whale' contract does not check the return value, which means the function will continue execution even if the external call fails. In Solidity ^0.4.21, low-level calls return a boolean indicating success or failure, but this return value is ignored here. If the 'donate()' function on the whale contract fails or reverts, the transaction won't revert and the 'amount' will still be added to 'totalDonated', leading to incorrect state tracking and potential loss of funds."
+}
+```

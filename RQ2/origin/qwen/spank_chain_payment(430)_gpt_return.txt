@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "Channels[_lcID].partyAddresses[0].transfer(Channels[_lcID].ethBalances[0]);",
+    "description": "The contract calls transfer() on an external address (partyAddresses[0]) before deleting the channel state. This allows a malicious receiver to re-enter the contract and potentially execute the transfer multiple times before the channel state is deleted, leading to theft of funds."
+}
+```

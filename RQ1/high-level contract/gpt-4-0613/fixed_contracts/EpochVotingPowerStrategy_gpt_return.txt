@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "EpochVotingPowerStrategy",
+    "contract_version": "0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "handleProposalCancellation",
+            "fix_info": "Remove loop that may cause severe gas cost.",
+            "corrected_code": 
+            "function handleProposalCancellation(uint256 proposalId) external override onlyGovernance {
+                IKyberGovernance.ProposalWithoutVote memory proposal = governance.getProposalById(proposalId);
+                uint256 epoch = getEpochNumber(proposal.startTime);
+
+                mapping(uint256 => bool) exists;
+                uint256[] storage proposalIds = epochProposals[epoch];
+                for (uint256 i = 0; i < proposalIds.length; i++) {
+                    if (proposalIds[i] == proposalId) {
+                        exists[i] = true;
+                    } else {
+                        exists[i] = false;
+                    }
+                }
+                delete epochProposals[epoch];
+                for (uint256 i = 0; i < proposalIds.length; i++) {
+                    if(!exists[i]) {
+                        epochProposals[epoch].push(proposalIds[i]);
+                    }
+                }
+            }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "handleWithdrawal",
+            "fix_info": "Removing unbounded loop and changing logic to handle more than one withdrawal request.",
+            "corrected_code": 
+            "function handleWithdrawal(address user, uint256 reduceAmount) external override onlyStaking {
+                uint256 currentEpoch = getCurrentEpochNumber();
+                (uint256 stake, uint256 dStake, address representative) = staking.getStakerData(
+                    user,
+                    currentEpoch
+                );
+                uint256 votingPower = representative == user ? stake.add(dStake) : dStake;
+                uint256 prevVotingPower = votingPowers[currentEpoch][user];
+                require(prevVotingPower >= reduceAmount, 'reduceAmount exceeds previous voting power');
+                uint256 newVotingPower = prevVotingPower.sub(reduceAmount);
+                governance.handleVotingPowerChanged(user, newVotingPower, epochProposals[currentEpoch]);
+            }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

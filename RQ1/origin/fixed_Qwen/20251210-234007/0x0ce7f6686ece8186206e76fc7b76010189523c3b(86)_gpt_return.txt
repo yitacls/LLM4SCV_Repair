@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MakeYourBet",
+    "contract_version": ">=0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "getLeader",
+            "fix_info": "Fixed DoS vulnerability by preventing zero address lookup and adding proper validation",
+            "corrected_code": "function getLeader() public view returns (address payable, uint256) {\n        address payable winnerAddress = address(0x0);\n        uint256 highestBet = 0;\n        \n        for (uint256 index = 0; index < players.length; index++) {\n            address payable currentAddress = players[index];\n            uint256 playerGameId = bets[currentAddress].gameId;\n            uint256 currentBet = bets[currentAddress].totalBet;\n            \n            if (playerGameId == gameId && currentBet > highestBet) {\n                highestBet = currentBet;\n                winnerAddress = currentAddress;\n            }\n        }\n        \n        return (winnerAddress, highestBet);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

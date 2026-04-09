@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "SGX_ADDRESS.send(CANCELLATION_FEE);",
+            "description": "The return value of the low-level send() call is not checked, which could lead to silent failures. If the send() operation fails (e.g., out of gas, recipient contract reverts), the contract will continue execution as if it succeeded, potentially leaving the contract in an inconsistent state."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "SGX_ADDRESS.send(fee);",
+            "description": "Similar to the previous issue, the return value of send() is not checked. If the transfer to SGX_ADDRESS fails, the fee will not be delivered but the contract state will still be updated (fee marked as DELIVERED_FEE_FLAG), resulting in loss of funds."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "requests[requestId].requester.call.gas(2300).value(fee)();",
+            "description": "The low-level call() is used without checking its return value. If the call fails (e.g., recipient contract reverts or runs out of gas), the ether transfer will be reverted but the contract will continue execution, leaving the fee undelivered while the request is marked as completed."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);",
+            "description": "The callback call's return value is not checked. If the callback fails, the contract won't be aware of it and will continue execution. This could lead to the application contract not being properly notified of the response despite the TownCrier contract considering the request completed."
+        }
+    ]
+}
+```

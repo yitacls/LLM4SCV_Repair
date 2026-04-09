@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. tx.origin refers to the original external account that started the transaction, while msg.sender refers to the account that called the current function. An attacker can create a malicious contract that calls this function, and if the owner interacts with the malicious contract, it can execute this function on behalf of the owner without the owner's direct consent."
+}
+```

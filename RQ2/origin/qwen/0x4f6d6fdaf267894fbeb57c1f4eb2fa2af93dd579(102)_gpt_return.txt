@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "The function uses 'msg.sender == impl' for access control, but 'impl' is not defined in the provided code snippet. This suggests that the implementation address might not be properly initialized or could be manipulated, allowing unauthorized access to the transferOrigin function. In Solidity ^0.4.25, uninitialized storage variables default to zero address, which could make this check bypassable if 'impl' is not properly set."
+}
+```

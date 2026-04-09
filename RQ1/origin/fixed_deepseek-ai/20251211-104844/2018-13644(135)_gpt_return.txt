@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "RoyalClassicCoin",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes needed - mapping is already declared in original contract",
+            "variable_code": "mapping (address => uint256) public balances;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed - uint256 is already declared in original contract",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed - modifier is assumed from original contract",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow/underflow vulnerabilities by using add() function for addition operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0));\n    balances[target] = balances[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

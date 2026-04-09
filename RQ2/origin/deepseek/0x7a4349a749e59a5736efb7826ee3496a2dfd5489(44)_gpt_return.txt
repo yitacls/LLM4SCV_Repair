@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call does not check the return value, which could lead to silent failures. If the external call fails (returns false), execution continues without reverting, potentially leaving the contract in an inconsistent state. Additionally, using `call.value()` without specifying gas in version ^0.4.19 could forward all remaining gas, making the contract vulnerable to reentrancy attacks. The function lacks explicit gas limits and return value handling, which is critical for security in Solidity < 0.5.0 when handling ether transfers to arbitrary addresses."
+}
+```

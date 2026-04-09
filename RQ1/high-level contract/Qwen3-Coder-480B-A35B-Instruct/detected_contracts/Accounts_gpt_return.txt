@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint i = 0; i < tokenNum; i++) { if(isUserHasDeposits(_accountAddr, uint8(i))) { ... } }",
+        "description": "The function getDepositETH contains a loop that iterates over all tokens in the registry. If the number of tokens becomes large, this loop may consume more gas than is available in a single block, causing the transaction to fail and making the function unusable."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint i = 0; i < tokenNum; i++) { if(isUserHasBorrows(_accountAddr, uint8(i))) { ... } }",
+        "description": "The function getBorrowETH contains a loop that iterates over all tokens in the registry. If the number of tokens becomes large, this loop may consume more gas than is available in a single block, causing the transaction to fail and making the function unusable."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint8 i = 0; i < tokenNum; i++) { if (isUserHasDeposits(_borrower, i) || isUserHasBorrows(_borrower, i)) { ... } }",
+        "description": "The function isAccountLiquidatable contains a loop that iterates over all tokens in the registry. If the number of tokens becomes large, this loop may consume more gas than is available in a single block, causing the transaction to fail and making the function unusable."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint8 i = 0; i < coinLength; i++) { if (isUserHasDeposits(_account, i) || isUserHasBorrows(_account, i)) { ... } }",
+        "description": "The function claim contains a loop that iterates over all tokens in the registry. If the number of tokens becomes large, this loop may consume more gas than is available in a single block, causing the transaction to fail and making the function unusable."
+    }
+]
+```

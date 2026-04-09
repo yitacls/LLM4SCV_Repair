@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "DENIAL_OF_SERVICE",
+            "location": "creditorAddresses = new address[](0);",
+            "description": "In the contract reset logic (when lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp), the creditorAddresses array is completely reset to an empty array. However, any pending send operations to previous creditors that haven't been executed yet will fail when they try to access creditorAddresses[lastCreditorPayedOut] in the payout logic. Since 'send' in Solidity 0.4.0 only provides 2300 gas and doesn't throw exceptions on failure (returns false), failed sends won't revert the transaction, but subsequent attempts to process payouts will fail due to array index out of bounds or incorrect state management."
+        },
+        {
+            "type": "DENIAL_OF_SERVICE",
+            "location": "creditorAmounts = new uint[](0);",
+            "description": "Similarly, resetting creditorAmounts to an empty array while maintaining lastCreditorPayedOut index creates an inconsistent state. When the contract tries to process payouts after reset, accessing creditorAmounts[lastCreditorPayedOut] will fail with an index out of bounds error since the array is empty but lastCreditorPayedOut may not be properly synchronized. This prevents legitimate creditors from receiving payouts even when funds are available."
+        },
+        {
+            "type": "DENIAL_OF_SERVICE",
+            "location": "The entire contract reset logic block",
+            "description": "The reset mechanism itself is vulnerable to DoS attacks. An attacker could trigger the reset condition (by waiting 12+ hours without new credits), causing all state arrays to be cleared. This would permanently disable the contract's payout functionality for previous participants, as their records are erased while some may still be owed funds. The contract doesn't properly handle the transition between rounds, creating a permanent denial of service for previous creditors."
+        }
+    ]
+}
+```

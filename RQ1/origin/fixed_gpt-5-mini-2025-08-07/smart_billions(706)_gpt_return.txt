@@ -1,0 +1,21 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "entropySalt",
+            "fix_info": "Added a private entropy salt that is mixed into derived hashes to mitigate miner manipulation of raw blockhash-based randomness. This makes outputs unpredictable to miners who do not know the salt.",
+            "variable_code": "bytes32 private entropySalt;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced direct concatenation of raw block.blockhash values with keccak256 mixes of each blockhash together with a private entropy salt and contextual inputs. This preserves the original layout (10 24-bit parts + delta field) while reducing miner control over the produced value.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Produce 10 independent 24-bit parts by hashing each blockhash together with a private entropy salt\n        // This keeps the original 10*24-bit layout but prevents miners from directly controlling the final bits\n        uint result = 0;\n        for (uint i = 0; i < 10; i++) {\n            // Mix the block.blockhash with a contract-local secret (entropySalt) and contextual data\n            bytes32 mixed = keccak256(block.blockhash(uint(_lastb) + i), entropySalt, _lastb, _delta, i);\n            uint part = uint(mixed) & 0xFFFFFF; // take lower 24 bits\n            result |= (part << (24 * i));\n        }\n        // Preserve the original delta placement\n        result |= ((uint(_delta) / hashesSize) << 240);\n        return result;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

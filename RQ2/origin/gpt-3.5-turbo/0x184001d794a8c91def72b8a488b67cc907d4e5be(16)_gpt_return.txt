@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "This code snippet is vulnerable to an Arithmetic overflow issue. If the value of 'value' is very large, it may cause an overflow when added to the 'balanceOf[to]' field, leading to unexpected results or potential security risks. It is important to implement proper checks and validation to handle such scenarios in a secure manner."
+}
+```

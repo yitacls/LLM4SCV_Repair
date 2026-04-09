@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.5.12;",
+            "description": "Using a floating pragma (^0.5.12) allows the contract to be compiled with different compiler versions, which can introduce unexpected behaviors and security vulnerabilities due to version inconsistencies across deployments. It is recommended to use a fixed pragma like 'pragma solidity 0.5.12;' for consistency."
+        },
+        {
+            "type": "SWC-108-State Variable Default Visibility",
+            "location": "Lines 532-541: uint256 beginDepositTime; uint256 endDepositTime; address yieldWallet; address kickerWallet; uint256 kickerDeadline; uint256 kickerPromille;",
+            "description": "State variables should explicitly specify their visibility (public, private, internal). In Solidity 0.5.12, variables without explicit visibility default to 'internal', but this can lead to confusion and potential security issues if developers incorrectly assume the visibility. It is best practice to explicitly declare visibility for all state variables."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Lines 640-644: for (uint256 i = 0; i < lockBoxStructs.length; ++i) { if (lockBoxStructs[i].releaseTime <= now && lockBoxStructs[i].balance > 0) { withdraw(i); } }",
+            "description": "The 'triggerWithdrawAll()' function iterates over all lockBoxStructs and calls 'withdraw()' for each eligible entry. As the number of lock boxes grows, this loop may consume more gas than the block gas limit, causing the transaction to fail and preventing legitimate withdrawals. This can be exploited to deny service to users. Consider implementing pagination or allowing individual withdrawals instead."
+        }
+    ]
+}
+```

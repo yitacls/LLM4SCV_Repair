@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EtherWorldCup",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "register",
+            "fix_info": "Removed tx.origin check which is vulnerable to phishing attacks and replaced with direct msg.sender validation",
+            "corrected_code": "function register()\n        public\n        payable\n    {\n        address _customerAddress = msg.sender;\n        require(!playerRegistered[_customerAddress]\n                && _isCorrectBuyin (msg.value));\n        registeredPlayers = SafeMath.addint256(registeredPlayers, 1);\n        playerRegistered[_customerAddress] = true;\n        playerGamesScored[_customerAddress] = 0;\n        playerList.push(_customerAddress);\n        uint fivePercent = 0.01009 ether;\n        uint tenPercent  = 0.02018 ether;\n        uint prizeEth    = (msg.value).sub(tenPercent);\n        require(playerRegistered[_customerAddress]);\n        prizePool  = prizePool.add(prizeEth);\n        givethPool = givethPool.add(fivePercent);\n        administrator.send(fivePercent);\n        emit Registration(_customerAddress);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ygo",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic vulnerability by using SafeMath library for safe arithmetic operations.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        uint256 _amount = SafeMath.mul(mintedAmount, 10 ** uint256(decimals));\n        balanceOf[target] = SafeMath.add(balanceOf[target], _amount);\n        totalSupply = SafeMath.add(totalSupply, _amount);\n        emit Transfer(this, target, _amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

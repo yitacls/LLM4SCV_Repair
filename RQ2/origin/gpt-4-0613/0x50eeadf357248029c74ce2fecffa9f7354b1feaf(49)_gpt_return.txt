@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The smart contract checks if the transaction origin is the contract's owner without considering the fact that a malicious contract can initiate a call. This means a malicious contract that is called by the owner can then mint new tokens, leading to an insecure delegation of privileges. It's a better practice to use msg.sender for access control to prevent attacks of this nature."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "Admin",
+        "contract_version": "0.6.12",
+        "functions": [
+            {
+                "function_name": "removeAdmin",
+                "fix_info": "Fixed the vulnerability causing potential denial of service",
+                "corrected_code": "function removeAdmin(address _adminAddress) external onlyAdmin { require(isAdmin[_adminAddress], 'Admin does not exist'); for(uint i = 0; i < admins.length; i++) { if(admins[i] == _adminAddress) { isAdmin[_adminAddress] = false; admins[i] = admins[admins.length - 1]; admins.pop(); break; } } }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

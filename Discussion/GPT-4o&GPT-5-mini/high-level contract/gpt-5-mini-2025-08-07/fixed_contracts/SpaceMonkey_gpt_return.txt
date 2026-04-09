@@ -1,0 +1,40 @@
+[{
+    "contract_name": "SpaceMonkey",
+    "contract_version": "^0.8.4",
+    "state_variables": [
+        {
+            "variable_name": "_status",
+            "fix_info": "Added reentrancy guard status variable and constants to prevent reentrant calls to functions that perform external calls.",
+            "variable_code": "uint256 private _status = 1;\nuint256 private constant _NOT_ENTERED = 1;\nuint256 private constant _ENTERED = 2;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier implementing a simple reentrancy guard. This enforces checks-effects-interactions and prevents reentrancy when performing external calls (e.g. tokenFallback).",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer(address,uint256,bytes)",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy. Reordered and simplified checks to use local sender variable and kept functionality: perform internal transfer first, then if recipient is a contract call tokenFallback. This preserves original behavior while protecting against reentrancy.",
+            "corrected_code": "function transfer(address recipient, uint256 amount, bytes calldata data) external nonReentrant returns (bool) {\n    address sender = _msgSender();\n    require(sender != address(0), \"ERC20: transfer from the zero address\");\n    require(recipient != address(0), \"ERC20: transfer to the zero address\");\n\n    // Perform the internal transfer (state changes) first\n    _transfer(sender, recipient, amount);\n\n    // Interact with external contract after state changes, protected by nonReentrant\n    if (recipient.isContract()) {\n        IERC223Recipient(recipient).tokenFallback(sender, amount, data);\n    }\n\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "allowance",
+            "fix_info": "Renamed parameter 'owner' to 'tokenOwner' to avoid shadowing any state variable named 'owner'. Kept signature compatible with IERC20 while avoiding shadowing warnings.",
+            "corrected_code": "function allowance(address tokenOwner, address spender) public view override returns (uint256) {\n    return _allowances[tokenOwner][spender];\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_approve",
+            "fix_info": "Renamed parameters to 'ownerAddr' and 'spenderAddr' to avoid shadowing state variables. Kept logic and blacklist check intact.",
+            "corrected_code": "function _approve(address ownerAddr, address spenderAddr, uint256 amount) private {\n    require(ownerAddr != address(0), 'ERC20: approve from the zero address');\n    require(spenderAddr != address(0), 'ERC20: approve to the zero address');\n    require(!_isBlacklisted[_msgSender()], 'You have no power here!');\n\n    _allowances[ownerAddr][spenderAddr] = amount;\n    emit Approval(ownerAddr, spenderAddr, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

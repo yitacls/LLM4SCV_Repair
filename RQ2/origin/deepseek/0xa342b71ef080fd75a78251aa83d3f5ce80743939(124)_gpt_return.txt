@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner)",
+        "description": "Using tx.origin for authorization creates a phishing vulnerability. Malicious contracts can trick users who are also the owner into interacting with them, allowing the malicious contract to call ownerTransferFrom with the user's address as tx.origin. This bypasses intended access controls because tx.origin refers to the original externally owned account (EOA) that initiated the transaction chain, not the immediate caller (msg.sender). The function should use msg.sender == owner instead to verify the direct caller is the owner."
+    }
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call's return value is not checked, which can lead to silent failures. If the call fails (e.g., out of gas, revert in called contract, non-existent contract), the transaction will not revert, potentially causing the contract to continue execution under incorrect assumptions. In Solidity 0.4.18, failed low-level calls return false rather than reverting automatically. This could allow unauthorized state changes or loss of funds if the contract logic depends on the call's success."
+}
+```

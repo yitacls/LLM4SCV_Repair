@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "fundsWallet.send(msg.value);",
+    "description": "The send() function is a low-level call that returns a boolean indicating success or failure, but the return value is not checked. If the send() call fails (e.g., due to gas limitations or the recipient contract rejecting the transfer), the transaction will not revert and the function will continue execution. This can lead to a situation where ETH is not transferred to the fundsWallet but the token transfer still occurs, potentially causing loss of funds. In Solidity ^0.4.24, the recommended practice is to check the return value of send() or use transfer() which automatically reverts on failure."
+}
+```

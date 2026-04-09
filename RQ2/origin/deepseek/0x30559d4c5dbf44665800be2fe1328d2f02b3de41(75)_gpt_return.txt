@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token_reward.call(beneficiary, token_amount);",
+    "description": "The return value of the low-level `call` function is not checked. In Solidity ^0.4.25, `call` returns a boolean success/failure indicator. If the external call fails (e.g., out of gas, revert in the recipient contract, non-existent contract), execution will continue without reverting, making the contract behave as if the transfer succeeded when it actually failed. This can leave funds locked in the contract despite setting `isReleased = true`. The call should be checked and the transaction reverted on failure, e.g., `require(token_reward.call(beneficiary, token_amount));`"
+}
+```

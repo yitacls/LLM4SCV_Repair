@@ -1,0 +1,20 @@
+【
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "^0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Fixed the block gas limit DoS attack by implementing a limit to the number of epochs that can be harvested at once. And also updated the pragma solidity line to be less vague.",
+                "corrected_code": "function massHarvest(uint128 limit) external returns (uint){\n\tuint totalDistributedValue;\n\tuint epochId = _getEpochId().sub(1); // fails in epoch 0\n\t// force max number of epochs\n\tif (epochId > NR_OF_EPOCHS) {\n\t\tepochId = NR_OF_EPOCHS;\n\t}\n\n\tuint128 harvestUntil = (lastEpochIdHarvested[msg.sender] + limit) <= epochId ? lastEpochIdHarvested[msg.sender] + limit : epochId;\n\tfor (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= harvestUntil; i++) {\n\t\t// i = epochId\n\t\t// compute distributed Value and do one single transfer at the end\n\t\ttotalDistributedValue += _harvest(i);\n\t}\n\n\temit MassHarvest(msg.sender, epochId.sub(lastEpochIdHarvested[msg.sender]), totalDistributedValue);\n\n\tif (totalDistributedValue > 0) {\n\t\t_bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n\t}\n\n\treturn totalDistributedValue;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+】

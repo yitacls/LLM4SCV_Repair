@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "JoinSplit",
+        "contract_version": ">=0.5.0 <0.6.0",
+        "functions": [
+            {
+                "function_name": "validateJoinSplit",
+                "fix_info": "Fixed the integer overflow vulnerability in the comparison of m and n.",
+                "corrected_code": "if gt(m, n) { mstore(0x00, 404) revert(0x00, 0x20) }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

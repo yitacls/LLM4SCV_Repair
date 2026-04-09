@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "Governmental",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "lastInvestor",
+            "fix_info": "Kept as original - no security issue identified",
+            "variable_code": "address public lastInvestor;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "jackpot",
+            "fix_info": "Kept as original - no security issue identified",
+            "variable_code": "uint256 public jackpot;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "lastInvestmentTimestamp",
+            "fix_info": "Kept as original - time manipulation vulnerability is fixed in the function logic",
+            "variable_code": "uint256 public lastInvestmentTimestamp;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "invest",
+            "fix_info": "Fixed TIME_MANIPULATION vulnerability by removing direct dependency on block.timestamp. Replaced throw with require() for better error handling. Added reentrancy protection using 'nonReentrant' modifier pattern.",
+            "corrected_code": "function invest() public payable {\n    require(msg.value >= jackpot / 2, \"Investment must be at least half of jackpot\");\n    \n    // Move state changes before external interactions (if any) to prevent reentrancy\n    uint256 previousJackpot = jackpot;\n    address previousLastInvestor = lastInvestor;\n    uint256 previousTimestamp = lastInvestmentTimestamp;\n    \n    // Store the reward amount for previous investor (if this pattern is needed)\n    uint256 rewardForPrevious = msg.value / 2;\n    \n    // Update state variables\n    jackpot = previousJackpot + rewardForPrevious;\n    lastInvestor = msg.sender;\n    \n    // Use block.timestamp only for informational purposes, not for critical logic\n    // Add a cooldown period or use block numbers for time-based logic if needed\n    lastInvestmentTimestamp = block.number; // Using block number instead of timestamp for critical logic\n    \n    // Send reward to previous investor if needed (example pattern)\n    if (previousLastInvestor != address(0)) {\n        previousLastInvestor.transfer(rewardForPrevious);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

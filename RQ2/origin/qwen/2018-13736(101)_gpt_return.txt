@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += initialSupply;",
+    "description": "The addition operation on balanceOf[target] and totalSupply can cause an integer overflow when the values become too large, leading to unexpected behavior and potential loss of funds. In Solidity ^0.4.18, there are no built-in overflow checks, so large values can wrap around to zero or negative values."
+}
+```

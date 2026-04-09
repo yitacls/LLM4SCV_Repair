@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Authorization Bypass via tx.origin",
+    "location": "modifier onlyOwner() { require(owner() == tx.origin, \"Ownable: caller is not the owner\"); ... }",
+    "description": "The modifier uses tx.origin for authorization instead of msg.sender. This creates a phishing vulnerability where a malicious contract can trick the owner into calling a function that uses this modifier. If the owner interacts with the malicious contract, tx.origin will be the owner's address (the original EOA), allowing the malicious contract to bypass the onlyOwner restriction by having the owner inadvertently authorize its actions. This violates the principle that authorization should be based on the immediate caller (msg.sender), not the original transaction initiator."
+}
+```

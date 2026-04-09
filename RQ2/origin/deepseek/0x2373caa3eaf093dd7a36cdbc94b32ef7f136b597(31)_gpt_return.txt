@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = msg.sender.send(address(this).balance);",
+    "description": "In Solidity versions before 0.4.21, the low-level send() function may silently fail by returning false instead of reverting when the transfer fails (e.g., if the recipient is a contract that runs out of gas in its fallback function). The return value of send() is assigned to 'res' but not checked, meaning a failed transfer will not be handled and the contract state will proceed as if the transfer succeeded. This could lead to locked funds or inconsistent contract state. The vulnerability is particularly critical in this context because it's in a withdrawal function that transfers the entire contract balance."
+}
+```

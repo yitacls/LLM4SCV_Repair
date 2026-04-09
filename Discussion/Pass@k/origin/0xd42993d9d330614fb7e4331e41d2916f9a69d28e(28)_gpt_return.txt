@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PresalerVoting",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "startVoting",
+                "fix_info": "Fixed time manipulation vulnerability by using block.timestamp instead of now and ensuring correct calculation of end time.",
+                "corrected_code": "function startVoting(uint startBlockNr, uint durationHrs) onlyOwner { VOTING_START_BLOCKNR = max(block.number, startBlockNr); VOTING_END_TIME = block.timestamp + max(durationHrs, 1) * 1 hours; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

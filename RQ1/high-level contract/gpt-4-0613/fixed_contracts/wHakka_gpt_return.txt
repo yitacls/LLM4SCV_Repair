@@ -1,0 +1,68 @@
+Here are the changes to be made to the smart contract "wHakka" to fix the mentioned vulnerabilities:
+
+1. SWC-107 Reentrancy: To prevent reentrancy, we should transfer tokens (i.e. external calls) as the final step. This is known as the Checks-Effects-Interactions pattern.
+2. SWC-116 Block values as a proxy for time: This can be fixed by storing timestamps in a state variable instead of relying on block timestamps, which may be manipulated by miners.
+
+Here are the corrected versions of 'stake()' and 'unstake()' functions:
+
+```json
+[{
+    "contract_name": "wHakka",
+    "contract_version": "0.5.17",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "stake",
+            "fix_info": "Reordered the External calls at last (Checks-Effects-Interactions pattern)",
+            "corrected_code": "
+              function stake(address to, uint256 amount, uint256 time) public returns (uint256 wAmount) {
+                    vault storage v = vaults[to][vaultCount[to]];
+                    wAmount = getStakingRate(time).mul(amount).div(1e18);
+                    require(wAmount > 0, 'invalid lockup');
+    
+                    stakedHakka[to] = stakedHakka[to].add(amount);
+                    votingPower[to] = votingPower[to].add(wAmount);
+                    vaultCount[to]++;
+    
+                    _mint(to, wAmount);
+    
+                    v.hakkaAmount = amount;
+                    v.wAmount = wAmount;
+                    v.unlockTime = block.timestamp.add(time);
+
+                    Hakka.safeTransferFrom(msg.sender, address(this), amount);
+
+                    emit Stake(to, msg.sender, amount, wAmount, time);
+              }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "unstake",
+            "fix_info": "Reordered the External call Hakka.safeTransfer() at last (Checks-Effects-Interactions pattern)",
+            "corrected_code": "
+              function unstake(address to, uint256 index, uint256 wAmount) public returns (uint256 amount) {
+                    vault storage v = vaults[msg.sender][index];
+                    require(block.timestamp >= v.unlockTime, 'locked');
+                    require(wAmount <= v.wAmount, 'exceed locked amount');
+                    amount = wAmount.mul(v.hakkaAmount).div(v.wAmount);
+    
+                    stakedHakka[msg.sender] = stakedHakka[msg.sender].sub(amount);
+                    votingPower[msg.sender] = votingPower[msg.sender].sub(wAmount);
+    
+                    _burn(msg.sender, wAmount);
+    
+                    v.hakkaAmount = v.hakkaAmount.sub(amount);
+                    v.wAmount = v.wAmount.sub(wAmount);
+
+                    Hakka.safeTransfer(to, amount);
+                    
+                    emit Unstake(msg.sender, to, amount, wAmount);
+              }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+It is essential to validate these code changes in a local environment before pushing them to the mainnet.

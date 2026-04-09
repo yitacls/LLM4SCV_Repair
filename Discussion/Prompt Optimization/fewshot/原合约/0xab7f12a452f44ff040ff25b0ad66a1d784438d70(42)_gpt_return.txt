@@ -1,0 +1,33 @@
+```json
+[
+    {
+        "contract_name": "FidgETHSpinner",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fidget",
+                "fix_info": "Prevent arithmetic overflow by validating multiplication result.",
+                "corrected_code": "function fidget(address _to) payable {
+    require(_to != 0x0); 
+    require(_to != address(0)); 
+    require(block.number <= endBlock);
+    require(msg.value >= 0.03 ether);
+    require(juicyBonus > 0); // Ensure juicyBonus is greater than 0 before decrementing
+    uint rate = normalRate * juicyBonus;
+    juicyBonus--; // Decrement juicyBonus after using it in the calculation
+    uint tokens = msg.value * rate;
+    require(tokens / msg.value == rate); // Check for overflow in multiplication
+    weiRaised += msg.value;  
+    juicyBonus = (juicyBonus < 1) ? 1 : juicyBonus;
+    spin(_to, tokens);
+    Fidget(msg.sender, _to, msg.value, juicyBonus, rate, tokens);
+    wallet.transfer(msg.value);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

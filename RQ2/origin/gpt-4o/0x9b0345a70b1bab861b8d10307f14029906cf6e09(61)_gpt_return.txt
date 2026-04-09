@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.send(amount);",
+    "description": "The contract contains a reentrancy vulnerability at the line where `msg.sender.send(amount);` is called. Specifically, the external call to `msg.sender.send` transfers Ether to the sender and can trigger fallback functions in the sender's contract. If the sender is a malicious contract exploiting reentrancy, it can repeatedly call back into the contract before the state variables `availableSupply` or `amountRaised` are updated. This allows the attacker to manipulate the contract and withdraw more funds than allowed, or bypass certain rules intended by the developer. To mitigate this, it is recommended to use the 'checks-effects-interactions' pattern and avoid directly sending Ether before securely updating critical variables."
+}
+```

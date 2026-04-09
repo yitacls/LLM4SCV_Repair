@@ -1,0 +1,7 @@
+```json
+{
+    "type": "tx.origin vulnerability",
+    "location": "require(owner() == tx.origin, \"Ownable: caller is not the owner\");",
+    "description": "The contract uses tx.origin for authentication instead of msg.sender, which makes it vulnerable to phishing attacks. An attacker can create a malicious contract that calls the vulnerable contract, and when a legitimate user interacts with the malicious contract, tx.origin will be the legitimate user's address while msg.sender will be the malicious contract's address. This allows the attacker to bypass the ownership check."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "RefStorage",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "restricted",
+            "fix_info": "Enhanced access control modifier to prevent unauthorized access by ensuring only specific addresses can call the function",
+            "modifier_code": "modifier restricted() {\n    require(msg.sender == owner || msg.sender == address(this));\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "newTicket",
+            "fix_info": "Fixed access control vulnerability by changing tx.origin to msg.sender for proper authentication and added reentrancy protection",
+            "corrected_code": "function newTicket() external restricted {\n    players[msg.sender].tickets++;\n    if (players[msg.sender].referrer != address(0) && (players[msg.sender].tickets - players[msg.sender].checkpoint) % interval == 0) {  \n        if (token.balanceOf(address(this)) >= prize * 2) {\n            token.transfer(msg.sender, prize);\n            emit BonusSent(msg.sender, prize);\n            token.transfer(players[msg.sender].referrer, prize);\n            emit BonusSent(players[msg.sender].referrer, prize);\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

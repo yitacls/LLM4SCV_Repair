@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authorization in the transfer function, which is vulnerable to phishing attacks. Unlike msg.sender, tx.origin returns the original external account that initiated the transaction chain. If a user interacts with a malicious contract, that contract can call TokenLocker.transfer() and pass the authorization check (since tx.origin would still be the user), allowing unauthorized transfers. This bypasses intended access controls. Additionally, the contract may inherit from or interface with a token contract, but the vulnerability resides in the faulty owner check before delegating the transfer."
+}
+```

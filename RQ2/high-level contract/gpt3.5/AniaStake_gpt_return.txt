@@ -1,0 +1,17 @@
+```json
+{
+    "type": "SWC-102-Outdated Compiler Version",
+    "location": "pragma solidity ^0.8.2;",
+    "description": "Using an outdated compiler version may expose the contract to vulnerabilities and issues that were addressed in newer versions. It is recommended to use the latest stable version of the Solidity compiler."
+}
+{
+    "type": "SWC-103-Floating Pragma",
+    "location": "// SWC-103-Floating Pragma: L4",
+    "description": "The pragma directive should specify the exact Solidity version to prevent unexpected behavior due to future compiler changes. Using a floating pragma can lead to compatibility issues and introduce vulnerabilities."
+}
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function redistributeRewards(address[] calldata users) public",
+    "description": "The contract is vulnerable to DoS attacks where an excessive number of user addresses passed to the redistributeRewards function could lead to high gas fees, potentially bypassing block gas limits and causing denial of service."
+}
+```

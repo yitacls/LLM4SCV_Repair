@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "ve",
+        "contract_version": "0.8.11",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "nonreentrant",
+                "fix_info": "Strengthened reentrancy protection by using explicit state change pattern with proper ordering",
+                "modifier_code": "modifier nonreentrant() {\n    require(_entered_state == _not_entered, \"ReentrancyGuard: reentrant call\");\n    _entered_state = _entered;\n    _;\n    _entered_state = _not_entered;\n}",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "ownerOf",
+                "fix_info": "Fixed SWC-112 by adding explicit check for zero address and returning proper error",
+                "corrected_code": "function ownerOf(uint _tokenId) public view returns (address) {\n    address owner = idToOwner[_tokenId];\n    require(owner != address(0), \"ERC721: owner query for nonexistent token\");\n    return owner;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "safeTransferFrom",
+                "fix_info": "Fixed SWC-104 by properly handling return value of onERC721Received and adding explicit revert with custom error message",
+                "corrected_code": "function safeTransferFrom(\n    address _from,\n    address _to,\n    uint _tokenId,\n    bytes memory _data\n) public {\n    _transferFrom(_from, _to, _tokenId, msg.sender);\n\n    if (_isContract(_to)) {\n        try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4 retval) {\n            require(retval == IERC721Receiver.onERC721Received.selector, \"ERC721: transfer to non ERC721Receiver implementer\");\n        } catch (bytes memory reason) {\n            if (reason.length == 0) {\n                revert('ERC721: transfer to non ERC721Receiver implementer');\n            } else {\n                assembly {\n                    revert(add(32, reason), mload(reason))\n                }\n            }\n        }\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed SWC-107 by moving the token transfer operation after all state changes to prevent reentrancy",
+                "corrected_code": "function withdraw(uint _tokenId) external nonreentrant {\n    assert(_isApprovedOrOwner(msg.sender, _tokenId));\n    require(attachments[_tokenId] == 0 && !voted[_tokenId], \"attached\");\n\n    LockedBalance memory _locked = locked[_tokenId];\n    require(block.timestamp >= _locked.end, \"The lock didn't expire\");\n    uint value = uint(int256(_locked.amount));\n\n    locked[_tokenId] = LockedBalance(0,0);\n    uint supply_before = supply;\n    supply = supply_before - value;\n\n    // old_locked can have either expired <= timestamp or zero end\n    // _locked has only 0 end\n    // Both can have >= 0 amount\n    _checkpoint(_tokenId, _locked, LockedBalance(0,0));\n\n    // Burn the NFT\n    _burn(_tokenId);\n    \n    // Token transfer after all state changes to prevent reentrancy\n    assert(IERC20(token).transfer(msg.sender, value));\n\n    emit Withdraw(msg.sender, _tokenId, value, block.timestamp);\n    emit Supply(supply_before, supply_before - value);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_burn",
+                "fix_info": "Fixed reentrancy issue by ensuring proper state changes before external calls and adding explicit ownership check",
+                "corrected_code": "function _burn(uint _tokenId) internal {\n    address owner = ownerOf(_tokenId);\n    require(_isApprovedOrOwner(msg.sender, _tokenId), \"caller is not owner nor approved\");\n\n    // Clear approval\n    approve(address(0), _tokenId);\n    // Remove token\n    _removeTokenFrom(owner, _tokenId);\n    emit Transfer(owner, address(0), _tokenId);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

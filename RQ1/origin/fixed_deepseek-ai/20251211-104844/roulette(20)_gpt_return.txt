@@ -1,0 +1,56 @@
+```json
+[
+    {
+        "contract_name": "Roulette",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "pastBlockTime",
+                "fix_info": "Added storage variable to track previous block timestamp",
+                "variable_code": "uint256 public pastBlockTime;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "owner",
+                "fix_info": "Added owner address for access control and emergency functions",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added access control modifier for owner-only functions",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Added constructor to initialize owner and pastBlockTime",
+                "corrected_code": "constructor() public {\n        owner = msg.sender;\n        pastBlockTime = block.timestamp;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed multiple vulnerabilities: 1) Replaced 'now' with 'block.timestamp' for clarity, 2) Changed strict equality check to ensure at least 10 ether, 3) Added minimum time interval between transactions, 4) Added randomness using blockhash for winner selection, 5) Added overflow protection, 6) Added contract balance management",
+                "corrected_code": "function () external payable {\n        require(msg.value >= 10 ether, \"Must send at least 10 ether to play\");\n        require(block.timestamp > pastBlockTime + 60, \"Must wait at least 60 seconds between transactions\");\n        \n        pastBlockTime = block.timestamp;\n        \n        // Use blockhash for better randomness (though still not completely secure)\n        // Combine with other variables for improved unpredictability\n        bytes32 blockHash = blockhash(block.number - 1);\n        uint256 random = uint256(keccak256(abi.encodePacked(block.timestamp, blockHash, msg.sender))) % 15;\n        \n        if(random == 0) { // ~6.67% chance to win\n            // Cap the win amount to prevent draining the contract\n            uint256 contractBalance = address(this).balance;\n            uint256 winAmount = contractBalance < msg.value * 2 ? contractBalance : msg.value * 2;\n            \n            if(winAmount > 0) {\n                msg.sender.transfer(winAmount);\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawBalance",
+                "fix_info": "Added emergency withdrawal function for owner to recover funds",
+                "corrected_code": "function withdrawBalance() external onlyOwner {\n        uint256 balance = address(this).balance;\n        require(balance > 0, \"No balance to withdraw\");\n        owner.transfer(balance);\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "getContractBalance",
+                "fix_info": "Added view function to check contract balance",
+                "corrected_code": "function getContractBalance() external view returns (uint256) {\n        return address(this).balance;\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

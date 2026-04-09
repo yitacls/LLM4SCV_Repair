@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "SuperCountriesWar",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Confirmed to exist based on usage in onlyGamePaused modifier and tx.origin check",
+            "variable_code": "address public owner;",
+            "change_type": "existing"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added to replace tx.origin check for ownership verification",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "restartNewGame",
+            "fix_info": "Fixed access control vulnerability by removing tx.origin usage and creating separate functions for owner and public restart. Added proper time-based restrictions and security checks.",
+            "corrected_code": "function restartNewGameByOwner() public onlyGamePaused onlyOwner {\n        require(block.timestamp > jackpotTimestamp + DSHORT, \"Time restriction for owner not met\");\n        _restartNewGameInternal();\n    }\n    \n    function restartNewGameByPublic() public onlyGamePaused {\n        require(block.timestamp > jackpotTimestamp + 2629000, \"Time restriction for public not met\");\n        _restartNewGameInternal();\n    }\n    \n    function _restartNewGameInternal() private {\n        uint256 timestampNow = block.timestamp;\n        \n        if (nextPrice[gameVersion] != 0) {\n            gameVersion++;\n            lastNukedCountry = 0;\n            howManyNuked = 0;\n            howManyReactivated = 0;\n            howManyEliminated = 0;\n            lastNukerMin = 0;\n            countryOwnerMin = 0;\n            continentMin = 0;\n            freePlayerMin = 0;\n            withdrawMinOwner = 0;\n            kingPrice = 1e16;\n            \n            // Clear arrays safely\n            delete newOwner;\n            delete nukerAddress;\n            \n            // Reinitialize arrays to proper length\n            newOwner.length = allCountriesLength;\n            nukerAddress.length = allCountriesLength;\n        }\n        \n        updateJackpotTimestamp(timestampNow);\n        gameRunning = true;\n        thisJackpotIsPlayedAndNotWon[gameVersion] = true;\n        \n        emit NewGameLaunched(gameVersion, timestampNow, msg.sender, jackpotTimestamp);\n        emit PausedOrUnpaused(block.timestamp, gameRunning);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "TokenSaleChallenge",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "PRICE_PER_TOKEN",
+            "fix_info": "Replaced with safe constant to prevent arithmetic overflows in calculations",
+            "variable_code": "uint256 public constant PRICE_PER_TOKEN = 1 ether;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for multiplication and addition, and properly handling Ether transfer with .call.value() pattern",
+            "corrected_code": "function sell(uint256 numTokens) public {\n    require(balanceOf[msg.sender] >= numTokens);\n    \n    // Using SafeMath to prevent overflow\n    uint256 etherAmount = SafeMath.mul(numTokens, PRICE_PER_TOKEN);\n    \n    // Update balance safely\n    balanceOf[msg.sender] = SafeMath.sub(balanceOf[msg.sender], numTokens);\n    \n    // Transfer Ether safely using .call.value() pattern\n    (bool success, ) = msg.sender.call.value(etherAmount)('');\n    require(success, 'Transfer failed');\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

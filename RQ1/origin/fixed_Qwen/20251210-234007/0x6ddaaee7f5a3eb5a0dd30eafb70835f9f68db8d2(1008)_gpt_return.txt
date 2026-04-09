@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SuperCountriesWar",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "restartNewGame",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender for proper authentication and maintaining the same timestamp-based conditions",
+            "corrected_code": "function restartNewGame() public onlyGamePaused{\n\t\trequire((msg.sender == owner && block.timestamp > jackpotTimestamp.add(DSHORT)) || block.timestamp > jackpotTimestamp.add(2629000));\n\t\tuint256 timestampNow = block.timestamp;\n\t\tif (nextPrice[gameVersion] !=0){\n\t\t\tgameVersion++;\n\t\t\tlastNukedCountry = 0;\n\t\t\thowManyNuked = 0;\n\t\t\thowManyReactivated = 0;\n\t\t\thowManyEliminated = 0;\n\t\t\tlastNukerMin = 0;\n\t\t\tcountryOwnerMin = 0;\n\t\t\tcontinentMin = 0;\n\t\t\tfreePlayerMin = 0;\n\t\t\twithdrawMinOwner = 0;\n\t\t\tkingPrice = 1e16;\n\t\t\tnewOwner.length = 0;\n\t\t\tnukerAddress.length = 0;\n\t\t\tnewOwner.length = allCountriesLength;\n\t\t\tnukerAddress.length = allCountriesLength;\n\t\t}\n\t\tupdateJackpotTimestamp(timestampNow);\n\t\tgameRunning = true;\t\n\t\tthisJackpotIsPlayedAndNotWon[gameVersion] = true;\n        emit NewGameLaunched(gameVersion, timestampNow, msg.sender, jackpotTimestamp);\n\t\temit PausedOrUnpaused(block.timestamp, gameRunning);\t\t\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

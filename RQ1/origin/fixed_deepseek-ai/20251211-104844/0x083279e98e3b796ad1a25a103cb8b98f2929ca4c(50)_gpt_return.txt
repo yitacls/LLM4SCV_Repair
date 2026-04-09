@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "pyramidMKII",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Assuming owner is already declared, if not, it should be added as a state variable with proper access control",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a modifier to properly enforce ownership checks instead of using tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setBlockSze",
+            "fix_info": "Fixed two vulnerabilities: 1) Replaced tx.origin with msg.sender for proper ownership verification. 2) Renamed parameter and variable for clarity. 3) Added proper function visibility and explicit data location. 4) Ensure requirement uses consistent naming. 5) Properly formatted function with indentation.",
+            "corrected_code": "function setBlockSze(uint256 _size) public onlyOwner {\n    require(_size >= 1 ether, \"Minimum block size requirement not met\");\n    blksze = _size;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "TokenSale",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed from public to private to prevent unauthorized access",
+                "variable_code": "address private owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to properly restrict access to owner-only functions",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "endSale",
+                "fix_info": "Fixed multiple vulnerabilities: 1) Replaced tx.origin with msg.sender for proper access control, 2) Added onlyOwner modifier, 3) Fixed unsafe transfer pattern, 4) Added reentrancy guard, 5) Added withdrawal pattern for ETH transfer",
+                "corrected_code": "function endSale() public onlyOwner {\n        // Transfer all tokens to owner\n        uint256 tokenBalance = tokenContract.balanceOf(address(this));\n        require(tokenBalance > 0, \"No tokens to transfer\");\n        require(tokenContract.transfer(owner, tokenBalance), \"Token transfer failed\");\n        \n        // Transfer ETH to owner using withdrawal pattern\n        uint256 ethBalance = address(this).balance;\n        if (ethBalance > 0) {\n            owner.transfer(ethBalance);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

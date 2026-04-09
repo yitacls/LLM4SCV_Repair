@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "CBRToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed to mapping declaration, but arithmetic operations updated to prevent overflows",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed to variable declaration, but arithmetic operations updated to prevent overflows",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities using SafeMath library or explicit checks; ensured proper ERC20 event emission",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0));\n        require(balanceOf[target] + mintedAmount >= balanceOf[target]); // Check for overflow\n        require(totalSupply + mintedAmount >= totalSupply); // Check for overflow\n        \n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

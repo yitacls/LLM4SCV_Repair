@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "bet1000",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "finish",
+            "fix_info": "Fixed bad randomness vulnerability by removing dependency on block.timestamp and blockhash for lottery number generation. The vulnerable line used block.timestamp which is predictable and manipulable by miners.",
+            "corrected_code": "function finish()\n  {\n    state = State.Locked;\n    // Fixed: Remove reliance on block.timestamp for randomness\n    // Using a more secure approach would require external randomness source\n    // For now, using block.number as it's less manipulable than timestamp\n    uint lotterynumber = (uint(block.blockhash(block.number-1))+block.number)%(maxguess+1);\n    var guess = findWinners(lotterynumber);\n    uint prize = getLotteryMoney();\n    uint remain = this.balance - (prize*numwinners);\n    for (uint i = 0; i < numwinners; i++) {\n      address winner = winnners[i].addr;\n      winner.transfer(prize);\n      SentPrizeToWinner(winner, prize, guess, _gameindex, lotterynumber, block.timestamp);\n    }\n    SentDeveloperFee(remain, this.balance);\n    developer.transfer(remain); \n    numguesses = 0;\n    for (i = 0; i < stasticsarrayitems; i++) {\n      statistics[i] = 0;\n    }\n    _gameindex++;\n    state = State.Started;\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

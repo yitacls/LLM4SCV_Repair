@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "creator",
+            "fix_info": "Made private to follow best practices for encapsulation",
+            "variable_code": "address private creator;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "initialized",
+            "fix_info": "Added initialization flag to prevent reinitialization",
+            "variable_code": "bool private initialized = false;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyCreator",
+            "fix_info": "Added access control modifier to restrict functions to creator only",
+            "modifier_code": "modifier onlyCreator() {\n    require(msg.sender == creator, \"Only creator can call this function\");\n    _;\n}",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "notInitialized",
+            "fix_info": "Added modifier to prevent reinitialization",
+            "modifier_code": "modifier notInitialized() {\n    require(!initialized, \"Wallet already initialized\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initWallet",
+            "fix_info": "Fixed access control vulnerability by adding initialization check and access control",
+            "corrected_code": "function initWallet() public notInitialized {\n    require(msg.sender != address(0), \"Invalid sender address\");\n    creator = msg.sender;\n    initialized = true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getCreator",
+            "fix_info": "Added getter function following best practices for private variables",
+            "corrected_code": "function getCreator() public view returns (address) {\n    return creator;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

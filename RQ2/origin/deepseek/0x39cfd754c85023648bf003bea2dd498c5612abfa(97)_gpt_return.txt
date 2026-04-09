@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "The low-level call to transfer ETH to _addr does not check the return value. In Solidity 0.4.18, .call() returns a boolean indicating success (true) or failure (false). If the call fails (e.g., recipient contract reverts, runs out of gas, or is a non-payable contract), the function will continue execution without reverting. This can lead to inconsistent state where 'Holders[_addr]' is decreased even though the transfer failed, causing loss of funds for the holder. Always check the return value of low-level calls and handle failures appropriately."
+}
+```

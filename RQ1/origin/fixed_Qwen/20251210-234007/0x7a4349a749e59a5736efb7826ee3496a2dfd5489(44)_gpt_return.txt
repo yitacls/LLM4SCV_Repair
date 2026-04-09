@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WhaleGiveaway1",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Added check for low-level call success to prevent unchecked return value",
+            "corrected_code": "function Command(address adr, bytes data)\n    payable\n    public\n    {\n        require(msg.sender == Owner);\n        // Fix: Check return value of low-level call\n        require(adr.call.value(msg.value)(data));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

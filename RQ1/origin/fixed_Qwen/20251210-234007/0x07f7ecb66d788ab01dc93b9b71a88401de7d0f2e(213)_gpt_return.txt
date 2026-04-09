@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PoCGame",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "loseWager",
+            "fix_info": "Added check for successful low-level call to prevent unchecked return value",
+            "corrected_code": "function loseWager(uint256 amount) \n    internal \n    {\n        // Check return value of low-level call to prevent unchecked calls\n        require(whale.call.value(amount)(bytes4(keccak256(\"donate()\"))));\n        totalDonated += amount;\n        emit Lose(amount, msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

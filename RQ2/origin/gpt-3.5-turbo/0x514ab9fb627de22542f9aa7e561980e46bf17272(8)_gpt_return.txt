@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "target.send(msg.value);",
+            "description": "Using send() to transfer funds can lead to unexpected behavior if the receiving contract does not implement a fallback function or if the call consumes all available gas, causing the transfer to fail. Consider using call.value()() with proper error handling."
+        }
+    ]
+}
+```  

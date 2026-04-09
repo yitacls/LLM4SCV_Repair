@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin for access control is a vulnerability as it can lead to potential security risks. The tx.origin property should be avoided for authorization as it represents the original sender of the transaction, which might not always be the intended user."
+}
+```

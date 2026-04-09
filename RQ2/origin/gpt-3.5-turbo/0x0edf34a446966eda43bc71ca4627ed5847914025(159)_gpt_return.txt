@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(_owner == tx.origin, \"Ownable: caller is not the owner\");",
+    "description": "Using tx.origin for authentication in the onlyOwner modifier can lead to the tx.origin vulnerability, where an attacker can exploit the contract by manipulating the call chain. It is recommended to use msg.sender (_msgSender()) instead of tx.origin for secure access control."
+}
+```

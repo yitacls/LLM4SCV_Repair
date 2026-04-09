@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "QIUToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly implement ownership pattern",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "ownerTransferFrom",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyOwner modifier to prevent unauthorized access",
+            "corrected_code": "function ownerTransferFrom(address _from, address _to, uint256 _value) public onlyOwner returns (bool) {\n        require(_to != address(0));\n        require(_value <= balances[_from]);\n        balances[_from] = balances[_from].sub(_value);\n        balances[_to] = balances[_to].add(_value);\n        Transfer(_from, _to, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

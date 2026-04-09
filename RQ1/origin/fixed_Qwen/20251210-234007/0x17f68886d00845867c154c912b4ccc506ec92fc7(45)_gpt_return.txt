@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "TokenLocker",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replaced insecure tx.origin check with secure msg.sender check using onlyOwner modifier",
+            "corrected_code": "function transfer(address dest, uint amount) public onlyOwner returns (bool) {\n    return token.transfer(dest, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

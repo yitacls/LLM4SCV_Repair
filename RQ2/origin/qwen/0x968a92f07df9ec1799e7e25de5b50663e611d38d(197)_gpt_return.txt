@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(token.transfer(tx.origin, amount));",
+    "description": "The function lacks proper access control modifiers, allowing any external caller to transfer tokens to tx.origin. In Solidity 0.4.24, functions without explicit visibility modifiers default to public, making this function callable by anyone. This could allow malicious actors to drain tokens from the contract by specifying their own tx.origin as the recipient."
+}
+```

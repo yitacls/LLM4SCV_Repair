@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "blockoptions",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "drain",
+            "fix_info": "Replaced unsafe send() with transfer() and added require() to check success, since transfer() reverts on failure which is safer. Also using address(this).balance instead of this.balance for clarity.",
+            "corrected_code": "function drain() onlyOwner {\n    require(address(this).balance > 0, \"No balance to drain\");\n    owner.transfer(address(this).balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

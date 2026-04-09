@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "robotCoin.serviceTransfer(msg.sender, msg.value * 1000 / salePrice );",
+    "description": "This line of code is vulnerable to an arithmetic overflow/underflow as the result of the division operation (msg.value * 1000 / salePrice) may exceed the maximum value that can be stored in the uint data type causing unexpected behavior or loss of funds."
+}
+```

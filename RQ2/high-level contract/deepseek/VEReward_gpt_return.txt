@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-113: DoS with Failed Call",
+        "location": "Lines 119-134 in the getBlockByTime function",
+        "description": "The binary search loop uses a fixed limit of 128 iterations, which could result in an infinite loop if the point_history array grows too large or if the search boundaries never converge properly. This could cause transactions to run out of gas and fail, enabling a Denial-of-Service attack."
+    },
+    {
+        "type": "SWC-128: DoS With Block Gas Limit",
+        "location": "Lines 269-275 in the claimRewardMany function",
+        "description": "The claimRewardMany function processes multiple tokenIds in a single transaction, with each token potentially processing multiple intervals. If a user provides a large array of tokenIds or complex intervals, the gas consumption could exceed the block gas limit, causing the transaction to fail and preventing legitimate reward claims."
+    }
+]
+```

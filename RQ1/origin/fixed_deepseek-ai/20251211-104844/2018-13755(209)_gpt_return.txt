@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "OTAKUToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Ensure mapping uses safe data types for overflow protection",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Ensure totalSupply uses safe math for overflow protection",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added safe ownership modifier pattern",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Not owner\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath or explicit checks, updated event emission syntax for Solidity ^0.4.25",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid target address\");\n        require(mintedAmount > 0, \"Mint amount must be positive\");\n        \n        // Safe addition to prevent overflow\n        uint256 newBalance = balanceOf[target] + mintedAmount;\n        require(newBalance > balanceOf[target], \"Balance overflow\");\n        \n        uint256 newTotalSupply = totalSupply + mintedAmount;\n        require(newTotalSupply > totalSupply, \"Total supply overflow\");\n        \n        balanceOf[target] = newBalance;\n        totalSupply = newTotalSupply;\n        \n        // Updated event emission syntax for newer Solidity versions\n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

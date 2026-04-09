@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Line 135: transfer function, specifically the rawAmount parameter conversion to uint96",
+        "description": "The transfer function accepts a uint256 rawAmount parameter and converts it to uint96 using _safe96(). While _safe96() includes a require check to prevent values >= 2^96, the contract uses solidity ^0.7.0 which does not have built-in overflow/underflow protection for arithmetic operations. Throughout the contract, arithmetic operations on uint96 values (lines 156, 170, 244, 246, etc.) use custom safe math functions (_add96, _sub96). However, these functions are private pure and only used in specific locations, leaving potential for overflow/underflow in other arithmetic operations if any uint96 variables are manipulated without these safety functions."
+    }
+}
+```

@@ -1,0 +1,29 @@
+【```json
+[{
+    "contract_name": "DIACompanyLockup",
+    "contract_version": "0.5.12",
+    "state_variables": [
+        {
+            "variable_name": "beginDepositTime",
+            "fix_info": "The state variable 'beginDepositTime' is set to default visibility, which in solidity is 'internal'. It should be made explicit and change it to 'public' for better readability and understanding of the code.",
+            "variable_code": "uint256 public beginDepositTime;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "endDepositTime",
+            "fix_info": "The state variable 'endDepositTime' is set to default visibility, which in solidity is 'internal'. It should be made explicit and change it to 'public' for better readability and understanding of the code.",
+            "variable_code": "uint256 public endDepositTime;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "triggerWithdrawAll",
+            "fix_info": "The original function has a loop that executes a variable number of times, generating a potential Denial of Service (DoS) attack due to exceeding the block gas limit. The function has been upgraded to an enhanced version that takes an array of indices of lock boxes to be withdrawn. This way, an attacker cannot cause a gas limit error except for manually providing a large array of indices. ",
+            "corrected_code": "function triggerWithdrawAll(uint256[] memory lockBoxNumbers) public {\n for (uint256 i = 0; i < lockBoxNumbers.length; ++i) {\n        uint256 lockBoxNumber = lockBoxNumbers[i];\n        if (lockBoxStructs[lockBoxNumber].releaseTime <= now && lockBoxStructs[lockBoxNumber].balance > 0) {\n            withdraw(lockBoxNumber);\n        }\n }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

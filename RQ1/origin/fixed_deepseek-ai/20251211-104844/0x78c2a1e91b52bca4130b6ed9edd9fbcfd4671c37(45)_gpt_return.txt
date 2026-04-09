@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "WhaleGiveaway1",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added onlyOwner modifier for access control",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == Owner);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "Command",
+                "fix_info": "Fixed unchecked low-level call vulnerability by checking return value and using appropriate gas. Removed require check and replaced with modifier. Also added proper error handling for call failures.",
+                "corrected_code": "function Command(address adr, bytes data) payable public onlyOwner {\n        bool success = adr.call.value(msg.value).gas(msg.gas - 2500)(data);\n        require(success, \"Low-level call failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

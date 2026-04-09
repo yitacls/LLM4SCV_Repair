@@ -1,0 +1,7 @@
+```json
+[{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(weiLeftOver);",
+    "description": "The send() function does not propagate errors and instead returns false on failure. In Solidity 0.4.10, this return value is not checked, which could lead to silent failures where users do not receive their ether refunds. This violates the contract's intended behavior of returning excess ether to the sender, potentially locking funds in the contract permanently. Additionally, the fallback function uses 'throw' (which consumes all gas) rather than 'revert()' for error handling, but this is less critical than the unchecked send vulnerability."
+}]
+```

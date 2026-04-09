@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(value);",
+    "description": "The use of 'send' for transferring funds in the smart contract does not capture potential failure in the external call and may result in unexpected behaviors if the call fails, not providing proper error handling or reverting mechanism."
+}
+```  

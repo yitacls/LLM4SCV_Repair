@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_source == 2) { if (_to == tx.origin) { balance.profitBalance = balance.profitBalance.sub(_deposited); } else { Balance storage senderBalance = userWallets[tx.origin]; senderBalance.profitBalance = senderBalance.profitBalance.sub(_deposited); } }",
+    "description": "The contract allows unauthorized deduction of profitBalance from any user when _source == 2. The tx.origin check is insufficient for authorization since tx.origin refers to the original EOA that initiated the transaction chain, not the immediate caller. An attacker can craft a transaction where tx.origin is set to a victim's address, causing the victim's profitBalance to be deducted without proper access control checks. Additionally, the onlyReserveFundContract modifier only restricts who can call the deposit function, but doesn't validate proper authorization for profitBalance deductions within the function logic."
+}
+```

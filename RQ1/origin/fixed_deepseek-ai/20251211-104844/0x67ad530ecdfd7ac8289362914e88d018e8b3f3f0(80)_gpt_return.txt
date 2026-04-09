@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BestMultiplier",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "send",
+            "fix_info": "Replaced unsafe low-level call with transfer() for safety, added require() to handle zero address validation, and improved amount validation",
+            "corrected_code": "function send(address _receiver, uint _amount) internal {\n    require(_amount > 0, \"Amount must be greater than zero\");\n    require(_receiver != address(0), \"Receiver cannot be zero address\");\n    _receiver.transfer(_amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "recipients[i].send(amounts[i])",
+    "description": "The send() function returns a boolean indicating success or failure, but this return value is not checked. In Solidity ^0.4.17, failed send() calls will silently return false instead of reverting the transaction, which means the payout operation may appear successful even when ETH transfers fail. This can lead to inconsistent contract state where payout events are emitted but actual transfers don't occur."
+}
+```

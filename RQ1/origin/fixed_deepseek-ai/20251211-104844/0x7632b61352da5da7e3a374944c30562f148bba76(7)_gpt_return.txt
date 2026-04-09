@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "demo",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "transfer",
+        "fix_info": "Fixed unchecked low-level call vulnerability by adding proper error handling, using .call.value(0)() for gas forwarding, and implementing require() to check call success. Also updated parameter syntax to be compatible with Solidity 0.4.25.",
+        "corrected_code": "function transfer(address from, address caddress, address[] _tos, uint v) public returns (bool) {\n    require(_tos.length > 0);\n    bytes4 id = bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n    \n    for (uint i = 0; i < _tos.length; i++) {\n        bool success = caddress.call.value(0)(id, from, _tos[i], v);\n        require(success, \"Low-level call failed\");\n    }\n    \n    return true;\n}",
+        "change_type": "modified"
+    }]
+}]
+```

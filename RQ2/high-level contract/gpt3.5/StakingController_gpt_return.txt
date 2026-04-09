@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "function approveDomainBid(uint256 parentId, string memory bidIPFSHash, bytes memory signature) external authorizedOwner(parentId)",
+            "description": "The function approveDomainBid can approve a domain bid without checking the security of the signature. This can lead to unauthorized withdrawals or approvals."
+        },
+        {
+            "type": "SWC-122-Lack of Proper Signature Verification",
+            "location": "function fulfillDomainBid(uint256 parentId, uint256 bidAmount, uint256 royaltyAmount, string memory bidIPFSHash, string memory name, string memory metadata, bytes memory signature, bool lockOnCreation, address recipient) external",
+            "description": "The function fulfillDomainBid lacks proper signature verification before executing critical operations like transferring tokens. This can lead to unauthorized actions by malicious actors."
+        },
+        {
+            "type": "SWC-117-Signature Malleability",
+            "location": "function fulfillDomainBid(uint256 parentId, uint256 bidAmount, uint256 royaltyAmount, string memory bidIPFSHash, string memory name, string memory metadata, bytes memory signature, bool lockOnCreation, address recipient) external",
+            "description": "The function fulfillDomainBid is vulnerable to signature malleability which could result in unexpected behavior due to signature manipulation."
+        }
+    ]
+}
+```

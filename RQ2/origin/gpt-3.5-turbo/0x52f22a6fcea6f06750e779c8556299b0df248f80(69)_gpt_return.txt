@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOfOld[_to] += _value;  // fault line",
+    "description": "The vulnerability is in the += operator used to update the balance of tokens for the recipient address. This vulnerability allows for an integer overflow or underflow when a large value is added to the balance, potentially resulting in unexpected behavior such as balance becoming negative or overflowing to a small value."
+}
+```

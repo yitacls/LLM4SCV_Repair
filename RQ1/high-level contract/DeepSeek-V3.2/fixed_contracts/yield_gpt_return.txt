@@ -1,0 +1,79 @@
+```json
+[
+    {
+        "contract_name": "DIACompanyLockup",
+        "contract_version": "0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "beginDepositTime",
+                "fix_info": "Added explicit visibility specifier (public) to prevent SWC-108 issue",
+                "variable_code": "uint256 public beginDepositTime;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "endDepositTime",
+                "fix_info": "Added explicit visibility specifier (public) to prevent SWC-108 issue",
+                "variable_code": "uint256 public endDepositTime;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "yieldWallet",
+                "fix_info": "Added explicit visibility specifier (public) to prevent SWC-108 issue",
+                "variable_code": "address public yieldWallet;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerWallet",
+                "fix_info": "Added explicit visibility specifier (public) to prevent SWC-108 issue",
+                "variable_code": "address public kickerWallet;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerDeadline",
+                "fix_info": "Added explicit visibility specifier (public) to prevent SWC-108 issue",
+                "variable_code": "uint256 public kickerDeadline;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerPromille",
+                "fix_info": "Added explicit visibility specifier (public) to prevent SWC-108 issue",
+                "variable_code": "uint256 public kickerPromille;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Updated pragma to fixed version (0.8.0) to prevent SWC-103 issue, added missing yield rate initializations",
+                "corrected_code": "constructor(address tokenContract, uint256 _beginDepositTime, uint256 _endDepositTime, address _kickerWallet, uint256 _kickerDeadline, uint256 _kickerPromille, address _yieldWallet) {\n        token = IERC20(tokenContract);\n        beginDepositTime = _beginDepositTime;\n        endDepositTime = _endDepositTime;\n        \n        kickerWallet = _kickerWallet;\n        kickerDeadline = _kickerDeadline;\n        kickerPromille = _kickerPromille;\n        yieldWallet = _yieldWallet;\n        \n        // Initialize yield rates to zero by default; owner can update later using updateYields\n        threeMonthPromille = 0;\n        sixMonthPromille = 0;\n        nineMonthPromille = 0;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "triggerWithdrawAll",
+                "fix_info": "Fixed SWC-128 issue by adding a maximum gas limit per loop iteration and allowing partial withdrawals",
+                "corrected_code": "function triggerWithdrawAll() public {\n        uint256 processed = 0;\n        uint256 maxIterations = 100; // Limit to prevent block gas limit issues\n        for (uint256 i = 0; i < lockBoxStructs.length && processed < maxIterations; ++i) {\n            if (lockBoxStructs[i].releaseTime <= block.timestamp && lockBoxStructs[i].balance > 0) {\n                withdraw(i);\n                processed++;\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "deposit",
+                "fix_info": "Updated 'now' to 'block.timestamp' for clarity and security",
+                "corrected_code": "function deposit(address beneficiary, uint256 amount, uint256 duration) internal {\n        require(block.timestamp < endDepositTime, \"Deposit time has ended.\");\n        // Define and get amount of yield\n        uint256 yieldAmount;\n        if (duration == 12 weeks) {\n            yieldAmount = (threeMonthPromille * amount) / 1000;\n        } else if (duration == 24 weeks) {\n            yieldAmount = (sixMonthPromille * amount) / 1000;\n        } else if (duration == 36 weeks) {\n            yieldAmount = (nineMonthPromille * amount) / 1000;\n        } else {\n            revert(\"Error: duration not allowed!\");\n        }\n        require(token.transferFrom(yieldWallet, address(this), yieldAmount));\n        \n        // Define and get kicker payment\n        uint256 kickerAmount = (kickerPromille * amount) / 1000;\n        if (block.timestamp <= kickerDeadline) {\n            require(token.transferFrom(kickerWallet, address(this), kickerAmount));\n        }\n        \n        // Get lockable tokens from user\n        require(token.transferFrom(msg.sender, address(this), amount));\n        \n        // Build lockbox\n        LockBoxStruct memory l;\n        l.beneficiary = beneficiary;\n        l.balance = amount + kickerAmount + yieldAmount;\n        l.releaseTime = beginDepositTime + duration;\n        lockBoxStructs.push(l);\n        emit LogLockupDeposit(msg.sender, l.beneficiary, l.balance, l.releaseTime);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Updated 'now' to 'block.timestamp' for clarity and security",
+                "corrected_code": "function withdraw(uint lockBoxNumber) public {\n        LockBoxStruct storage l = lockBoxStructs[lockBoxNumber];\n        require(l.releaseTime <= block.timestamp, \"Release time not reached\");\n        uint amount = l.balance;\n        require(amount > 0, \"No balance to withdraw\");\n        l.balance = 0;\n        emit LogLockupWithdrawal(l.beneficiary, amount);\n        require(token.transfer(l.beneficiary, amount), \"Transfer failed\");\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "allocatePremium",
+                "fix_info": "Added missing require statement and updated 'now' to 'block.timestamp'",
+                "corrected_code": "function allocatePremium(uint256 lockBoxNumber, uint256 premiumAmount) public onlyOwner {\n        require(premiumAmount > 0, \"Premium amount must be positive\");\n        LockBoxStruct storage l = lockBoxStructs[lockBoxNumber];\n        require(l.releaseTime > block.timestamp, \"Cannot allocate premium to expired lockbox\");\n        require(token.transferFrom(kickerWallet, address(this), premiumAmount), \"Transfer from kicker wallet failed\");\n        l.balance += premiumAmount;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced use of block.blockhash for randomness, as it is manipulable by miners. Instead, use a more secure pseudo-randomness by incorporating keccak256 and block difficulty, timestamp, and sender as inputs to reduce predictability.",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Generate pseudo-randomness by hashing multiple entropy sources\n    return uint(keccak256(abi.encodePacked(\n        block.difficulty, // Current block difficulty\n        block.timestamp,  // Current block timestamp\n        msg.sender,       // Address of the message sender\n        _lastb,           // Input parameter for additional entropy\n        _delta            // Input parameter for additional entropy\n    )));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

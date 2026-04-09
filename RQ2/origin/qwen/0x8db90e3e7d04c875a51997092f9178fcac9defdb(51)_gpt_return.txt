@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "if (balance[_from] >= _value && balance[_to] + _value >= balance[_to])",
+    "description": "The contract is vulnerable to arithmetic overflow attacks. In the checked condition 'balance[_to] + _value >= balance[_to]', the addition operation could overflow, causing the check to pass when it should fail. This could allow transfers that exceed the intended balance limits. Additionally, the subtraction operation 'balance[_from] -= _value' could underflow if _value exceeds balance[_from], though this is partially mitigated by the first condition. In Solidity ^0.4.25, arithmetic operations are not checked for overflow/underflow by default, making this vulnerability exploitable."
+}
+```

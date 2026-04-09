@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SYCEarlyPurchase",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "appendEarlyPurchase",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer instead of send, added require statements for input validation, and properly handled overflow scenarios",
+            "corrected_code": "function appendEarlyPurchase(address purchaser, uint amount, uint purchasedAt)\n        internal\n        onlyEarlyPurchaseTerm\n        returns (bool)\n    {\n        require(purchaser != address(0), \"Invalid purchaser address\");\n        require(amount > 0, \"Amount must be greater than 0\");\n        require(purchasedAt > 0 && purchasedAt <= now, \"Invalid purchase timestamp\");\n        \n        uint remainingCapacity = WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised;\n        require(remainingCapacity > 0, \"Early purchase capacity reached\");\n        \n        if (totalEarlyPurchaseRaised + amount >= WEI_MAXIMUM_EARLYPURCHASE) {\n            uint purchaseAmount = remainingCapacity;\n            uint refundAmount = amount - purchaseAmount;\n            \n            if (refundAmount > 0) {\n                purchaser.transfer(refundAmount);\n            }\n            \n            earlyPurchases.push(EarlyPurchase(purchaser, purchaseAmount, purchasedAt));\n            totalEarlyPurchaseRaised = WEI_MAXIMUM_EARLYPURCHASE;\n        } else {\n            earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));\n            totalEarlyPurchaseRaised += amount;\n        }\n        \n        if (totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE) {\n            earlyPurchaseClosedAt = now;\n        }\n        \n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

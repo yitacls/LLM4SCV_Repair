@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "MultiplyProxyActions",
+    "contract_version": ">=0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "convertTo18",
+            "fix_info": "Fixed potential integer underflow by checking if IJoin(gemJoin).dec() is <= 18 before subtraction. Also added SafeMath usage for all arithmetic operations to prevent overflow/underflow.",
+            "corrected_code": "function convertTo18(address gemJoin, uint256 amt) internal returns (uint256 wad) {\n    // For those collaterals that have less than 18 decimals precision we need to do the conversion before passing to frob function\n    // Adapters will automatically handle the difference of precision\n    uint8 decimals = IJoin(gemJoin).dec();\n    require(decimals <= 18, \"MPA/decimals-overflow\");\n    wad = amt.mul(10**(18 - decimals));\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "increaseMultipleDepositCollateral",
+            "fix_info": "Fixed unchecked call return value by adding explicit check for transferFrom success. Also added checks for transfer success.",
+            "corrected_code": "function increaseMultipleDepositCollateral(\n    ExchangeData calldata exchangeData,\n    CdpData memory cdpData,\n    AddressRegistry calldata addressRegistry\n)\n    public\n    payable\n    logMethodName(\n      \"increaseMultipleDepositCollateral\",\n      cdpData,\n      addressRegistry.multiplyProxyActions\n    )\n{ \n    // SWC-104-Unchecked Call Return Value: L172\n    IGem gem = IJoin(cdpData.gemJoin).gem();\n\n    if (address(gem) == WETH) {\n      gem.deposit{value: msg.value}();\n      if (cdpData.skipFL == false) {\n        require(gem.transfer(addressRegistry.multiplyProxyActions, msg.value), \"MPA/transfer-failed\");\n      }\n    } else {\n      if (cdpData.skipFL == false) {\n        require(gem.transferFrom(\n          msg.sender,\n          addressRegistry.multiplyProxyActions,\n          cdpData.depositCollateral\n        ), \"MPA/transferFrom-failed\");\n      } else {\n        require(gem.transferFrom(msg.sender, address(this), cdpData.depositCollateral), \"MPA/transferFrom-failed\");\n      }\n    }\n    increaseMultipleInternal(exchangeData, cdpData, addressRegistry);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

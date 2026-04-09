@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "amount * sellPrice in both require() and msg.sender.transfer() statements",
+    "description": "In Solidity 0.4.16, integer arithmetic operations can overflow without throwing an exception due to the absence of built-in overflow checks. When amount * sellPrice exceeds the maximum value of uint256 (2^256 - 1), the multiplication will wrap around to a small value instead of reverting. This could allow: 1) The require(this.balance >= amount * sellPrice) check to pass even when it shouldn't, 2) msg.sender.transfer(amount * sellPrice) to send far less ether than intended. An attacker could exploit this by providing a large amount value that causes overflow, potentially draining contract funds or obtaining tokens at minimal cost. This vulnerability is fixed in Solidity 0.8.0+ with automatic overflow checks, or by using SafeMath library in earlier versions."
+}
+```

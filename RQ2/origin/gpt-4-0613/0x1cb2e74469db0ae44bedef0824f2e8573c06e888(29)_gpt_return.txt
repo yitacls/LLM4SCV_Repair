@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The transferOwnership function has a direct reference to tx.origin, which refers to the original external actor who initiated the transaction. This is an access control vulnerability. tx.origin can be manipulated by an external contract, potentially allowing unauthorized changes of the contract owner. Consider changing it to msg.sender, which is more secure as it refers to the immediate sender of the call, not the original initiator of the transaction."
+}
+```

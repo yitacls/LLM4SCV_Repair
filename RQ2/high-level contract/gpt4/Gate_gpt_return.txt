@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "lines 175-190 in the 'multiFill' function",
+    "description": "This DoS (Denial of Service) attack occurs when 'owner.transfer' is used without checking if the operation succeeded or not. In the case where the customer's address is a contract and its fallback function uses more than 2300 gas, the transfer will fail, and due to missing error handling, your contract will stop execution. In the worst-case scenario, this could lock your whole contract."
+}
+```

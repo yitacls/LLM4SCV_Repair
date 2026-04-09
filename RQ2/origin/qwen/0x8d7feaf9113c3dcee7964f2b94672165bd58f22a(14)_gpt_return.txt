@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "eth_stored[msg.sender] += msg.value;",
+    "description": "The contract is vulnerable to arithmetic overflow in Solidity version 0.4.25 where the addition operation eth_stored[msg.sender] += msg.value can overflow without detection. Since Solidity 0.4.25 does not have built-in overflow protection, a malicious user could potentially cause an integer overflow by sending a large amount of ETH, leading to incorrect balance tracking and potential loss of funds."
+}
+```

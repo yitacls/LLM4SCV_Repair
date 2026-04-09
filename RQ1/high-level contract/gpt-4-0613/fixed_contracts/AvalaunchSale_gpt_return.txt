@@ -1,0 +1,22 @@
+【```json
+[{
+    "contract_name": "AvalaunchSale",
+    "contract_version": "0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "postponeSale",
+            "fix_info": "Fixed vulnerability of SWC-113-DoS with Failed Call by replacing timestamp update inside loop with outside loop computation",
+            "corrected_code": "function postponeSale(uint256 timeToShift) external onlyAdmin {\n    require(block.timestamp < roundIdToRound[roundIds[0]].startTime, '1st round already started.');\n    uint256 len = roundIds.length;\n    uint256[] memory newStartTimes = new uint256[](len);\n    for(uint i = 0; i < len; i++) { newStartTimes[i] = roundIdToRound[roundIds[i]].startTime.add(timeToShift); }\n    for(uint i = 0; i < len; i++) { roundIdToRound[roundIds[i]].startTime = newStartTimes[i]; }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "depositTokens",
+            "fix_info": "Fixed vulnerability of SWC-113-DoS with Failed Call by checking tokens transfer result and reverting in case of failure",
+            "corrected_code": "function depositTokens() external onlySaleOwner {\n    require(sale.totalTokensSold == 0 && sale.token.balanceOf(address(this)) == 0, 'Deposit can be done only once');\n    require(block.timestamp < roundIdToRound[roundIds[0]].startTime, 'Deposit too late. Round already started.');\n    bool sent = sale.token.safeTransferFrom(msg.sender, address(this), sale.amountOfTokensToSell);\n    require(sent, 'Token transfer failed');\n    sale.tokensDeposited = true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

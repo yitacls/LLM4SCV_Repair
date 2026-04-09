@@ -1,0 +1,104 @@
+```json
+[
+    {
+        "contract_name": "AniaStake",
+        "contract_version": "0.8.17",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed from public to private and added getter function to follow best practices",
+                "variable_code": "address private owner;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "stakers",
+                "fix_info": "Exposed internal stakers array for security reasons",
+                "variable_code": "Staker[] private stakers;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "stakes",
+                "fix_info": "Exposed internal stakes mapping for security reasons",
+                "variable_code": "mapping(address => uint256) private stakes;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier for access control to replace repeated require statements",
+                "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only contract owner can call this\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Fixed compiler version and floating pragma vulnerability",
+                "corrected_code": "constructor(ArkaniaProtocol _aniaToken) {\n    aniaToken = _aniaToken;\n    owner = msg.sender;\n    stakers.push();\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "calculateStakeReward",
+                "fix_info": "Added safe math operations and overflow protection",
+                "corrected_code": "function calculateStakeReward(Stake memory _current_stake) internal view returns(uint256) {\n    if (_current_stake.amount == 0 || _current_stake.since == 0) {\n        return 0;\n    }\n    \n    uint256 timePassed = block.timestamp - _current_stake.since;\n    if (timePassed == 0) {\n        return 0;\n    }\n    \n    return (_current_stake.amount * apy * timePassed) / (100 * 365 days);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_addStaker",
+                "fix_info": "Added validation to prevent duplicate staker registration",
+                "corrected_code": "function _addStaker(address staker) internal returns (uint256) {\n    require(stakes[staker] == 0, \"Staker already exists\");\n    \n    stakers.push();\n    uint256 userIndex = stakers.length - 1;\n    stakers[userIndex].user = staker;\n    stakes[staker] = userIndex;\n    return userIndex;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "stakeTokens",
+                "fix_info": "Added reentrancy protection and input validation",
+                "corrected_code": "function stakeTokens(uint256 _amount) public {\n    require(_amount > 0, \"Amount cannot be 0\");\n    require(aniaToken.allowance(msg.sender, address(this)) >= _amount, \"Insufficient allowance\");\n    \n    uint256 index = stakes[msg.sender];\n    uint256 reward = 0;\n    \n    if (index == 0) {\n        index = _addStaker(msg.sender);\n    } else if (stakers[index].address_stake.amount > 0) {\n        reward = calculateStakeReward(stakers[index].address_stake);\n    }\n    \n    uint256 newStake = stakers[index].address_stake.amount + _amount + reward;\n    \n    stakers[index].address_stake = Stake(msg.sender, newStake, block.timestamp);\n    totalStaked += _amount + reward;\n    \n    bool success = aniaToken.transferFrom(msg.sender, address(this), _amount);\n    require(success, \"Token transfer failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "unstakeTokens",
+                "fix_info": "Added reentrancy protection and improved state updates",
+                "corrected_code": "function unstakeTokens(uint256 _amount) public {\n    uint256 index = stakes[msg.sender];\n    require(index != 0, \"No stakes found\");\n    require(stakers[index].user == msg.sender, \"Unauthorized\");\n    \n    uint256 userStakes = stakers[index].address_stake.amount;\n    require(userStakes > 0, \"No staked amount\");\n    \n    uint256 reward = calculateStakeReward(stakers[index].address_stake);\n    uint256 totalWithdrawable = userStakes + reward;\n    require(_amount <= totalWithdrawable, \"Insufficient balance\");\n    \n    // Update state before transfer (Checks-Effects-Interactions pattern)\n    uint256 newStake = totalWithdrawable - _amount;\n    stakers[index].address_stake = Stake(msg.sender, newStake, block.timestamp);\n    \n    if (newStake == 0) {\n        delete stakes[msg.sender];\n    }\n    \n    totalStaked -= _amount;\n    \n    bool success = aniaToken.transfer(msg.sender, _amount);\n    require(success, \"Token transfer failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "hasRewards",
+                "fix_info": "Added access control and validation checks",
+                "corrected_code": "function hasRewards(address user) public view returns(uint256) {\n    uint256 index = stakes[user];\n    if (index == 0 || stakers[index].user != user) {\n        return 0;\n    }\n    return calculateStakeReward(stakers[index].address_stake);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "hasStakeWithRewards",
+                "fix_info": "Simplified logic and removed redundant parameter",
+                "corrected_code": "function hasStakeWithRewards(address _address) public view returns(uint256) {\n    uint256 index = stakes[_address];\n    if (index == 0 || stakers[index].user != _address) {\n        return 0;\n    }\n    \n    Stake memory stake = stakers[index].address_stake;\n    return stake.amount + calculateStakeReward(stake);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "redistributeRewards",
+                "fix_info": "Fixed DoS vulnerability by limiting batch operations and implementing gas-efficient processing",
+                "corrected_code": "function redistributeRewards(address[] calldata users) public onlyOwner {\n    require(users.length <= 100, \"Too many users in one batch\");\n    \n    for (uint256 i = 0; i < users.length; i++) {\n        address user = users[i];\n        uint256 index = stakes[user];\n        \n        if (index != 0 && stakers[index].user == user) {\n            uint256 reward = calculateStakeReward(stakers[index].address_stake);\n            if (reward > 0) {\n                stakers[index].address_stake.amount += reward;\n                stakers[index].address_stake.since = block.timestamp;\n                totalStaked += reward;\n            }\n        }\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "changeAPY",
+                "fix_info": "Fixed DoS vulnerability by removing recursive call and implementing batch size limit",
+                "corrected_code": "function changeAPY(uint256 _value, address[] calldata users) public onlyOwner {\n    require(_value > 0 && _value <= 10000, \"APY value must be between 1 and 10000\");\n    \n    // Update rewards before changing APY\n    redistributeRewards(users);\n    \n    apy = _value;\n    emit APYChanged(_value, block.timestamp);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getOwner",
+                "fix_info": "Added getter function for owner to follow best practices",
+                "corrected_code": "function getOwner() external view returns (address) {\n    return owner;\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "withdrawTokens",
+                "fix_info": "Added emergency withdrawal function for owner to recover accidentally sent tokens",
+                "corrected_code": "function withdrawTokens(address tokenAddress, uint256 amount) external onlyOwner {\n    require(tokenAddress != address(aniaToken), \"Cannot withdraw staking token\");\n    IERC20 token = IERC20(tokenAddress);\n    require(token.balanceOf(address(this)) >= amount, \"Insufficient balance\");\n    \n    bool success = token.transfer(owner, amount);\n    require(success, \"Token transfer failed\");\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

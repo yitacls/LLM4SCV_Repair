@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "Lines 108-118 in init() function",
+        "description": "The init() function lacks proper access control and can be called by any address after deployment. An attacker could front-run the legitimate initialization call with their own malicious pool parameters, potentially gaining control over the contract's funds or disrupting the intended auction mechanism."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "Lines 174-258 in swap() function",
+        "description": "The swap() function performs critical state changes and transfers tokenReceived to tokenReceivingAddress without proper access control checks. While it has 'whenNotPaused' modifier, it lacks explicit authorization checks, allowing any external caller to trigger the auction cycle, withdraw liquidity, and transfer tokens to the receiving address."
+    }
+]
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EasyHOLD",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyValidAddress",
+            "fix_info": "Added modifier to check if the sender is not the zero address before critical operations",
+            "modifier_code": "modifier onlyValidAddress {\n    require(msg.sender != address(0), \"Invalid address: zero address\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing send() with transfer(), added overflow protection, zero address check, and proper handling of pending rewards",
+            "corrected_code": "function () external payable onlyValidAddress {\n    if (invested[msg.sender] != 0) {\n        uint waited = block.timestamp - atTime[msg.sender];\n        \n        // Prevent overflow in calculation with SafeMath-like checks\n        require(waited <= block.timestamp, \"Timestamp overflow\");\n        require(invested[msg.sender] < type(uint256).max / waited / waited, \"Multiplication overflow\");\n        \n        uint256 amount = invested[msg.sender] * waited * waited / (25 days) / (25 days);\n        \n        // Check contract balance before transfer\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        \n        // Use transfer() instead of send() - throws on failure and provides 2300 gas stipend\n        msg.sender.transfer(amount);\n    }\n    \n    // Update timestamps and investments\n    atTime[msg.sender] = block.timestamp;\n    invested[msg.sender] += msg.value;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "hashesSize",
+            "fix_info": "Added state variable to store the size of hash segments",
+            "variable_code": "uint256 public hashesSize = 0xFFFFFF;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "lastRandom",
+            "fix_info": "Added state variable to store last generated random value",
+            "variable_code": "uint256 public lastRandom;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "lastRandomBlock",
+            "fix_info": "Added state variable to track block number of last random generation",
+            "variable_code": "uint32 public lastRandomBlock;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced vulnerable block.blockhash() with a more secure randomness mechanism using keccak256 and multiple entropy sources",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Fix BAD_RANDOMNESS by using keccak256 with multiple entropy sources\n        bytes32 entropy = keccak256(\n            block.coinbase,\n            block.difficulty,\n            block.gaslimit,\n            block.number,\n            block.timestamp,\n            msg.sender,\n            tx.gasprice\n        );\n        \n        return( ( uint(entropy) & 0xFFFFFF )\n            | ( ( uint(entropy << 3) & 0xFFFFFF ) << 24 )\n            | ( ( uint(entropy << 6) & 0xFFFFFF ) << 48 )\n            | ( ( uint(entropy << 9) & 0xFFFFFF ) << 72 )\n            | ( ( uint(entropy << 12) & 0xFFFFFF ) << 96 )\n            | ( ( uint(entropy << 15) & 0xFFFFFF ) << 120 )\n            | ( ( uint(entropy << 18) & 0xFFFFFF ) << 144 )\n            | ( ( uint(entropy << 21) & 0xFFFFFF ) << 168 )\n            | ( ( uint(entropy << 24) & 0xFFFFFF ) << 192 )\n            | ( ( uint(entropy << 27) & 0xFFFFFF ) << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

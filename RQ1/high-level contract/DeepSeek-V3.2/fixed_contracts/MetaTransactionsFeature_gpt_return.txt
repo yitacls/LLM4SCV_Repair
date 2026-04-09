@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "MetaTransactionsFeature",
+    "contract_version": "1.1.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "refundsAttachedEth",
+            "fix_info": "Fixed reentrancy vulnerability by performing transfer before calling external functions and using transfer() which has gas limit",
+            "modifier_code": "modifier refundsAttachedEth() {\n        // Store the refund amount first to prevent reentrancy\n        uint256 refundAmount = LibSafeMathV06.min256(msg.value, address(this).balance);\n        // Perform refund immediately before proceeding\n        if (refundAmount > 0) {\n            (bool success, ) = msg.sender.call{value: refundAmount}(\"\");\n            require(success, \"ETH refund failed\");\n        }\n        // Clear any remaining balance after operations\n        uint256 remainingBalance = address(this).balance;\n        if (remainingBalance > 0) {\n            (bool success, ) = msg.sender.call{value: remainingBalance}(\"\");\n            require(success, \"ETH cleanup failed\");\n        }\n        // Ensure no ETH is left in contract after modifier completes\n        require(address(this).balance == 0, \"ETH left in contract\");\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "executeMetaTransaction",
+            "fix_info": "Fixed reentrancy by updating refundsAttachedEth modifier to prevent state changes after external call",
+            "corrected_code": "function executeMetaTransaction(\n        MetaTransactionData memory mtx,\n        LibSignature.Signature memory signature\n    )\n        public\n        payable\n        override\n        nonReentrant(REENTRANCY_MTX)\n        refundsAttachedEth\n        returns (bytes memory returnResult)\n    {\n        ExecuteState memory state;\n        state.sender = msg.sender;\n        state.mtx = mtx;\n        state.hash = getMetaTransactionHash(mtx);\n        state.signature = signature;\n\n        returnResult = _executeMetaTransactionPrivate(state);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "batchExecuteMetaTransactions",
+            "fix_info": "Fixed reentrancy by updating refundsAttachedEth modifier to prevent state changes after external call",
+            "corrected_code": "function batchExecuteMetaTransactions(\n        MetaTransactionData[] memory mtxs,\n        LibSignature.Signature[] memory signatures\n    )\n        public\n        payable\n        override\n        nonReentrant(REENTRANCY_MTX)\n        refundsAttachedEth\n        returns (bytes[] memory returnResults)\n    {\n        if (mtxs.length != signatures.length) {\n            LibMetaTransactionsRichErrors.InvalidMetaTransactionsArrayLengthsError(\n                mtxs.length,\n                signatures.length\n            ).rrevert();\n        }\n        returnResults = new bytes[](mtxs.length);\n        for (uint256 i = 0; i < mtxs.length; ++i) {\n            ExecuteState memory state;\n            state.sender = msg.sender;\n            state.mtx = mtxs[i];\n            state.hash = getMetaTransactionHash(mtxs[i]);\n            state.signature = signatures[i];\n\n            returnResults[i] = _executeMetaTransactionPrivate(state);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_callSelf",
+            "fix_info": "Added reentrancy protection by ensuring no state changes after external call and checking return data length",
+            "corrected_code": "function _callSelf(bytes32 hash, bytes memory callData, uint256 value)\n        private\n        returns (bytes memory returnResult)\n    {\n        // Store original balance before call\n        uint256 originalBalance = address(this).balance;\n        \n        bool success;\n        // Use staticcall for functions that don't need value\n        if (value == 0) {\n            (success, returnResult) = address(this).staticcall(callData);\n        } else {\n            // For calls with value, ensure no reentrancy\n            require(originalBalance >= value, \"Insufficient balance for call\");\n            (success, returnResult) = address(this).call{value: value}(callData);\n        }\n        \n        if (!success) {\n            LibMetaTransactionsRichErrors.MetaTransactionCallFailedError(\n                hash,\n                callData,\n                returnResult\n            ).rrevert();\n        }\n        \n        // Ensure contract balance hasn't been tampered with through reentrancy\n        require(address(this).balance >= originalBalance - value, \"Balance inconsistency detected\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

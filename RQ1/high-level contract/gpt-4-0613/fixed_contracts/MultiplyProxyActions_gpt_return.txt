@@ -1,0 +1,28 @@
+```json
+[{
+    "contract_name": "MultiplyProxyActions",
+    "contract_version": ">=0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "increaseMultipleDepositCollateral",
+            "fix_info": "Ensure gem.deposit and gem.transfer calls succeed",
+            "corrected_code": "function increaseMultipleDepositCollateral(\nExchangeData calldata exchangeData,\nCdpData memory cdpData,\nAddressRegistry calldata addressRegistry\n)\npublic\npayable\nlogMethodName(\n'increaseMultipleDepositCollateral',\ncdpData,\naddressRegistry.multiplyProxyActions\n)\n{\nIGem gem = IJoin(cdpData.gemJoin).gem();\n\nif (address(gem) == WETH) {\nrequire(gem.deposit{value: msg.value}(), 'increaseMultipleDepositCollateral: WETH deposit failed');\nif (cdpData.skipFL == false) {\nrequire(gem.transfer(addressRegistry.multiplyProxyActions, msg.value), 'increaseMultipleDepositCollateral: WETH transfer failed');\n}\n} else {\nif (cdpData.skipFL == false) {\nrequire(gem.transferFrom(\nmsg.sender,\naddressRegistry.multiplyProxyActions,\ncdpData.depositCollateral\n), 'increaseMultipleDepositCollateral: ERC20 transfer failed');\n} else {\nrequire(gem.transferFrom(msg.sender, address(this), cdpData.depositCollateral), 'increaseMultipleDepositCollateral: ERC20 transfer failed');\n}\n}\nincreaseMultipleInternal(exchangeData, cdpData, addressRegistry);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "increaseMultipleDepositDai",
+            "fix_info": "Ensure DAI transfer calls succeed",
+            "corrected_code": "function increaseMultipleDepositDai(\nExchangeData calldata exchangeData,\nCdpData memory cdpData,\nAddressRegistry calldata addressRegistry\n)\npublic\nlogMethodName('increaseMultipleDepositDai', cdpData, addressRegistry.multiplyProxyActions)\n{\nif (cdpData.skipFL) {\nrequire(IERC20(DAI).transferFrom(msg.sender, address(this), cdpData.depositDai), 'increaseMultipleDepositDai: DAI transfer failed');\n} else {\nrequire(IERC20(DAI).transferFrom(\nmsg.sender,\naddressRegistry.multiplyProxyActions,\ncdpData.depositDai\n), 'increaseMultipleDepositDai: DAI transfer failed');\n}\nincreaseMultipleInternal(exchangeData, cdpData, addressRegistry);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "convertTo18",
+            "fix_info": "Check for integer overflow when converting to 18 decimals",
+            "corrected_code": "function convertTo18(address gemJoin, uint256 amt) internal returns (uint256 wad) {\nrequire(amt < uint256(1) << (256 - 18 + IJoin(gemJoin).dec()), 'convertTo18: amount to join overflows');\nwad = amt.mul(10**(18 - IJoin(gemJoin).dec()));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

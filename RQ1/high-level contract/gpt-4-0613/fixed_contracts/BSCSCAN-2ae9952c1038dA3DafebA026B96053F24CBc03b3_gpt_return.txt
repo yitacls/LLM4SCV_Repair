@@ -1,0 +1,5 @@
+The contract in question doesn't have any issue with SWC-105-Unprotected Ether Withdrawal since it doesn't have functions to send/withdraw ether. The mentioned vulnerability type seems to be a misunderstanding. Therefore, there's no required changes needed in this contract. Hence, the return is an empty array.
+
+```json
+[]
+```

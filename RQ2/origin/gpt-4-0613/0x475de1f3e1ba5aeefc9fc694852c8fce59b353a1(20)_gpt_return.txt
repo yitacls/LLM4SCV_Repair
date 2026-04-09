@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send( tx.gasprice*(startGasLeft-endGasLeft+35000) );",
+    "description": "The contract EtherShareDonation uses a low-level call 'send' to transfer funds to 'msg.sender', and the return value of this call is not being checked. Ignoring the possibility that the 'send' function call may fail at runtime because the callee account is a contract account, or for other reasons, causes risky failures. This could put the contract's Ether balance at risk, as failure to send Ether does not throw an error."
+}
+```

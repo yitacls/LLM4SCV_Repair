@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": " bool res = nftAddress.send(this.balance);  // fault line",
+    "description": "The contract utilizes a low-level call using the .send method which does not handle failure by default. If the call to nftAddress.send(this.balance) fails, it will not trigger any exceptions or revert the transaction, potentially leaving the contract in an inconsistent state or leading to loss of funds."
+}
+```

@@ -1,0 +1,16 @@
+【```json
+[{
+    "contract_name": "CollateralizationOracle",
+    "contract_version": "^0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "pcvStats",
+            "fix_info": "Added SafeMath to prevent integer overflow and underflow.",
+            "corrected_code": "function pcvStats() public override view returns ( uint256 protocolControlledValue, uint256 userCirculatingFei,  int256 protocolEquity,  bool validityStatus ) { uint256 _protocolControlledFei = 0; validityStatus = !paused(); for (uint256 i = 0; i < tokensInPcv.length(); i++) { address _token = tokensInPcv.at(i); uint256 _totalTokenBalance  = 0; for (uint256 j = 0; j < tokenToDeposits[_token].length(); j++) { address _deposit = tokenToDeposits[_token].at(j); if (!excludedDeposits[_deposit]) { (uint256 _depositBalance, uint256 _depositFei) = IPCVDepositBalances(_deposit).resistantBalanceAndFei(); _totalTokenBalance = _totalTokenBalance.add(_depositBalance); _protocolControlledFei = _protocolControlledFei.add(_depositFei); } } if (_totalTokenBalance != 0) { (Decimal.D256 memory _oraclePrice, bool _oracleValid) = IOracle(tokenToOracle[_token]).read(); if (!_oracleValid) { validityStatus = false; } protocolControlledValue = protocolControlledValue.add(_oraclePrice.mul(_totalTokenBalance).asUint256()); } } userCirculatingFei = fei().totalSupply().sub(_protocolControlledFei); protocolEquity = int256(protocolControlledValue).sub(int256(userCirculatingFei)); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

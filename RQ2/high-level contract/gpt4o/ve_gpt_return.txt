@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-112-Delegatecall to Untrusted Callee",
+        "location": "function ownerOf(uint _tokenId) public view returns (address) { return idToOwner[_tokenId]; }",
+        "description": "The statement relies on invoking potentially untrusted code indirectly. This may cause unforeseen behavior if the callee has a malicious implementation of the interface."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "if (_isContract(_to)) { try IERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) returns (bytes4) {} catch (bytes memory reason) { if (reason.length == 0) { revert('ERC721: transfer to non ERC721Receiver implementer'); } ... } }",
+        "description": "The call does not check the return value of the external contract (`IERC721Receiver`). If the receiver contract fails intentionally or unintentionally, it can lead to unpredictable behavior and loss of funds."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "assert(IERC20(token).transfer(msg.sender, value));",
+        "description": "The `transfer` call in the `withdraw` function may lead to a reentrancy attack. An external address is called before updating the contract's state, enabling an attacker to continually withdraw funds by re-entering the function."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "assert(_isApprovedOrOwner(msg.sender, _tokenId)); require(attachments[_tokenId] == 0 && !voted[_tokenId], \"attached\"); ... assert(IERC20(token).transferFrom(from, address(this), _value));",
+        "description": "The `_deposit_for` function includes multiple external calls (to `IERC20.transferFrom`) before updating the state, which may allow a reentrancy attack when handling malicious tokens or addresses."
+    }
+]
+```

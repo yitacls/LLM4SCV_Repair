@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "amount += _value[j]*10**uint256(decimals);",
+    "description": "The multiplication operation _value[j]*10**uint256(decimals) can cause an arithmetic overflow if the result exceeds the maximum value that can be stored in a uint256 variable. This occurs when _value[j] is large enough that when multiplied by 10**decimals, it exceeds 2^256-1. Since Solidity 0.4.18 does not have built-in overflow protection, this can lead to unexpected behavior and incorrect amount calculations."
+}
+```

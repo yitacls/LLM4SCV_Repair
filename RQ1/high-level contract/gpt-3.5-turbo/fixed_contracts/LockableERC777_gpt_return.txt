@@ -1,0 +1,14 @@
+```json
+{
+    "contract_name": "LockableERC777",
+    "contract_version": "^0.5.3",
+    "functions": [
+        {
+            "function_name": "_burn",
+            "fix_info": "Fixed the reentrancy vulnerability by updating state variables before calling external contracts and ensured all state changes happen before interacting with external contracts.",
+            "corrected_code": "function _burn(address operator, address from, uint256 amount, bytes memory data, bytes memory operatorData) private {\n        require(from != address(0), 'ERC777: burn from the zero address');\n\n        // Update state variables\n        _totalSupply = _totalSupply.sub(amount);\n        _balances[from] = _balances[from].sub(amount);\n\n        emit Burned(\n            operator, from, amount, data, operatorData\n        );\n        emit Transfer(from, address(0), amount);\n\n        _callTokensToSend(\n            operator, from, address(0), amount, data, operatorData\n        );\n    }",
+            "change_type": "modified"
+        }
+    ]
+}
+```

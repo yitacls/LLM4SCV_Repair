@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EthTxOrderDependenceMinimal",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "setReward",
+            "fix_info": "Fixed front-running vulnerability by updating the reward state variable before transferring funds, preventing attackers from calling the function multiple times in the same transaction",
+            "corrected_code": "function setReward() public payable {\n        require (!claimed);\n        require(msg.sender == owner);\n        \n        // Fix front-running by updating state before external call\n        uint256 currentReward = reward;\n        reward = msg.value;\n        \n        // Transfer the current reward\n        if (currentReward > 0) {\n            owner.transfer(currentReward);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

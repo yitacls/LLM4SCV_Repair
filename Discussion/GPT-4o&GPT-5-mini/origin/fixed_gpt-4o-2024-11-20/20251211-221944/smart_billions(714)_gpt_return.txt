@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced block.blockhash-based randomness with a more secure approach using keccak256 and additional entropy generated from other inputs. This avoids predictability from using block.blockhash.",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) view private returns (uint) {\n    // Use keccak256 as a pseudorandom generator by combining unpredictable inputs\n    return uint(keccak256(abi.encodePacked(\n        block.timestamp, // Current block timestamp as entropy\n        block.difficulty, // Block difficulty as entropy\n        msg.sender, // Sender's address as entropy\n        _lastb, // Passed parameter _lastb\n        _delta  // Passed parameter _delta\n    )));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

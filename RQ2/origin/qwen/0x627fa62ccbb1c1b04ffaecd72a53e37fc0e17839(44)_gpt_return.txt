@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+    "description": "The low-level call to transfer tokens does not check the return value, which means the function will not detect if the token transfer fails. In Solidity 0.4.19, low-level calls return a boolean indicating success/failure, but this return value is ignored here. If the token transfer fails, the function will still execute as if it succeeded, potentially leading to incorrect state changes or loss of funds. The call should be checked by assigning the return value to a variable and handling the failure case appropriately."
+}
+```

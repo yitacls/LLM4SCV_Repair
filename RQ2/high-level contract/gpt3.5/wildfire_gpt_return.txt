@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "function includeInReward",
+    "description": "The loop in the 'includeInReward' function to find and remove an excluded account may lead to a denial of service (DoS) attack if the array of excluded accounts is too large. As the number of excluded accounts increases, the loop will consume more gas, possibly exceeding the gas limit and blocking the contract functionality."
+}
+```

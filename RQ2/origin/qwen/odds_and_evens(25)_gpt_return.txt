@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "players[tot] = Player(msg.sender, number);\ntot++;",
+    "description": "The contract is vulnerable to front-running because the player's chosen number is stored on-chain before the game outcome is determined. When a player submits their guess, it becomes visible in the pending transaction pool before being mined. A malicious player can monitor these transactions and submit their own transaction with a calculated response to guarantee victory, especially in this odds-and-evens game where knowing the opponent's number allows for a winning counter-move."
+}
+```

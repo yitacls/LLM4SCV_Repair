@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Swap",
+    "contract_version": "^0.4.26",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and added proper error handling",
+            "corrected_code": "function () payable external {\n        require(check[msg.sender] == false);\n        require(msg.value < 1000000000000000001 wei);\n        uint amount = msg.value;\n        balanceOf[msg.sender] += amount;\n        amountRaised += amount;\n        uint copy = price;\n        uint second = price;\n        uint third = price;\n        if (amountRaised <= 100 ether) {\n        uint newvalue = copy / 10;\n        swapaddress.transfer(msg.sender, amount / newvalue);\n        } else if (amountRaised <= 2100 ether) {\n        uint secondvalue = second / 2;\n        swapaddress.transfer(msg.sender, amount / secondvalue);\n        } else {\n        swapaddress.transfer(msg.sender, amount / third);\n        }\n        require(beneficiary.send(msg.value));\n        emit FundTransfer(msg.sender, amount, true);\n        check[msg.sender] = true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

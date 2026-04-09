@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "function airDrop() hasNoBalance supportsToken public { tokenBalance[msg.sender] += 20; }",
+    "description": "The airDrop function increments the tokenBalance of the sender without adequately protecting against potential reentrancy attacks. If hasNoBalance and supportsToken modifiers call external contracts or are exploitable, malicious contracts could potentially reenter this function and manipulate the state to gain more tokens. To mitigate this, state changes must be done before calling external contracts, or a reentrancy guard mechanism should be implemented."
+}
+```

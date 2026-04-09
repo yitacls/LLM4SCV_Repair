@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Line 96: tx.origin.transfer(availableBalance);",
+    "description": "The contract uses tx.origin to transfer ETH in the trade() function, which can be exploited through reentrancy attacks. An attacker can create a malicious contract that calls trade() and has a fallback/receive function that re-enters the ReferralFeeReceiver contract before state updates are completed. Since the external transfer occurs before the epochBalance.token0Balance/token1Balance state is updated (lines 103-105), and before token.firstUnprocessedEpoch is potentially updated (lines 107-109), an attacker could repeatedly call trade() before these state changes are committed, potentially draining contract funds. The use of tx.origin instead of msg.sender exacerbates this vulnerability as it allows the attack to be initiated through a chain of contract calls."
+}
+```

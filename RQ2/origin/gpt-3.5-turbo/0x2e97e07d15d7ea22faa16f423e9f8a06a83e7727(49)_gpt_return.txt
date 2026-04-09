@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The 'tx.origin' should not be used to check the ownership of a transaction due to potential security vulnerabilities. It is recommended to use 'msg.sender' or maintain a separate variable to keep track of the owner address."
+}
+```

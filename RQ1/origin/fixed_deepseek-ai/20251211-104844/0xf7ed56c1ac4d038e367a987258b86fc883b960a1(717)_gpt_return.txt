@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "EDCoreVersion1",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable to store contract owner address for proper access control",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to contract owner only",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Caller is not the owner\"); _; }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "migrationWindowOpen",
+            "fix_info": "Added modifier to manage migration time window with descriptive error message",
+            "modifier_code": "modifier migrationWindowOpen() { require(now < 1520694000, \"Migration window has closed\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "migrateDungeon",
+            "fix_info": "Replaced tx.origin with msg.sender for security, removed hardcoded address check, replaced with ownership modifier, added separate time window modifier",
+            "corrected_code": "function migrateDungeon(uint _id, uint _playerCount) external onlyOwner migrationWindowOpen {\n        dungeonIdToPlayerCount[_id] = _playerCount;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize the contract owner during deployment",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

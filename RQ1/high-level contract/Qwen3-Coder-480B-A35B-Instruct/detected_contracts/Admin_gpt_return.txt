@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "admins.pop();",
+    "description": "The removal of an admin relies on copying the last element of the array to the index of the element being removed, then calling `admins.pop()`. In Solidity 0.6.12, if the `pop()` operation fails (e.g., due to gas exhaustion or other conditions), it can cause a denial of service. Additionally, the use of a loop to find the index of the admin (`while(admins[i] != _adminAddress)`) can lead to excessive gas consumption or even timeout if the array is large, making the function vulnerable to DoS attacks."
+}
+```

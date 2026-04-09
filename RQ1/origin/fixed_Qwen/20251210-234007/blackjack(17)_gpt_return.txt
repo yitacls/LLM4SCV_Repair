@@ -1,0 +1,53 @@
+```json
+[{
+    "contract_name": "Deck",
+    "contract_version": "^0.4.2",
+    "state_variables": [
+        {
+            "variable_name": "dealer",
+            "fix_info": "Added state variable to store the dealer address for secure random number generation",
+            "variable_code": "address public dealer;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "pendingCommitment",
+            "fix_info": "Added state variable to store pending commitment for secure random number generation",
+            "variable_code": "bytes32 public pendingCommitment;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "pendingReveal",
+            "fix_info": "Added state variable to store pending reveal for secure random number generation",
+            "variable_code": "bytes32 public pendingReveal;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "setDealer",
+            "fix_info": "Added function to set the dealer address for secure random number generation",
+            "corrected_code": "function setDealer(address _dealer) internal {\n    dealer = _dealer;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "commitToDeal",
+            "fix_info": "Added function to commit to a deal with secure randomness",
+            "corrected_code": "function commitToDeal(bytes32 commitment) internal {\n    require(msg.sender == dealer);\n    pendingCommitment = commitment;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "revealDeal",
+            "fix_info": "Added function to reveal the deal with secure randomness",
+            "corrected_code": "function revealDeal(bytes32 reveal) internal {\n    require(msg.sender == dealer);\n    pendingReveal = reveal;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "deal",
+            "fix_info": "Fixed BAD_RANDOMNESS vulnerability by implementing a commit-reveal scheme for secure random number generation",
+            "corrected_code": "function deal(address player, uint8 cardNumber) internal returns (uint8) {\n    // Secure random number generation using commit-reveal scheme\n    bytes32 randomness = keccak256(pendingCommitment, pendingReveal, player, cardNumber);\n    pendingCommitment = 0;\n    pendingReveal = 0;\n    return uint8(uint256(randomness) % 52);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

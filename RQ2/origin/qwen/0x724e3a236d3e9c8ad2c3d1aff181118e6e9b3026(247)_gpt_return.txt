@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public {\n        address myAddress = this;\n        uint256 etherBalance = myAddress.balance;\n        owner.transfer(etherBalance); // <LEAKING_VUL>\n    }",
+    "description": "The withdraw function has access control vulnerability due to the onlyOwner modifier which may not be properly implemented or verified. In Solidity ^0.4.18, if the onlyOwner modifier is not correctly defined or if the owner address is not properly set/validated, it could allow unauthorized users to call the withdraw function and drain contract funds. The function transfers the entire contract balance to the owner, making it a high-risk target for access control bypass."
+}
+```

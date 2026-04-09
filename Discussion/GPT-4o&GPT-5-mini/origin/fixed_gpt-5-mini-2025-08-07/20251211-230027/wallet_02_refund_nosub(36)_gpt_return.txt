@@ -1,0 +1,28 @@
+[{
+    "contract_name": "Wallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "Added reentrancy guard state variable to prevent reentrant calls during refunds.",
+            "variable_code": "bool private locked;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "noReentrant",
+            "fix_info": "Added non-reentrancy modifier to protect sensitive external calls.",
+            "modifier_code": "modifier noReentrant() {\n    require(!locked);\n    locked = true;\n    _;\n    locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "refund",
+            "fix_info": "Zero the caller's balance before transferring and protect with non-reentrancy modifier to preserve functionality while preventing reentrant/exploitative calls.",
+            "corrected_code": "function refund() public noReentrant {\n    uint amount = balances[msg.sender];\n    require(amount > 0);\n    // Effects\n    balances[msg.sender] = 0;\n    // Interaction\n    msg.sender.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

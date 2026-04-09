@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "Line: totalContributed += msg.value;",
+    "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflow/underflow. The statement 'totalContributed += msg.value;' could overflow if 'msg.value + totalContributed' exceeds the maximum value of the data type (uint256 by default). Although there is a preceding require statement that checks 'hardCap >= msg.value + totalContributed', this addition could itself overflow in the require condition before the check is applied, potentially allowing the transaction to succeed when it should fail, or causing unexpected behavior. Additionally, the state update could overflow independently if the preceding check is bypassed or miscalculated. This vulnerability can be mitigated by using SafeMath library or upgrading to Solidity 0.8.0+ which has built-in overflow/underflow checks."
+}
+```

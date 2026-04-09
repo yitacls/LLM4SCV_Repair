@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 55-68: tokensReceived function",
+    "description": "The tokensReceived function is called as an ERC777 token hook when tokens are transferred to this contract. It decodes a recipient address from userData and calls stashBalance without validating the recipient address or implementing reentrancy guards. This could allow an attacker to create a malicious ERC777 recipient contract that calls back into SkaleBalances during the token transfer process, potentially manipulating balances or bypassing time limits. The vulnerability is compounded by the fact that the function is only protected by allow('SkaleToken'), but if the SkaleToken contract itself can be manipulated or if there are other entry points, a reentrancy attack could be executed."
+}
+```

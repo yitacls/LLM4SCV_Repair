@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "TrustZen",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes required to state variable declaration; arithmetic fix handled in function",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes required to modifier; original functionality preserved",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic vulnerability by adding SafeMath library usage to prevent overflows/underflows",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        // Use SafeMath additions to prevent overflow\n        balanceOf[target] = balanceOf[target].add(mintedAmount); // Fixed: SafeMath addition\n        totalSupply = totalSupply.add(mintedAmount); // Fixed: SafeMath addition\n        Transfer(address(0), address(this), mintedAmount); // Fixed: proper address conversion and null address\n        Transfer(address(this), target, mintedAmount); // Fixed: proper address conversion\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

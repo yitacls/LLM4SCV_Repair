@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Atoshi",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Using SafeMath library to prevent arithmetic overflow/underflow in operations. No direct modification needed, but SafeMath functions will be used.",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "safeBalanceUpdate",
+                "fix_info": "Added modifier to safely update balances while preventing overflow/underflow.",
+                "modifier_code": "modifier safeBalanceUpdate(address from, address to, uint256 value) {\n        require(from != address(0), \"Transfer from the zero address\");\n        require(to != address(0), \"Transfer to the zero address\");\n        require(balances[from] >= value, \"Insufficient balance\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by adding proper overflow checks for the recipient's balance, zero address validation, and using SafeMath library for safe arithmetic operations.",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(_to != address(0), \"Cannot transfer to the zero address\");\n        require(balances[msg.sender] >= _value, \"Insufficient balance\");\n        require(balances[_to] + _value >= balances[_to], \"Overflow detected in recipient's balance\");\n        \n        balances[msg.sender] = balances[msg.sender].sub(_value);\n        balances[_to] = balances[_to].add(_value);\n        \n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

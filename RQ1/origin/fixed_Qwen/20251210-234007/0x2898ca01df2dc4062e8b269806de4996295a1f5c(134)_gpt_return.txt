@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SaleAuction",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low-level call by checking the return value of send() and reverting on failure",
+            "corrected_code": "function withdrawBalance() external {\n        address nftAddress = address(nonFungibleContract);\n        require(msg.sender == nftAddress);\n        bool res = nftAddress.send(this.balance);\n        require(res);  // Fix: Check return value and revert on failure\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "MoneyTreeToken",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Implicitly used in sell() function, should be declared as uint256 to avoid arithmetic issues",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyValidAmount",
+            "fix_info": "Added modifier to prevent arithmetic underflow/overflow and validate amounts",
+            "modifier_code": "modifier onlyValidAmount(uint256 amount) {\n        require(amount > 0, \"Amount must be greater than zero\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic vulnerabilities: 1. Replaced deprecated 'throw' with 'revert' 2. Added SafeMath-like checks 3. Fixed recursive call vulnerability 4. Prevented reentrancy 5. Used call() instead of send() for better gas handling 6. Added input validation",
+            "corrected_code": "function sell(uint256 amount) external onlyValidAmount(amount) nonReentrant {\n        // Check sender balance and prevent underflow with explicit validation\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        \n        // Prevent overflow on balanceOf[this] addition\n        uint256 newOwnerBalance = balanceOf[this] + amount;\n        require(newOwnerBalance >= balanceOf[this], \"Balance addition overflow\");\n        \n        // Calculate payment amount with overflow check\n        uint256 payment = amount * sellPrice;\n        require(payment / amount == sellPrice || amount == 0, \"Multiplication overflow\");\n        \n        // Update balances before external call (Checks-Effects-Interactions pattern)\n        balanceOf[this] = newOwnerBalance;\n        balanceOf[msg.sender] -= amount; // Safe due to require check above\n        \n        // Emit transfer event\n        emit Transfer(msg.sender, address(this), amount);\n        \n        // Send ether using call() instead of send() for better gas handling\n        (bool success, ) = msg.sender.call{value: payment}(\"\");\n        require(success, \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "RefStorage",
+    "contract_version": "0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added ownership variable to properly implement restricted access control",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "restricted",
+            "fix_info": "Modified modifier to properly check caller is contract owner instead of relying on tx.origin for authorization",
+            "modifier_code": "modifier restricted() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize owner to contract deployer",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "newTicket",
+            "fix_info": "Fixed access control vulnerability by using msg.sender instead of tx.origin for authorization and owner restriction. Added overflow protection for tickets counter.",
+            "corrected_code": "function newTicket() external restricted {\n        require(players[msg.sender].tickets + 1 > players[msg.sender].tickets, \"Ticket counter overflow\");\n        players[msg.sender].tickets++;\n        \n        if (players[msg.sender].referrer != address(0) && (players[msg.sender].tickets - players[msg.sender].checkpoint) % interval == 0) {\n            if (token.balanceOf(address(this)) >= prize * 2) {\n                token.transfer(msg.sender, prize);\n                emit BonusSent(msg.sender, prize);\n                token.transfer(players[msg.sender].referrer, prize);\n                emit BonusSent(players[msg.sender].referrer, prize);\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

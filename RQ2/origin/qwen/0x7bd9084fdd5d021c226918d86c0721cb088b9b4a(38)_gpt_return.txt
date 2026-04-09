@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(this.balance);",
+    "description": "The function lacks proper access control mechanisms, allowing any caller to invoke multiSendEth and potentially drain the contract's balance. The final transfer of remaining balance to msg.sender can be exploited by malicious actors to withdraw all funds from the contract, especially when combined with the looped transfers that may not distribute the full contract balance."
+}
+```

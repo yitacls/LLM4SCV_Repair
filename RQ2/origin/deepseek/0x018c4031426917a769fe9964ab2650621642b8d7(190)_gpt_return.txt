@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require (tx.origin == owner);",
+    "description": "This access control mechanism uses `tx.origin` instead of `msg.sender` for authorization, which is vulnerable to phishing attacks. The `tx.origin` variable returns the original sender of the entire transaction chain, not the direct caller. A malicious contract could trick the real owner into calling a function that then calls `setVars`, making `tx.origin` equal to the owner's address but `msg.sender` equal to the malicious contract's address. Additionally, there is no access control on the function itself to prevent unauthorized calls before the owner is set, and the function allows reassignment of the `owner` state variable, potentially enabling a complete takeover if exploited."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "This contract has an arithmetic vulnerability. The balance addition may lead to an integer overflow if the 'value' being added to the balance exceeds the maximum limit an integer can hold. This situation can be manipulated by an attacker to gain an unfairly large amount of tokens. It lacks a requirement statement to ensure that the new balance after the addition operation would not be less than the previous balance, ensuring the addition operation doesn't overflow."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[_to] += _value;",
+    "description": "The addition operation is vulnerable to integer overflow. When _value is large enough, adding it to balanceOf[_to] could exceed the maximum uint256 value, causing the balance to wrap around to zero or a small number. This results in incorrect balance tracking and potential loss of funds. The contract should use SafeMath library or explicit overflow checks to prevent this vulnerability."
+}
+```

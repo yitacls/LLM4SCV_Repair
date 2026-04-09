@@ -1,0 +1,13 @@
+```json
+{
+  "contract": "SplitterService",
+  "version": "^0.4.18",
+  "vulnerabilities": [
+    {
+      "type": "access_control",
+      "location": "owner.transfer(this.balance);",
+      "description": "This function allows the owner to withdraw all funds from the contract without any checks. This means anyone who becomes the owner can withdraw all the fees. To avoid this, a modifier should be added to check if the sender of the transaction is indeed the owner or not."
+    }
+  ]
+}
+```

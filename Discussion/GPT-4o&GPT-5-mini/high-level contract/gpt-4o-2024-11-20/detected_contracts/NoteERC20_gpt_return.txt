@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Line 135: //SWC-101-Integer Overflow and Underflow:L135",
+            "description": "The transfer function relies on the _safe96 function to prevent overflows when casting rawAmount to a uint96. However, this type of overflow or underflow could potentially occur internally if unchecked arithmetic (e.g., balances calculations) bypasses the safe functions. It is crucial to ensure all arithmetic operations utilize _safe96 for consistency."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Inside the _add96 function (Line 662)",
+            "description": "The function performs unchecked addition for uint96 integers. Overflow could occur if the sum of a and b exceeds the maximum value of uint96. The require statement mitigates this risk, but reliance on manual safeguards may lead to vulnerabilities if misused."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Inside the _sub96 function (Line 670)",
+            "description": "The function performs unchecked subtraction for uint96 integers. Underflow could occur if b is greater than a, leading to a wraparound to a high value. The require statement mitigates this risk, but incorrect usage (e.g., forgetting to apply _safe96 consistently) may reintroduce the vulnerability."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "Inside the _writeCheckpoint function (Line 586)",
+            "description": "The block number cast to uint32 via the _safe32 function could potentially cause an overflow if block.number exceeds the uint32 range (4,294,967,295). Although the require statement checks for this, unexpected issues arising from unforeseen blockchain behavior or deployments on different chains may manifest the vulnerability."
+        }
+    ]
+}
+```

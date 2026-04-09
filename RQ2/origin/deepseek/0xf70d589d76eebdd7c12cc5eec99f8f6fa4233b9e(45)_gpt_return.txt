@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "This low-level call in Solidity 0.4.19 does not check the return value, allowing execution to continue even if the external call fails. This can lead to unexpected contract behavior, including loss of funds if the call fails but the contract state assumes success. Additionally, it does not limit gas usage, which could potentially lead to reentrancy attacks. Best practice is to check the return value, handle failures explicitly, and consider using transfer() or send() for value transfers, or at minimum: require(adr.call.value(msg.value)(data));"
+}
+```

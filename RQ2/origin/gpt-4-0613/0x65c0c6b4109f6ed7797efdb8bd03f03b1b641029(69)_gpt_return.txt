@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.call.value(value)()",
+    "description": "This line has a low level call which is unchecked. Low level calls don't automatically throw on failure and return false instead. Ignoring this failure state could lead to unexpected contract behavior. In this particular context it allows the contract to continue running even though the transfer of ether might have failed."
+}
+```

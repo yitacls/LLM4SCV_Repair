@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "EtherShareDonation",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "FreeShare",
+        "fix_info": "Added require statement to handle call failure and prevent silent failures, changed send() to transfer() for safer ether transfers with built-in gas stipend and revert on failure",
+        "corrected_code": "function FreeShare(string nickname, string content) public {\n    uint startGasLeft = gasleft();\n    ES.NewShare(nickname, false, content);\n    uint endGasLeft = gasleft();\n    uint amount = tx.gasprice * (startGasLeft - endGasLeft + 35000);\n    require(address(this).balance >= amount, \"Insufficient contract balance\");\n    msg.sender.transfer(amount);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

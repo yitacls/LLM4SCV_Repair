@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ETH_VAULT",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "CashOut",
+            "fix_info": "Reentrancy vulnerability was mitigated by using the Checks-Effects-Interactions pattern. The balance update now happens before the external call, and Solidity's transfer function is used to simplify the value transfer for better safety.",
+            "corrected_code": "function CashOut(uint _am) public payable {\n    require(_am <= balances[msg.sender], \"Insufficient Balance\");\n\n    // Effect\n    balances[msg.sender] -= _am;\n\n    // Interaction\n    msg.sender.transfer(_am);\n\n    // Log\n    TransferLog.AddMessage(msg.sender, _am, \"CashOut\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

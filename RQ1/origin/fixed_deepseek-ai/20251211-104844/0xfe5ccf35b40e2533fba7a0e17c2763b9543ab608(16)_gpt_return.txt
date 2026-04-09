@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "StandardToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No changes required - using SafeMath library for arithmetic operations",
+            "variable_code": "mapping(address => uint256) balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath library usage to prevent integer overflow/underflow vulnerabilities and added address validation",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Invalid recipient address\");\n    require(_value > 0, \"Transfer value must be positive\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "SafeMath library",
+            "fix_info": "Added SafeMath library to prevent arithmetic vulnerabilities",
+            "corrected_code": "library SafeMath {\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        if (a == 0) {\n            return 0;\n        }\n        uint256 c = a * b;\n        require(c / a == b, \"SafeMath: multiplication overflow\");\n        return c;\n    }\n    \n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b > 0, \"SafeMath: division by zero\");\n        uint256 c = a / b;\n        return c;\n    }\n    \n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a, \"SafeMath: subtraction overflow\");\n        uint256 c = a - b;\n        return c;\n    }\n    \n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a, \"SafeMath: addition overflow\");\n        return c;\n    }\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

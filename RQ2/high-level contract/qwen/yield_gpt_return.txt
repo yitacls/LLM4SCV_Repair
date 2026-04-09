@@ -1,0 +1,55 @@
+```json
+[
+    {
+        "contract_name": "DIACompanyLockup",
+        "contract_version": "^0.5.12",
+        "state_variables": [
+            {
+                "variable_name": "beginDepositTime",
+                "fix_info": "Explicitly set visibility to public to fix SWC-108",
+                "variable_code": "uint256 public beginDepositTime;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "endDepositTime",
+                "fix_info": "Explicitly set visibility to public to fix SWC-108",
+                "variable_code": "uint256 public endDepositTime;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "yieldWallet",
+                "fix_info": "Explicitly set visibility to public to fix SWC-108",
+                "variable_code": "address public yieldWallet;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerWallet",
+                "fix_info": "Explicitly set visibility to public to fix SWC-108",
+                "variable_code": "address public kickerWallet;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerDeadline",
+                "fix_info": "Explicitly set visibility to public to fix SWC-108",
+                "variable_code": "uint256 public kickerDeadline;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "kickerPromille",
+                "fix_info": "Explicitly set visibility to public to fix SWC-108",
+                "variable_code": "uint256 public kickerPromille;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "triggerWithdrawAll",
+                "fix_info": "Fix SWC-128 DoS with block gas limit by adding a limit parameter",
+                "corrected_code": "function withdrawLimited(uint256 limit) public {\n        require(limit <= lockBoxStructs.length, \"Limit exceeds array length\");\n        uint256 count = 0;\n        for (uint256 i = 0; i < lockBoxStructs.length && count < limit; ++i) {\n            if (lockBoxStructs[i].releaseTime <= now && lockBoxStructs[i].balance > 0) {\n                withdraw(i);\n                count++;\n            }\n        }\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

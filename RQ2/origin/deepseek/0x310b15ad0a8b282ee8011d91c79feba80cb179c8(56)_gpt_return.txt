@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw(uint tokenCount) public returns (bool)",
+    "description": "The withdraw function has no access control checks, allowing any public caller to trigger the function regardless of token ownership. The parameter 'tokenCount' is ignored according to the comment, meaning the function always attempts to transfer the full dividend balance to the caller. This could enable unauthorized withdrawal of dividends by any Ethereum address, as the function does not validate if the caller actually has any claim to the funds before executing 'msg.sender.transfer(balance)'."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; ... }",
+    "description": "The contract uses a low-level call to transfer ether before updating the sender's internal balance state. This allows a malicious contract to receive the call, fall back into the `Collect` function (or another function that modifies state), and potentially drain funds because the balance is only reduced after the external call completes. The use of `.call.value()` forwards all remaining gas by default, making reentrancy possible even if the attacker's fallback function is gas-intensive. This is a classic reentrancy vulnerability similar to the DAO attack."
+}
+```

@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "YieldFarmLP",
+        "contract_version": "^0.6.12",
+        "state_variables": [
+            {
+                "variable_name": "pragma solidity ^0.6.0",
+                "fix_info": "Updated the pragma version to lock it to a specific version to avoid unintended behavior due to compiler changes.",
+                "variable_code": "pragma solidity ^0.6.12;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Added gas usage safeguards to prevent a potential denial-of-service situation when a user has unclaimed rewards over many epochs.",
+                "corrected_code": "function massHarvest() external returns (uint) {\n    uint totalDistributedValue;\n    uint epochId = _getEpochId().sub(1); // fails in epoch 0\n\n    // force max number of epochs\n    if (epochId > NR_OF_EPOCHS) {\n        epochId = NR_OF_EPOCHS;\n    }\n\n    uint128 lastHarvestEpoch = lastEpochIdHarvested[msg.sender];\n    require(lastHarvestEpoch < epochId, \"No epochs to harvest\");\n\n    // Start harvesting in a gas-friendly manner\n    uint128 limit = lastHarvestEpoch + 50; // Limit to process max 50 epochs at a time\n    if (limit > epochId) {\n        limit = uint128(epochId);\n    }\n\n    for (uint128 i = lastHarvestEpoch + 1; i <= limit; i++) {\n        totalDistributedValue += _harvest(i);\n    }\n\n    lastEpochIdHarvested[msg.sender] = uint128(limit);\n\n    emit MassHarvest(msg.sender, limit - lastHarvestEpoch, totalDistributedValue);\n\n    if (totalDistributedValue > 0) {\n        _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);\n    }\n\n    return totalDistributedValue;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "harvest",
+                "fix_info": "Added security checks and improved error messages. Optimized for clarity and to ensure it only allows in-sequence harvesting.",
+                "corrected_code": "function harvest(uint128 epochId) external returns (uint) {\n    require(_getEpochId() > epochId, \"Requested epoch is in the future\");\n    require(epochId <= NR_OF_EPOCHS, \"Epoch exceeds the maximum limit\");\n    require(lastEpochIdHarvested[msg.sender].add(1) == epochId, \"Harvesting must be in sequential order\");\n\n    uint userReward = _harvest(epochId);\n\n    if (userReward > 0) {\n        _bond.transferFrom(_communityVault, msg.sender, userReward);\n    }\n\n    emit Harvest(msg.sender, epochId, userReward);\n    \n    return userReward;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_initEpoch",
+                "fix_info": "Added checks to prevent redundant initialization and ensure mapping updates happen correctly.",
+                "corrected_code": "function _initEpoch(uint128 epochId) internal {\n    require(lastInitializedEpoch.add(1) == epochId, \"Epoch must be initialized in order\");\n    require(epochs[epochId] == 0, \"Epoch is already initialized\");\n\n    lastInitializedEpoch = epochId;\n    epochs[epochId] = _getPoolSize(epochId);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_getEpochId",
+                "fix_info": "Improved code readability and safety by ensuring cleaner handling of timestamp comparisons.",
+                "corrected_code": "function _getEpochId() internal view returns (uint128 epochId) {\n    if (block.timestamp < epochStart) {\n        return 0;\n    }\n\n    uint256 elapsed = block.timestamp.sub(epochStart);\n    epochId = uint128(elapsed.div(epochDuration).add(1));\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(result);",
+    "description": "The contract uses address.send() at line 'msg.sender.send(result);' without checking the return value. In Solidity 0.4.24, send() returns a boolean indicating success or failure, but the return value is ignored here. If the send() call fails (returns false), execution continues normally without reverting, which could leave ETH stuck in the contract and cause loss of funds for users, especially when converting to ETH_ADDRESS. This dangerous pattern has been exploited in previous attacks (like the King of the Ether). The recommended fix is to either use transfer() (which automatically reverts on failure) or to explicitly check send()'s return value and revert on failure."
+}
+```

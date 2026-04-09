@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "contract_name": "Fidometa",
+        "contract_version": "0.8.11",
+        "state_variables": [
+            {
+                "variable_name": "_ecoSysWallet",
+                "fix_info": "Modified comment to be consistent with coding standards. No functional changes required.",
+                "variable_code": "address public _ecoSysWallet;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "unlock",
+                "fix_info": "Fixed potential integer overflow vulnerability and validated the calculation logic. Added safe math operations.",
+                "corrected_code": "function unlock(address target_) external {\n    require(target_ != address(0), \"Invalid target\");\n    require(_msgSender() == target_, \"Unauthorized access\");\n\n    LockDetails storage lock = locks[target_];\n    require(lock.remainedToken != 0, \"All tokens are unlocked\");\n\n    require(\n        block.timestamp > lock.startTime + (lock.initialLock * 1 days),\n        \"Unlocking period has not yet started\"\n    );\n\n    uint256 timePassed = block.timestamp - (lock.startTime + (lock.initialLock * 1 days));\n    uint256 monthNumber = timePassed.div(30 days);\n\n    uint256 remainedMonth = monthNumber.sub(lock.monthCount);\n\n    if (remainedMonth > 5) remainedMonth = 5;\n    require(remainedMonth > 0, \"No tokens available for unlocking\");\n\n    uint256 receivableToken = lock.lockedToken.mul(remainedMonth).mul(20).div(100);\n\n    lock.monthCount = lock.monthCount.add(remainedMonth);\n    lock.remainedToken = lock.remainedToken.sub(receivableToken);\n\n    if (lock.remainedToken == 0) {\n        delete locks[target_];\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferWithLock",
+                "fix_info": "Removed redundant code comments and clarified logic. Strict validation for locking duration.",
+                "corrected_code": "function transferWithLock(\n    address recipient,\n    uint256 tAmount,\n    uint256 initialLock\n) external onlyOwner {\n    require(recipient != address(0), \"Invalid recipient\");\n    require(tAmount > 0, \"Amount must be greater than 0\");\n    require(locks[recipient].lockedToken == 0, \"Recipient already has locked tokens\");\n\n    require(\n        initialLock >= 0 && initialLock <= 3650, // Maximum 10 years\n        \"Lock duration must be valid\"\n    );\n\n    _transfer(_msgSender(), recipient, tAmount);\n    locks[recipient] = LockDetails({\n        startTime: block.timestamp,\n        initialLock: initialLock,\n        lockedToken: tAmount,\n        remainedToken: tAmount,\n        monthCount: 0\n    });\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_getCurrentSupply",
+                "fix_info": "Added gas-usage optimization by caching array length variable to avoid multiple memory reads. Fixed potential DoS vulnerability.",
+                "corrected_code": "function _getCurrentSupply() private view returns (uint256, uint256) {\n    uint256 rSupply = _rTotal;\n    uint256 tSupply = _tTotal;\n    uint256 cacheLength = _excluded.length;\n\n    for (uint256 i = 0; i < cacheLength; i++) {\n        address excludedAddress = _excluded[i];\n        if (_rOwned[excludedAddress] > rSupply || _tOwned[excludedAddress] > tSupply) {\n            return (_rTotal, _tTotal);\n        }\n        rSupply = rSupply.sub(_rOwned[excludedAddress]);\n        tSupply = tSupply.sub(_tOwned[excludedAddress]);\n    }\n\n    if (rSupply < _rTotal.div(_tTotal)) {\n        return (_rTotal, _tTotal);\n    }\n    return (rSupply, tSupply);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setCharges",
+                "fix_info": "Revised decoupled checks to ensure consistent charge limits. Fixed redundant calculations.",
+                "corrected_code": "function setCharges(\n    uint256 community_charge,\n    uint256 ecoSysFee,\n    uint256 surcharge1,\n    uint256 surcharge2,\n    uint256 surcharge3\n) external onlyOwner {\n    require(\n        community_charge.add(ecoSysFee).add(surcharge1).add(surcharge2).add(surcharge3) <= (100 * 10**uint256(decimals)),\n        \"Total charges cannot exceed 100%\"\n    );\n\n    _community_charge = community_charge;\n    _ecoSysFee = ecoSysFee;\n    _surcharge1 = surcharge1;\n    _surcharge2 = surcharge2;\n    _surcharge3 = surcharge3;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "takeCharges",
+                "fix_info": "Removed redundant calculations for excluded accounts. Fixed logic for surcharge checks.",
+                "corrected_code": "function takeCharges(\n    uint256 tEcoSys,\n    uint256 tSurcharge1,\n    uint256 tSurcharge2,\n    uint256 tSurcharge3\n) private {\n    uint256 currentRate = _getRate();\n\n    if (tEcoSys > 0) {\n        uint256 rEcosys = tEcoSys.mul(currentRate);\n        _rOwned[_ecoSysWallet] = _rOwned[_ecoSysWallet].add(rEcosys);\n        if (_isExcludedFromEcoSysFee[_ecoSysWallet]) {\n            _tOwned[_ecoSysWallet] = _tOwned[_ecoSysWallet].add(tEcoSys);\n        }\n    }\n\n    if (tSurcharge1 > 0 && _surcharge_1_Wallet != address(0)) {\n        uint256 rSurcharge1 = tSurcharge1.mul(currentRate);\n        _rOwned[_surcharge_1_Wallet] = _rOwned[_surcharge_1_Wallet].add(rSurcharge1);\n        if (_isExcludedFromSurcharge1[_surcharge_1_Wallet]) {\n            _tOwned[_surcharge_1_Wallet] = _tOwned[_surcharge_1_Wallet].add(tSurcharge1);\n        }\n    }\n\n    if (tSurcharge2 > 0 && _surcharge_2_Wallet != address(0)) {\n        uint256 rSurcharge2 = tSurcharge2.mul(currentRate);\n        _rOwned[_surcharge_2_Wallet] = _rOwned[_surcharge_2_Wallet].add(rSurcharge2);\n        if (_isExcludedFromSurcharge2[_surcharge_2_Wallet]) {\n            _tOwned[_surcharge_2_Wallet] = _tOwned[_surcharge_2_Wallet].add(tSurcharge2);\n        }\n    }\n\n    if (tSurcharge3 > 0 && _surcharge_3_Wallet != address(0)) {\n        uint256 rSurcharge3 = tSurcharge3.mul(currentRate);\n        _rOwned[_surcharge_3_Wallet] = _rOwned[_surcharge_3_Wallet].add(rSurcharge3);\n        if (_isExcludedFromSurcharge3[_surcharge_3_Wallet]) {\n            _tOwned[_surcharge_3_Wallet] = _tOwned[_surcharge_3_Wallet].add(tSurcharge3);\n        }\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

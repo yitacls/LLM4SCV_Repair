@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The call to `msg.sender.call.value(_am)()` allows external code execution before updating the state variable `balances`. An attacker could exploit this by repeatedly invoking the fallback function of the contract to perform reentrant calls, depleting the contract's funds before the balance is updated."
+}
+```

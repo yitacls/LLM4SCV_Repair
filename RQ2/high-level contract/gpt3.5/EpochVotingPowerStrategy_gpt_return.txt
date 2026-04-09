@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-126-Insufficient Gas Griefing",
+            "location": "function handleProposalCancellation(uint256 proposalId)",
+            "description": "The implementation of removing a proposal from the list in the handleProposalCancellation function may be vulnerable to an Insufficient Gas Griefing attack. If the list of proposalIds is very large, removing an item within a loop can cause the function to consume high gas, potentially allowing griefing attacks where an attacker can make the function uncallable by manipulating the gas limit."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "function handleWithdrawal(address user, uint256 /*reduceAmount*/)",
+            "description": "The implementation of handleWithdrawal function is potentially vulnerable to a DoS (Denial of Service) attack with Block Gas Limit. If the epochProposals array becomes too large, iterating over it within the handleWithdrawal function can exceed the block gas limit, making the function uncallable."
+        }
+    ]
+}
+```

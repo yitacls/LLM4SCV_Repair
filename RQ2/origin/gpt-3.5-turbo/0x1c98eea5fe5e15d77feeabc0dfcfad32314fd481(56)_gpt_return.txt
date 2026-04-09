@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.transfer(balance);",
+    "description": "The contract is vulnerable to reentrancy due to transferring funds to msg.sender before updating the state variables, allowing a malicious contract to repeatedly call the withdraw function to drain funds."
+}
+```

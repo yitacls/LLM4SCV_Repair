@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CTESale",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath library calls to prevent integer overflow in arithmetic operations",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        balances[target] = balances[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        Transfer(0, this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

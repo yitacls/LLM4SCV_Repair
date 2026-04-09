@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function fillOrderTo (L28 - L346)",
+        "description": "The function `fillOrderTo` may be vulnerable to reentrancy attacks. Specifically, during asset transfers (e.g., `_callTakerAssetTransferFrom` and `_callMakerAssetTransferFrom`), an attacker could exploit external calls to reenter the function and manipulate the state in unintended ways. There are no apparent reentrancy guards to protect against such attacks, and the function heavily modifies `_remaining` state variables."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function fillOrderTo (L339)",
+        "description": "The call to `InteractiveMaker(order.makerAssetData.decodeAddress(_FROM_INDEX)).notifyFillOrder` could introduce interaction with external contracts. If the external contract consumes a significant amount of gas or intentionally traps the execution, it could cause a Denial of Service (DoS) for subsequent steps in the function, impacting the execution of orders."
+    }
+]
+```

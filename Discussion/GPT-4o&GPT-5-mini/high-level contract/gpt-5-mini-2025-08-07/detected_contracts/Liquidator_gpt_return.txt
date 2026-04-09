@@ -1,0 +1,5 @@
+{
+  "type": "SWC-105-Unprotected Ether Withdrawal",
+  "location": "TransferHelper.safeTransfer(collateral, pair, IERC20Minimal(collateral).balanceOf(address(this))); (distribute function)",
+  "description": "The distribute function performs an unconditional asset transfer from the contract using TransferHelper.safeTransfer with the entire balance of `collateral`. If this contract ever holds native Ether (for example, via self-destructs or accidental transfers), there is no explicit, protected mechanism to withdraw or recover that Ether. Additionally, the call assumes `collateral` is an ERC20 token; if `collateral` refers to a native-ETH representation or TransferHelper forwards a native transfer, the transfer semantics differ and may result in unintended Ether movement. In short, the contract lacks explicit handling and protection for native Ether withdrawals (and lacks a safe recovery path), which can lead to locked funds or unintended Ether transfers."
+}

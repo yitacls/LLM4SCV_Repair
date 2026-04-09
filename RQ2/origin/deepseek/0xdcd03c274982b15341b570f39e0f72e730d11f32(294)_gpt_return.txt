@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(weiAmount);",
+    "description": "The fallback function allows anyone to send ETH and trigger token minting, but immediately transfers all collected ETH to the owner without any access control or withdrawal pattern. This means: 1) The owner can be a malicious contract that re-enters this function, 2) There's no mechanism to pause or stop fund collection if issues arise, 3) All funds are immediately transferred to owner's control with no escrow or timelock, 4) No validation that `owner` is a valid payable address. This violates the 'pull over push' principle for payments and exposes funds to reentrancy if the owner is a contract."
+}
+```

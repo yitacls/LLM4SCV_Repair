@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The mint function uses tx.origin for authorization instead of msg.sender, which can be manipulated by malicious contracts. tx.origin returns the original externally owned account (EOA) that initiated the transaction chain, not the immediate caller. This allows a malicious contract to call this function while forwarding the transaction from the owner's EOA, bypassing the intended access control. Additionally, the contract uses an unsafe Solidity version (^0.4.11) which can have other known vulnerabilities."
+}
+```

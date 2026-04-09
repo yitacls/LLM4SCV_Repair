@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Created a modifier to replace the vulnerable tx.origin check with msg.sender for proper access control",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyOwner modifier to fix access control vulnerability",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner {\n    assert(amount >= 0);\n    balances[msg.sender] += amount;\n    totalSupply += amount;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

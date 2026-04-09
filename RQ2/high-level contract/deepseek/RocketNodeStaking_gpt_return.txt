@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-104-Unchecked Call Return Value",
+            "location": "Line 150: rocketVault.depositToken(\"rocketNodeStaking\", rplTokenAddress, _amount);",
+            "description": "The return value of the depositToken call is not checked. If the deposit fails, the RPL tokens could be lost or locked in the contract since the function continues to update stake amounts and emit events without confirming the deposit succeeded."
+        },
+        {
+            "type": "SWC-114-Transaction Order Dependence",
+            "location": "Line 166: require(block.number.sub(getNodeRPLStakedBlock(msg.sender)) >= rocketDAOProtocolSettingsRewards.getRewardsClaimIntervalBlocks(), \"The withdrawal cooldown period has not passed\");",
+            "description": "The withdrawal cooldown check relies on the block number when RPL was last staked, which can be manipulated through transaction ordering. A malicious actor could front-run or manipulate transactions to bypass the cooldown period by affecting the timing of stake and withdrawal operations."
+        }
+    ]
+}
+```

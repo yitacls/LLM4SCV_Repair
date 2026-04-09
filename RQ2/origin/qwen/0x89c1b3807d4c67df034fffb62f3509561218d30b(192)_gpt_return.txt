@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(CANCELLATION_FEE);",
+        "description": "The send() function is used to transfer CANCELLATION_FEE to SGX_ADDRESS, but the return value of send() is not checked. In Solidity version ^0.4.9, send() returns false silently on failure, which may lead to unexpected behavior if the transfer fails."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(fee);",
+        "description": "The send() function is used to transfer fee to SGX_ADDRESS, but the return value of send() is not checked. In Solidity version ^0.4.9, send() returns false silently on failure, which may lead to unexpected behavior if the transfer fails."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].requester.call.gas(2300).value(fee)();",
+        "description": "The low-level call() function is used to transfer fee to the requester, but the return value of call() is not checked. In Solidity version ^0.4.9, call() returns false silently on failure, which may lead to unexpected behavior if the transfer fails."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);",
+        "description": "The low-level call() function is used to invoke the callback function in the application contract, but the return value of call() is not checked. In Solidity version ^0.4.9, call() returns false silently on failure, which may lead to unexpected behavior if the callback execution fails."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-120-Weak Sources of Randomness from Chain Attributes",
+    "location": "Lines 452-494 in the relayEntry function",
+    "description": "The contract uses block attributes as a source of randomness in the `relayEntry` function. When a new relay entry is submitted, the contract generates a random number by computing `uint256(keccak256(_groupSignature))` and passes this value to the callback function. However, this value is derived from on-chain data (the group signature) which can be predictable or manipulated by miners/validators. Additionally, the contract uses `block.number` in multiple places for timing and delay calculations (e.g., in `getDelayFactor()`, `hasEntryTimedOut()`, and `isGroupSelectionPossible()`), making the system's behavior dependent on blockchain state that miners can influence, potentially leading to manipulation of reward distributions, timeout triggers, or other critical operations."
+}
+```

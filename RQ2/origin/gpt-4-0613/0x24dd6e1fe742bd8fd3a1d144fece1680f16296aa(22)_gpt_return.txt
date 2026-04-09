@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This statement is susceptible to an integer overflow. If '_value' is very high and gets added to 'balances[_to]', the total can exceed the maximum limit that can be held in a uint256. This can wrap the sum around to a very small number, essentially leading to users getting credited with less tokens than they should. It is recommended to use SafeMath library to handle such arithmetic operations."
+}
+```

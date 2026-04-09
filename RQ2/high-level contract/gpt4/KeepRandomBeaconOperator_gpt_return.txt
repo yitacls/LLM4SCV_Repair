@@ -1,0 +1,7 @@
+```json
+{
+  "type": "SWC-120-Weak Sources of Randomness from Chain Attributes",
+  "location": "line 452 to 494 in the function relayEntry(bytes memory _groupSignature)",
+  "description": "This function uses the block variables such as 'block.number' and 'block.timestamp' in generating randomness which may be influenced by miners to some degree, making it potentially weak and predictable. Malicious miners may manipulate these variables within certain constraints to influence the contract's behavior, including the payout from a contract, the outcome of a game, or even the control flow of the contract."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Owned",
+    "contract_version": ">=0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "execute",
+            "fix_info": "Added return value checking for low-level call to prevent unchecked return values",
+            "corrected_code": "function execute(address _dst, uint _value, bytes _data) onlyOwner {\n        bool success;\n        bytes memory returnData;\n        (success, returnData) = _dst.call.value(_value)(_data);\n        require(success, \"Low-level call failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

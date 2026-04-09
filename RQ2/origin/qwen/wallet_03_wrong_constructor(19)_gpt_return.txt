@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function initWallet() public {\n         creator = msg.sender;\n     }",
+    "description": "The initWallet function is publicly accessible and lacks proper access control modifiers. In Solidity ^0.4.24, this function can be called by any external actor to reset the creator address, potentially allowing unauthorized users to take control of the wallet contract. The function should be protected with appropriate access control modifiers such as 'onlyOwner' or similar restrictions to ensure only authorized parties can initialize or reinitialize the wallet."
+}
+```

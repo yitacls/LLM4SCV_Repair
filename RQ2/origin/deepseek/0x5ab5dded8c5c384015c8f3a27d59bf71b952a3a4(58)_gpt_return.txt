@@ -1,0 +1,7 @@
+```json
+{
+    "vulnerability": "Unchecked Transfer",
+    "location": "partner.transfer(partnerShare);",
+    "description": "The partner.transfer() call does not check the return value. In Solidity 0.4.x, the transfer() function returns a boolean indicating success, but this return value is ignored. If the transfer fails (for example, if the partner address is a contract that runs out of gas or reverts), the transaction will revert only at that point, potentially leaving the contract in an inconsistent state where director.transfer() has already been executed but partner.transfer() failed. This is especially dangerous in this context as it handles contract funds. Additionally, the calculation of partnerShare uses integer division which may lead to rounding errors, and the subsequent director.transfer() calculation (this.balance - partnerShare) could be affected by reentrancy if this were an issue, though the .transfer() function's gas limit provides some protection against that specific attack in this version."
+}
+```

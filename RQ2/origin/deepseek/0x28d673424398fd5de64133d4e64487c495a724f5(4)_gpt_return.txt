@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(address(this).balance-msg.value);",
+    "description": "The low-level `send` call does not check its return value. If the send fails (e.g., if the recipient is a contract that runs out of gas or reverts), the transaction will not revert, potentially causing the contract to proceed under the false assumption that the transfer succeeded. This could leave funds locked in the contract or break intended logic. In Solidity 0.5.0, `send` forwards only 2,300 gas, which is insufficient for most contract interactions, making failures likely. The proper pattern is to use `transfer` (which automatically reverts on failure) or to check the return value of `send` and handle the failure explicitly."
+}
+```

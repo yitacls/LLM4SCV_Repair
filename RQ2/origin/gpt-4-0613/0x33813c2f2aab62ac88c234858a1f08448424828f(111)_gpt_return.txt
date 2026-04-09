@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "(bool success,) = to.call{value:value}(new bytes(0));",
+    "description": "In the Solidity version ^0.4.25, this line of code can potentially lead to arithmetic underflows or overflows. The value variable given as an input may lead to situations where the number of Wei being sent becomes too large or too small, causing the Ethereum virtual machine to behave unpredictably and potentially leading to loss of Ether or failure of the contract."
+}
+```

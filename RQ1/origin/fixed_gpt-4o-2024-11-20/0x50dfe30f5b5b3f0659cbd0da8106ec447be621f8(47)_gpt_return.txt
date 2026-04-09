@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "HXL",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Ensured `owner` is correctly initialized and used for proper access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Ensures only the contract owner can call protected functions",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Replaced `tx.origin` with a modifier `onlyOwner` for secure and reliable access control. Added overflow check for balances and totalSupply.",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner { require(amount > 0); require(balances[msg.sender] + amount > balances[msg.sender]); balances[msg.sender] += amount; require(totalSupply + amount > totalSupply); totalSupply += amount; }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

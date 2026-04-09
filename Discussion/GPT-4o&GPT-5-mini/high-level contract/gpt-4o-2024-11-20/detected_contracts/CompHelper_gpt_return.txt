@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);",
+    "description": "The call to IComptroller's enterMarkets function does not check the returned value. If the call fails (e.g., Compound rejects entering the market), this failure will not be detected, potentially leading to unexpected behavior or vulnerabilities in the system. Proper validation should be added to ensure the function executes successfully."
+}
+```

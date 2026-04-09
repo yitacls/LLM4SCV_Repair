@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.send(this.balance);  // fault line",
+    "description": "The use of send() to transfer the contract's balance to an externally controlled address 'adr' without handling the return value can lead to potential re-entrancy attacks where the receiving contract may call back into the contract before the state is updated, causing unexpected behavior. Consider using transfer() instead of send() or updating the state before the external call to prevent re-entrancy."
+}
+```

@@ -1,0 +1,16 @@
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replace direct concatenation of raw block.blockhash values with a single keccak256 mix of those blockhashes and _delta, then derive the 10 x 24-bit parts from the resulting hash. This reduces direct reliance on raw blockhash bits and avoids returning predictable concatenated blockhash slices while preserving the function's original output layout.",
+                "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Mix the relevant blockhashes and _delta into a single keccak256 value\n        bytes32 h = keccak256(\n            block.blockhash(_lastb),\n            block.blockhash(_lastb + 1),\n            block.blockhash(_lastb + 2),\n            block.blockhash(_lastb + 3),\n            block.blockhash(_lastb + 4),\n            block.blockhash(_lastb + 5),\n            block.blockhash(_lastb + 6),\n            block.blockhash(_lastb + 7),\n            block.blockhash(_lastb + 8),\n            block.blockhash(_lastb + 9),\n            _delta\n        );\n\n        // Derive ten 24-bit parts from the keccak256 output and pack them the same way as original\n        uint result = 0;\n        for (uint i = 0; i < 10; i++) {\n            // Extract 24 bits from the hash. We take consecutive 3-byte slices from the keccak output.\n            // Note: bytes32 is treated as big-endian for this shift-based extraction.\n            uint shiftBits = 8 * (32 - 3 * (i + 1));\n            uint part = (uint(h) >> shiftBits) & 0xFFFFFF;\n            result |= (part << (24 * i));\n        }\n\n        // Preserve original final composition with hashesSize contribution\n        result |= (uint(_delta) / hashesSize) << 240;\n        return result;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

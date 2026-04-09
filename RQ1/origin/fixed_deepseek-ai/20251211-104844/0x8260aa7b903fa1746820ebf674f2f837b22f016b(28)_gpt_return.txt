@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LydianCoin",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or explicit checks",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(balances[msg.sender] >= _value);\n    require(balances[_to] + _value >= balances[_to]); // Check for overflow\n    \n    balances[msg.sender] = balances[msg.sender] - _value;\n    balances[_to] = balances[_to] + _value;\n    \n    Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

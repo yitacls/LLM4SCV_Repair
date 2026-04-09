@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Line 55-68 in the function 'tokensReceived'",
+    "description": "The `tokensReceived` function updates the `_bountyBalances` mapping via the `stashBalance` function before all external calls are completed. This introduces a potential reentrancy vulnerability because an attacker could reenter the contract via a malicious implementation of the `IERC777Sender` interface or through other external interactions. To mitigate this risk, follow best practices such as using the Checks-Effects-Interactions (CEI) pattern or leveraging mutexes to prevent reentrant calls."
+}
+```

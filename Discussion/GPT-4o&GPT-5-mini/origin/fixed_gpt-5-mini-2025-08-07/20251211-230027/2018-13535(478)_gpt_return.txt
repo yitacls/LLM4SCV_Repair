@@ -1,0 +1,36 @@
+[
+    {
+        "contract_name": "PACCOIN",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "No change to the variable definition; overflow protection added in mintToken to prevent arithmetic vulnerabilities when updating balances.",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "No change to the variable definition; overflow protection added in mintToken to prevent arithmetic vulnerabilities when updating total supply.",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Modifier preserved for context. No functional changes made here; access control remains the same.",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Added explicit integer overflow checks before updating state to prevent arithmetic vulnerabilities while preserving original functionality and event emission.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(mintedAmount > 0);\n\n        // Check for overflow on totalSupply and balance before making state changes\n        uint256 newTotalSupply = totalSupply + mintedAmount;\n        require(newTotalSupply >= totalSupply);\n\n        uint256 newBalance = balanceOf[target] + mintedAmount;\n        require(newBalance >= balanceOf[target]);\n\n        // Apply state changes after checks\n        totalSupply = newTotalSupply;\n        balanceOf[target] = newBalance;\n\n        // Preserve original Transfer behavior\n        Transfer(address(0), this, mintedAmount);\n        Transfer(this, target, mintedAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint lotterynumber = (uint(curhash)+block.timestamp)%(maxguess+1);",
+    "description": "The lottery number in the contract is calculated by adding the hash value and the timestamp of the block, and then calculating the modulus of the maximum number of guesses plus 1. However, both the block timestamp and the calculated hash could potentially be influenced by miners, thereby manipulating the outcome of the lottery. This represents a BAD_RANDOMNESS vulnerability as the randomness can be biased by external factors, notably miners, compromising the fairness of the lottery."
+}
+```

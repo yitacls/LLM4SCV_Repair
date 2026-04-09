@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "UniqlyPresale4",
+        "contract_version": "0.8.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "send",
+                "fix_info": "Fixed Reentrancy vulnerability by using the Checks-Effects-Interactions pattern.",
+                "corrected_code": "function send(address user, uint256 amount) private {\n        require(amount <= address(this).balance, 'Insufficient balance');\n        (bool success, ) = address(user).call{value: amount}('');\n        require(success, 'ETH send failed');\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

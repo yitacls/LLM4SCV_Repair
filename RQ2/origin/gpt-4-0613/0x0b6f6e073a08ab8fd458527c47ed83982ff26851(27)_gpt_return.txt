@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance);",
+    "description": "This vulnerability occurs when the smart contract does not check the return value of send(), call(), and callcode(). These low level functions never throw an exception, but rather return false when they fail. If this failure is not handled by the contract, it may continue execution without the guarantee of the called contract's code having been successfully executed. In the context of this function, if the transaction to 'owner' fails, the contract will not be alerted and execution will continue as if it had succeeded, potentially leading to unexpected behavior."
+}
+```

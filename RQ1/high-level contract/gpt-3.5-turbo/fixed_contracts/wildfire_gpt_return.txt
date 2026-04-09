@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "SAFECOVID",
+        "contract_version": "^0.6.12",
+        "functions": [
+            {
+                "function_name": "_getCurrentSupply",
+                "fix_info": "Modified to prevent potential DoS attack by optimizing the loop logic.",
+                "corrected_code": "function _getCurrentSupply() private view returns(uint256, uint256) {\n        uint256 rSupply = _rTotal;\n        uint256 tSupply = _tTotal;\n        for (uint256 i = 0; i < _excluded.length; i++) {\n            rSupply = rSupply.sub(_rOwned[_excluded[i]]);\n            tSupply = tSupply.sub(_tOwned[_excluded[i]]);\n        }\n        if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);\n        return (rSupply, tSupply);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

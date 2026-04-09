@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "contract_address.call(\"register\", \"CentraToken\");",
+    "description": "The call to 'call' function is using literal values 'register' and 'CentraToken' which are not valid function identifiers, leading to an unchecked low-level call vulnerability."
+}
+```

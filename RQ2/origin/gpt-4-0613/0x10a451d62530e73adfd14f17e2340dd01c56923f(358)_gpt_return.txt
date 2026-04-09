@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public",
+    "description": "There is an 'onlyReserveFundContract' modifier which shows that access to this function is limited.Only the Reserve Fund contract can call this function. If an unauthorized contract or user gains access rights, it may exploit this function and perform injections or execute certain code, leading to unpredictable system behavior."
+}
+```

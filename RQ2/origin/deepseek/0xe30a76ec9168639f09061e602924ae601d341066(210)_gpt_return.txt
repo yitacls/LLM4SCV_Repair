@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public",
+    "description": "The withdraw() function uses the onlyOwner modifier for access control, but this is insufficient when deploying with Solidity ^0.4.24. In Solidity versions before 0.5.0, constructors were not uniquely identified by the 'constructor' keyword but rather by a function with the same name as the contract. If the contract name is misspelled in the constructor function (e.g., 'NewIntelTechMedia' vs 'NewIntelTechmedia'), the constructor becomes a regular public function. This allows any attacker to call it, become the owner, and then call withdraw() to drain all contract funds. The vulnerability is exacerbated by the lack of explicit visibility specifiers for the constructor in older Solidity versions."
+}
+```

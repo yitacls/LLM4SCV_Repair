@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Function: closeTrove()",
+    "description": "The closeTrove() function allows anyone to call it and withdraw the collateral without any access control or permission check. This can lead to an unauthorized withdrawal of Ether by any caller, which is a potential security vulnerability."
+}
+```

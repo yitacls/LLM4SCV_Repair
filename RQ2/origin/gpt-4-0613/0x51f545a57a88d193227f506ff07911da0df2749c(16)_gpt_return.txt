@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[to] += value;",
+    "description": "This line of the contract code contains an arithmetic vulnerability known as an 'Integer Overflow and Underflow'. If the value being transferred is very large, the recipient's balance could overflow, wrap around, and become very small instead. It means that the balance of the recipient 'to' may not be correctly updated, which can lead to incorrect functionality and a potential loss of funds."
+}
+```

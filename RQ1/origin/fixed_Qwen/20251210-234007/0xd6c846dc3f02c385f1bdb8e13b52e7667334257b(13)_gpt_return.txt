@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "OmnisBitBurner",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "totalBurned",
+            "fix_info": "Added safe math library import and used safeAdd to prevent arithmetic overflow",
+            "variable_code": "using SafeMath for uint256;\nuint256 public totalBurned;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Burn",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for addition operation",
+            "corrected_code": "function Burn() payable {\n    totalBurned = totalBurned.add(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

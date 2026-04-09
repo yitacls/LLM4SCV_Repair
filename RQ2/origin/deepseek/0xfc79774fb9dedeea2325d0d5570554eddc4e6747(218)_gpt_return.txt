@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public { ... owner.transfer(etherBalance); }",
+    "description": "The `withdraw()` function uses the `onlyOwner` modifier, but the contract does not show the declaration or assignment of the `owner` state variable and constructor. In Solidity ^0.4.22, if the `owner` is not properly initialized (e.g., set in the constructor) or can be modified by unauthorized parties (e.g., due to missing initialization or an unprotected `transferOwnership` function), it may lead to unauthorized access. Specifically, if the contract lacks a constructor setting `owner = msg.sender` or allows arbitrary address changes, any caller could potentially become the owner and drain the contract's Ether balance. Even with a correct `onlyOwner` modifier, the absence of visibility on the `owner` setup is a critical omission that may allow privilege escalation."
+}
+```

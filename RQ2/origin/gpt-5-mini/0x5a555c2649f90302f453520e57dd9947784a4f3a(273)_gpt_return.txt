@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "function changeOwner (address _receiver) public\n    {\n        require(tx.origin == owner);  // fault line\n        owner = _receiver;\n    }",
+  "description": "The function uses tx.origin for authorization (require(tx.origin == owner)). Relying on tx.origin is insecure because it preserves the externally owned account (EOA) that started the transaction across intermediate contract calls. An attacker can deploy a malicious contract and trick the real owner into calling it; that malicious contract can then call changeOwner on FUTM. tx.origin will still equal the owner's EOA, causing the require to pass, while msg.sender will be the malicious contract. The attacker-controlled contract can pass an attacker address as _receiver and take ownership. The correct pattern is to check msg.sender for direct-caller authorization (e.g., require(msg.sender == owner)) or use a vetted ownership pattern such as OpenZeppelin Ownable to manage access control."
+}

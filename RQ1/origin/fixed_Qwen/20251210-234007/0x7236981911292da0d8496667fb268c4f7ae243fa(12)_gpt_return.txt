@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ExpoInvest",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by rearranging calculations and adding safety checks. Used multiplication before division where appropriate and added balance check before transfer.",
+            "corrected_code": "function () payable {\n    if (invested[msg.sender] != 0) {\n        // Rearranged calculation to prevent overflow and improve precision\n        uint amount = invested[msg.sender] * 5 * (block.number - atBlock[msg.sender]) / 100 / 5900;\n        \n        // Added safety check for potential overflow\n        if (block.number > 6401132) {\n            amount += amount * (block.number - 6401132) / 118000;\n        }\n        \n        address sender = msg.sender;\n        uint contractBalance = address(this).balance;\n        \n        if (amount > contractBalance) {\n            require(sender.send(contractBalance));\n        } else {\n            require(sender.send(amount));\n        }\n    }\n    \n    atBlock[msg.sender] = block.number;\n    invested[msg.sender] += msg.value;\n    \n    address referrer = bytesToAddress(msg.data);\n    if (invested[referrer] > 0 && referrer != msg.sender) {\n        invested[msg.sender] += msg.value/10;\n        invested[referrer] += msg.value/10;\n    } else {\n        invested[0x705872bebffA94C20f82E8F2e17E4cCff0c71A2C] += msg.value/10;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

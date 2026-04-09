@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "YEYE",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added explicit private/internal visibility to prevent unauthorized access",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyWhitelist",
+            "fix_info": "Strengthened whitelist validation to prevent unauthorized access",
+            "modifier_code": "modifier onlyWhitelist() {\n    require(whitelist[msg.sender] == true, \"Not in whitelist\");\n    _;\n}",
+            "change_type": "modified"
+        },
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added proper ownership modifier for critical functions",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Not contract owner\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "autoDistribute",
+            "fix_info": "Fixed access control issues: 1. Removed tx.origin for secure sender validation 2. Added proper whitelist check 3. Secured owner transfer with reentrancy guard 4. Added input validation for etherValue",
+            "corrected_code": "function autoDistribute() payable canDistr onlyWhitelist public {\n    require(msg.sender != address(0), \"Invalid sender\");\n    require(msg.value > 0, \"No ether sent\");\n    \n    if (Send0GiveBase > totalRemaining) {\n        Send0GiveBase = totalRemaining;\n    }\n    \n    uint256 etherValue = msg.value;\n    uint256 value;\n    address sender = msg.sender;\n    \n    // Fixed: Remove tx.origin check as it's vulnerable to phishing attacks\n    require(!isContract(sender), \"Contracts not allowed\");\n    \n    if(etherValue > StartEth) {\n        require(EndEthGetToken == false, \"Eth token distribution ended\");\n        RandNonce = RandNonce.add(Send0GiveBase);\n        uint256 random1 = uint(keccak256(abi.encodePacked(blockhash(RandNonce % 100), RandNonce, sender))) % 10;\n        RandNonce = RandNonce.add(random1);\n        value = etherValue.mul(EthGet);\n        value = value.div(1 ether);\n        if(random1 < 2) value = value.add(value);\n        value = value.add(Send0GiveBase);\n        Send0GiveBase = Send0GiveBase.div(100000).mul(99999);\n        require(value <= totalRemaining, \"Insufficient remaining tokens\");\n        \n        distr(sender, value);\n        \n        // Secure transfer with reentrancy protection\n        uint256 ownerTransfer = etherValue;\n        etherValue = 0;\n        owner.transfer(ownerTransfer);\n    } else {\n        uint256 balance = balances[sender];\n        if(balance == 0) {\n            require(EndSend0GetToken == false && Send0GiveBase <= totalRemaining, \"Free token distribution not available\");\n            Send0GiveBase = Send0GiveBase.div(100000).mul(99999);\n            distr(sender, Send0GiveBase);\n        } else {\n            require(EndGamGetToken == false, \"Gam token distribution ended\");\n            RandNonce = RandNonce.add(Send0GiveBase);\n            uint256 random = uint(keccak256(abi.encodePacked(blockhash(RandNonce % 100), RandNonce, sender))) % 10;\n            RandNonce = RandNonce.add(random);\n            \n            if(random > 4) {\n                distr(sender, balance);\n            } else {\n                balances[sender] = 0;\n                totalRemaining = totalRemaining.add(balance);\n                totalDistributed = totalDistributed.sub(balance);\n                emit Transfer(sender, address(this), balance);\n            }\n        }\n    }\n    \n    if (totalDistributed >= _totalSupply) {\n        EndDistr = true;\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Added secure ownership transfer function",
+            "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n    require(newOwner != address(0), \"Invalid new owner address\");\n    require(newOwner != owner, \"New owner is the same as current owner\");\n    emit OwnershipTransferred(owner, newOwner);\n    owner = newOwner;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

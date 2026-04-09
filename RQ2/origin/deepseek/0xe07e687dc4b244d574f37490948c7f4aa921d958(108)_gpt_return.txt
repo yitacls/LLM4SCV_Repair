@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "wallet.transfer(this.balance);",
+    "description": "The transfer() function in Solidity 0.4.18 forwards 2300 gas, which is insufficient for reentrant calls to the same contract. This specific implementation is NOT vulnerable to the classic reentrancy attack. However, it exhibits a reentrancy-related anti-pattern: the state update (`state = State.Closed;`) happens AFTER the external call, which violates the Checks-Effects-Interactions pattern. While the low gas stipend prevents recursive reentrancy into this same function, it could still be vulnerable to cross-function reentrancy if other functions rely on the `state` variable for access control. An attacker could potentially call other functions that are still accessible before the state is updated to 'Closed'."
+}
+```

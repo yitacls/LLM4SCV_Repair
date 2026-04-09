@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "ChainlinkAdapter",
+        "contract_version": "^0.5.2",
+        "state_variables": [
+            {
+                "variable_name": "chainlinkDecimalsAdapter",
+                "fix_info": "No changes needed; constant variable is safe and correctly declared",
+                "variable_code": "int256 public constant chainlinkDecimalsAdapter = 10**10;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "price",
+                "fix_info": "Added overflow/underflow protection for multiplication using SafeMath library from OpenZeppelin",
+                "corrected_code": "function price() public view returns (uint256 newPrice, uint256 timestamp) {\n    int256 latestAnswer = feeder.latestAnswer();\n    require(latestAnswer >= 0, \"Latest answer from feeder must be non-negative\"); // Ensure input is safe\n\n    // Use SafeMath to prevent overflow/underflow\n    newPrice = uint256(latestAnswer).mul(uint256(chainlinkDecimalsAdapter));\n    timestamp = feeder.latestTimestamp();\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

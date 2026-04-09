@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == state.owner, \"Owner\");",
+    "description": "The smart contract utilizes `tx.origin` for access control instead of `msg.sender`. This exposes the contract to a phishing attack where a malicious contract can trick the owner into executing a transaction, leveraging the contract’s privileges. `tx.origin` should not be used for authorization checks since it may include unintended participants in the transaction chain."
+}
+```

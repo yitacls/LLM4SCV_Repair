@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SHORT_ADDRESSES",
+    "location": "function sendCoin(address to, uint amount) returns(bool sufficient) {\n         if (balances[msg.sender] < amount) return false;\n         balances[msg.sender] -= amount;\n         balances[to] += amount;\n         Transfer(msg.sender, to, amount);\n         return true;\n     }",
+    "description": "The sendCoin function is vulnerable to the short addresses attack because it doesn't validate the length of the 'to' address parameter. In Solidity versions prior to 0.4.12, addresses that are shorter than 20 bytes can cause unexpected behavior during ABI encoding/decoding, potentially leading to incorrect balance calculations and token theft. The function should include address length validation or upgrade to a Solidity version that handles this automatically."
+}
+```

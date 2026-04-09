@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TravelZediToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath operations to prevent integer overflow vulnerabilities in balance and total supply increments",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n        balanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        Transfer(0, owner, mintedAmount);\n        Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

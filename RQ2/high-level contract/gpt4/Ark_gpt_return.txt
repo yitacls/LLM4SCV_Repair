@@ -1,0 +1,16 @@
+Here is the requested JSON output:
+
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity 0.6.9;",
+        "description": "The contract utilizes the Solidity compiler version 0.6.9 which is outdated. The out-of-date compiler version could have undiscovered bugs and issues that could present security threats. Upgrade to the latest Solidity compiler as soon as possible."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), 'insufficient funds');",
+        "description": "The contract code uses a 'require' statement to validate if there are enough tokens available before performing a withdrawal. In this code line, if there are insufficient funds, a 'revert' operation is invoked, thereby costing all gas and stopping further contract execution. This can be exploited in a Denial of Service (DoS) attack if not enough tokens are available."
+    }
+]
+```

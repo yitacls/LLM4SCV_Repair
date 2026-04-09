@@ -1,0 +1,12 @@
+```json
+{
+    "contractName": "WhaleGiveaway2",
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "adr.call.value(msg.value)(data);",
+            "description": "The contract uses low-level calls which are not checked for their return values. It can potentially allow an attacker to cause the contract to execute unintended code, throwing exceptions or functioning incorrectly."
+        }
+    ]
+}
+```

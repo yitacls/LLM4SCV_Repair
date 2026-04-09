@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Line 203-206: SWC-107-Reentrancy: L203-206 and Line 160-163: call(gas(), pair, 0, 0xB00, 0xA4, 0, 0)",
+    "description": "The contract contains a reentrancy vulnerability in the sellToUniswap() function. After performing a swap via Uniswap pair contracts using low-level call() at line 160-163, the contract proceeds to unwrap WETH and transfer tokens without following the checks-effects-interactions pattern. The external call to the pair contract occurs before state changes are finalized, allowing a malicious token/pair contract to re-enter the sellToUniswap() function and potentially manipulate the execution flow, especially since the buyAmount variable is updated after the external call. While some safeguards exist (like gas limiting), the contract still violates the proper order of operations for secure contract design."
+}
+```

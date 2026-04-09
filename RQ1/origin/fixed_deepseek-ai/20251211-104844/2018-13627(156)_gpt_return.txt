@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MyOffer",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Ensure safe arithmetic to prevent overflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Ensure safe arithmetic to prevent overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed - original modifier preserved",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or explicit checks",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(target != address(0), \"Invalid address\");\n    require(mintedAmount > 0, \"Amount must be positive\");\n    \n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Addition overflow for balance\");\n    \n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Addition overflow for total supply\");\n    \n    balanceOf[target] = newBalance;\n    totalSupply = newTotalSupply;\n    \n    emit Transfer(address(0), this, mintedAmount);\n    emit Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

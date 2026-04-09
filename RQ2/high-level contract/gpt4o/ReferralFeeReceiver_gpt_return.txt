@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "tx.origin.transfer(availableBalance);",
+            "description": "The use of `tx.origin.transfer` in the `trade` function makes the contract vulnerable to reentrancy attacks since the external transfer operation could trigger malicious fallback functions. This type of vulnerability allows an attacker to repeatedly call the contract and potentially drain funds if proper checks or reentrancy guards are not implemented."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "inchToken.transfer(msg.sender, balance - 1);",
+            "description": "The `inchToken.transfer` call in the `claim` function does not implement defensive programming techniques such as reentrancy locks or checks-effects-interactions pattern. This could allow an attacker to exploit reentrancy by repeatedly invoking the `claim` function in an undesired way while the state of the contract is still being updated."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "mooniswap.transfer(msg.sender, balance);",
+            "description": "The `mooniswap.transfer` call in the `claimCurrentEpoch` function does not safeguard against potential reentrancy bugs. This could give malicious actors an opportunity to disrupt the contract's state or operations by exploiting this external interaction."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "token.uniTransfer(msg.sender, amount);",
+            "description": "The `token.uniTransfer` call in the `_transferTokenShare` function presents a potential risk of reentrancy as it involves external token transfers. Without implementing appropriate locks or checks, an attacker could exploit this vulnerability to manipulate the state of the contract."
+        }
+    ]
+}
+```

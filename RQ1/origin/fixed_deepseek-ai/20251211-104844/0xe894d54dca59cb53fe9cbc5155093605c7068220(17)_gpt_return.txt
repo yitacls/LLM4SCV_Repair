@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "airDrop",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding require statement to verify call success, added overflow protection for decimals calculation, used address[] memory for _tos parameter, and improved parameter naming",
+            "corrected_code": "function transfer(address from, address caddress, address[] memory _tos, uint v, uint _decimals) public returns (bool) {\n    require(_tos.length > 0, \"No recipients specified\");\n    require(_decimals <= 18, \"Too many decimals\");\n    \n    bytes4 id = bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n    uint _value = v * (10 ** _decimals);\n    \n    for (uint i = 0; i < _tos.length; i++) {\n        (bool success, ) = caddress.call(abi.encodeWithSelector(id, from, _tos[i], _value));\n        require(success, \"TransferFrom call failed\");\n    }\n    \n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

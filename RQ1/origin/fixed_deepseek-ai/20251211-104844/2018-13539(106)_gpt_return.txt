@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "Bcxss",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Ensure safe arithmetic operations to prevent overflow",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Mapping to store balances with safe arithmetic",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "decimals",
+            "fix_info": "Added explicit initialization to prevent uncertainty",
+            "variable_code": "uint8 public decimals = 18;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Owner access control for security",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner, \"Not owner\"); _; }",
+            "change_type": "modified"
+        },
+        {
+            "modifier_name": "validAddress",
+            "fix_info": "Added address validation to prevent zero-address minting",
+            "modifier_code": "modifier validAddress(address addr) { require(addr != address(0), \"Invalid address\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath and added validation",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner validAddress(target) public {\n        require(mintedAmount > 0, \"Amount must be positive\");\n        uint256 _amount = mintedAmount.mul(10 ** uint256(decimals));\n        \n        // Safe addition using SafeMath\n        balanceOf[target] = balanceOf[target].add(_amount);\n        totalSupply = totalSupply.add(_amount);\n        \n        emit Transfer(address(0), target, _amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

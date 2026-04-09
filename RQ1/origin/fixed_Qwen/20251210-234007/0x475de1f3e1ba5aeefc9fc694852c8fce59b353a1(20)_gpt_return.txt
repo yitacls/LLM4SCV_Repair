@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EtherShareDonation",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "FreeShare",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding return value check for send() and using transfer() for better gas handling",
+            "corrected_code": "function FreeShare(string nickname, string content) public {\n        uint startGasLeft = gasleft();\n        ES.NewShare(nickname, false, content); \n        uint endGasLeft = gasleft();\n        require(msg.sender.send(tx.gasprice*(startGasLeft-endGasLeft+35000)), \"Gas refund failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

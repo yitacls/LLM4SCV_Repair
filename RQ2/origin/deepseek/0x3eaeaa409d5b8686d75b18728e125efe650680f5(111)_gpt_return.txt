@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for authorization, which is vulnerable to phishing attacks. A malicious contract could trick the owner into calling it, and then the malicious contract could call 'withdrawEther()'. Since 'tx.origin' is the original externally owned account (EOA) that initiated the entire transaction chain, the authorization check would pass, allowing the malicious contract to drain funds. The contract should use 'msg.sender' for authentication instead. This is particularly critical as the function allows transfer of arbitrary amounts of Ether to the 'owner' address."
+}
+```

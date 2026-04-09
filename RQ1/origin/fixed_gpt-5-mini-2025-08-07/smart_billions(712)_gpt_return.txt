@@ -1,0 +1,14 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Mitigate BAD_RANDOMNESS by deriving a seed from multiple recent blockhashes plus additional unpredictable inputs, then expand that seed with keccak256 to produce the 10 x 24-bit segments. Keeps original return layout but avoids using raw blockhash bits directly.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Build a combined seed from multiple blockhashes and extra entropy\n    // (timestamp, difficulty, caller, contract) to make manipulation harder.\n    bytes32 seed = keccak256(\n        block.blockhash(_lastb),\n        block.blockhash(_lastb + 1),\n        block.blockhash(_lastb + 2),\n        block.blockhash(_lastb + 3),\n        block.blockhash(_lastb + 4),\n        block.blockhash(_lastb + 5),\n        block.blockhash(_lastb + 6),\n        block.blockhash(_lastb + 7),\n        block.blockhash(_lastb + 8),\n        block.blockhash(_lastb + 9),\n        _delta,\n        block.difficulty,\n        now,\n        msg.sender,\n        this\n    );\n\n    // Expand seed into 10 independent 24-bit values using keccak256(seed, i)\n    uint result = 0;\n    for (uint i = 0; i &lt; 10; i++) {\n        bytes32 h = keccak256(seed, i);\n        result |= (uint(h) & 0xFFFFFF) << (24 * i);\n    }\n\n    // Preserve original high-order packing of (_delta / hashesSize) at bit 240\n    result |= (uint(_delta) / hashesSize) << 240;\n    return result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

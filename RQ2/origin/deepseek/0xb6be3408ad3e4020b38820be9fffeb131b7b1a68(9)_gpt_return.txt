@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.call(msg.value);",
+    "description": "The low-level 'call' function is used without checking its return value. In Solidity < 0.5.0, 'call' returns a boolean indicating success (true) or failure (false). If this call fails (e.g., the recipient contract runs out of gas, throws an exception, or reverts), the return value is ignored, and execution continues. This can lead to silent failures where Ether transfer is assumed successful but actually failed, potentially causing loss of funds or inconsistent contract state. The vulnerability is exacerbated because the function is payable and lacks access controls, making it a target for reentrancy attacks if the recipient is a malicious contract."
+}
+```

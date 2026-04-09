@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BountyEscrow",
+    "contract_version": "^0.4.17",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "payout",
+            "fix_info": "Fixed unchecked low level call by checking the return value of send() and handling failures appropriately",
+            "corrected_code": "function payout(address[] recipients, uint256[] amounts) public {\n    require(admin == msg.sender);\n    require(recipients.length == amounts.length);\n    for (uint i = 0; i < recipients.length; i++) {\n      require(recipients[i].send(amounts[i]));\n      Payout(\n        msg.sender,\n        recipients[i],\n        i + 1,\n        amounts[i]\n      );\n    }\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function _payout(address _to) private {\n    if (_to == address(0)) {\n      ceoAddress.transfer(this.balance); // <LEAKING_VUL>\n    } else {\n      _to.transfer(this.balance); // <LEAKING_VUL>\n    }\n  }",
+    "description": "The _payout function is marked as private but contains a critical access control vulnerability. The function allows transfer of the entire contract balance to either the ceoAddress or any specified address without proper authorization checks. In Solidity ^0.4.18, the use of 'this.balance' and '.transfer()' without proper access controls can lead to unauthorized fund withdrawals. The function should only be callable by authorized addresses, but the private visibility combined with potential delegatecall or other contract interactions could lead to unauthorized access to contract funds."
+}
+```

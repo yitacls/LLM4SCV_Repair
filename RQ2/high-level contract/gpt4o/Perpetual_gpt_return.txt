@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "pragma experimental ABIEncoderV2;",
+        "description": "The experimental pragma `ABIEncoderV2` is enabled in the contract, but its use does not have any functional impact within the provided code. Unused or unnecessary code statements should be removed to improve code readability and prevent potential future issues."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "L34-41 - constructor(address globalConfig, address devAddress, address collateral, uint256 collateralDecimals)",
+        "description": "Shadowing of state variables occurs when a local variable or constructor parameter has the same name as a state variable. This can lead to confusion and unintended behavior. In this case, the constructor parameters shadow the state variables with the same name (`globalConfig`, `devAddress`, `collateral`, and `collateralDecimals`)."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "L270-289 - function liquidateFrom(address from, address guy, uint256 maxAmount)",
+        "description": "The liquidateFrom function allows withdrawal of Ether without adequate access control mechanisms. This could enable unauthorized accounts to withdraw Ether from the contract. Proper implementation of access restrictions is needed to ensure only authorized users can execute this functionality."
+    }
+]
+```

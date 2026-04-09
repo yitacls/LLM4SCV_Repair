@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "USDC",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Implicitly required upgrade to SafeMath for arithmetic operations to prevent overflow/underflow",
+                "variable_code": "mapping(address => uint256) private balances;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic vulnerability by using SafeMath operations and preventing overflow in balance addition. Added input validation and upgraded to Solidity 0.8+ which has built-in overflow protection.",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"USDC: transfer to the zero address\");\n    require(balances[msg.sender] >= _value, \"USDC: insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender] - _value;\n    balances[_to] = balances[_to] + _value;\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

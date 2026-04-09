@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "BitcoinQuick",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added SafeMath protection to prevent integer overflow/underflow in balance operations",
+            "corrected_code": "function transfer(address _to, uint _amount) public returns (bool success) {\n        require(_amount > 0 && accounts[msg.sender] >= _amount);\n        accounts[msg.sender] = accounts[msg.sender].sub(_amount);\n        accounts[_to] = accounts[_to].add(_amount);\n        Transfer(msg.sender, _to, _amount);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

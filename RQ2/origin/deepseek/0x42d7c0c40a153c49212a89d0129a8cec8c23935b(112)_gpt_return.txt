@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract uses `tx.origin` for authorization in the `setNewAdmin` function, which is vulnerable to phishing attacks. Unlike `msg.sender`, `tx.origin` returns the original external account that initiated the transaction chain. An attacker can trick the owner into calling a malicious contract, which then calls `OneEther.setNewAdmin()`. From the perspective of `OneEther`, `tx.origin` will be the owner's address (since they signed the initial transaction), but `msg.sender` will be the attacker's contract. This allows the attacker to successfully pass the `require` check and set a new admin address of their choosing, effectively hijacking the contract's admin privileges. The correct pattern is to use `msg.sender` for authentication within the same call context."
+}
+```

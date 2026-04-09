@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Deck",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deal",
+            "fix_info": "The original function used on-chain elements like block.number, block.timestamp, and blockhash for randomness, which are vulnerable to manipulation. These have been replaced with a more secure approach using a predefined seed generated externally or a random source inaccessible to miners.",
+            "corrected_code": "function deal(address player, uint8 cardNumber, bytes32 seed) internal pure returns (uint8) {\n    // Use an externally supplied 'seed' for randomness to mitigate miner manipulation.\n    return uint8(uint256(keccak256(abi.encodePacked(seed, player, cardNumber))) % 52);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

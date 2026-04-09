@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "if(!beneficiary.send(bids[highestBidder])) { }",
+    "description": "The low-level 'send()' call's return value is not checked for success. In Solidity ^0.4.22, 'send()' returns false on failure (e.g., if the beneficiary is a contract that runs out of gas or reverts). Since the return value is not validated and no fallback logic is implemented, the function may proceed as if the transfer succeeded when it actually failed, leaving the funds stuck in the contract. This violates the auction's intended behavior where the beneficiary should receive the highest bid."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),to,amount);",
+    "description": "The low-level call to the token contract does not check the return value. In Solidity 0.4.x, the `call` function returns a boolean indicating success, but this return value is ignored. If the external `transfer` call fails (e.g., due to insufficient balance, a non-existent function, or a contract that does not implement the expected function), the transaction will not revert, potentially leading to loss of funds or unexpected contract state. Additionally, the use of `sha3` is deprecated; `keccak256` should be used instead. The recommended fix is to use `require(token.call(...))` to validate the call's success or to use a higher-level interface with proper error handling."
+}
+```

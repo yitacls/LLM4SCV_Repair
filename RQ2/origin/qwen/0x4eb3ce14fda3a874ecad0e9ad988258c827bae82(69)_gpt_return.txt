@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token.call(bytes4(sha3(\"transfer(address,uint256)\")),creator,amount);",
+    "description": "The low-level call to transfer tokens does not check the return value, which means if the token transfer fails, the function will not revert and the failure will be silently ignored. This can lead to loss of funds as the contract assumes the transfer succeeded even when it didn't. The call should check the return value or use a higher-level token transfer function that reverts on failure."
+}
+```

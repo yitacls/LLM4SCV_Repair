@@ -1,0 +1,9 @@
+Here is the vulnerability information provided in the desired JSON format:
+
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for access control which is a security risk. An attacker can create a malicious contract that calls ERC20Standard, making tx.origin equal to the attacker's address, thereby bypassing the access control check. Instead, 'msg.sender' should be used which refers to the immediate caller of the contract, reducing the risk of malicious contract invocations."
+}
+```

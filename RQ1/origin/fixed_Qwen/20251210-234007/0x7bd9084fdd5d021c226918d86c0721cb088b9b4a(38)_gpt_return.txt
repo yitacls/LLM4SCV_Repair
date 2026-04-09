@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MultiSend",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "multiSendEth",
+            "fix_info": "Fixed access control vulnerability by adding onlyOwner modifier and corrected logic to prevent ETH leakage",
+            "corrected_code": "function multiSendEth(address[] addresses) public payable onlyOwner {\n    require(addresses.length > 0);\n    uint amount = msg.value / addresses.length;\n    uint totalSent = 0;\n    \n    for(uint i = 0; i < addresses.length; i++) {\n        addresses[i].transfer(amount);\n        totalSent += amount;\n    }\n    \n    // Transfer any remaining balance back to sender\n    uint remainder = msg.value - totalSent;\n    if(remainder > 0) {\n        msg.sender.transfer(remainder);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Forwarder",
+        "contract_version": "0.5.1",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed unchecked low-level call vulnerability by replacing .send() with safer transfer() function and added require() to handle failure cases",
+                "corrected_code": "function() external payable {\n        emit LogForwarded(msg.sender, msg.value);\n        (bool success, ) = address(0x0E0Fc7a0a4a4AB61080E22D602fc038759403F03).call.value(msg.value)(\"\");\n        require(success, \"Forwarding failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Sale",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send(), checking the return value, and adding withdraw pattern with ReentrancyGuard protection",
+            "corrected_code": "function withdraw() onlyOwner {\n    require(address(this).balance > 0, \"No funds to withdraw\");\n    address payable owner = msg.sender;\n    uint256 amount = address(this).balance;\n    owner.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

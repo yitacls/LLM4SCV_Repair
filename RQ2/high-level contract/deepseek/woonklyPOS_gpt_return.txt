@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Line 743-769 in processReward function",
+            "description": "The processReward function exhibits a reentrancy vulnerability despite having the nonReentrant modifier. The issue occurs because _processReward_2 is called (line 760) after transferring tokens from the caller (line 755), but before updating the contract's state to reflect the total rewards distributed. An attacker could potentially reenter through a token transfer callback if the ERC20 token implements the ERC777 standard or has transfer hooks. The leftover calculation and transfer at line 764-768 also occur after external calls, which could be exploited."
+        },
+        {
+            "type": "SWC-113-DoS with Failed Call",
+            "location": "Line 874-886 in _withdrawAllrewardsCOIN function",
+            "description": "The _withdrawAllrewardsCOIN function uses a loop to distribute COIN rewards to multiple stakeholders. If one of the reward withdrawals fails (e.g., due to a malicious contract that reverts on receive, out-of-gas, or other reasons), the entire transaction will revert. This prevents other legitimate stakeholders from receiving their rewards, creating a Denial of Service vulnerability. The vulnerable pattern is the use of address.transfer() without handling individual failures, which can be exploited by a single malicious stakeholder to block the entire reward distribution process."
+        }
+    ]
+}
+```

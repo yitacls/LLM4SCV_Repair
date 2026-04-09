@@ -1,0 +1,103 @@
+Here is the corrected version of the functions:
+
+```json
+[{
+    "contract_name": "Moloch",
+    "contract_version": "0.5.3",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_ragequit",
+            "fix_info": "Added checks and reverts to protect from transaction order dependence",
+            "corrected_code": "
+            function _ragequit(address memberAddress, uint256 sharesToBurn, uint256 lootToBurn, IERC20[] memory tokenList) internal {
+                uint256 initialTotalSharesAndLoot = totalShares.add(totalLoot);
+                require(initialTotalSharesAndLoot > 0, 'Error: total shares and loot is 0');
+
+                Member storage member = members[memberAddress];
+
+                require(member.shares >= sharesToBurn, 'Error: insufficient shares');
+                require(member.loot >= lootToBurn, 'Error: insufficient loot');
+
+                require(canRagequit(member.highestIndexYesVote), 'Error: cannot ragequit until highest index proposal member voted YES on is processed');
+
+                uint256 sharesAndLootToBurn = sharesToBurn.add(lootToBurn);
+
+                // burn shares and loot
+                member.shares = member.shares.sub(sharesToBurn);
+                member.loot = member.loot.sub(lootToBurn);
+                totalShares = totalShares.sub(sharesToBurn);
+                totalLoot = totalLoot.sub(lootToBurn);
+
+                // instruct guildBank to transfer fair share of tokens to the ragequitter
+                require(
+                  guildBank.withdraw(memberAddress, sharesAndLootToBurn, initialTotalSharesAndLoot, tokenList),
+                  'withdrawal of tokens from guildBank failed'
+                );
+
+                emit Ragequit(msg.sender, sharesToBurn, lootToBurn);
+            }
+            ",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "processProposal",
+            "fix_info": "_validateProposalForProcessing is done at the start of the processProposal function. Also to prevent ether withdrawal, first the state variables are updated and then the value transfer is done.",
+            "corrected_code": "
+            function processProposal(uint256 proposalIndex) public nonReentrant {
+                _validateProposalForProcessing(proposalIndex);
+
+                uint256 proposalId = proposalQueue[proposalIndex];
+                Proposal storage proposal = proposals[proposalId];
+
+                require(!proposal.flags[4] && !proposal.flags[5], 'must be a standard proposal');
+
+                proposal.flags[1] = true; // processed
+
+                (bool didPass, bool emergencyProcessing) = _didPass(proposalIndex);
+
+                // Make the proposal fail if the new total number of shares and loot exceeds the limit
+                if (totalShares.add(totalLoot).add(proposal.sharesRequested).add(proposal.lootRequested) > MAX_NUMBER_OF_SHARES_AND_LOOT) {
+                    didPass = false;
+                }
+
+                // Make the proposal fail if it is requesting more tokens as payment than the available guild bank balance
+                if (!emergencyProcessing && proposal.paymentToken != IERC20(0) && proposal.paymentRequested > proposal.paymentToken.balanceOf(address(guildBank))) {
+                    didPass = false;
+                }
+
+                // PROPOSAL PASSED
+                if (didPass) {
+                    proposal.flags[2] = true; // didPass
+
+                    // if the applicant is already a member, add to their existing shares & loot
+                    if (members[proposal.applicant].exists) {
+                        members[proposal.applicant].shares = members[proposal.applicant].shares.add(proposal.sharesRequested);
+                        members[proposal.applicant].loot = members[proposal.applicant].loot.add(proposal.lootRequested);
+
+                    // the applicant is a new member, create a new record for them
+                    } else {
+                        // if the applicant address is already taken by a member's delegateKey, reset it to their member address
+                        if (members[memberAddressByDelegateKey[proposal.applicant]].exists) {
+                            address memberToOverride = memberAddressByDelegateKey[proposal.applicant];
+                            memberAddressByDelegateKey[memberToOverride] = memberToOverride;
+                            members[memberToOverride].delegateKey = memberToOverride;
+                        }
+
+                        // use applicant address as delegateKey by default
+                        members[proposal.applicant] = Member(proposal.applicant, proposal.sharesRequested, proposal.lootRequested, true, 0, 0);
+                        memberAddressByDelegateKey[proposal.applicant] = proposal.applicant;
+                    }
+
+                    // mint new shares & loot
+                    totalShares = totalShares.add(proposal.sharesRequested);
+                    totalLoot = totalLoot.add(proposal.lootRequested);
+
+                    require(
+                      proposal.tributeToken.transfer(address(guildBank), proposal.tributeOffered),
+                      'token transfer to guild bank failed'
+                    );
+
+                    require(
+                      guildBank.withdrawToken(proposal.paymentToken, proposal

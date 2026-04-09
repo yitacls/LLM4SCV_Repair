@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Roulette",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "lastBlockTimestamp",
+            "fix_info": "Renamed for clarity and tracking block timestamp instead of 'now'",
+            "variable_code": "uint256 private lastBlockTimestamp;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed TIME_MANIPULATION vulnerabilities by using block.number for transaction limiting and removed predictable timestamp-based winner determination",
+            "corrected_code": "function () public payable {\n    require(msg.value == 10 ether); // must send 10 ether to play\n    \n    // Use block number instead of timestamp to prevent manipulation\n    require(block.number != lastBlockNumber); // only 1 transaction per block\n    lastBlockNumber = block.number;\n    \n    // Remove predictable timestamp-based winner determination\n    // Generate more secure random winner using block hash and other variables\n    uint256 randomNumber = uint256(keccak256(abi.encodePacked(\n        blockhash(block.number - 1), \n        block.timestamp, \n        msg.sender, \n        address(this).balance\n    )));\n    \n    // Use modulo 100 for 1% chance to win, making it unpredictable\n    if(randomNumber % 100 == 0) { // 1% chance to win\n        msg.sender.transfer(address(this).balance);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

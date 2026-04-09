@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[_to] += _value;",
+    "description": "There is a vulnerability in the addition operation where overflow/underflow conditions are not checked. This can potentially lead to unexpected behavior if the result of the addition exceeds the maximum value that can be stored in a uint256 variable."
+}
+```   

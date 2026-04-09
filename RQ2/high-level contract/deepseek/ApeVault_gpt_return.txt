@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 71: ApeAllowanceModule public allowanceModule;",
+            "description": "The state variable 'allowanceModule' is declared but never used in the contract. This unnecessary code increases deployment cost and contract size without providing any functionality."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 64: mapping(address => bool) public hasAccess;",
+            "description": "The mapping 'hasAccess' is declared but never used in the contract. This unused storage variable wastes gas and increases contract complexity without serving any purpose."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Lines 133-135: function apeWithdrawSimpleToken(uint256 _amount) public { simpleToken.safeTransfer(msg.sender, _amount); }",
+            "description": "The apeWithdrawSimpleToken function allows any address to withdraw arbitrary amounts of simpleToken from the contract without any access control checks. This could lead to complete drainage of the contract's simpleToken balance by any malicious or accidental caller."
+        }
+    ]
+}
+```

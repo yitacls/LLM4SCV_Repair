@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "Lines 27-38 in the enterMarket function",
+    "description": "The contract calls IComptroller(COMPTROLLER_ADDR).enterMarkets(markets) without checking the return value. The enterMarkets function returns a uint[] array where each element represents an error code for the corresponding market. In Compound Protocol, error code 0 indicates success, while non-zero values indicate various failures (e.g., market not listed, insufficient liquidity). By not checking the return value, the contract may proceed as if the market entry was successful when it actually failed, potentially leading to unexpected behavior in subsequent deposit/borrow operations."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Savingcoin",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "createTokens",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for owner.send() and using safer transfer() method",
+            "corrected_code": "function createTokens() payable {\n    if(isMinting == true){\n        require(msg.value > 0);\n        uint256 tokens = msg.value.div(100000000000000).mul(RATE);\n        balances[msg.sender] = balances[msg.sender].add(tokens);\n        _totalSupply = _totalSupply.add(tokens);\n        require(owner.send(msg.value), \"Transfer to owner failed\");\n    }\n    else{\n        throw;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

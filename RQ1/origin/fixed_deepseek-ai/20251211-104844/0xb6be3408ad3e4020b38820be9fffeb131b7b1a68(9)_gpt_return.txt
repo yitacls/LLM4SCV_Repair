@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "IntermediateWallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "fallback",
+        "fix_info": "Added low-level call return check and proper ether transfer pattern. Replaced wallet.call(msg.value) with require(wallet.send(msg.value)) for secure ether transfer instead of potentially losing funds on failed calls.",
+        "corrected_code": "function() payable public {\n    require(wallet.send(msg.value));\n}",
+        "change_type": "modified"
+    }]
+}]
+```

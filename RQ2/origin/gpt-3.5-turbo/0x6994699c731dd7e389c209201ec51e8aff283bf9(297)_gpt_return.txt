@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(weiLeftOver);  // fault line",
+    "description": "The use of msg.sender.send(weiLeftOver) for sending Ether is vulnerable to reentrancy attacks. An attacker can exploit this by having a fallback function in their contract that calls back to the tokensale contract before the state is updated, enabling them to manipulate the contract's state to their advantage."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(!playerRegistered[_customerAddress] && tx.origin == _customerAddress);",
+    "description": "The contract uses tx.origin for authentication, which is vulnerable to phishing attacks. A malicious contract can call this function, making tx.origin the original EOA (externally owned account) that initiated the transaction chain, bypassing the intended restriction of direct human interaction. This allows attackers to register on behalf of other users, potentially draining their funds via the BTCTKN.transferFrom call if prior approval exists."
+}
+```

@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint c0 = a * b; require(a == 0 || c0 / a == b, \"ERR_MUL_OVERFLOW\");",
+        "description": "The multiplication of `a` and `b` may cause an integer overflow if the product exceeds the maximum value of a uint. The require statement checks for the overflow, but without this safeguard, an overflow could occur, leading to unintended behavior."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint c1 = c0 + (BONE / 2); require(c1 >= c0, \"ERR_MUL_OVERFLOW\");",
+        "description": "The addition operation `c0 + (BONE / 2)` might lead to an integer overflow if the sum exceeds the maximum uint value. The require statement is used to prevent such an overflow, but the vulnerability exists if the guard is removed."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint c0 = a * BONE; require(a == 0 || c0 / a == BONE, \"ERR_DIV_INTERNAL\");",
+        "description": "The multiplication of `a` and `BONE` in the `bdiv` function could result in an integer overflow. Although a require statement is used as a safeguard, the vulnerability resides in the unchecked arithmetic operation before this check."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "uint c1 = c0 + (b / 2); require(c1 >= c0, \"ERR_DIV_INTERNAL\");",
+        "description": "The addition `c0 + (b / 2)` in the `bdiv` function could cause an overflow if the result exceeds the maximum uint value. The require statement provides a safeguard, but the unchecked operation itself is vulnerable."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "term = bmul(term, bmul(c, x)); term = bdiv(term, bigK);",
+        "description": "The operations within the `bpowApprox` function could result in integer overflows, specifically in the double multiplication and division involving `term`, `c`, `x`, and `bigK`. Without the surrounding checks, such operations are vulnerable to overflows."
+    }
+]
+```

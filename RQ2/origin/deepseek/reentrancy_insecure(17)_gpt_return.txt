@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Reentrancy",
+        "location": "(bool success, ) = msg.sender.call.value(amountToWithdraw)(\"\");",
+        "description": "This contract is vulnerable to reentrancy attacks due to the state update (userBalances[msg.sender] = 0) occurring after the external call. An attacker can create a malicious contract that calls back into withdrawBalance() repeatedly before the balance is zeroed out, allowing multiple withdrawals of the same funds. This is particularly dangerous in versions prior to Solidity 0.8.0 where .call() is used without gas limits. The vulnerability follows the classic 'Checks-Effects-Interactions' pattern violation where state changes should happen before external calls."
+    }
+}
+```

@@ -1,0 +1,43 @@
+```json
+[
+  {
+    "contract_name": "WorthTokenSale",
+    "contract_version": "0.8.10",
+    "state_variables": [],
+    "modifiers": [
+      {
+        "modifier_name": "_saleEnded",
+        "fix_info": "Extended modifier to also require contract is powered up before sale can be considered ended",
+        "modifier_code": "modifier _saleEnded() {\n        require(contractUp, \"Token Sale hasn't started\");\n        require(saleEnded, \"Token Sale hasn't ended yet\");\n        _;\n    }",
+        "change_type": "modified"
+      }
+    ],
+    "functions": [
+      {
+        "function_name": "withdrawTokens",
+        "fix_info": "Fixed SWC-105 by adding saleEnded requirement and ensuring proper state validation before allowing token withdrawal",
+        "corrected_code": "    function withdrawTokens(address beneficiary, address _tokenAddr) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n        require(saleEnded, \"Token Sale has not ended\");\n        require(_tokenAddr != address(0), \"Token address cannot be zero\");\n        uint256 balance = Token(_tokenAddr).balanceOf(address(this));\n        require(balance > 0, \"No tokens to withdraw\");\n        require(Token(_tokenAddr).transfer(beneficiary, balance), \"Token transfer failed\");\n        emit TokenWithdrawn(_tokenAddr, balance);\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "withdrawCrypto",
+        "fix_info": "Fixed SWC-105 by adding saleEnded requirement and ensuring proper state validation before allowing ETH withdrawal",
+        "corrected_code": "    function withdrawCrypto(address payable beneficiary) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n        require(saleEnded, \"Token Sale has not ended\");\n        uint256 balance = address(this).balance;\n        require(balance > 0, \"No Crypto inside contract\");\n        (bool success, ) = beneficiary.call{value: balance}(\"\");\n        require(success, \"Transfer failed.\");\n        emit CryptoWithdrawn(beneficiary, balance);\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "endSale",
+        "fix_info": "Added validation to prevent ending sale before contract is powered up",
+        "corrected_code": "    function endSale() external onlyOwner _contractUp() _saleNotEnded() {\n        require(contractUp, \"Contract must be powered up to end sale\");\n        //End the sale process\n        saleEnded = true;\n        emit SaleEnded(msg.sender, block.timestamp);\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "emergencyStop",
+        "fix_info": "Added validation to prevent emergency stop before contract is powered up",
+        "corrected_code": "    function emergencyStop() external onlyOwner _contractUp() _saleNotEnded() {\n        require(contractUp, \"Contract must be powered up to emergency stop\");\n        saleEnded = true;    \n        emit SaleStopped(msg.sender, block.timestamp);\n    }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

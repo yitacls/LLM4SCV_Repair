@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-113-DoS with Failed Call",
+            "location": "Lines 809-817: includeInReward function",
+            "description": "The includeInReward function contains a loop that iterates through the _excluded array. As the array grows, gas costs increase linearly with each iteration. If the array becomes too large, the function may exceed the block gas limit, causing the transaction to fail and preventing addresses from being included in rewards. This could be exploited by malicious actors adding many addresses to the exclusion list."
+        },
+        {
+            "type": "SWC-113-DoS with Failed Call",
+            "location": "Lines 898-902: _getCurrentSupply function",
+            "description": "The _getCurrentSupply function iterates through the _excluded array, which could grow over time. As the number of excluded addresses increases, the gas consumption for each balance query and transfer operation that calls this function will increase. This could eventually cause transactions to fail due to out-of-gas errors, effectively creating a Denial of Service vulnerability for token transfers and other functions that rely on balance calculations."
+        }
+    ]
+}
+```

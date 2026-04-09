@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "X3ProfitInMonthV2",
+    "contract_version": "^0.5.0",
+    "state_variables": [
+        {
+            "variable_name": "countOfAdvTax",
+            "fix_info": "Variable remains unchanged - no fix needed",
+            "variable_code": "uint256 public countOfAdvTax;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "amountReturnDebt",
+            "fix_info": "Variable remains unchanged - no fix needed",
+            "variable_code": "uint256 public amountReturnDebt;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "countOfReturnDebt",
+            "fix_info": "Variable remains unchanged - no fix needed",
+            "variable_code": "uint256 public countOfReturnDebt;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "none",
+            "fix_info": "No modifiers require fixing",
+            "modifier_code": "",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "_payout",
+            "fix_info": "Fixed unchecked send() call by checking return value and handling failure; Fixed deprecated .value() syntax for call(); Fixed now -> block.timestamp; Added overflow protection for calculations",
+            "corrected_code": "function _payout(address payable addr, uint256 amount, bool retDep) private {\n    if (amount == 0)\n        return;\n    \n    if (amount > address(this).balance) \n        amount = address(this).balance;\n    \n    if (amount == 0) {\n        restart();\n        return;\n    }\n    \n    Investor storage inv = investors[addr];\n    uint256 activDep = inv.deposit - inv.lockedDeposit;\n    \n    if (!retDep && !isProfitStarted && amount + inv.withdrawn > activDep / 2) {\n        if (inv.withdrawn < activDep / 2) {\n            amount = (activDep / 2) - inv.withdrawn;\n        } else {\n            if (inv.withdrawn >= activDep) {\n                _delete(addr);\n                return;\n            }\n            amount = activDep - inv.withdrawn;\n            _delete(addr);\n        }\n    }\n    \n    uint256 interestPure = amount * (PERCENT_DIVIDER - PERCENT_MAIN_FUND) / PERCENT_DIVIDER;\n    uint256 advTax = amount - interestPure;\n    bool isDebt = inv.lockedDeposit > 0 && inv.withdrawnPure < inv.lockedDeposit;\n    \n    inv.withdrawnPure += interestPure;\n    inv.withdrawn += amount;\n    inv.time = block.timestamp;\n    \n    if (advTax > 0) {\n        (bool success, bytes memory data) = ADDRESS_MAIN_FUND.call{value: advTax}(\"\");\n        if (success) {\n            countOfAdvTax += advTax;\n        } else {\n            inv.withdrawn -= advTax;\n            // Revert the transaction if the main fund transfer fails\n            revert(\"Main fund transfer failed\");\n        }\n    }\n    \n    // Fixed: Check the result of send() call and handle failure\n    bool sent = addr.send(interestPure);\n    if (!sent) {\n        // Revert changes if the transfer fails\n        inv.withdrawnPure -= interestPure;\n        inv.withdrawn -= amount;\n        inv.time = block.timestamp - 1;\n        revert(\"Transfer to investor failed\");\n    }\n    \n    if (isDebt && inv.withdrawnPure >= inv.lockedDeposit) {\n        amountReturnDebt += inv.lockedDeposit;\n        countOfReturnDebt++;\n    }\n    \n    if (address(this).balance == 0)\n        restart();\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

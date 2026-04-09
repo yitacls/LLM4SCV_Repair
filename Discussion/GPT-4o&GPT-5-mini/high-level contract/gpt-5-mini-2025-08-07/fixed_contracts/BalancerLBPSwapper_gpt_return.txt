@@ -1,0 +1,52 @@
+[{
+    "contract_name": "BalancerLBPSwapper",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "_NOT_ENTERED",
+            "fix_info": "Added ReentrancyGuard status constants to prevent reentrant calls in swap/init.",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_ENTERED",
+            "fix_info": "Added ReentrancyGuard status constants to prevent reentrant calls in swap/init.",
+            "variable_code": "uint256 private constant _ENTERED = 2;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_status",
+            "fix_info": "Added ReentrancyGuard status variable, initialized to _NOT_ENTERED to protect external-entry functions.",
+            "variable_code": "uint256 private _status = _NOT_ENTERED;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier to guard against reentrancy on functions performing external calls/transfers.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"BalancerLBPSwapper: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "init",
+            "fix_info": "Restricted init to onlyGovernorOrAdmin and protected with nonReentrant. Reordered checks to validate pool ownership before setting contract state to avoid TOCTOU / transaction order issues.",
+            "corrected_code": "function init(IWeightedPool _pool) external onlyGovernorOrAdmin nonReentrant {\n    require(address(pool) == address(0), \"BalancerLBPSwapper: initialized\");\n\n    // Ensure this contract is the owner of the pool before mutating internal state\n    require(_pool.getOwner() == address(this), \"BalancerLBPSwapper: contract not pool owner\");\n\n    // Fetch vault and poolId before updating state (avoid TOCTOU)\n    IVault _vault = _pool.getVault();\n    bytes32 _pid = _pool.getPoolId();\n\n    // Set core state variables\n    pool = _pool;\n    vault = _vault;\n    pid = _pid;\n\n    (IERC20[] memory tokens,,) = _vault.getPoolTokens(_pid);\n    require(tokens.length == 2, \"BalancerLBPSwapper: pool does not have 2 tokens\");\n    require(\n        tokenSpent == address(tokens[0]) || tokenSpent == address(tokens[1]),\n        \"BalancerLBPSwapper: tokenSpent not in pool\"\n    );\n    require(\n        tokenReceived == address(tokens[0]) || tokenReceived == address(tokens[1]),\n        \"BalancerLBPSwapper: tokenReceived not in pool\"\n    );\n\n    // Set the asset array and target weights\n    assets = new IAsset[](2);\n    assets[0] = IAsset(address(tokens[0]));\n    assets[1] = IAsset(address(tokens[1]));\n\n    bool tokenSpentAtIndex0 = tokenSpent == address(tokens[0]);\n    initialWeights = new uint[](2);\n    endWeights = new uint[](2);\n\n    if (tokenSpentAtIndex0) {\n        initialWeights[0] = NINETY_NINE_PERCENT;\n        initialWeights[1] = ONE_PERCENT;\n\n        endWeights[0] = ONE_PERCENT;\n        endWeights[1] = NINETY_NINE_PERCENT;\n    } else {\n        initialWeights[0] = ONE_PERCENT;\n        initialWeights[1] = NINETY_NINE_PERCENT;\n\n        endWeights[0] = NINETY_NINE_PERCENT;\n        endWeights[1] = ONE_PERCENT;\n    }\n\n    // Approve pool tokens for vault\n    _pool.approve(address(_vault), type(uint256).max);\n    IERC20(tokenSpent).approve(address(_vault), type(uint256).max);\n    IERC20(tokenReceived).approve(address(_vault), type(uint256).max);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "swap",
+            "fix_info": "Added nonReentrant to prevent reentrancy during external calls and token transfers. Replaced direct ERC20.transfer with a checked low-level transfer to handle non-standard ERC20 implementations and ensure failure reverts.",
+            "corrected_code": "function swap() external override afterTime whenNotPaused nonReentrant {\n    (\n        uint256 spentReserves,\n        uint256 receivedReserves,\n        uint256 lastChangeBlock\n    ) = getReserves();\n\n    // Ensures no actor can change the pool contents earlier in the block\n    require(lastChangeBlock < block.number, \"BalancerLBPSwapper: pool changed this block\");\n\n    (\n        uint256 bptTotal,\n        uint256 bptBalance,\n        uint256 spentBalance,\n        uint256 receivedBalance\n    ) = getPoolBalances(spentReserves, receivedReserves);\n\n    // Balancer locks a small amount of bptTotal after init, so 0 bpt means pool needs initializing\n    if (bptTotal == 0) {\n        _initializePool();\n        return;\n    }\n    require(swapEndTime() < block.timestamp, \"BalancerLBPSwapper: weight update in progress\");\n\n    // 1. Withdraw existing LP tokens (if currently held)\n    if (bptBalance != 0) {\n        IVault.ExitPoolRequest memory exitRequest;\n\n        // Uses encoding for exact BPT IN withdrawal using all held BPT\n        bytes memory userData = abi.encode(IWeightedPool.ExitKind.EXACT_BPT_IN_FOR_TOKENS_OUT, bptBalance);\n\n        exitRequest.assets = assets;\n        exitRequest.minAmountsOut = new uint256[](2); // 0 min\n        exitRequest.userData = userData;\n        exitRequest.toInternalBalance = false; // use external balances to be able to transfer out tokenReceived\n\n        vault.exitPool(\n            pid,\n            address(this),\n            payable(address(this)),\n            exitRequest\n        );\n    }\n\n    // 2. Reset weights to 99:1\n    // Using current block time triggers immediate weight reset\n    _updateWeightsGradually(\n        pool,\n        block.timestamp,\n        block.timestamp,\n        initialWeights\n    );\n\n    // 3. Provide new liquidity\n    uint256 spentTokenBalance = IERC20(tokenSpent).balanceOf(address(this));\n    if (spentTokenBalance > minTokenSpentBalance) {\n        // uses exact tokens in encoding for deposit, supplying both tokens\n        // will use some of the previously withdrawn tokenReceived to seed the 1% required for new auction\n        uint256[] memory amountsIn = _getTokensIn(spentTokenBalance);\n        bytes memory userData = abi.encode(IWeightedPool.JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT, amountsIn, 0);\n\n        IVault.JoinPoolRequest memory joinRequest;\n        joinRequest.assets = assets;\n        joinRequest.maxAmountsIn = amountsIn;\n        joinRequest.userData = userData;\n        joinRequest.fromInternalBalance = false; // uses external balances because tokens are held by contract\n\n        vault.joinPool(\n            pid,\n            address(this),\n            payable(address(this)),\n            joinRequest\n        );\n\n        // 4. Kick off new auction ending after `duration` seconds\n        _updateWeightsGradually(\n            pool,\n            block.timestamp,\n            block.timestamp + duration,\n            endWeights\n        );\n        _initTimed(); // reset timer\n    }\n\n    // 5. Send remaining tokenReceived to target using safe transfer\n    uint256 remaining = IERC20(tokenReceived).balanceOf(address(this));\n    if (remaining > 0) {\n        _safeTransfer(tokenReceived, tokenReceivingAddress, remaining);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_safeTransfer",
+            "fix_info": "Added a small internal helper that performs a low-level call to transfer ERC20 tokens and checks return values to handle non-standard ERC20s safely.",
+            "corrected_code": "function _safeTransfer(address token, address to, uint256 value) internal {\n    (bool success, bytes memory data) = token.call(abi.encodeWithSelector(IERC20.transfer.selector, to, value));\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"BalancerLBPSwapper: ERC20 transfer failed\");\n}",
+            "change_type": "added"
+        }
+    ]
+}]

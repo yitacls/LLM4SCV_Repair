@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "function approveAndCall(address _spender, uint256 _value, bytes _extraData)\n        public\n        returns (bool success) {\n        tokenRecipient spender = tokenRecipient(_spender);\n        if (approve(_spender, _value)) {\n            spender.receiveApproval(msg.sender, _value, this, _extraData);\n            return true;\n        }\n    }",
+    "description": "The approveAndCall function is vulnerable to reentrancy attacks. The external call to spender.receiveApproval() is made after the approve() function but before the state changes are fully committed. This allows a malicious spender contract to re-enter the function and potentially manipulate the token approval state or execute multiple approvals with the same values. The vulnerability exists because there's no reentrancy guard or checks-effects-interactions pattern implementation."
+}
+```

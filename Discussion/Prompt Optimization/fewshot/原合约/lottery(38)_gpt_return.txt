@@ -1,0 +1,29 @@
+```json
+[
+    {
+        "contract_name": "Lottery",
+        "contract_version": "^0.4.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "makeBet",
+                "fix_info": "Improve randomness by using a safer method for generating random numbers.",
+                "corrected_code": "function makeBet() {
+    bytes32 randomHash = keccak256(abi.encodePacked(blockhash(block.number), msg.sender, now));
+    bool won = uint256(randomHash) % 2 == 0;
+
+    bets.push(Bet(msg.value, block.number, won));
+
+    if(won) {
+        if(!msg.sender.send(msg.value)) {
+            revert("Failed to send ether to sender");
+        }
+    }
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "hodl.call(bytes4(keccak256(\"withdrawFor(address,uint256)\")),from,2000000000000000);",
+    "description": "The problem with low level calls like 'call' in Solidity is that they return a boolean to indicate success or failure but they never throw an exception for failures. So, if you don't check the returned value, you can't know whether the call was successful or not making your contract vulnerable to unexpected behavior. In this contract, the return value of the 'call' function is not being checked which creates the unchecked_low_level_calls vulnerability. Therefore, potentially harmful execution can happen without any indication of a failure."
+}
+```

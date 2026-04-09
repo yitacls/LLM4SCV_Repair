@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(sender == tx.origin && !isContract(sender));  // fault line",
+    "description": "The current access control mechanism in the autoDistribute function is using tx.origin for authentication, which is a known security risk. Using tx.origin for access control can be vulnerable to certain attacks, such as phishing attacks. It is recommended to use msg.sender for access control checks instead of tx.origin."
+}
+```

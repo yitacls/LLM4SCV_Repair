@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "DREAMCOIN",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added require statement to check if caller is owner",
+            "modifier_code": "modifier onlyOwner {\n    require(msg.sender == owner, \"Only owner can call this\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "collectExcess",
+            "fix_info": "Replaced unsafe send() with safe transfer pattern, added overflow protection, and proper access control",
+            "corrected_code": "function collectExcess() public onlyOwner {\n    uint256 contractBalance = address(this).balance;\n    require(contractBalance > 2100000, \"Insufficient balance for transfer\");\n    \n    uint256 amountToSend = contractBalance - 2100000;\n    address payable ownerPayable = address(uint160(owner));\n    \n    bool success = ownerPayable.send(amountToSend);\n    require(success, \"Transfer failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

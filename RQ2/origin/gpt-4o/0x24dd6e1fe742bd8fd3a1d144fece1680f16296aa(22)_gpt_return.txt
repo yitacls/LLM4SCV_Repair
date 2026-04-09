@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This line contains an arithmetic vulnerability due to the potential for an integer overflow. In Solidity version ^0.4.16, arithmetic operations do not have built-in overflow or underflow checks. If the addition of `_value` to `balances[_to]` causes the value to exceed the maximum limit of a uint256, it will wrap around, resulting in incorrect balances being recorded. This can lead to severe discrepancies in the state of the contract, such as unauthorized token balances for certain addresses."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced use of blockhash with a more secure randomness approach by introducing a better pseudo-random generation method using keccak256 with block.timestamp and msg.sender as inputs.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) private view returns (uint) {\n    bytes32 randomSeed = keccak256(abi.encodePacked(block.timestamp, msg.sender, _delta));\n    uint hashValue = uint(randomSeed) & ((1 << 240) - 1); // Extract 240 bits from the seed.\n    return hashValue;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "lastInvestmentTimestamp = block.timestamp;",
+    "description": "The contract uses block.timestamp to track the last investment time. In Solidity 0.4.0, block.timestamp can be manipulated by miners within a small range (up to about 15 seconds). This can be exploited in time-dependent logic, especially if used for critical state transitions, reward distributions, or game mechanics. Attackers with miner capabilities could influence the timestamp to gain unfair advantages."
+}
+```

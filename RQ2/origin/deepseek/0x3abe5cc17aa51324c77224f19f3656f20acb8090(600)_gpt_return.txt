@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function setEth uses tx.origin for authorization, which is vulnerable to phishing attacks. In Solidity ^0.4.25, tx.origin returns the original sender of the entire transaction chain, not the immediate caller (msg.sender). A malicious contract could trick the owner into calling it, and then that contract could call Swapper.setEth, passing the tx.origin check because the owner initiated the transaction, thereby allowing unauthorized access. Additionally, 'owner' is not declared or initialized in the provided snippet, which may indicate missing state variable definition or initialization logic."
+}
+```

@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "SYCPrivateEarlyPurchase",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "totalEarlyPurchaseRaised",
+                "fix_info": "No changes needed, but ensure it tracks total raised ETH correctly",
+                "variable_code": "uint256 public totalEarlyPurchaseRaised;",
+                "change_type": "existing"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyEarlyPurchaseTerm",
+                "fix_info": "No changes needed",
+                "modifier_code": "modifier onlyEarlyPurchaseTerm() { require(now >= STARTING_TIME && now <= ENDING_TIME && !isEarlyPurchaseClosed()); _; }",
+                "change_type": "existing"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "appendEarlyPurchase",
+                "fix_info": "Fixed unchecked low-level call vulnerability by using transfer instead of send with proper overflow protection",
+                "corrected_code": "function appendEarlyPurchase(address purchaser, uint256 amount, uint256 purchasedAt) internal onlyEarlyPurchaseTerm returns (bool) {\n        require(purchasedAt != 0 && purchasedAt <= now, \"Invalid purchase timestamp\");\n        \n        if (totalEarlyPurchaseRaised + amount >= WEI_MAXIMUM_EARLYPURCHASE) {\n            uint256 refundAmount = totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE;\n            uint256 purchaseAmount = WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised;\n            \n            // Replace send() with transfer() to ensure proper failure handling\n            if (refundAmount > 0) {\n                purchaser.transfer(refundAmount);\n            }\n            \n            earlyPurchases.push(EarlyPurchase(purchaser, purchaseAmount, purchasedAt));\n            totalEarlyPurchaseRaised = WEI_MAXIMUM_EARLYPURCHASE; // Use direct assignment to avoid overflow\n        } else {\n            // Use SafeMath for addition to prevent overflow\n            require(totalEarlyPurchaseRaised + amount >= totalEarlyPurchaseRaised, \"Addition overflow\");\n            earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));\n            totalEarlyPurchaseRaised += amount;\n        }\n        \n        if (totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE || now >= ENDING_TIME) {\n            earlyPurchaseClosedAt = now;\n        }\n        \n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

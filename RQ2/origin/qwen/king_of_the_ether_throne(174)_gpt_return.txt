@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wizardAddress.send(amount);",
+    "description": "The send() function is used without checking its return value. In Solidity ^0.4.0, send() returns false if the transfer fails (e.g., due to insufficient gas or recipient contract throwing an exception), but the code does not handle this case. This could result in the function appearing to succeed while the Ether transfer actually failed, potentially leading to loss of funds or incorrect contract state. The return value of send() should be checked and handled appropriately."
+}
+```

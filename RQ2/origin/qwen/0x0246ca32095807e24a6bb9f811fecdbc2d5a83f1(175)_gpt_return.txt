@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "return oneEther.mul(10**18).div( tokenSaleContract.tokenValueInEther(oneTokenInFiatWei) );",
+    "description": "The multiplication operation oneEther.mul(10**18) can cause an arithmetic overflow since both operands are very large numbers (10**18 each), potentially resulting in unexpected behavior or incorrect price calculations. In Solidity ^0.4.25, arithmetic operations are not protected against overflow by default, making this vulnerability critical."
+}
+```

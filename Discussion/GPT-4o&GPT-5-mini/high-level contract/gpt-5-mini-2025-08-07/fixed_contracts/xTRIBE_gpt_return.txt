@@ -1,0 +1,14 @@
+[{
+    "contract_name": "xTRIBE",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "emitVotingBalances",
+            "fix_info": "Added access control check to prevent unauthorized callers from triggering potentially expensive event emissions and limited maximum batch size to avoid out-of-gas DoS. Preserves original functionality of emitting DelegateVotesChanged events for provided accounts.",
+            "corrected_code": "function emitVotingBalances(address[] calldata accounts) external {\n    // Allow only the owner or authorized callers (as per Auth.authority) to invoke this helper\n    require(\n        msg.sender == owner ||\n        (address(authority) != address(0) && authority.canCall(msg.sender, address(this), msg.sig)),\n        \"UNAUTHORIZED\"\n    );\n\n    uint256 size = accounts.length;\n\n    // Prevent excessively large batches which could cause out-of-gas or DoS\n    require(size <= 256, \"Too many accounts\");\n\n    for (uint256 i = 0; i < size; ) {\n        uint256 votes = getVotes(accounts[i]);\n        emit DelegateVotesChanged(accounts[i], 0, votes);\n\n        unchecked {\n            i++;\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

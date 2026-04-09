@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "for (uint i; i < zz.length; i++) {  // fault line",
+    "description": "The for loop in the addMultipleRecords function can be exploited to cause a Denial of Service (DoS) attack. If an attacker provides a large array for the zz parameter, the loop can consume excessive gas, potentially leading to high transaction costs or even causing the transaction to fail. This can be used maliciously to disrupt the normal functioning of the contract."
+}
+```  

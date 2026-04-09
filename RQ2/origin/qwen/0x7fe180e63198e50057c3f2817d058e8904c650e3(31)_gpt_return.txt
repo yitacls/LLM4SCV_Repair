@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "(recipient.send(amount))",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.11, send() returns false if the transfer fails, but this return value is not checked in the code. This could lead to a situation where the refund operation appears successful but actually failed, while the contract state is still updated (registrantsPaid[recipient] set to 0 and numRegistrants decremented), potentially causing loss of funds or incorrect state tracking."
+}
+```

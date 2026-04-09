@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Crowdnext",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by adding SafeMath-style checks for addition and subtraction operations, and ensured proper error handling",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balanceOf[msg.sender] < amount) throw;\n        \n        // Check for overflow when adding to contract balance\n        if (balanceOf[this] + amount < balanceOf[this]) throw;\n        balanceOf[this] += amount;\n        \n        // Check for underflow when subtracting from sender balance\n        if (balanceOf[msg.sender] - amount > balanceOf[msg.sender]) throw;\n        balanceOf[msg.sender] -= amount;\n        \n        if (!msg.sender.send(amount * sellPrice)) {\n            throw;\n        } else {\n            Transfer(msg.sender, this, amount);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

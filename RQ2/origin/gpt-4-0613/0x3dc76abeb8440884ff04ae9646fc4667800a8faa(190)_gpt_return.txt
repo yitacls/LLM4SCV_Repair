@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount)",
+    "description": "The 'deposit' function should only be accessible by the ReserveFundContract. However, this function does not implement any access control mechanism to prevent other users from executing the function. Typically, a modifier could be implemented to check that the message sender is indeed the ReserveFundContract before allowing further execution of the function."
+}
+```

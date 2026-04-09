@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[receiver] += amount;",
+    "description": "In Solidity ^0.4.25, this line contains an integer overflow vulnerability because the contract does not use SafeMath and does not check for overflow conditions. The 'balances' mapping is likely a mapping(address => uint256). Since Solidity 0.8.0, arithmetic operations revert on overflow by default, but in version 0.4.25, they wrap around silently. An attacker could exploit this by minting an extremely large 'amount' to cause an overflow, resulting in the receiver's balance becoming much smaller than intended, potentially even zero. Additionally, there is no upper bound check on the 'amount' parameter."
+}
+```

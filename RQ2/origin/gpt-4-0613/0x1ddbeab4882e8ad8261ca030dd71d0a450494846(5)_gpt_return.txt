@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contract": "CYBRPurchaseAddress",
+    "location": "wallet.send(msg.value)",
+    "description": "In the given contract, the low-level .send() method has been used which can lead to unexpected exceptions. If the .send() call fails, no error will be thrown and contract execution will continue. As a result, this could be exploited to cause the contract to behave unexpectedly which can lead to potential security vulnerabilities. It is very crucial to handle the failure of .send() method appropriately in the contract. Solidity versions >= 0.4.13 raise an exception and revert the state changes when a low-level call fails."
+}
+```

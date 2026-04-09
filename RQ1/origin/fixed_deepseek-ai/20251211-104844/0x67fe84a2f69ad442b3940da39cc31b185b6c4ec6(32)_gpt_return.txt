@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "CompanyFunding",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Made owner address private to control access",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to check msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Replaced tx.origin with onlyOwner modifier for proper access control",
+            "corrected_code": "function clear() public onlyOwner {\n        selfdestruct(owner);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

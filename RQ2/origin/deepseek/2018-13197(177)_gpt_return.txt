@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic/Integer Overflow",
+    "location": "amount * sellPrice in the statement `if (!msg.sender.send(amount * sellPrice))`",
+    "description": "In Solidity ^0.4.2, integer arithmetic operations do not automatically check for overflow/underflow. The multiplication `amount * sellPrice` can overflow if the product exceeds the maximum value of uint256 (2^256 - 1). This could result in the sender receiving a significantly smaller amount of Ether than intended (due to wrap-around) or the transaction failing unexpectedly. The vulnerability is exacerbated because the state changes (balance updates) occur before the Ether transfer, leaving the contract in an inconsistent state if the send fails and causes a throw/revert. SafeMath library should be used for all arithmetic operations, or the contract should be upgraded to at least Solidity 0.8.0 which has built-in overflow checks."
+}
+```

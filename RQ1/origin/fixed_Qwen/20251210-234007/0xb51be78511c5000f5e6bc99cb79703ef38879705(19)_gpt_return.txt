@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ERC20CoreBase",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Added SafeMath library usage to prevent arithmetic overflow/underflow vulnerabilities in balance calculations",
+            "corrected_code": "function _transfer(address from, address to, uint256 value) internal {\n        _checkRequireERC20(to, value, true, _balanceOf[from]);\n        _balanceOf[from] = _balanceOf[from].sub(value);\n        _balanceOf[to] = _balanceOf[to].add(value);\n        emit Transfer(from, to, value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

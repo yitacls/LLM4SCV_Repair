@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "withdrawDate = now + 2 days;",
+    "description": "This contract uses block timestamp ('now') to determine a time-lock period. Block timestamps can be manipulated by miners within a limited range (typically up to ~900 seconds). An attacker who is also a miner could influence the timestamp to make 'now' appear earlier than actual time, potentially allowing them to claim funds or extend lock periods. In this specific contract, the timestamp determines when the 'largestPenisOwner' can withdraw funds, making it vulnerable to manipulation that could shorten or extend the waiting period. The use of relative time (2 days) based on mutable block timestamps creates unreliable timing logic."
+}
+```

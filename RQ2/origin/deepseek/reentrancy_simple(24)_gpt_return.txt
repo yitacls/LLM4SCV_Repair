@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if( ! (msg.sender.call.value(userBalance[msg.sender])() ) ){ throw; }",
+    "description": "This contract uses the deprecated low-level `call.value()` method to transfer Ether before updating the sender's balance to zero. An attacker can create a malicious contract that calls back into this `withdrawBalance()` function from its fallback/receive function. Since `userBalance[msg.sender]` is only set to 0 after the Ether transfer, the attacker can repeatedly call `withdrawBalance()` and drain all Ether from the contract before the state update occurs. This violates the Checks-Effects-Interactions pattern. The vulnerability is exacerbated by using Solidity ^0.4.15, which lacks modern security features and uses the old `throw` statement for error handling."
+}
+```

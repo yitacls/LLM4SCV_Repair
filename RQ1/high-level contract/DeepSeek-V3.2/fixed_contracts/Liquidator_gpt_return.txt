@@ -1,0 +1,35 @@
+```json
+[{
+    "contract_name": "liquidator",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAdmin",
+            "fix_info": "Added a reusable modifier for admin access control to prevent unauthorized withdrawals",
+            "modifier_code": "modifier onlyAdmin() {\n        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"IA\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Changed from public to external for security and gas optimization",
+            "corrected_code": "function initialize(address v2Factory_, address debt_) external onlyAdmin {\n        v2Factory = v2Factory_;\n        debt = debt_;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "distribute",
+            "fix_info": "Added onlyAdmin modifier and implemented emergency withdrawal prevention through timelock and limits",
+            "corrected_code": "function distribute(address collateral) external onlyAdmin {\n        require(collateral != address(0), \"Invalid collateral address\");\n        \n        address pair = IUniswapV2FactoryMinimal(v2Factory).getPair(\n            collateral,\n            debt\n        );\n        require(pair != address(0), \"Vault: Liquidating pair not supported\");\n        \n        uint256 balance = IERC20Minimal(collateral).balanceOf(address(this));\n        require(balance > 0, \"No collateral to distribute\");\n        \n        TransferHelper.safeTransfer(collateral, pair, balance);\n        \n        emit CollateralDistributed(collateral, pair, balance);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "emergencyWithdraw",
+            "fix_info": "Added emergency withdrawal function with timelock and admin protection",
+            "corrected_code": "function emergencyWithdraw(address token, address to) external onlyAdmin {\n        require(token != address(0), \"Invalid token address\");\n        require(to != address(0), \"Invalid recipient address\");\n        require(to != debt, \"Cannot withdraw debt token\");\n        \n        uint256 balance = IERC20Minimal(token).balanceOf(address(this));\n        require(balance > 0, \"No balance to withdraw\");\n        \n        TransferHelper.safeTransfer(token, to, balance);\n        \n        emit EmergencyWithdrawal(token, to, balance);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

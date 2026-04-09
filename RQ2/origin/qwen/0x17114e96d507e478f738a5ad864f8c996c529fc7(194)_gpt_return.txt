@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(_target.call.value(_value)(_data));",
+    "description": "The function sendEthValue lacks proper access control modifiers such as onlyOwner or similar authorization checks. This allows any external caller to execute arbitrary calls with ETH value, potentially draining the contract's funds or performing unauthorized actions. In Solidity 0.4.24, the .call.value() method is used to send ETH and execute code on the target contract, making this a critical security risk without proper authorization mechanisms."
+}
+```

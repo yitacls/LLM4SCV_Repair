@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "balances[tx.origin]",
+    "description": "The function 'transferOrigin' allows the transfer of tokens based on the balance of 'tx.origin' which is the immediate caller of the function. This poses a risk as 'tx.origin' can be manipulated by a contract further down the call stack, leading to potential unauthorized transfers. It is recommended to use 'msg.sender' instead of 'tx.origin' for authorization checks."
+}
+```  

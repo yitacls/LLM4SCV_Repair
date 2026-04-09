@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_recipient] += _value;",
+    "description": "The addition operation without overflow check in this line can lead to arithmetic overflow vulnerabilities. It may result in unexpected behavior and can be exploited by malicious actors to manipulate balances."
+}
+```

@@ -1,0 +1,42 @@
+```json
+[
+    {
+        "contract_name": "MasterChef",
+        "contract_version": "0.6.7",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attacks. The modifier ensures that the function cannot be called recursively.",
+                "corrected_code": "function deposit(uint256 _pid, uint256 _amount) public nonReentrant {\n    PoolInfo storage pool = poolInfo[_pid];\n    UserInfo storage user = userInfo[_pid][msg.sender];\n\n    updatePool(_pid);\n    if (user.shares > 0) {\n        uint256 pending =\n            user.shares.mul(pool.accPudPerShare).div(1e12).sub(\n                user.rewardDebt\n            );\n        safePudTransfer(msg.sender, pending);\n    }\n\n    uint256 _pool = balance(_pid); //get _pid lptoken balance\n    if (_amount > 0) {\n        uint256 _before = pool.lpToken.balanceOf(pool.strategy);\n        pool.lpToken.safeTransferFrom(\n            address(msg.sender),\n            pool.strategy,\n            _amount\n        );\n\n        uint256 _after = pool.lpToken.balanceOf(pool.strategy);\n        _amount = _after.sub(_before); // Additional check for deflationary tokens\n    }\n    uint256 shares = 0;\n    if (pool.totalShares == 0) {\n        shares = _amount;\n    } else {\n        shares = (_amount.mul(pool.totalShares)).div(_pool);\n    }\n\n    user.shares = user.shares.add(shares); //add shares instead of amount\n    user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n    pool.totalShares = pool.totalShares.add(shares); //add shares in pool\n\n    emit Deposit(msg.sender, _pid, _amount);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attacks. The modifier ensures that the function cannot be called recursively.",
+                "corrected_code": "function withdraw(uint256 _pid, uint256 _shares) public nonReentrant {\n    PoolInfo storage pool = poolInfo[_pid];\n    UserInfo storage user = userInfo[_pid][msg.sender];\n\n    require(user.shares >= _shares, \"withdraw: not good\");\n    updatePool(_pid);\n\n    uint256 r = (balance(_pid).mul(_shares)).div(pool.totalShares);\n    uint256 pending =\n        user.shares.mul(pool.accPudPerShare).div(1e12).sub(\n            user.rewardDebt\n        );\n\n    safePudTransfer(msg.sender, pending);\n    user.shares = user.shares.sub(_shares);\n    user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n    pool.totalShares = pool.totalShares.sub(_shares); //minus shares in pool\n\n    // Check balance\n    if (r > 0) {\n        uint256 b = pool.lpToken.balanceOf(address(this));\n\n        IStrategy(pool.strategy).withdraw(r);\n        uint256 _after = pool.lpToken.balanceOf(address(this));\n        uint256 _diff = _after.sub(b);\n        if (_diff < r) {\n            r = b.add(_diff);\n        }\n\n        pool.lpToken.safeTransfer(address(msg.sender), r);\n    }\n\n    emit Withdraw(msg.sender, _pid, r);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "emergencyWithdraw",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attacks. The modifier ensures that the function cannot be called recursively.",
+                "corrected_code": "function emergencyWithdraw(uint256 _pid) public nonReentrant {\n    PoolInfo storage pool = poolInfo[_pid];\n    UserInfo storage user = userInfo[_pid][msg.sender];\n    uint256 r = (balance(_pid).mul(user.shares)).div(pool.totalShares);\n\n    // Check balance\n    uint256 b = pool.lpToken.balanceOf(address(this));\n\n    IStrategy(pool.strategy).withdraw(r);\n    uint256 _after = pool.lpToken.balanceOf(address(this));\n    uint256 _diff = _after.sub(b);\n    if (_diff < r) {\n        r = b.add(_diff);\n    }\n\n    pool.lpToken.safeTransfer(address(msg.sender), r);\n    emit EmergencyWithdraw(msg.sender, _pid, user.shares);\n    user.shares = 0;\n    user.rewardDebt = 0;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "safePudTransfer",
+                "fix_info": "Added check for successful transfer to prevent unchecked return values. The function now uses require to check the return value of transfer.",
+                "corrected_code": "function safePudTransfer(address _to, uint256 _amount) internal {\n    uint256 pudBal = pud.balanceOf(address(this));\n    if (_amount > pudBal) {\n        require(pud.transfer(_to, pudBal), \"Transfer failed\");\n    } else {\n        require(pud.transfer(_to, _amount), \"Transfer failed\");\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setPoolStrategy",
+                "fix_info": "Added check for successful harvest and withdrawAll calls to prevent unchecked return values. The function now uses require to check the return values of external calls.",
+                "corrected_code": "function setPoolStrategy(uint256 _pid,address _strategy) public onlyOwner {\n    PoolInfo storage pool = poolInfo[_pid];\n    require(IStrategy(pool.strategy).harvest(), \"Harvest failed\");\n    require(IStrategy(pool.strategy).withdrawAll(_strategy), \"WithdrawAll failed\");\n    pool.strategy = _strategy;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

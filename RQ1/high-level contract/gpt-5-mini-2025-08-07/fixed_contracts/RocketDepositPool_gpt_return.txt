@@ -1,0 +1,14 @@
+[{
+    "contract_name": "RocketDepositPool",
+    "contract_version": "1",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "assignDeposits",
+            "fix_info": "Mitigated DoS by the block gas limit by adding a gasleft() guard, using a bounded maximum iteration count, and making the minipool userDeposit call a low-level call so a failing minipool does not revert the entire assignment loop. On failure the withdrawn ETH is returned to the vault to avoid loss of funds.",
+            "corrected_code": "function assignDeposits() override public onlyLatestContract(\"rocketDepositPool\", address(this)) {\n    // Load contracts\n    RocketDAOProtocolSettingsDepositInterface rocketDAOProtocolSettingsDeposit = RocketDAOProtocolSettingsDepositInterface(getContractAddress(\"rocketDAOProtocolSettingsDeposit\"));\n    RocketMinipoolQueueInterface rocketMinipoolQueue = RocketMinipoolQueueInterface(getContractAddress(\"rocketMinipoolQueue\"));\n    RocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress(\"rocketVault\"));\n    // Check deposit settings\n    require(rocketDAOProtocolSettingsDeposit.getAssignDepositsEnabled(), \"Deposit assignments are currently disabled\");\n    // Assign deposits with protections against block gas limit DoS\n    uint256 maxAssign = rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments();\n    // Heuristic gas threshold to ensure we don't run out of gas mid-iteration (adjustable)\n    uint256 gasThreshold = 200000;\n    for (uint256 i = 0; i < maxAssign; ++i) {\n        // Exit if low on gas to avoid hitting block gas limit and leaving the tx unusable\n        if (gasleft() < gasThreshold) { break; }\n        // Get & check next available minipool capacity\n        uint256 minipoolCapacity = rocketMinipoolQueue.getNextCapacity();\n        if (minipoolCapacity == 0 || getBalance() < minipoolCapacity) { break; }\n        // Dequeue next available minipool\n        address minipoolAddress = rocketMinipoolQueue.dequeueMinipool();\n        // Withdraw ETH from vault\n        rocketVault.withdrawEther(minipoolCapacity);\n        // Attempt to assign deposit to minipool using a low-level call so a failing minipool does not revert the whole loop\n        (bool success, ) = minipoolAddress.call{value: minipoolCapacity}(abi.encodeWithSignature(\"userDeposit()\"));\n        if (!success) {\n            // On failure return funds to the vault to avoid loss and continue to next minipool\n            // Note: this contract is allowed to call depositEther\n            rocketVault.depositEther{value: minipoolCapacity}();\n            continue;\n        }\n        // Emit deposit assigned event\n        emit DepositAssigned(minipoolAddress, minipoolCapacity, block.timestamp);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

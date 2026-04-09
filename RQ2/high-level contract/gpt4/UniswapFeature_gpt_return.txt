@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Within the sellToUniswap function, between lines 203-206 where pair.getReserves() is called.",
+    "description": "The UniswapFeature contract is vulnerable to reentrancy attacks, particularly in the sellToUniswap function. A reentrancy attack occurs when the state of a contract can be changed during a function call before that function call has completed. In this case, by calling pair.getReserves() before function sellToUniswap has completed could alter the state of the UniswapFeature contract and potentially lead to unexpected results."
+}
+```

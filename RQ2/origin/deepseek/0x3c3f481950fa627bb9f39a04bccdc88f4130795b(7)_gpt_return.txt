@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "if (!msg.sender.call.value(2 ether)())",
+            "description": "The low-level call to `msg.sender` does not check its return value properly. In Solidity versions before 0.5.x, the call returns a boolean indicating success (true) or failure (false). The condition `if (!msg.sender.call.value(2 ether)())` includes the check but in an unsafe manner: if the external call fails, `throw` is executed, which reverts all state changes. However, due to deprecated `throw` and legacy error handling, this pattern is error-prone. More critically, it is susceptible to reentrancy attacks because state changes (like setting `locked`) occur after the external call, but here `locked` is not updated at all, allowing repeated reentrant calls to `bet()`. The combination of unchecked call return value and lack of state updates before the call creates significant security risks."
+        }
+    ]
+}
+```

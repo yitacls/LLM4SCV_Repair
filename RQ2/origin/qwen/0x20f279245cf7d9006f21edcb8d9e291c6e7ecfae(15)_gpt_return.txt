@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "The addition of balanceOf[_from] and balanceOf[_to] can overflow, causing previousBalances to wrap around to a small number. This would allow the subsequent assertion to pass even when tokens have been improperly created, bypassing the intended balance conservation check. In Solidity ^0.4.19, arithmetic operations are not protected against overflow by default."
+}
+```

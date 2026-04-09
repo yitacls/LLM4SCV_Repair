@@ -1,0 +1,14 @@
+[{
+    "contract_name": "BaseToken",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Add explicit checks to prevent arithmetic overflow when computing previousBalances and preserve original behavior. Ensure underflow/overflow are detected and revert before state changes.",
+            "corrected_code": "function _transfer(address _from, address _to, uint _value) internal {\n        require(_to != address(0));\n        require(balanceOf[_from] >= _value);\n        require(balanceOf[_to] + _value > balanceOf[_to]);\n\n        uint previousBalances = balanceOf[_from] + balanceOf[_to];\n        // Detect addition overflow when computing previousBalances\n        require(previousBalances >= balanceOf[_from]);\n\n        balanceOf[_from] -= _value;\n        balanceOf[_to] += _value;\n\n        assert(balanceOf[_from] + balanceOf[_to] == previousBalances);\n        Transfer(_from, _to, _value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

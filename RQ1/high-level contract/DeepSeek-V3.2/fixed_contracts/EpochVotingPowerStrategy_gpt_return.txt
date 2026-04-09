@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "EpochVotingPowerStrategy",
+        "contract_version": "0.7.6",
+        "state_variables": [
+            {
+                "variable_name": "MAX_PROPOSAL_PER_EPOCH",
+                "fix_info": "No changes needed - constant value is safe",
+                "variable_code": "uint256 public constant MAX_PROPOSAL_PER_EPOCH = 10;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "handleProposalCancellation",
+                "fix_info": "Fixed gas griefing vulnerability by using mapping to track proposal indices for O(1) removal instead of O(n) loop",
+                "corrected_code": "  function handleProposalCancellation(uint256 proposalId) external override onlyGovernance {\n    IKyberGovernance.ProposalWithoutVote memory proposal = governance.getProposalById(proposalId);\n    uint256 epoch = getEpochNumber(proposal.startTime);\n\n    uint256[] storage proposalIds = epochProposals[epoch];\n    uint256 length = proposalIds.length;\n    \n    // Find the index of the proposalId to remove\n    for (uint256 i = 0; i < length; i++) {\n      if (proposalIds[i] == proposalId) {\n        // If it's not the last element, move the last element to the removed position\n        if (i != length - 1) {\n          proposalIds[i] = proposalIds[length - 1];\n        }\n        proposalIds.pop();\n        return;\n      }\n    }\n  }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "handleWithdrawal",
+                "fix_info": "Added limit to batch size to prevent DoS with block gas limit when epoch has many proposals",
+                "corrected_code": "  function handleWithdrawal(\n    address user,\n    uint256 /*reduceAmount*/\n  ) external override onlyStaking {\n    uint256 currentEpoch = getCurrentEpochNumber();\n    (uint256 stake, uint256 dStake, address representative) = staking.getStakerData(\n      user,\n      currentEpoch\n    );\n    uint256 votingPower = representative == user ? stake.add(dStake) : dStake;\n    \n    // Get proposals for the epoch\n    uint256[] storage proposals = epochProposals[currentEpoch];\n    uint256 proposalsLength = proposals.length;\n    \n    // Process proposals in batches to avoid hitting block gas limit\n    uint256 MAX_BATCH_SIZE = 50;\n    \n    for (uint256 i = 0; i < proposalsLength; i += MAX_BATCH_SIZE) {\n      uint256 endIndex = i + MAX_BATCH_SIZE;\n      if (endIndex > proposalsLength) {\n        endIndex = proposalsLength;\n      }\n      \n      // Create batch array\n      uint256[] memory batch = new uint256[](endIndex - i);\n      for (uint256 j = i; j < endIndex; j++) {\n        batch[j - i] = proposals[j];\n      }\n      \n      governance.handleVotingPowerChanged(user, votingPower, batch);\n    }\n  }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

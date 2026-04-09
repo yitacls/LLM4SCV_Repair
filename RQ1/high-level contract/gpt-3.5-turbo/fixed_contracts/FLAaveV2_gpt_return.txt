@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "FLAaveV2",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "executeOperation",
+                "fix_info": "Fixed reentrancy vulnerability by updating the logic to transfer tokens before executing other actions.",
+                "corrected_code": "function executeOperation(address[] memory _assets, uint256[] memory _amounts, uint256[] memory _fees, address _initiator, bytes memory _params) public returns (bool) { require(msg.sender == AAVE_LENDING_POOL, ERR_ONLY_AAVE_CALLER); require(_initiator == address(this), ERR_SAME_CALLER); (Task memory currTask, address proxy) = abi.decode(_params, (Task, address)); for (uint256 i = 0; i < _assets.length; ++i) { _assets[i].withdrawTokens(proxy, _amounts[i]); _assets[i].approveToken(address(AAVE_LENDING_POOL), _amounts[i] + _fees[i]); } address payable taskExecutor = payable(registry.getAddr(TASK_EXECUTOR_ID)); IDSProxy(proxy).execute{value: address(this).balance}(taskExecutor, abi.encodeWithSelector(CALLBACK_SELECTOR, currTask, bytes32(_amounts[0] + _fees[0])); return true; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

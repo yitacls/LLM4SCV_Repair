@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "ERC721",
+        "contract_version": "^0.4.19",
+        "state_variables": [
+            {
+                "variable_name": "allowed",
+                "fix_info": "Mapping structure should be changed to track approvals properly",
+                "variable_code": "mapping (address => mapping (address => bool)) internal allowed;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwnerOf",
+                "fix_info": "Added modifier to ensure caller owns the token",
+                "modifier_code": "modifier onlyOwnerOf(uint256 _tokenId) {\n        require(msg.sender == ownerOf(_tokenId), \"Caller is not token owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "approve",
+                "fix_info": "Fixed access control vulnerability by removing tx.origin, adding proper ownership check, and improving approval structure",
+                "corrected_code": "function approve(address _to, uint256 _tokenId) public {\n        require(msg.sender == ownerOf(_tokenId), \"Caller is not token owner\");\n        require(msg.sender != _to, \"Cannot approve self\");\n        \n        allowed[msg.sender][_to] = true;\n        Approval(msg.sender, _to, _tokenId);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "lockEtherPay",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "release",
+                "fix_info": "Replaced vulnerable low-level call with a safer transfer method and added checks for successful execution and re-entrancy protection.",
+                "corrected_code": "function release() onlyOwner public {\n    require(isLocked, \"Funds are not locked.\");\n    require(!isReleased, \"Funds are already released.\");\n    require(lockOver(), \"Lock period is not over.\");\n\n    uint256 token_amount = tokenBalance();\n\n    // Ensure no reentrancy\n    isReleased = true;\n\n    // Use .transfer() for safer token transfer, ensuring fallback function is not exploited\n    require(address(token_reward).call(abi.encodeWithSignature(\"transfer(address,uint256)\", beneficiary, token_amount)), \"Token transfer failed.\");\n\n    emit TokenReleased(beneficiary, token_amount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

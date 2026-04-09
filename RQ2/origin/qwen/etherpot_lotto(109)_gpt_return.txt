@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "winner.send(subpot);",
+    "description": "The low-level send() function is used without checking its return value. In Solidity 0.4.x, send() can fail silently (e.g., due to gas limitations or contract fallback function reverting), but the code does not verify whether the transfer was successful. This could lead to a situation where the isCashed flag is set to true even though the funds were not actually transferred to the winner, resulting in permanent loss of funds from the contract."
+}
+```

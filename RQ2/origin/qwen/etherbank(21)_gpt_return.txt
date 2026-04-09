@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if (!(msg.sender.call.value(amountToWithdraw)())) { throw; }\nuserBalances[msg.sender] = 0;",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the user's balance. An attacker can create a malicious contract that calls back into the withdrawBalance function before the userBalances[msg.sender] = 0; line is executed, allowing them to withdraw the same amount multiple times. The balance is only set to zero after the external call completes, making this a classic reentrancy vulnerability."
+}
+```

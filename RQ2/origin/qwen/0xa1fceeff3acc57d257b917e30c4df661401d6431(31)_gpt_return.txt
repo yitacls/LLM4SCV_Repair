@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "contract_address.call(id, msg.sender, tos[i], vs[i]);",
+    "description": "The low-level call operation does not check the return value, which means that if the transferFrom call fails, the function will continue executing without reverting. This can lead to situations where tokens are not actually transferred but the function still returns true, potentially causing loss of funds or incorrect state updates. In Solidity ^0.4.18, call() returns a boolean indicating success, but this return value is ignored here."
+}
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "PTSDToken",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Added to ensure contract compiles with SafeMath",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "1. Updated to SafeMath to prevent arithmetic overflows/underflows\n2. Using SafeMath operations (add/sub) instead of basic arithmetic\n3. Added zero address check\n4. Upgraded to Solidity 0.8.x which has built-in overflow protection",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Cannot transfer to zero address\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender] - _value;\n    balances[_to] = balances[_to] + _value;\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

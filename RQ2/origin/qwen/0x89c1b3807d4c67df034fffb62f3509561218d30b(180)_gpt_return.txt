@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(CANCELLATION_FEE);",
+        "description": "The low-level call to send CANCELLATION_FEE to SGX_ADDRESS does not check the return value. If the call fails (e.g., due to gas issues or receiver reversion), the failure will be silently ignored, potentially leading to financial losses or incorrect state tracking."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "SGX_ADDRESS.send(fee);",
+        "description": "The low-level call to send fee to SGX_ADDRESS does not check the return value. If the call fails (e.g., due to gas issues or receiver reversion), the failure will be silently ignored, potentially leading to financial losses or incorrect state tracking."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].requester.call.gas(2300).value(fee)();",
+        "description": "The low-level call to refund the requester does not check the return value. If the call fails (e.g., due to gas issues, receiver reversion, or a fallback function that consumes more than 2300 gas), the failure will be silently ignored, potentially leading to financial losses or incorrect state tracking."
+    },
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);",
+        "description": "The low-level call to the callback function in the application contract does not check the return value. If the call fails (e.g., due to insufficient gas or receiver reversion), the failure will be silently ignored, potentially causing incomplete execution of expected behavior or incorrect state tracking."
+    }
+]
+```

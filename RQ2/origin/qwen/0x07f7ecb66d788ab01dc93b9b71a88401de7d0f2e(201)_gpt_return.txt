@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256(\"donate()\")));",
+    "description": "The low-level call to the whale address does not check the return value, which means the function will continue execution even if the external call fails. This can lead to loss of funds if the donate() function on the whale contract reverts or if the whale address is not a contract. The amount will be transferred regardless of call success, and totalDonated will still be incremented even if the donation actually failed."
+}
+```

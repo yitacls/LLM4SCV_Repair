@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "WashCrowdsale",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic vulnerability by adding SafeMath operations and improved the ether transfer mechanism to use transfer() instead of send() for better security",
+            "corrected_code": "function () payable {\n        require(!crowdsaleClosed);\n        uint256 bonus = 0;\n        uint256 amount;\n        uint256 ethamount = msg.value;\n        balanceOf[msg.sender] = balanceOf[msg.sender].add(ethamount);\n        amountRaised = amountRaised.add(ethamount);\n        if(now >= preSaleStartdate && now <= preSaleDeadline ){\n            amount = ethamount.div(price);\n            bonus = amount.div(8);\n            amount = amount.add(bonus);\n        }\n        else if(now >= mainSaleStartdate && now <= mainSaleDeadline){\n            amount = ethamount.div(price);\n        }\n        amount = amount.mul(1000000000000000000);\n        tokenReward.transfer(msg.sender, amount);\n        beneficiary.transfer(ethamount);\n        fundTransferred = fundTransferred.add(ethamount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "token.transfer(msg.sender, tokens);",
+    "description": "The code does not check the return value of the transfer function in line 60, which can lead to unexpected behavior if the transfer fails. It is important to handle potential transfer failures to prevent loss of funds or disruption of the contract's intended logic."
+}
+```

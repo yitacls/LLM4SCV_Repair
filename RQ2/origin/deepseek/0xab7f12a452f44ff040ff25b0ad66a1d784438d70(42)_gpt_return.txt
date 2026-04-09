@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Undeflow/Integer Overflow",
+    "location": "Line: `uint rate = normalRate * juicyBonus--;`",
+    "description": "In Solidity <0.8.0, integer arithmetic operations do not automatically check for overflow/underflow. The operation `juicyBonus--` will cause an underflow when `juicyBonus` is 0, wrapping around to 2^256 - 1. This makes the subsequent multiplication `normalRate * juicyBonus--` produce an extremely large `rate` value, leading to an incorrect and potentially enormous `tokens` calculation in `uint tokens = msg.value * rate;`. An attacker could exploit this to mint an excessive number of tokens for a small ETH payment when `juicyBonus` reaches 0."
+}
+```

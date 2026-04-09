@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ExtremeToken",
+    "contract_version": "^0.4.14",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations for balance calculations and price multiplication",
+            "corrected_code": "function sell(uint256 amount) {\n        if (balances[msg.sender] < amount ) throw;\n        balances[this] = balances[this].add(amount);\n        balances[msg.sender] = balances[msg.sender].sub(amount);\n        if (!msg.sender.send(amount.mul(sellPrice))) {\n            throw;\n        } else {\n            Transfer(msg.sender, this, amount);\n        }               \n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

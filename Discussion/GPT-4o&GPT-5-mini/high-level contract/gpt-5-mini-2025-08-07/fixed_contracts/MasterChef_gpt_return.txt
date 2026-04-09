@@ -1,0 +1,76 @@
+[{
+    "contract_name": "MasterChef",
+    "contract_version": "0.6.7",
+    "state_variables": [
+        {
+            "variable_name": "_status",
+            "fix_info": "Added reentrancy guard state variable to prevent reentrant calls.",
+            "variable_code": "uint256 private _status = 1;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_NOT_ENTERED",
+            "fix_info": "Added reentrancy guard constant for the non-entered state.",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_ENTERED",
+            "fix_info": "Added reentrancy guard constant for the entered state.",
+            "variable_code": "uint256 private constant _ENTERED = 2;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier to block reentrant calls on functions that perform external interactions.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "add",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy during pool addition and massUpdatePools calls.",
+            "corrected_code": "function add(\n        uint256 _allocPoint,\n        IERC20 _lpToken,\n        bool _withUpdate,\n        address _strategy\n    ) public onlyOwner nonReentrant {\n        if (_withUpdate) {\n            massUpdatePools();\n        }\n        uint256 lastRewardBlock =\n            block.number > startBlock ? block.number : startBlock;\n        totalAllocPoint = totalAllocPoint.add(_allocPoint);\n        poolInfo.push(\n            PoolInfo({\n                lpToken: _lpToken,\n                allocPoint: _allocPoint,\n                lastRewardBlock: lastRewardBlock,\n                accPudPerShare: 0,\n                strategy: _strategy,\n                totalShares: 0\n            })\n        );\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "set",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy while updating pool allocation and optionally mass-updating pools.",
+            "corrected_code": "function set(\n        uint256 _pid,\n        uint256 _allocPoint,\n        bool _withUpdate\n    ) public onlyOwner nonReentrant {\n        if (_withUpdate) {\n            massUpdatePools();\n        }\n        totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(\n            _allocPoint\n        );\n        poolInfo[_pid].allocPoint = _allocPoint;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "deposit",
+            "fix_info": "Applied nonReentrant guard and moved reward transfer after state updates to mitigate reentrancy. Preserved deflationary-token handling and share calculations.",
+            "corrected_code": "function deposit(uint256 _pid, uint256 _amount) public nonReentrant {\n        PoolInfo storage pool = poolInfo[_pid];\n        UserInfo storage user = userInfo[_pid][msg.sender];\n\n        updatePool(_pid);\n\n        uint256 pending = 0;\n        if (user.shares > 0) {\n            pending = user.shares.mul(pool.accPudPerShare).div(1e12).sub(\n                user.rewardDebt\n            );\n        }\n\n        uint256 _pool = balance(_pid); // get current lp token balance in strategy (before deposit)\n        if (_amount > 0) {\n            uint256 _before = pool.lpToken.balanceOf(pool.strategy);\n            pool.lpToken.safeTransferFrom(\n                address(msg.sender),\n                pool.strategy,\n                _amount\n            );\n            uint256 _after = pool.lpToken.balanceOf(pool.strategy);\n            _amount = _after.sub(_before); // adjust for deflationary tokens\n        }\n\n        uint256 shares = 0;\n        if (pool.totalShares == 0) {\n            shares = _amount;\n        } else {\n            // If _pool is zero but pool.totalShares > 0, avoid division by zero\n            if (_pool == 0) {\n                shares = _amount;\n            } else {\n                shares = (_amount.mul(pool.totalShares)).div(_pool);\n            }\n        }\n\n        // Effects: update state before making reward transfer to avoid reentrancy on reward token\n        user.shares = user.shares.add(shares);\n        pool.totalShares = pool.totalShares.add(shares);\n        user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n\n        // Interaction: transfer pending rewards after state updates\n        if (pending > 0) {\n            safePudTransfer(msg.sender, pending);\n        }\n\n        emit Deposit(msg.sender, _pid, _amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdraw",
+            "fix_info": "Applied nonReentrant guard and rearranged checks-effects-interactions: state is updated before invoking external strategy withdraws and reward transfers to prevent reentrancy. Also preserved balance adjustments for limited strategy returns.",
+            "corrected_code": "function withdraw(uint256 _pid, uint256 _shares) public nonReentrant {\n        PoolInfo storage pool = poolInfo[_pid];\n        UserInfo storage user = userInfo[_pid][msg.sender];\n\n        require(user.shares >= _shares, \"withdraw: not good\");\n        updatePool(_pid);\n\n        uint256 r = 0;\n        if (pool.totalShares > 0) {\n            r = (balance(_pid).mul(_shares)).div(pool.totalShares);\n        }\n\n        uint256 pending =\n            user.shares.mul(pool.accPudPerShare).div(1e12).sub(\n                user.rewardDebt\n            );\n\n        // Effects: update state before external calls\n        user.shares = user.shares.sub(_shares);\n        pool.totalShares = pool.totalShares.sub(_shares);\n        user.rewardDebt = user.shares.mul(pool.accPudPerShare).div(1e12);\n\n        // Interactions: transfer pending rewards first (safe) then handle LP withdrawals\n        if (pending > 0) {\n            safePudTransfer(msg.sender, pending);\n        }\n\n        if (r > 0) {\n            uint256 b = pool.lpToken.balanceOf(address(this));\n\n            IStrategy(pool.strategy).withdraw(r);\n            uint256 _after = pool.lpToken.balanceOf(address(this));\n            uint256 _diff = _after.sub(b);\n            if (_diff < r) {\n                r = b.add(_diff);\n            }\n\n            pool.lpToken.safeTransfer(address(msg.sender), r);\n        }\n\n        emit Withdraw(msg.sender, _pid, r);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "emergencyWithdraw",
+            "fix_info": "Applied nonReentrant guard and updated state (clearing user shares and adjusting pool.totalShares) before external strategy interactions to prevent reentrancy and ensure accounting correctness.",
+            "corrected_code": "function emergencyWithdraw(uint256 _pid) public nonReentrant {\n        PoolInfo storage pool = poolInfo[_pid];\n        UserInfo storage user = userInfo[_pid][msg.sender];\n\n        uint256 userShares = user.shares;\n        require(userShares > 0, \"no shares\");\n\n        uint256 r = 0;\n        if (pool.totalShares > 0) {\n            r = (balance(_pid).mul(userShares)).div(pool.totalShares);\n        }\n\n        // Effects: update state BEFORE external calls\n        pool.totalShares = pool.totalShares.sub(userShares);\n        user.shares = 0;\n        user.rewardDebt = 0;\n\n        // Interactions: withdraw from strategy and transfer tokens\n        uint256 b = pool.lpToken.balanceOf(address(this));\n\n        IStrategy(pool.strategy).withdraw(r);\n        uint256 _after = pool.lpToken.balanceOf(address(this));\n        uint256 _diff = _after.sub(b);\n        if (_diff < r) {\n            r = b.add(_diff);\n        }\n\n        pool.lpToken.safeTransfer(address(msg.sender), r);\n        emit EmergencyWithdraw(msg.sender, _pid, userShares);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "safePudTransfer",
+            "fix_info": "Replaced direct pud.transfer calls with SafeERC20.safeTransfer (casting to IERC20) to properly handle ERC20 return values and prevent unchecked-call-return-value issues.",
+            "corrected_code": "function safePudTransfer(address _to, uint256 _amount) internal {\n        uint256 pudBal = IERC20(address(pud)).balanceOf(address(this));\n        if (_amount > pudBal) {\n            IERC20(address(pud)).safeTransfer(_to, pudBal);\n        } else {\n            IERC20(address(pud)).safeTransfer(_to, _amount);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setPoolStrategy",
+            "fix_info": "Added nonReentrant guard and used try/catch on external strategy calls to check failures explicitly (fixing unchecked-call-return-value). Ensures old strategy harvest and withdrawal succeed before switching strategy.",
+            "corrected_code": "function setPoolStrategy(uint256 _pid,address _strategy) public onlyOwner nonReentrant {\n        PoolInfo storage pool = poolInfo[_pid];\n        address oldStrategy = pool.strategy;\n\n        // Try to harvest from the old strategy; revert explicitly on failure to avoid silent failures.\n        try IStrategy(oldStrategy).harvest() {\n        } catch {\n            revert(\"setPoolStrategy: harvest failed\");\n        }\n\n        // Withdraw all from old strategy to the new strategy address; revert on failure.\n        try IStrategy(oldStrategy).withdrawAll(_strategy) {\n        } catch {\n            revert(\"setPoolStrategy: withdrawAll failed\");\n        }\n\n        pool.strategy = _strategy;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

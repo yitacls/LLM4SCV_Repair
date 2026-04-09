@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Lotto",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "cash",
+            "fix_info": "Fixed unchecked low level call by checking the return value of send() and handling failures properly",
+            "corrected_code": "function cash(uint roundIndex, uint subpotIndex){\n\n         var subpotsCount = getSubpotsCount(roundIndex);\n\n         if(subpotIndex>=subpotsCount)\n             return;\n\n         var decisionBlockNumber = getDecisionBlockNumber(roundIndex,subpotIndex);\n\n         if(decisionBlockNumber>block.number)\n             return;\n\n         if(rounds[roundIndex].isCashed[subpotIndex])\n             return;\n         //Subpots can only be cashed once. This is to prevent double payouts\n\n         var winner = calculateWinner(roundIndex,subpotIndex);\n         var subpot = getSubpot(roundIndex);\n\n         // Fixed unchecked low level call by checking return value\n         if(!winner.send(subpot)) {\n             revert();\n         }\n\n         rounds[roundIndex].isCashed[subpotIndex] = true;\n         //Mark the round as cashed\n     }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

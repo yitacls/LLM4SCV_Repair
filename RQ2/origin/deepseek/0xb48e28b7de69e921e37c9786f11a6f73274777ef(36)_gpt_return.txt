@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "beneficiary.send(amountRaised);",
+    "description": "The contract uses the low-level send() call to transfer funds to the beneficiary address before updating critical state variables (amountRaised = 0). If the beneficiary is a malicious contract with a fallback function that calls back into this fallback function via an external call, it can reenter the function while amountRaised still has the original value, allowing multiple withdrawals of the same funds. This violates the Checks-Effects-Interactions pattern, where state changes should occur before external calls. In Solidity ^0.4.18, send() forwards only 2300 gas, which prevents complex reentrancy but is still vulnerable to gas-stingy reentrancy attacks or if the beneficiary is an EOA. The correct mitigation is to use the Checks-Effects-Interactions pattern: update amountRaised before the external call, or use transfer() which throws on failure and forwards 2300 gas, or better yet, use a withdrawal pattern."
+}
+```

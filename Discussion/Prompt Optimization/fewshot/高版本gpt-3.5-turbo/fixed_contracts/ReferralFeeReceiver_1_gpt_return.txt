@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "ReferralFeeReceiver",
+        "contract_version": "^0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "claim",
+                "fix_info": "Avoid erasing storage to decrease gas footprint for referral payments by altering the balance check condition.",
+                "corrected_code": "function claim(Mooniswap[] memory pools) external {
+        UserInfo storage user = userInfo[msg.sender];
+        for (uint256 i = 0; i < pools.length; ++i) {
+            Mooniswap mooniswap = pools[i];
+            TokenInfo storage token = tokenInfo[mooniswap];
+            _collectProcessedEpochs(user, token, mooniswap, token.currentEpoch);
+        }
+
+        uint256 balance = user.balance;
+        if (balance >= 1) {
+            inchToken.transfer(msg.sender, balance - 1);
+        }
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

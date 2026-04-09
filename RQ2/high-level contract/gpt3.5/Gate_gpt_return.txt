@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "multiFill function, lines 120-137",
+    "description": "The multiFill function can be abused for denial-of-service by passing an array of non-existing order IDs. As the function loops through the provided array of IDs, it attempts to access the owner of each order at the index. If an order with a non-existing ID is supplied, the require statement on line 123 will revert the transaction for each iteration, causing a potential DoS attack as the gas will be spent without achieving any meaningful operation. The failed calls could consume significant gas for the caller without any concrete benefit."
+}
+```

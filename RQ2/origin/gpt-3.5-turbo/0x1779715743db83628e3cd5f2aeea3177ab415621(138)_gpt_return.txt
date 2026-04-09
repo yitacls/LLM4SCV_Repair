@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner() );",
+    "description": "This line is vulnerable to the access control issue because it relies on tx.origin for authentication, which is considered an insecure practice as it can be manipulated by intermediate contracts. It is recommended to use msg.sender for authentication instead in most cases."
+}
+```

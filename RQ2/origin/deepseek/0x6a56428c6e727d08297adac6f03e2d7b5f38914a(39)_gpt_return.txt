@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authorization is a dangerous practice that can lead to phishing attacks. tx.origin returns the original EOA (Externally Owned Account) that initiated the transaction chain, not the immediate caller. A malicious contract could trick the owner into calling a function that then calls this contract's convert() function, passing the authorization check because tx.origin would still be the owner. This allows unauthorized operations. The proper access control mechanism should use msg.sender (the immediate caller) or implement a robust role-based system with modifiers. Additionally, in Solidity 0.4.25, there are no built-in access control constructs like Ownable without OpenZeppelin libraries, making manual implementations error-prone."
+}
+```

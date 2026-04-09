@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Lines 75 to 78",
+    "description": "This code does not perform proper range checks on the inputs to the functions. This can potentially lead to Integer Overflow and Underflow if malicious inputs are provided which could result in unexpected consequences. Particularly, the bug is in the validateJoinSplit() function where variables 'm' and 'n' is simply added without checking for potential overflows."
+}
+```

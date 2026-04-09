@@ -1,0 +1,23 @@
+```json
+{
+    "contract_name": "GAWToken",
+    "solidity_version": "0.4.18",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function close() public onlyOwner {",
+            "description": "The close function can be called by anyone as there is no access control modifier to restrict it to only the owner. This makes the selfdestruct vulnerable to unauthorized parties triggering it."
+        },
+        {
+            "type": "LEAKING_VUL",
+            "location": "selfdestruct(owner);",
+            "description": "The use of selfdestruct allows Ether to be sent to an arbitrary address, which can result in a loss of funds if the receiver is not a trusted entity."
+        },
+        {
+            "type": "SUICIDAL_VUL",
+            "location": "selfdestruct(owner);",
+            "description": "The selfdestruct operation can be initiated by the owner, which essentially kills the contract and sends remaining funds to the specified address. This can be exploited in certain scenarios to disrupt the functioning of the contract."
+        }
+    ]
+}
+```  

@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "Fidometa",
+        "contract_version": "0.8.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_approve",
+                "fix_info": "Ensure proper event emission and address validations in _approve function.",
+                "corrected_code": "function _approve(address owner, address spender, uint256 amount) private {\n        require(owner != address(0), 'BEP20: approve from the zero address');\n        require(spender != address(0), 'BEP20: approve to the zero address');\n        _allowances[owner][spender] = amount;\n        emit Approval(owner, spender, amount);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setCharges",
+                "fix_info": "Ensure that the charges do not exceed 100% when setting charges in setCharges function.",
+                "corrected_code": "function setCharges(uint256 community_charge, uint256 ecoSysFee, uint256 surcharge1, uint256 surcharge2, uint256 surcharge3) external onlyOwner {\n        require(community_charge <= (100 * 10**uint256(decimals)), 'Community Charge % should be less than or equal to 100%');\n        require(ecoSysFee <= (100 * 10**uint256(decimals)), 'EcoSysFee % should be less than or equal to 100%');\n        require(surcharge1 <= (100 * 10**uint256(decimals)), 'surcharge1 % should be less than or equal to 100%');\n        require(surcharge2 <= (100 * 10**uint256(decimals)), 'surcharge2 % should be less than or equal to 100%');\n        require(surcharge3 <= (100 * 10**uint256(decimals)), 'surcharge3 % should be less than or equal to 100%');\n        _community_charge = community_charge;\n        _ecoSysFee = ecoSysFee;\n        _surcharge1 = surcharge1;\n        _surcharge2 = surcharge2;\n        _surcharge3 = surcharge3;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "transferWithLock",
+                "fix_info": "Ensure proper validation in transferWithLock function to prevent re-locking an already locked address.",
+                "corrected_code": "function transferWithLock(address recipient, uint256 tAmount, uint256 initialLock) external onlyOwner {\n        require(recipient != address(0), 'Invalid target');\n        require(initialLock >= 0, 'timeindays should be greater than or equal to 0');\n        require(locks[recipient].lockedToken == 0, 'This address is already in vesting period');\n        _transfer(_msgSender(), recipient, tAmount);\n        locks[recipient] = LockDetails(block.timestamp, initialLock, tAmount, tAmount, 0);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

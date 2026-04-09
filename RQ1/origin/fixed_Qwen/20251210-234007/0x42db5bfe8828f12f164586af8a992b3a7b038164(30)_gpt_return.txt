@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "firstTest",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawal",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for send() and delegatecall() operations",
+            "corrected_code": "function withdrawal()\n    payable public\n    {\n        adr=msg.sender;\n        if(msg.value>Limit)\n        {  \n            var result = emails.delegatecall(bytes4(sha3(\"logEvent()\")));\n            require(result);\n            require(adr.send(this.balance));\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

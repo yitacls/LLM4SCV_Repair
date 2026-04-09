@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "JaxBox",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Changed from uint256 to uint256 mapping, added safe math library usage",
+                "variable_code": "mapping (address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Changed type to uint256 with safe math",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No changes needed - original modifier remains the same",
+                "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "none"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library and input validation",
+                "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner {\n        require(tokensToMint > 0, \"Tokens to mint must be greater than 0\");\n        \n        uint256 multiplier = 10 ** 18;\n        uint256 totalTokenToMint = tokensToMint.mul(multiplier);\n        \n        // Check for overflow before updating balances\n        uint256 newOwnerBalance = balanceOf[owner].add(totalTokenToMint);\n        uint256 newTotalSupply = totalSupply.add(totalTokenToMint);\n        \n        // Update state variables\n        balanceOf[owner] = newOwnerBalance;\n        totalSupply = newTotalSupply;\n        \n        emit Transfer(address(0), owner, totalTokenToMint);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

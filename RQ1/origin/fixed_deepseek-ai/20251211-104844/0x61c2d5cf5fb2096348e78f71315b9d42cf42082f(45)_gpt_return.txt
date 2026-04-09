@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "TestERC721",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "allowed",
+                "fix_info": "Upgraded mapping variable to use address operator instead of index-based approval tracking",
+                "variable_code": "mapping(uint256 => address) private _tokenApprovals;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyTokenOwner",
+                "fix_info": "Added modifier to ensure only token owner can approve transfers",
+                "modifier_code": "modifier onlyTokenOwner(uint256 tokenId) {\n        require(ownerOf(tokenId) == msg.sender, \"ERC721: approve caller is not token owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "approve",
+                "fix_info": "Fixed access control vulnerability by removing tx.origin check, using onlyTokenOwner modifier, updating to ERC721 standard approval pattern, and adding comprehensive validation",
+                "corrected_code": "function approve(address to, uint256 tokenId) public virtual {\n        address owner = ownerOf(tokenId);\n        require(to != owner, \"ERC721: approval to current owner\");\n        require(\n            msg.sender == owner || isApprovedForAll(owner, msg.sender),\n            \"ERC721: approve caller is not token owner nor approved for all\"\n        );\n        _approve(to, tokenId);\n    }\n\n    function _approve(address to, uint256 tokenId) internal virtual {\n        _tokenApprovals[tokenId] = to;\n        emit Approval(ownerOf(tokenId), to, tokenId);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

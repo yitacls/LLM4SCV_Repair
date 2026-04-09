@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "This code uses the deprecated `send()` function to forward ether without checking its return value. In Solidity ^0.4.23, `send()` returns a boolean indicating success (`true`) or failure (`false`). If the transfer fails (e.g., if the recipient is a contract that runs out of gas or reverts), the function will silently continue execution instead of reverting, causing the ether transfer to fail while the rest of the transaction proceeds. This can lead to inconsistent state and loss of funds. The recommended fix is to use `transfer()` (which automatically reverts on failure in this compiler version) or explicitly check the return value of `send()` and revert on failure."
+}
+```

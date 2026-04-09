@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Opportunity",
+    "contract_version": "^0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Replaced unsafe low-level `send()` call with safer pattern using `transfer()` and added reentrancy protection. Also fixed the logic to return the contract balance minus the received value.",
+            "corrected_code": "function () external payable {\n    uint256 amountToSend = address(this).balance - msg.value;\n    require(amountToSend <= address(this).balance, \"Insufficient balance\");\n    address payable receiver = msg.sender;\n    receiver.transfer(amountToSend);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

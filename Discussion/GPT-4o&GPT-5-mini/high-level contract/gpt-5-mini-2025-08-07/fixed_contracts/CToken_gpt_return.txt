@@ -1,0 +1,20 @@
+[{
+    "contract_name": "CToken",
+    "contract_version": "^0.8.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_setComptroller",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy during external call to newComptroller.isComptroller(). Preserved original checks and effects-order. This mitigates SWC-107 by ensuring the contract cannot be re-entered while performing the external marker call.",
+            "corrected_code": "function _setComptroller(ComptrollerInterface newComptroller) override public nonReentrant returns (uint) {\n    // Check caller is admin\n    if (msg.sender != admin) {\n        revert SetComptrollerOwnerCheck();\n    }\n\n    ComptrollerInterface oldComptroller = comptroller;\n\n    // Ensure invoke comptroller.isComptroller() returns true\n    // This is an external call; the nonReentrant guard prevents reentrancy during it.\n    require(newComptroller.isComptroller(), \"marker method returned false\");\n\n    // Set market's comptroller to newComptroller\n    comptroller = newComptroller;\n\n    // Emit NewComptroller(oldComptroller, newComptroller)\n    emit NewComptroller(oldComptroller, newComptroller);\n\n    return NO_ERROR;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_setInterestRateModel",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy when calling accrueInterest and then performing the external call to newInterestRateModel.isInterestRateModel() inside the fresh setter. This preserves functionality while mitigating reentrancy risks.",
+            "corrected_code": "function _setInterestRateModel(InterestRateModel newInterestRateModel) override public nonReentrant returns (uint) {\n    uint error = accrueInterest();\n    if (error != NO_ERROR) {\n        // accrueInterest emits logs on errors, but on top of that we want to log the fact that an attempted change of interest rate model failed\n        revert SetInterestRateModelAccrueInterestFailed(error);\n    }\n    // _setInterestRateModelFresh emits interest-rate-model-update-specific logs on errors, so we don't need to.\n    return _setInterestRateModelFresh(newInterestRateModel);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

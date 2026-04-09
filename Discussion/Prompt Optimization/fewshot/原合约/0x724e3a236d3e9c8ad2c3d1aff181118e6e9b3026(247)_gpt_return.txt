@@ -1,0 +1,21 @@
+```json
+[
+    {
+        "contract_name": "BITCOINMILLIONARE",
+        "contract_version": "^0.4.18",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdraw",
+                "fix_info": "Ensure only the owner can withdraw and prevent reentrancy vulnerability.",
+                "corrected_code": "function withdraw() onlyOwner public {
+    uint256 etherBalance = address(this).balance;
+    owner.transfer(etherBalance);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

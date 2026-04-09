@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Oraclize",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "cbAddress",
+            "fix_info": "Replaced tx.origin with msg.sender to prevent access control bypass vulnerability. tx.origin can be exploited by malicious contracts to bypass authentication checks.",
+            "corrected_code": "function cbAddress()\n    constant\n    returns (address _cbAddress)\n    {\n        if (cbAddresses[msg.sender] != 0)\n            _cbAddress = msg.sender;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

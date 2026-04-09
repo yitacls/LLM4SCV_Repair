@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "approveDomainBid function (line 92 - 101)",
+        "description": "This vulnerability is associated with the potential risk that malicious actors can withdraw Ether without proper safety checks. In the approveDomainBid function, Ether may be mishandled due to a lack of security checks or validations."
+    },
+    {
+        "type": "SWC-122-Lack of Proper Signature Verification",
+        "location": "fulfillDomainBid function (line 121 - 153)",
+        "description": "This vulnerability arises due to the absence of proper verification of the signature. Attackers can tamper with signed transactions and manipulate their orders if signature verification is not correctly implemented. The recover function in the contract does not adequately verify the signatures in fulfillDomainBid function, leading to this vulnerability."
+    },
+    {
+        "type": "SWC-117-Signature Malleability",
+        "location": "fulfillDomainBid function, recover statement (line 135)",
+        "description": "This vulnerability is associated with the risk that signatures can potentially be modified, providing attack vectors. The recover function extracts an Ethereum address from a signed hash, but there is no check to ensure the correct and valid signature, which may enable an attacker to change the signature."
+    }
+]
+```

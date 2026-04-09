@@ -1,0 +1,42 @@
+```json
+[
+    {
+        "contract_name": "Ark",
+        "contract_version": "0.6.12",
+        "state_variables": [
+            {
+                "variable_name": "insuranceFund",
+                "fix_info": "Added address(0) check to prevent invalid assignments",
+                "variable_code": "address public insuranceFund;",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Updated to include version and prevent re-initialization.",
+                "corrected_code": "function initialize() external initializer {\n    __Ownable_init();\n    __ReentrancyGuard_init();\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawForLoss",
+                "fix_info": "Added checks-effects-interactions pattern to mitigate reentrancy. Added error handling for _transfer call failure to address SWC-113.",
+                "corrected_code": "function withdrawForLoss(Decimal.decimal memory _amount, IERC20 _quoteToken) public override nonReentrant {\n    require(insuranceFund == _msgSender(), \"only insuranceFund\");\n    require(address(_quoteToken) != address(0), \"invalid token\");\n\n    if (_getTokenDecimals(address(_quoteToken)) < 18) {\n        _amount = _amount.addD(_toDecimal(_quoteToken, 1));\n    }\n\n    require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \"insufficient funds\");\n\n    // Effects: Update the withdrawal history before making external calls\n    Decimal.decimal memory cumulativeAmount;\n    uint256 len = withdrawnTokenHistory[_quoteToken].length;\n    if (len == 0) {\n        cumulativeAmount = _amount;\n    } else {\n        cumulativeAmount = withdrawnTokenHistory[_quoteToken][len - 1].cumulativeAmount.addD(_amount);\n    }\n    withdrawnTokenHistory[_quoteToken].push(\n        WithdrawnToken({ timestamp: _blockTimestamp(), cumulativeAmount: cumulativeAmount })\n    );\n\n    // Interactions: External function calls go last to avoid reentrancy\n    require(_transfer(_quoteToken, _msgSender(), _amount), \"transfer failed\");\n    emit WithdrawnForLoss(_msgSender(), _amount.toUint(), address(_quoteToken));\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimTokens",
+                "fix_info": "Added proper error handling for _transfer call failure and address(0) validation.",
+                "corrected_code": "function claimTokens(address payable _to, IERC20 _token) external onlyOwner nonReentrant {\n    require(_to != address(0), \"to address is required\");\n    if (_token == IERC20(0)) {\n        require(address(this).balance > 0, \"no Ether to transfer\");\n        (bool success, ) = _to.call{value: address(this).balance}(\"\");\n        require(success, \"Ether transfer failed\");\n    } else {\n        uint256 tokenBalance = _balanceOf(_token, address(this));\n        require(tokenBalance > 0, \"no tokens to transfer\");\n        require(_transfer(_token, _to, tokenBalance), \"token transfer failed\");\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setInsuranceFund",
+                "fix_info": "Added validation to prevent setting the insuranceFund to address(0).",
+                "corrected_code": "function setInsuranceFund(address _insuranceFund) external onlyOwner {\n    require(_insuranceFund != address(0), \"insuranceFund cannot be address(0)\");\n    insuranceFund = _insuranceFund;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

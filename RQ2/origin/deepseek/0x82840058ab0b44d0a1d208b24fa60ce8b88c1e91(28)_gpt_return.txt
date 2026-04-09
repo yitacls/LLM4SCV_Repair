@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner, 'onlyOwner: insufficient privilege');",
+    "description": "The modifier uses tx.origin for authorization instead of msg.sender. This makes the contract vulnerable to phishing attacks where a malicious contract could trick the owner into calling a function, causing tx.origin to be the owner's address while msg.sender is the attacker's contract address. This bypasses the intended access control, allowing unauthorized privileged operations. The vulnerability is compounded by the use of the onlyOwner modifier to protect critical functions in the BridgeOperatable contract."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The 'require' statement is checking the transaction origin (tx.origin) against the owner of the contract. This is a potential security vulnerability because it allows any contract that is called by the owner to modify the state of your contract. It is safer to use 'msg.sender' instead of 'tx.origin' for user authentication. 'msg.sender' is the direct caller of the contract which may be another contract, while 'tx.origin' is the sender of the transaction and can't be a contract. Thus, a malicious contract could trick the owner into initiating a transaction, allowing it to pass the 'require' condition and change the 'ethToJot' value."
+}
+```

@@ -1,0 +1,54 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return( ( uint(block.blockhash(_lastb  )) & 0xFFFFFF )",
+        "description": "The blockhash function is being used to derive randomness; however, it should not be relied upon for secure randomness as it can be manipulated by miners."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+1)) & 0xFFFFFF ) << 24 )",
+        "description": "The blockhash function is being used to derive randomness, and combining additional blockhash values does not improve its security. Miners can still influence the randomness outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+2)) & 0xFFFFFF ) << 48 )",
+        "description": "Using multiple blockhash values further spreads the reliance on blockhash-based randomness, which remains insecure and manipulable by miners."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+3)) & 0xFFFFFF ) << 72 )",
+        "description": "This code continues to use blockhash for randomness, spreading its use over additional blocks, which does not mitigate the fundamental vulnerability of miner influence."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+4)) & 0xFFFFFF ) << 96 )",
+        "description": "The continued reliance on multiple blockhash values for randomness amplifies the risk of predictable randomness that could be exploited by miners."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+5)) & 0xFFFFFF ) << 120 )",
+        "description": "Blockhash does not provide secure randomness. This snippet further contributes to predictable randomness, which miners can exploit."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+6)) & 0xFFFFFF ) << 144 )",
+        "description": "The compound use of blockhash here cannot assure secure randomness, increasing susceptibility to miner manipulation."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+7)) & 0xFFFFFF ) << 168 )",
+        "description": "Using a sequence of blockhash values introduces no meaningful improvement to randomness security."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+8)) & 0xFFFFFF ) << 192 )",
+        "description": "Inclusion of additional blockhash computations spreads the reliance on insecure randomness across more data points, without eliminating miner manipulation risks."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "| ( ( uint(block.blockhash(_lastb+9)) & 0xFFFFFF ) << 216 )",
+        "description": "The blockhash function in this context remains insecure and vulnerable to miner manipulation, repeating the same core issue."
+    }
+]
+```

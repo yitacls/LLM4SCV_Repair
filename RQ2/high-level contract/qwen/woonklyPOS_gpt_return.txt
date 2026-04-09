@@ -1,0 +1,42 @@
+```json
+[
+    {
+        "contract_name": "WOOPStake",
+        "contract_version": "^0.6.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_withdrawReward",
+                "fix_info": "Fixed reentrancy vulnerability by updating reward balance before token transfer",
+                "corrected_code": "function _withdrawReward(address sc, address account, uint256 amount) internal Active nonReentrant returns (uint256) { IERC20 _token = IERC20(sc); uint256 rew = rewarded(sc, account); require(amount <= rew, \"WO:amew\"); require(amount <= getMyTokensBalance(sc), \"WO:-tk\"); uint256 remainder = rew.sub(amount); // Fix critical issue by coin Fabrik _doreward(sc, account, remainder); require(_token.transfer(account, amount)); emit RewardWithdrawed(sc, account, amount, remainder); return amount; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_compoundReward",
+                "fix_info": "Fixed reentrancy vulnerability by updating reward balance before stake addition",
+                "corrected_code": "function _compoundReward(address account, uint256 amount) internal Active returns (uint256) { uint256 rew = rewarded(_woopERC20, account); require(amount <= rew, \"WO: am>w\"); require(amount <= getMyTokensBalance(_woopERC20), \"WO:-tk\"); uint256 remainder = rew.sub(amount); // Fix critical issue by coin Fabrik _doreward(_woopERC20, account, remainder); _stakes.addToStake(account, amount); emit RewardToCompound(account, amount); return amount; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdrawRewardCOIN",
+                "fix_info": "Fixed reentrancy vulnerability by updating reward balance before ETH transfer",
+                "corrected_code": "function _withdrawRewardCOIN(address account, uint256 amount) internal Active nonReentrant returns (uint256) { uint256 rew = rewardedCOIN(account); require(amount <= rew, \"WO:am++\"); require(amount <= getMyCoinBalance(), \"WO:tk-\"); uint256 remainder = rew.sub(amount); // Fix critical issue by coin Fabrik _dorewardCOIN(account, remainder); address payable acc = address(uint160(address(account))); acc.transfer(amount); emit RewardCOINWithdrawed(account, amount, remainder); return amount; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdrawAllrewardsCOIN",
+                "fix_info": "Fixed DoS vulnerability by adding try/catch for external transfers",
+                "corrected_code": "function _withdrawAllrewardsCOIN() internal SolvencyCOIN() nonReentrant returns (uint256) { uint256 total = 0; uint256 rew = 0; Stake memory p; uint256 last = _stakes.getLastIndexStakes(); for (uint256 i = 0; i < (last + 1); i++) { (p.account, p.bal, p.autoCompound, p.flag) = _stakes.getStakeByIndex(i); if (p.flag == 1) { rew = rewardedCOIN(p.account); if (rew > 0) { try this.withdrawRewardCOINInternal(p.account, rew) { total = total.add(rew); } catch { emit InsuficientRewardFundCOIN(p.account); } } } } uint256 eth_reserve = address(this).balance; if (eth_reserve > 0) { address payable ow = address(uint160(_remainder)); ow.transfer(eth_reserve); } return total; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawRewardCOINInternal",
+                "fix_info": "Added internal function to handle reward withdrawal in try/catch block",
+                "corrected_code": "function withdrawRewardCOINInternal(address account, uint256 amount) external onlyIsInOwners { _withdrawRewardCOIN(account, amount); }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

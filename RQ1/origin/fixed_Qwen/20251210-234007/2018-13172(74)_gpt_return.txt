@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "bzxcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath checks to prevent arithmetic overflow when minting tokens",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n        balanceOf[target] = safeAdd(balanceOf[target], mintedAmount);\n        totalSupply = safeAdd(totalSupply, mintedAmount);\n        Transfer(0, owner, mintedAmount);\n        Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

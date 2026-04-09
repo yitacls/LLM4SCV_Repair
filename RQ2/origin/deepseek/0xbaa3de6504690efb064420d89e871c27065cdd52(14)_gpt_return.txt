@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.value(msg.value)(data);",
+    "description": "The low-level call to the target address does not check the return value or handle possible failures. In Solidity versions prior to 0.5.0, .call() returns a boolean indicating success, but this return value is ignored. If the call fails (e.g., due to out of gas, revert in the target contract, or non-existent contract), the transaction will not revert, potentially leading to unexpected state changes and loss of funds. Additionally, since the function is payable and forwards all sent Ether, any failure in the call could result in the Ether being locked in the Proxy contract. Best practice is to always check the return value of low-level calls and revert on failure."
+}
+```

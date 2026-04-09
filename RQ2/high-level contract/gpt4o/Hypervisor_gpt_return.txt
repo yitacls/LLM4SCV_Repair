@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "deposit function: Lines 81-142",
+            "description": "The `deposit` function does not contain explicit checks or restrictions to prevent unauthorized users from withdrawing Ether or tokens, which could potentially allow unintended transfers."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "withdraw function: Lines 175-216",
+            "description": "The `withdraw` function could be vulnerable to a reentrancy attack because it transfers tokens (`token0.safeTransfer` and `token1.safeTransfer`) before updating the `totalSupply` or performing the `_burn` operation. This allows potential attackers to call the function recursively before state changes are finalized, leading to fund theft."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "uniswapV3MintCallback function: Line 415",
+            "description": "The conditional statement (`if (payer == address(this))`) will execute code that has no functional effect when `payer` equals `address(this)`, resulting in unnecessary computations that do nothing to alter the contract's state or behavior."
+        }
+    ]
+}
+```

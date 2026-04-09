@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "return uint8(uint256(keccak256(block.blockhash(b), player, cardNumber, timestamp)) % 52);",
+    "description": "The randomness generation using block.blockhash, block.timestamp, and block.number is insecure. These values can be influenced, predicted, or manipulated by miners, especially in cases where they have an incentive to do so. As a result, the generated randomness can be biased or non-random, leading to potential exploits in scenarios where randomness integrity is crucial."
+}
+```

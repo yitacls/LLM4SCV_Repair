@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_to == tx.origin) {  // fault line",
+    "description": "This line of code allows anyone calling the 'deposit' function to manipulate the 'profitBalance' of another user if they are the transaction originator (tx.origin). This can lead to unauthorized access and potential loss of funds."
+}
+```

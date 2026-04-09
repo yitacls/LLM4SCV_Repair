@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "for(uint i=0;i<350;i++) {\n    listAddresses.push(msg.sender);\n}",
+    "description": "The function is vulnerable to Denial of Service (DoS) attack because it allows a malicious user to repeatedly call this function and fill the array with their address 350 times per transaction. Since the array has a gas cost for each push operation, repeated calls can eventually cause the contract to run out of gas or become expensive to execute, preventing legitimate users from interacting with the contract. The loop executes 350 iterations per call, which can be called multiple times until the array reaches 1500 elements, after which the array is reset. This creates a resource exhaustion vulnerability."
+}
+```

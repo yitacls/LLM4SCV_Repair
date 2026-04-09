@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "hashesSize",
+            "fix_info": "Added state variable to store the size of hashes for entropy calculation",
+            "variable_code": "uint256 public hashesSize;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "entropyProvider",
+            "fix_info": "Added state variable to store authorized entropy provider address",
+            "variable_code": "address public entropyProvider;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "lastEntropy",
+            "fix_info": "Added state variable to store last entropy value",
+            "variable_code": "uint256 public lastEntropy;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyEntropyProvider",
+            "fix_info": "Added modifier to restrict entropy updates to authorized provider",
+            "modifier_code": "modifier onlyEntropyProvider() {\n    require(msg.sender == entropyProvider);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced vulnerable blockhash-based randomness with commit-reveal scheme using external entropy",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Use secure entropy source instead of blockhash\n    return( ( uint(sha256(lastEntropy, _lastb)) & 0xFFFFFF )\n        | ( ( uint(sha256(lastEntropy, _lastb+1)) & 0xFFFFFF ) << 24 )\n        | ( ( uint(sha256(lastEntropy, _lastb+2)) & 0xFFFFFF ) << 48 )\n        | ( ( uint(sha256(lastEntropy, _lastb+3)) & 0xFFFFFF ) << 72 )\n        | ( ( uint(sha256(lastEntropy, _lastb+4)) & 0xFFFFFF ) << 96 )\n        | ( ( uint(sha256(lastEntropy, _lastb+5)) & 0xFFFFFF ) << 120 )\n        | ( ( uint(sha256(lastEntropy, _lastb+6)) & 0xFFFFFF ) << 144 )\n        | ( ( uint(sha256(lastEntropy, _lastb+7)) & 0xFFFFFF ) << 168 )\n        | ( ( uint(sha256(lastEntropy, _lastb+8)) & 0xFFFFFF ) << 192 )\n        | ( ( uint(sha256(lastEntropy, _lastb+9)) & 0xFFFFFF ) << 216 )\n        | ( ( uint(_delta) / hashesSize) << 240));\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setEntropy",
+            "fix_info": "Added function to update entropy value by authorized provider",
+            "corrected_code": "function setEntropy(uint256 _entropy) onlyEntropyProvider public {\n    lastEntropy = _entropy;\n}",
+            "change_type": "added"
+        },
+        {
+            "function_name": "setEntropyProvider",
+            "fix_info": "Added function to set the authorized entropy provider",
+            "corrected_code": "function setEntropyProvider(address _provider) onlyEntropyProvider public {\n    entropyProvider = _provider;\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "msg.sender.call.value(2 ether)()",
+            "description": "The use of unchecked low-level call in this context can be exploited by malicious contracts to perform reentrancy attacks on the contract."
+        }
+    ]
+}
+```

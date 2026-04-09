@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function rand(uint max) constant private returns (uint256 result)",
+    "description": "The `rand` function generates a predictable random number based on previous block hash (`block.blockhash(block.number - 1)`) and block number. This is vulnerable because: 1) Block hashes are publicly visible and can be predicted by miners who can choose to not publish a block if the resulting random value is unfavorable. 2) When a contract calls this function in the same transaction as other contracts, those contracts can also see the same block hash. 3) In many blockchain environments (especially testnets or private chains), miners/validators may have control over block production, making the randomness easily manipulable. This makes the function unsuitable for any security-critical randomness needs like gambling, lotteries, or random assignments."
+}
+```

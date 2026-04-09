@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.send(address(this).balance);",
+    "description": "The function withdrawEther allows anyone to withdraw the contract's balance. There is no access control logic implemented to restrict this operation to only the owner of the contract, potentially exposing the contract to unauthorized withdrawals of Ether."
+}
+```

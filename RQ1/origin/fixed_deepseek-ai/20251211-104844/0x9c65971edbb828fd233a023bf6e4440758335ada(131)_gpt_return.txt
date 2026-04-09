@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "Main",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "ownerAddress",
+                "fix_info": "Keep the original owner address variable but modify its usage",
+                "variable_code": "address private ownerAddress;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to properly restrict access to owner",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == ownerAddress, \"Caller is not the owner\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "playLottery",
+                "fix_info": "Replaced tx.origin check with msg.sender and proper owner authentication. Fixed parameter types to include explicit storage location for arrays. Replaced deprecated 'now' with 'block.timestamp'.",
+                "corrected_code": "function playLottery(uint256[] amounts, address[] winners) public onlyStarted onlyOwner {\n        require(amounts.length == winners.length, \"Arrays must have same length\");\n        require(lastLotteryTime.add(LotteryStepTime) <= block.timestamp, \"Lottery not ready yet\");\n        \n        for (uint i = 0; i < amounts.length; i++) {\n            winners[i].transfer(amounts[i]);\n        }\n        lastLotteryTime = block.timestamp;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

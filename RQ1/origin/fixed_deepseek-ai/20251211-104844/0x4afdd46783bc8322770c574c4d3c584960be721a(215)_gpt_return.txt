@@ -1,0 +1,27 @@
+Here is the corrected function with the vulnerability fixed:
+
+```json
+[
+    {
+        "contract_name": "CryptoDynasty",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwnerOf",
+                "fix_info": "Added modifier to properly check item ownership",
+                "modifier_code": "modifier onlyOwnerOf(uint256 _itemId) {\n    require(msg.sender == ownerOf(_itemId));\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Replaced tx.origin with msg.sender and added onlyOwnerOf modifier to prevent phishing attacks and ensure proper access control",
+                "corrected_code": "function transfer(address _to, uint256 _itemId) public onlyOwnerOf(_itemId) {\n    _transfer(msg.sender, _to, _itemId);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "StrategyBase",
+        "contract_version": "^0.6.7",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_swapUniswap",
+                "fix_info": "Added check for the return value of `swapExactTokensForTokens` to ensure it succeeds. Prior to this, an unchecked return value could lead to undefined behavior.",
+                "corrected_code": "function _swapUniswap(\n    address _from,\n    address _to,\n    uint256 _amount\n) internal {\n    require(_to != address(0), \"Invalid _to address\");\n\n    // Approve token transfer to Uniswap router\n    IERC20(_from).safeApprove(univ2Router2, 0);\n    IERC20(_from).safeApprove(univ2Router2, _amount);\n\n    address[] memory path;\n\n    if (_from == weth || _to == weth) {\n        path = new address[](2);\n        path[0] = _from;\n        path[1] = _to;\n    } else {\n        path = new address[](3);\n        path[0] = _from;\n        path[1] = weth;\n        path[2] = _to;\n    }\n\n    uint256[] memory amounts = UniswapRouterV2(univ2Router2).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n    require(amounts.length > 0, \"Uniswap swap failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapUniswapWithPath",
+                "fix_info": "Added check for the return value of `swapExactTokensForTokens` to ensure swap operation executes successfully.",
+                "corrected_code": "function _swapUniswapWithPath(\n    address[] memory path,\n    uint256 _amount\n) internal {\n    require(path[1] != address(0), \"Invalid path\");\n\n    // Approve token transfer to Uniswap router\n    IERC20(path[0]).safeApprove(univ2Router2, 0);\n    IERC20(path[0]).safeApprove(univ2Router2, _amount);\n\n    uint256[] memory amounts = UniswapRouterV2(univ2Router2).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n    require(amounts.length > 0, \"Uniswap path swap failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapSushiswap",
+                "fix_info": "Added check for the return value of `swapExactTokensForTokens` to ensure a successful token swap.",
+                "corrected_code": "function _swapSushiswap(\n    address _from,\n    address _to,\n    uint256 _amount\n) internal {\n    require(_to != address(0), \"Invalid _to address\");\n\n    // Approve token transfer to Sushi router\n    IERC20(_from).safeApprove(sushiRouter, 0);\n    IERC20(_from).safeApprove(sushiRouter, _amount);\n\n    address[] memory path;\n\n    if (_from == weth || _to == weth) {\n        path = new address[](2);\n        path[0] = _from;\n        path[1] = _to;\n    } else {\n        path = new address[](3);\n        path[0] = _from;\n        path[1] = weth;\n        path[2] = _to;\n    }\n\n    uint256[] memory amounts = UniswapRouterV2(sushiRouter).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n    require(amounts.length > 0, \"Sushiswap swap failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_swapSushiswapWithPath",
+                "fix_info": "Added check for the return value of `swapExactTokensForTokens` to ensure the function does not fail silently.",
+                "corrected_code": "function _swapSushiswapWithPath(\n    address[] memory path,\n    uint256 _amount\n) internal {\n    require(path[1] != address(0), \"Invalid path\");\n\n    // Approve token transfer to Sushi router\n    IERC20(path[0]).safeApprove(sushiRouter, 0);\n    IERC20(path[0]).safeApprove(sushiRouter, _amount);\n\n    uint256[] memory amounts = UniswapRouterV2(sushiRouter).swapExactTokensForTokens(\n        _amount,\n        0,\n        path,\n        address(this),\n        now.add(60)\n    );\n    require(amounts.length > 0, \"Sushiswap path swap failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "UniswapFeature",
+        "contract_version": "0.6.5",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sellToUniswap",
+                "fix_info": "The function 'sellToUniswap' invokes a call to another contract method within its implementation. This might lead to the reentrancy attack. To prevent this attack, it is necessary to follow the Check-Effects-Interaction pattern in which all the local state changes are made before calling other contracts.",
+                "corrected_code": "function sellToUniswap(\nIERC20TokenV06[] calldata tokens,\nuint256 sellAmount,\nuint256 minBuyAmount,\nbool isSushi\n)\nexternal\npayable\noverride\nreturns (uint256 buyAmount)\n{\nrequire(tokens.length > 1, \"UniswapFeature/InvalidTokensLength\");\n...\nsignals an error if the return value is zero\nbubbleRevert();\n}\n\n// no change to the contract state after the external contract is called\nif eq(buyToken, ETH_TOKEN_ADDRESS_32) {\nmstore(0xB00, WETH_WITHDRAW_CALL_SELECTOR_32)\nmstore(0xB04, buyAmount)\nif iszero(call(gas(), mload(0xA40), 0, 0xB00, 0x24, 0x00, 0x0)) {\nbubbleRevert()\n}\n// Transfer ETH to the caller.\nif iszero(call(gas(), caller(), buyAmount, 0xB00, 0x0, 0x00, 0x0)) {\nbubbleRevert()\n}\n}\n...\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

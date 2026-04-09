@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "owner.send(msg.value);",
+            "description": "The send function used here for transferring ETH to 'owner' does not handle any errors which can result in potential loss of funds if the execution fails."
+        }
+    ]
+}
+```

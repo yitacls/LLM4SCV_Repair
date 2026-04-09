@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Line 75-78 in the assembly code: `function validateJoinSplit() { mstore(0x80, calldataload(0x44)) mstore(0xa0, calldataload(0x64)) let notes := add(0x104, calldataload(0x184)) let m := calldataload(0x124)`",
+    "description": "The contract performs arithmetic operations using the `add()` function on untrusted calldata values without proper overflow/underflow checks. Specifically, `let notes := add(0x104, calldataload(0x184))` adds a user-controlled value from calldata offset `0x184` to a constant `0x104`. If an attacker provides a large value at this offset, it could cause an integer overflow, resulting in `notes` pointing to an incorrect memory location. This could lead to reading/writing arbitrary memory locations during subsequent operations like `calldataload(notes)` and `hashCommitments(notes, n)`, potentially allowing memory corruption, incorrect proof validation, or denial of service."
+}
+```

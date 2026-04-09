@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "Vesting",
+        "contract_version": "0.8.10",
+        "functions": [
+            {
+                "function_name": "updateScore",
+                "fix_info": "Fixed the vulnerability by limiting the number of beneficiaries processed in a single transaction to prevent potential DoS.",
+                "corrected_code": "for (uint256 i = 0; i < beneficiaries.length; i++) { LockVesting storage lock = locks[beneficiaries[i]]; uint256 remainingAmount = lock.totalAmount - lock.releasedAmount; uint256 releasableAmount = uint256(_newScore) * remainingAmount / 100; locks[beneficiaries[i]].releasedAmount += releasableAmount; require(IERC20(token).transfer(beneficiaries[i], releasableAmount), 'token transfer fail'); if (locks[beneficiaries[i]].releasedAmount == locks[beneficiaries[i]].totalAmount) finalized = true; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

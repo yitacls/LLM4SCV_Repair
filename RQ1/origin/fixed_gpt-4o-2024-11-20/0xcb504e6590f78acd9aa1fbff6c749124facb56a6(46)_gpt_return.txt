@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "KryptoArmy",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "armies",
+            "fix_info": "Ensure storage variable type is explicitly defined and not prone to ambiguity.",
+            "variable_code": "mapping(uint => Army) armies;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Introduce a modifier to prevent reentrancy attacks.",
+            "modifier_code": "modifier nonReentrant() { require(!locked); locked = true; _; locked = false; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "purchaseArmy",
+            "fix_info": "Fix reentrancy by ensuring call logic occurs after all state changes and using nonReentrant modifier.",
+            "corrected_code": "function purchaseArmy(uint _armyId) public payable nonReentrant { \n    require(msg.value == armies[_armyId].price); \n    require(msg.value > 0); \n    require(armies[_armyId].ownerAddress != msg.sender, \"Cannot purchase your own army\"); \n\n    address previousOwner = armies[_armyId].ownerAddress; \n    armies[_armyId].ownerAddress = msg.sender; \n\n    _ownershipArmy(_armyId); \n\n    if (previousOwner != address(this)) { \n        uint commissionOwnerValue = msg.value - (msg.value / 10); \n        previousOwner.transfer(commissionOwnerValue); \n    } \n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

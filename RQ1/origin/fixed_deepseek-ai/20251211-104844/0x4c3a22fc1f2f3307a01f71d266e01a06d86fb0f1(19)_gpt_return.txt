@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Hold",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "amountRaised",
+                "fix_info": "Changed variable type to uint256 and unchecked block to prevent arithmetic overflow in Solidity 0.8+",
+                "variable_code": "uint256 public amountRaised;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Added fallback function with explicit payable modifier and unchecked block to handle arithmetic safely in Solidity 0.8+ while preserving original functionality",
+                "corrected_code": "fallback() external payable {\n    uint256 amount = msg.value;\n    unchecked {\n        amountRaised += amount;\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

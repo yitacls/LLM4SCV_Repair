@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(msg.sender == impl);",
+    "description": "The function uses 'msg.sender == impl' for authorization, but checks 'balances[tx.origin]' for balance deduction. This creates a discrepancy where the authorized caller (impl) can transfer funds from any 'tx.origin' (the externally owned account that initiated the transaction), not just their own balance. An attacker could call this function via a contract they control (making 'msg.sender' the contract address that equals 'impl'), while having a victim's EOA as 'tx.origin', allowing unauthorized transfer of the victim's tokens."
+}
+```

@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "KingOfTheEtherThrone",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "sweepCommission",
+        "fix_info": "Added return value validation to the low-level send call and converted to transfer pattern for safer Ether transfer. In Solidity 0.4.x, send() returns bool that must be checked to prevent silent failures.",
+        "corrected_code": "function sweepCommission(uint amount) onlywizard {\n    require(wizardAddress.send(amount));\n}",
+        "change_type": "modified"
+    }]
+}]
+```

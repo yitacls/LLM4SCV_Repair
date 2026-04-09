@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "mintedAmount = mintedAmount * 10**18;",
+    "description": "The multiplication operation mintedAmount * 10**18 can cause an arithmetic overflow if the result exceeds the maximum value that can be stored in a uint256 variable. Since Solidity version 0.4.16 does not have built-in overflow protection, this could lead to unexpected behavior where the result wraps around to a much smaller value, potentially allowing an attacker to mint an incorrect amount of tokens."
+}
+```

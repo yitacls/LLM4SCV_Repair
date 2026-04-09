@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 client_share = msg.value*3/10;",
+    "description": "Solidity 0.4.x performs integer arithmetic and division truncates toward zero. If `msg.value` is not a multiple of 10, `client_share` will be less than 30% of `msg.value`. This rounding down causes `client_wallet.transfer(client_share);` to transfer slightly less than intended, making `our_share = msg.value - client_share;` slightly larger than 70%. This imbalance leads to an incorrect distribution of funds due to integer precision loss."
+}
+```】

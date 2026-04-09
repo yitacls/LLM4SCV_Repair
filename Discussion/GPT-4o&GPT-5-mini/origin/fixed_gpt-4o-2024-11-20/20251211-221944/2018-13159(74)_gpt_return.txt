@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "bankcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes required for state variables as they are not directly problematic.",
+            "variable_code": "mapping (address => uint256) public balanceOf;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes required for state variables as they are not directly problematic.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes required for this modifier as it was not causing vulnerability.",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Introduced SafeMath library to prevent overflows and underflows during arithmetic operations.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0)); // Ensure target address is valid\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    emit Transfer(address(0), owner, mintedAmount);\n    emit Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

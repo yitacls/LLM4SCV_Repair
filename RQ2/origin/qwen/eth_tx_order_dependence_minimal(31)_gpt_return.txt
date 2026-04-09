@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "msg.sender.transfer(reward);\n        claimed = true;",
+    "description": "The contract is vulnerable to front-running because the reward transfer and state update (claimed = true) are not atomic. In Solidity ^0.4.16, there's a race condition where the transfer operation can be front-run by another transaction, potentially allowing malicious actors to claim the reward multiple times before the claimed flag is set to true. The state variable 'claimed' should be set to true before the transfer operation to prevent this vulnerability."
+}
+```

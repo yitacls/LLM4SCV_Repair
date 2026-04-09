@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "UniqlyPresale4",
+        "contract_version": "0.8.2",
+        "state_variables": [
+            {
+                "variable_name": "reentrancyGuard",
+                "fix_info": "Added a reentrancy guard state variable to protect the contract from reentrancy attacks.",
+                "variable_code": "bool private reentrancyGuard;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "nonReentrant",
+                "fix_info": "A nonReentrant modifier was added to control access to vulnerable functions and prevent reentrant calls.",
+                "modifier_code": "modifier nonReentrant() { require(!reentrancyGuard, \"ReentrancyGuard: reentrant call\"); reentrancyGuard = true; _; reentrancyGuard = false; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "send",
+                "fix_info": "The function was updated to use a nonReentrant modifier to prevent reentrancy attacks. It keeps the original functionality but now ensures the contract is protected.",
+                "corrected_code": "function send(address user, uint256 amount) private nonReentrant {\n        bool success = false;\n        (success, ) = address(user).call{value: amount}(\"\");\n        require(success, \"ETH send failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

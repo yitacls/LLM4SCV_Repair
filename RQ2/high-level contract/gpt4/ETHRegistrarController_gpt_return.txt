@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "L46-L49 makeCommitment function",
+        "description": "This function produces a commitment for registration which can be misused. An attacker can wait for a valid commitment and front run the transaction to register the domain before the original transaction is mined."
+    },
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "L56-L65 register function",
+        "description": "In this function, a commitment check followed by a domain registration can be problematic due to potential race conditions. An attacker could front run the register transaction after a user's commit transaction."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "L59-L65 register function, L74-L78 renew function",
+        "description": "These parts of the contract involve transfer of funds but do not check the return value. In case the transfer fails for reasons such as the receiving contract throwing an exception, it may lead to loss of funds."
+    }
+]
+```

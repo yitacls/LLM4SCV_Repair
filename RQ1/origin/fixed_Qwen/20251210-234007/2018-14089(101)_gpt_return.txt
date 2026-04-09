@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Virgo_ZodiacToken",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by using SafeMath operations for balance calculations and added proper validation checks",
+            "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {\n        // mitigates the ERC20 short address attack\n        if(msg.data.length < (3 * 32) + 4) { throw; }\n\n        if (_value == 0) { return true; }\n        \n        uint256 fromBalance = balances[_from];\n        uint256 allowance = allowed[_from][msg.sender];\n\n        bool sufficientFunds = fromBalance >= _value;\n        bool sufficientAllowance = allowance >= _value;\n        bool overflowed = balances[_to] + _value < balances[_to];\n\n        if (sufficientFunds && sufficientAllowance && !overflowed) {\n            balances[_to] = balances[_to] + _value;\n            balances[_from] = balances[_from] - _value;\n            \n            allowed[_from][msg.sender] = allowed[_from][msg.sender] - _value;\n            \n            Transfer(_from, _to, _value);\n            return true;\n        } else { return false; }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

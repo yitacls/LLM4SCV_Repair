@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Erc20Wallet",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "commonWithdraw",
+            "fix_info": "Fixed multiple vulnerabilities: 1) Reentrancy vulnerability by using checks-effects-interactions pattern; 2) Unchecked low-level call by checking return value and using transfer() for ETH; 3) Added safe subtraction with require statements; 4) Used SafeERC20 for ERC20 token transfers; 5) Added address(0) check for token parameter",
+            "corrected_code": "function commonWithdraw(address token, uint value) internal {\n    require(token != address(0), \"Invalid token address\");\n    require(tokens[token][msg.sender] >= value, \"Insufficient balance\");\n    require(totalDeposited[token] >= value, \"Insufficient contract balance\");\n    \n    // Apply checks-effects-interactions pattern\n    tokens[token][msg.sender] -= value;\n    totalDeposited[token] -= value;\n    \n    if (token == address(0)) {\n        // Handle ETH withdrawal\n        address payable receiver = msg.sender;\n        receiver.transfer(value);\n    } else {\n        // Handle ERC20 token withdrawal with safer transfer\n        require(ERC20(token).transfer(msg.sender, value), \"Token transfer failed\");\n    }\n    \n    emit Withdraw(\n      token,\n      msg.sender,\n      value,\n      tokens[token][msg.sender]\n    );\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

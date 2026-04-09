@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The vulnerability in this code arises from the lack of proper validation for integer overflows on line 'balances[_to] += _value;'. If the integer 'balances[_to]' reaches its maximum value and an addition operation is performed, it can overflow and wrap around to a very low value, potentially leading to unexpected behavior. This can result in transfers not being executed correctly, allowing an attacker to exploit the overflow."
+}
+```

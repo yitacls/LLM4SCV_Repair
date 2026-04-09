@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Lottery",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "doInvest",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender for user identification and referrer assignment. Also fixed potential reentrancy by transferring funds after state updates.",
+            "corrected_code": "function doInvest() internal {\n        uint256 investment = msg.value;\n        require (investment >= MINIMUM_DEPOSIT);\n        User storage user = users[wave][msg.sender];\n        if (user.firstTime == 0) {\n            user.firstTime = now;\n            user.lastPayment = now;\n            emit InvestorAdded(msg.sender);\n        }\n        if (user.referrer == address(0) && msg.data.length == 20 && user.firstTime == now) {\n            address newReferrer = _bytesToAddress(msg.data);\n            if (newReferrer != address(0) && newReferrer != msg.sender && users[wave][newReferrer].firstTime > 0) {  \n                user.referrer = newReferrer;\n                emit ReferrerAdded(msg.sender, newReferrer);\n            }\n        }\n        investment = investment.add(getDividends(msg.sender));\n        totalInvest = totalInvest.add(investment);\n        user.deposits.push(Deposit({\n            amount: investment,\n            interest: getUserInterest(msg.sender),\n            withdrawedRate: 0\n        }));\n        emit DepositAdded(msg.sender, user.deposits.length, investment);\n        \n        if (user.referrer != address(0)) {\n            uint256 refAmount = investment.mul(referralPercents).div(ONE_HUNDRED_PERCENTS);\n            users[wave][user.referrer].referralAmount = users[wave][user.referrer].referralAmount.add(investment);\n            user.referrer.transfer(refAmount);\n        }\n        \n        uint256 marketingAndTeamFee = msg.value.mul(MARKETING_AND_TEAM_FEE).div(ONE_HUNDRED_PERCENTS);\n        marketingAndTechnicalSupport.transfer(marketingAndTeamFee);\n        emit FeePayed(msg.sender, marketingAndTeamFee);\n        emit BalanceChanged(address(this).balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

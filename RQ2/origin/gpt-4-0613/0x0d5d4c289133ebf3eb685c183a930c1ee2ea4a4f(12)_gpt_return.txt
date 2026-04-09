@@ -1,0 +1,12 @@
+```json
+{
+    "type": "Reentrancy",
+    "contract_name": "I_BANK",
+    "version": "^0.4.25",
+    "location": {
+        "function": "Collect",
+        "statement": "if(msg.sender.call.value(_am)())"
+    },
+    "description": "A Reentrancy vulnerability allows an attacker to repeatedly enter the Collect function before the previous invocation of the function completes. This is caused by the fact that the function sends Ether to msg.sender before it decreases the sender's balance. This could lead to the attacker continuously withdrawing funds up to the balance of the smart contract."
+}
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Wallet",
+        "contract_version": "0.4.25",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyReserveFundContract",
+                "fix_info": "Added modifier to ensure only authorized contract can call the function",
+                "modifier_code": "modifier onlyReserveFundContract {\n    require(msg.sender == reserveFundContractAddress, \"Only ReserveFund contract can call this function\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed access control vulnerability by properly restricting function calls to authorized reserve fund contract and removing tx.origin vulnerability",
+                "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount)\n    onlyReserveFundContract\n    public {\n        require(_to != address(0x0), \"User address can not be empty\");\n        require(_deposited > 0, \"Package value must be > 0\");\n        \n        // Access control is enforced by onlyReserveFundContract modifier\n        // No need to check tx.origin for authorization\n        \n        uint totalDeposited = walletStore.getTotalDeposited(_to);\n        uint[] memory deposited = walletStore.getDeposited(_to);\n        uint profitableBalance = walletStore.getProfitableBalance(_to);\n        uint profitSourceBalance = walletStore.getProfitSourceBalance(_to);\n        uint profitBalance = getProfitBalance(_to);\n        bool firstDeposit = deposited.length == 0;\n        \n        walletStore.pushDeposited(_to, _deposited);\n        uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n        uint profitSourceIncreaseAmount = _deposited * 10;\n        \n        walletStore.setTotalDeposited(_to, totalDeposited.add(_deposited));\n        walletStore.setProfitableBalance(_to, profitableBalance.add(profitableIncreaseAmount));\n        walletStore.setProfitSourceBalance(_to, profitSourceBalance.add(profitSourceIncreaseAmount));\n        \n        if (_source == 2) {\n            // Fixed: Use msg.sender instead of tx.origin for proper authorization\n            if (_to == msg.sender) {\n                walletStore.setProfitBalance(_to, profitBalance.sub(_deposited));\n            } else {\n                uint senderProfitBalance = getProfitBalance(msg.sender);\n                walletStore.setProfitBalance(msg.sender, senderProfitBalance.sub(_deposited));\n            }\n            emit ProfitBalanceChanged(msg.sender, _to, int(_deposited) * -1, 1);\n        }\n        \n        citizen.addF1DepositedToInviter(_to, _deposited);\n        addRewardToInviter(_to, _deposited, _source, _sourceAmount);\n        \n        if (firstDeposit) {\n            citizen.increaseInviterF1HaveJoinedPackage(_to);\n        }\n        \n        if (profitableIncreaseAmount > 0) {\n            emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n            emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

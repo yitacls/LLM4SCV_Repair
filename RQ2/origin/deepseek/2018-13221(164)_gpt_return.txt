@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "amount * sellPrice",
+    "description": "This multiplication is vulnerable to integer overflow prior to Solidity 0.8.0, as there are no built-in overflow checks. If the product of 'amount' and 'sellPrice' exceeds the maximum value of uint256 (2^256 - 1), it will wrap around, resulting in a much smaller value being sent to the seller. This could allow an attacker to receive Ether significantly disproportionate to the tokens they are selling. Additionally, the function uses 'throw' which is deprecated and should be replaced with 'revert()'. The contract should either use SafeMath library for arithmetic operations or be compiled with Solidity 0.8.0 or higher which has built-in overflow protection."
+}
+```

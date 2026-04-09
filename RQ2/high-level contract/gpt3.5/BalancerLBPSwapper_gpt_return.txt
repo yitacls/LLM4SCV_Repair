@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-114-Transaction Order Dependence",
+    "location": "function init(IWeightedPool _pool) external",
+    "description": "The 'init' function allows for the initialization of the Balancer LBP contract. However, it lacks proper checks to prevent re-initialization of the pool, allowing the function to be called multiple times, potentially leading to unexpected behavior or manipulation of the contract state."
+},
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function swap() external override afterTime whenNotPaused",
+    "description": "The 'swap' function does not include proper checks or validation mechanisms to ensure that only authorized actors can trigger the withdrawal of assets from the pool. This may lead to unauthorized withdrawals of assets from the contract, resulting in the loss of funds or disruption of the intended functionality of the contract."
+}
+```
+```

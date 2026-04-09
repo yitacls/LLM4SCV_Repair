@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "for (uint256 index = 0; index < players.length; index++)",
+    "description": "The getLeader() function iterates through the entire players array, which can lead to a Denial-of-Service (DoS) attack if the players array grows excessively large. The looping through the array depends on its length, which could result in high gas consumption or out-of-gas errors, making the function call fail for legitimate users. Attackers could exploit this by inflating the players array size, preventing the contract's proper functionality for others."
+}
+```

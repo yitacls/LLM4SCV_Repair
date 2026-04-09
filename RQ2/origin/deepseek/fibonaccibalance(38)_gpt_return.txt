@@ -1,0 +1,7 @@
+```json
+{
+    "type": "ACCESS_CONTROL",
+    "location": "function() public { require(fibonacciLibrary.delegatecall(msg.data)); }",
+    "description": "The fallback function uses delegatecall to forward arbitrary msg.data to fibonacciLibrary without any access control checks. This allows any external caller to execute arbitrary functions in the context of the calling contract, potentially enabling unauthorized state modifications, privilege escalation, or self-destruction if the delegatecall target contains dangerous functions."
+}
+```

@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerability": [
+        {
+            "type": "Arithmetic Overflow/Underflow",
+            "location": "require(msg.value == numTokens * PRICE_PER_TOKEN);",
+            "description": "In Solidity version ^0.4.21, there is no built-in overflow protection for arithmetic operations. The multiplication 'numTokens * PRICE_PER_TOKEN' can overflow if 'numTokens' is large enough, allowing attackers to bypass the price validation and purchase tokens for less Ether than intended."
+        },
+        {
+            "type": "Arithmetic Precision",
+            "location": "balanceOf[msg.sender] += numTokens;",
+            "description": "While this specific line may not overflow in typical usage, in Solidity ^0.4.21, all arithmetic operations are vulnerable to integer overflows/underflows due to the lack of SafeMath by default. An overflow in the balance update could allow attackers to gain excessive tokens or cause denial of service."
+        }
+    ]
+}
+```

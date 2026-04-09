@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "TimereumX",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "devAddress",
+            "fix_info": "Made private to follow best practices for access control",
+            "variable_code": "address private devAddress;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balanceImportsComplete",
+            "fix_info": "No change needed",
+            "variable_code": "bool public balanceImportsComplete;",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyDev",
+            "fix_info": "Added modifier to centralize access control logic",
+            "modifier_code": "modifier onlyDev() {\n    require(msg.sender == devAddress, \"Only developer can call this\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "lockBalanceChanges",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and adding onlyDev modifier. The tx.origin check was removed as it's insecure for authorization.",
+            "corrected_code": "function lockBalanceChanges() public onlyDev {\n    balanceImportsComplete = true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

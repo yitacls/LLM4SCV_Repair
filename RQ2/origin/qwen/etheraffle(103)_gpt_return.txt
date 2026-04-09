@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;",
+        "description": "The use of block.coinbase as a source of randomness is insecure because miners can manipulate this value. A malicious miner can choose their own coinbase address to influence the random number generation and potentially win the raffle."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "address seed2 = contestants[uint(msg.sender) % totalTickets].addr;",
+        "description": "Using msg.sender as part of the random seed is predictable and manipulable. The caller of the function can influence this value, making the randomness generation insecure and potentially allowing them to predict or influence the winner selection."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "uint seed3 = block.difficulty;",
+        "description": "block.difficulty can be manipulated by miners to some extent, making it an insecure source of randomness. Miners can potentially adjust the difficulty within certain bounds to influence the random number generation process."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "blockNumber = block.number;",
+        "description": "Storing block.number for potential future use in randomness generation is problematic because it's a predictable value that can be known in advance, making any random number generation based on it susceptible to manipulation and prediction."
+    }
+]
+```

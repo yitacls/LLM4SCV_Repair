@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "dopnetwork",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change needed - vulnerability is in function logic",
+            "variable_code": "mapping(address => uint256) balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No change needed - vulnerability is in function logic",
+            "variable_code": "uint256 totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No change needed - modifier remains unchanged",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed integer overflow vulnerability by using SafeMath operations. Added overflow checks for balanceOf[target] and totalSupply variables.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    // Use SafeMath or explicit overflow checks\n    require(balanceOf[target] + mintedAmount >= balanceOf[target], \"Integer overflow in balance\");\n    require(totalSupply + mintedAmount >= totalSupply, \"Integer overflow in total supply\");\n    \n    balanceOf[target] += mintedAmount; // Now safe\n    totalSupply += mintedAmount; // Now safe\n    \n    Transfer(0, owner, mintedAmount);\n    Transfer(owner, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

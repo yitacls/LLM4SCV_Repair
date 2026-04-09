@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "UniqlyPresale4",
+        "contract_version": "0.8.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "send",
+                "fix_info": "Add reentrancy guard using a boolean state variable.",
+                "corrected_code": "bool private locked = false;\n\nfunction send(address user, uint256 amount) private {\n    require(!locked, 'Reentrancy guard');\n    locked = true;\n    bool success = false;\n    (success, ) = address(user).call{value: amount}(\"\");\n    require(success, 'ETH send failed');\n    locked = false;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

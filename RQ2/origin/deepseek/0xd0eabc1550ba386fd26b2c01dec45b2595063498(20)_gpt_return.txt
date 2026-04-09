@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "if (releaseWallet.send(address(this).balance)) { }",
+    "description": "The contract uses `address.send()` without checking its return value. If the Ether transfer to `releaseWallet` fails (e.g., due to out-of-gas, call depth limit, or the recipient contract rejecting the transfer), the contract will continue execution without reverting. This could lead to Ether being locked in the contract or unintended state changes. The `send()` call returns a boolean indicating success/failure, which should be validated. Consider using `transfer()` (which automatically reverts on failure in Solidity <0.8.0) or handling the return value appropriately."
+}
+```

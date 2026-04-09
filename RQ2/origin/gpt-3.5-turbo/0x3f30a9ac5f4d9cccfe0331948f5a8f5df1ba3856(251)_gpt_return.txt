@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(amount * sellPrice);",
+    "description": "The sell function lacks proper access control, allowing anyone to call this function and trigger transfer of funds to the caller with an arbitrary amount. This can lead to unauthorized fund withdrawals and possible attacks on the contract."
+}
+```

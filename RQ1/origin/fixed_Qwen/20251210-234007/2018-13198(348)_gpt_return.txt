@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "STE",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for multiplication operation",
+            "corrected_code": "function sell(uint256 amount) public {\n        if (sellPrice == 0) revert();\n        if (balanceOf[msg.sender] < amount) revert();\t// checks if the sender has enough to sell\n        uint256 ethAmount = safeMul(amount, sellPrice);\t\t\t// amount of ETH for sell\n        balanceOf[msg.sender] -= amount;\t\t\t\t// subtracts the amount from seller's balance\n        balanceOf[this] += amount;\t\t\t\t\t\t// adds the amount to token balance\n        if (!msg.sender.send(ethAmount)) revert();\t\t// sends ether to the seller.\n        Transfer(msg.sender, this, amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

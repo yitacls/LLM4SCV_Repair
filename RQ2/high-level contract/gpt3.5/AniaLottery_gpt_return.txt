@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-102-Outdated Compiler Version",
+            "location": "pragma solidity ^0.8.2;",
+            "description": "The compiler version specified in the pragma statement is outdated and might not include the latest security updates or improvements."
+        },
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.8.2;",
+            "description": "The pragma statement specifies a floating compiler version which can be risky as it may lead to unintended behavior when compiling the contract in the future."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "function withdraw() public payable onlyOwner { ... }",
+            "description": "The 'withdraw' function allows the owner of the contract to withdraw Ether from the contract without any additional checks or restrictions, which can lead to potential vulnerabilities if not handled carefully."
+        }
+    ]
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_recipient] += _value;",
+    "description": "The vulnerability lies in the unchecked addition operation 'balances[_recipient] += _value'. If a large value is passed for _value, it could lead to an integer overflow, allowing an attacker to manipulate the token balance in an unintended way. It is essential to incorporate proper checks and safeguards to prevent arithmetic issues."
+}
+```

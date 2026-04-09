@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The call method in Solidity allows low-level interaction with external contracts. When using adr.call.value(msg.value)(data), the success of the call is not checked. This means that even if the external call fails, the transaction will not revert, and execution will continue as normal. This can lead to unexpected behaviors and vulnerabilities, as error handling is not performed. It is advised to use .call() with proper error handling, or alternative methods like .transfer() or .send()."
+}
+```

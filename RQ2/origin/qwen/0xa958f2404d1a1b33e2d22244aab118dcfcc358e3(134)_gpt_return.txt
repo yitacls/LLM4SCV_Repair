@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "User storage user = users[wave][tx.origin];",
+    "description": "The contract uses `tx.origin` to identify users, which is vulnerable to access control issues. `tx.origin` refers to the original external caller, not the immediate caller (`msg.sender`). This can be exploited in phishing attacks or malicious contract interactions where `tx.origin` is manipulated, potentially allowing unauthorized access to user data or actions. It should be replaced with `msg.sender` for proper authentication and access control."
+}
+```

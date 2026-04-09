@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The .send() method returns a boolean indicating success or failure, but this return value is not checked. If the ether transfer fails (e.g., if the recipient is a contract that runs out of gas in its fallback function, or intentionally rejects the transfer), the function will continue execution without handling the failed transfer. This can lead to inconsistencies where the contract records that the purchaser received excess ether refund, but the actual transfer failed, effectively trapping those funds in the contract. In Solidity 0.4.11, .send() forwards only 2300 gas, making it particularly susceptible to failure when sending to contract addresses."
+}
+```

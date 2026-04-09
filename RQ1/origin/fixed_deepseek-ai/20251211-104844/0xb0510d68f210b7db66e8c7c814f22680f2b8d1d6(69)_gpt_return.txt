@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Splitter",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier for access control to replace repeated require statement",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fundPuppets",
+            "fix_info": "Fixed unchecked low-level calls by checking return values and using call.value with proper error handling. Used onlyOwner modifier for access control.",
+            "corrected_code": "function fundPuppets() public payable onlyOwner {\n        _share = SafeMath.div(msg.value, 4);\n        \n        bool success;\n        \n        // Send to extra[0]\n        (success, ) = extra[0].call.value(_share).gas(800000)();\n        require(success, \"Transfer to extra[0] failed\");\n        \n        // Send to extra[1]\n        (success, ) = extra[1].call.value(_share).gas(800000)();\n        require(success, \"Transfer to extra[1] failed\");\n        \n        // Send to extra[2]\n        (success, ) = extra[2].call.value(_share).gas(800000)();\n        require(success, \"Transfer to extra[2] failed\");\n        \n        // Send to extra[3]\n        (success, ) = extra[3].call.value(_share).gas(800000)();\n        require(success, \"Transfer to extra[3] failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

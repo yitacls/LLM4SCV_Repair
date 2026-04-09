@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.transfer(etherBalance);",
+    "description": "The withdraw function uses onlyOwner modifier but the transfer operation is vulnerable to reentrancy attack in Solidity ^0.4.18. The ether is transferred before any state changes, and since the owner could be a contract, it may call back into the contract before the state is updated, potentially allowing multiple withdrawals. Additionally, the use of 'transfer' instead of 'call.value()' with proper gas limiting may cause issues with recipient contracts that require more gas for their fallback functions."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "In Solidity 0.4.11, the send() function returns a boolean indicating whether the transfer succeeded or failed. This return value is stored in 'res' but never checked, meaning failed ETH transfers will go unnoticed. If the send() call fails (returns false), execution continues without handling the failure, potentially leaving funds locked in the contract. This is especially critical in a withdrawal function where users expect to receive their ETH."
+}
+```

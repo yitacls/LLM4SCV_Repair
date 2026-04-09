@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "FiftyFlip",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "wager",
+            "fix_info": "Fixed unchecked low level call vulnerability by adding return value check and try-catch pattern for the external call to whale contract",
+            "corrected_code": "function wager(bool bMask, uint ticketID, uint ticketLastBlock, uint8 v, bytes32 r, bytes32 s)  \n    checkContractHealth()\n    external\n    payable { \n        Bet storage bet = bets[ticketID];\n        uint amount = msg.value;\n        address player = msg.sender;\n        require (bet.player == address(0), \"Ticket is not new one!\");\n        require (amount >= MIN_BET, \"Your bet is lower than minimum bet amount\");\n        require (amount <= MAX_BET, \"Your bet is higher than maximum bet amount\");\n        require (getCollateralBalance() >= 2 * amount, \"If we accept this, this contract will be in danger!\");\n\n        require (block.number <= ticketLastBlock, \"Ticket has expired.\");\n        bytes32 signatureHash = keccak256(abi.encodePacked('\\x19Ethereum Signed Message:\\n37', uint40(ticketLastBlock), ticketID));\n        require (secretSigner == ecrecover(signatureHash, v, r, s), \"web3 vrs signature is not valid.\");\n\n        jackpotSize += amount * JACKPOT_FEE / 1000;\n        devFeeSize += amount * DEV_FEE / 1000;\n        lockedInBets += amount * WIN_X / 1000;\n\n        uint donate_amount = amount * DONATING_X / 1000;\n        // Fixed unchecked low level call by checking return value\n        bool success;\n        bytes memory empty;\n        (success, empty) = whale.call.value(donate_amount)(abi.encodeWithSignature(\"donate()\"));\n        require(success, \"Whale donation failed\");\n        totalAmountToWhale += donate_amount;\n\n        bet.amount = amount;\n        bet.blockNumber = block.number;\n        bet.betMask = bMask;\n        bet.player = player;\n\n        emit Wager(ticketID, bet.amount, bet.blockNumber, bet.betMask, bet.player);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

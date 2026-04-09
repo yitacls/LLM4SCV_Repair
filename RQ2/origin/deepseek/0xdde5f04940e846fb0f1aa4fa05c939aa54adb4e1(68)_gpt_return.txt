@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "unchecked_low_level_calls",
+        "location": "fundsWallet.send(msg.value);",
+        "description": "The send() function is used to transfer Ether without checking the return value. In Solidity 0.4.25, send() returns a boolean indicating success/failure, but this return value is ignored. If the transfer fails (e.g., due to out-of-gas, fundsWallet being a contract with a fallback function that fails, or call depth limit), the Ether transfer will fail silently, leaving the contract's state inconsistent (totalEthInWei and balances updated but no Ether actually transferred). This violates the checks-effects-interactions pattern and could lead to loss of user funds."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This contract has a significant security vulnerability due to improper use of 'tx.origin' for authorization. The 'tx.origin' returns the address of the user who originally triggered off the transaction, not the last contract in the call chain. This can lead to a serious security issue where a malicious contract can force the sender’s transaction to be executed, gaining the permissions of the owner in the contract, and potentially leading to unauthorized actions."
+}
+```

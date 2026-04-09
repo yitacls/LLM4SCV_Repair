@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ReservedContract",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "becomeRichest",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding safe addition check before updating pendingWithdraws",
+            "corrected_code": "function becomeRichest() payable returns (bool){\n        require(msg.value > mostSent);\n        require(msg.value + pendingWithdraws[richest] >= pendingWithdraws[richest]); // Overflow check\n        pendingWithdraws[richest] += msg.value;\n        richest = msg.sender;\n        mostSent = msg.value;\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

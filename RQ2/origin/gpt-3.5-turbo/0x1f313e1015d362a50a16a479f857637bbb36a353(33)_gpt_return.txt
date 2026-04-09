@@ -1,0 +1,13 @@
+```json
+{
+    "contract_name": "LineOfTransfers",
+    "solidity_version": "^0.4.16",
+    "vulnerabilities": [
+        {
+            "type": "Reentrancy",
+            "location": "transferTo(transferPointer);",
+            "description": "The transferTo function should be designed to handle reentrancy issues. Without proper safeguards, this can lead to potential vulnerabilities where an external contract can take control of this contract's logic during a transfer operation."
+        }
+    ]
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountToSend);",
+    "description": "The send() function in Solidity versions prior to 0.5.0 can fail silently and returns a boolean indicating success. The return value is not checked here, which means if the send() call fails (e.g., due to out of gas, recipient contract rejection, etc.), the function will proceed as if the transfer succeeded. This leaves the contract in an inconsistent state where currentBalance has been reset to 0, but the funds were not actually sent to the beneficiary. The vulnerability could lead to permanent loss of funds trapped in the contract. The fix is to either use transfer() (which automatically reverts on failure in older versions) or check the return value of send() and revert on failure."
+}
+```

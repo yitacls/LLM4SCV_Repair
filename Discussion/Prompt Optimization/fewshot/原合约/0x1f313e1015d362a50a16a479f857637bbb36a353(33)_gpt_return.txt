@@ -1,0 +1,27 @@
+```json
+[
+    {
+        "contract_name": "LineOfTransfers",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "makeTransfer",
+                "fix_info": "Add reentrancy guard to prevent reentrancy vulnerability.",
+                "corrected_code": "function makeTransfer(uint times) public {
+    require(!transferring);
+    transferring = true;
+    while(times > 0) { 
+        transferTo(transferPointer);  
+        transferPointer++;
+        times--;
+    }
+    transferring = false;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

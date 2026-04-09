@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function Constructor() public { owner = msg.sender; }",
+    "description": "The constructor function name 'Constructor' is not properly capitalized. In Solidity ^0.4.24, the constructor should be named 'constructor' (with lowercase 'c') or the contract name 'Missing' to be recognized as a constructor. Due to this naming issue, the function behaves as a regular public function that can be called by anyone, allowing attackers to overwrite the 'owner' variable and gain unauthorized access to owner-restricted functions."
+}
+```

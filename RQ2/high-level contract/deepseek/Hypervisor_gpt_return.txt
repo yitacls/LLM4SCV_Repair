@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Lines 81-142 in deposit() function and Lines 175-216 in withdraw() function",
+            "description": "The deposit() and withdraw() functions lack access control modifiers, allowing any address to call these critical functions. While deposit() checks whitelist status when enabled, and withdraw() has some ownership validation for the 'from' parameter, these functions should have explicit authorization controls to prevent unauthorized deposits/withdrawals."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 175-216 in withdraw() function",
+            "description": "The withdraw() function makes external calls (token transfers via safeTransfer) before updating state (_burn). This creates a reentrancy vulnerability where a malicious token contract could re-enter the withdraw() function, potentially draining funds. The function should follow the checks-effects-interactions pattern by burning shares before making token transfers."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "Line 415 in uniswapV3MintCallback() function: 'if (payer == address(this))' statement",
+            "description": "The condition 'if (payer == address(this))' in uniswapV3MintCallback() has no state-changing effects and serves only as a branching condition for transfer logic. While not directly harmful, this could indicate unused code paths or potential logic errors. In this context, it correctly determines whether to use safeTransfer or safeTransferFrom based on the payer address."
+        }
+    ]
+}
+```

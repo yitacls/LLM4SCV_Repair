@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function rand(uint max) constant private returns (uint256 result)",
+    "description": "The rand function uses blockhash(block.number - 1) to generate randomness, which is predictable and can be manipulated by miners. In Solidity 0.4.0, miners can influence or control block hashes, making this source of randomness insecure for any financial or game-critical logic. Additionally, using blockhash on a non-recent block (older than 256 blocks) returns 0, further limiting reliability. This vulnerability allows attackers to predict or influence outcomes in contracts relying on this function, such as games or lotteries."
+}
+```

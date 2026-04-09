@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "This access control check uses `tx.origin` for authorization, which is vulnerable to phishing attacks. A malicious contract can trick the owner into calling it, causing the owner's address to become `tx.origin` in a subsequent call to `mint()`, thereby bypassing the intended authorization. The proper pattern is to use `msg.sender == owner` to authenticate the immediate caller. Additionally, `assert(amount >= 0)` is redundant since `uint256` values are inherently non-negative, and using `assert` with non-critical checks is gas-inefficient and deprecated for input validation in this context."
+        }
+    ]
+}
+```

@@ -1,0 +1,21 @@
+[{
+    "contract_name": "LiquidStakingV2",
+    "contract_version": "v2",
+    "state_variables": [
+        {
+            "variable_name": "MAX_WITHDRAW_ITERATIONS",
+            "fix_info": "Added a per-call iteration cap to prevent unbounded loops that can hit the block gas limit (SWC-128). This bounds gas usage per withdraw call and requires callers to batch withdraw if there are many entries.",
+            "variable_code": "uint256 private constant MAX_WITHDRAW_ITERATIONS = 100;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawUnstakedTokens",
+            "fix_info": "Limited iterations per call with a fixed cap (MAX_WITHDRAW_ITERATIONS) to avoid DoS by exhausting block gas limit. Preserves original behavior of collecting matured entries but processes them in bounded batches.",
+            "corrected_code": "function withdrawUnstakedTokens(address staker)\n    public\n    virtual\n    override\n    whenNotPaused\n{\n    require(staker == _msgSender(), \"LQ20\");\n\n    uint256 _withdrawBalance;\n    uint256 _unstakingExpirationLength = _unstakingExpiration[staker].length;\n    uint256 _counter = _withdrawCounters[staker];\n\n    // Bound the number of iterations per call to avoid running out of gas\n    uint256 _iterations = 0;\n    uint256 _maxIter = MAX_WITHDRAW_ITERATIONS;\n\n    for (uint256 i = _counter; i < _unstakingExpirationLength && _iterations < _maxIter; i = i.add(1)) {\n        (uint256 _getUnstakeTime, , ) = getUnstakeTime(_unstakingExpiration[staker][i]);\n        if (block.timestamp >= _getUnstakeTime) {\n            // collect matured entry\n            _withdrawBalance = _withdrawBalance.add(_unstakingAmount[staker][i]);\n            _unstakingExpiration[staker][i] = 0;\n            _unstakingAmount[staker][i] = 0;\n            _withdrawCounters[staker] = _withdrawCounters[staker].add(1);\n        }\n        _iterations = _iterations.add(1);\n    }\n\n    require(_withdrawBalance > 0, \"LQ21\");\n    emit WithdrawUnstakeTokens(staker, _withdrawBalance, block.timestamp);\n    _uTokens.mint(staker, _withdrawBalance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

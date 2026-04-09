@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "ImpossibleWrappedToken",
+        "contract_version": "0.7.6",
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Fixed reentrancy vulnerability by updating state before external call",
+                "corrected_code": "function deposit(address dst, uint256 wad) public returns (uint256 transferAmt) {transferAmt = wad.mul(ratioDenom).div(ratioNum);underlyingBalance = underlyingBalance.add(transferAmt);bool success = IERC20(underlying).transferFrom(msg.sender, address(this), transferAmt);require(success, 'ImpossibleWrapper: TRANSFERFROM_FAILED');_deposit(dst, wad);emit Transfer(address(0), msg.sender, wad);}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Fixed reentrancy vulnerability by updating state before external call",
+                "corrected_code": "function withdraw(address dst, uint256 wad) public override returns (uint256 transferAmt) {balanceOf[msg.sender] = balanceOf[msg.sender].sub(wad);emit Transfer(msg.sender, address(0), wad);return _withdraw(dst, wad);}"
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

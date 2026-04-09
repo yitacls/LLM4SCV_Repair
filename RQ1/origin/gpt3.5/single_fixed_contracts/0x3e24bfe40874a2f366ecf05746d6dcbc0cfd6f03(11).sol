@@ -1,0 +1,13 @@
+pragma solidity ^0.4.24;
+contract Timelock {
+  address public owner;
+  uint public releaseDate;
+  constructor( uint _days, uint _seconds ) public payable {
+    require( msg.value > 0, "There's no point in creating an empty Timelock!" );
+    owner = msg.sender;
+    releaseDate = now + (_days * 1 days) + (_seconds * 1 seconds);
+  }
+  function withdraw() public onlyOwner afterReleaseDate {
+    msg.sender.transfer(address(this).balance);
+}
+}

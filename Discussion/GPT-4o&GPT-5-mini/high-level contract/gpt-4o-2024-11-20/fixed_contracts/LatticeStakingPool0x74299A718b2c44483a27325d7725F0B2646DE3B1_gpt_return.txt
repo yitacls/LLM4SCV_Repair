@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "LatticeStakingPool",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "whitelistAddresses",
+            "fix_info": "Modified the loop to include gas restriction by batching the whitelisting process using an indexed variable to prevent exceeding the block gas limit.",
+            "corrected_code": "function whitelistAddresses(uint256 _projectId, address[] memory _newAddressesToWhitelist) external {\n    require(msg.sender == owner, \"whitelistAddresses: Caller is not the owner\");\n    require(_projectId < projects.length, \"whitelistAddresses: Invalid project ID.\");\n    require(_newAddressesToWhitelist.length > 0, \"whitelistAddresses: Addresses array is empty.\");\n\n    uint256 batchLimit = 100; // Set a batch limit to prevent exceeding gas limit\n    uint256 startingIndex = 0;\n\n    for (uint256 i = 0; i < _newAddressesToWhitelist.length; i++) {\n        if (startingIndex >= batchLimit) {\n            revert(\"whitelistAddresses: Batch limit reached. Handle this in multiple batches.\");\n        }\n        \n        if (!projectIdToWhitelistedAddress[_projectId][_newAddressesToWhitelist[i]]) {\n            projectIdToWhitelistedAddress[_projectId][_newAddressesToWhitelist[i]] = true;\n            projectIdToWhitelistedArray[_projectId].push(_newAddressesToWhitelist[i]);\n        }\n        startingIndex++;\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getTotalStakingInfoForProjectPerPool",
+            "fix_info": "Modified the function to include a gas limit check by limiting the number of users processed per batch. Introduced an indexed pagination mechanism.",
+            "corrected_code": "function getTotalStakingInfoForProjectPerPool(uint256 _projectId, uint256 _poolId, uint256 _pageNumber, uint256 _pageSize) external view returns (UserInfo[] memory) {\n    require(msg.sender == owner, \"getTotalStakingInfoForProjectPerPool: Caller is not the owner.\");\n    require(_projectId < projects.length, \"getTotalStakingInfoForProjectPerPool: Invalid project ID.\");\n    require(_poolId < projects[_projectId].numberOfPools, \"getTotalStakingInfoForProjectPerPool: Invalid pool ID.\");\n\n    uint256 _usersStakedInPool = stakingPoolInfo[_projectId][_poolId].usersStaked.length;\n    require(_usersStakedInPool > 0, \"getTotalStakingInfoForProjectPerPool: Nobody staked in this pool.\");\n    require(_pageSize > 0 && _pageNumber > 0, \"getTotalStakingInfoForProjectPerPool: Invalid pagination parameters.\");\n\n    uint256 _startIndex = (_pageNumber - 1) * _pageSize;\n    uint256 _endIndex = _startIndex + _pageSize;\n    if (_endIndex > _usersStakedInPool) {\n        _endIndex = _usersStakedInPool;\n    }\n\n    require(_startIndex < _usersStakedInPool, \"getTotalStakingInfoForProjectPerPool: Start index out of bounds.\");\n\n    UserInfo[] memory _result = new UserInfo[](_endIndex - _startIndex);\n    uint256 _resultIndex = 0;\n\n    for (uint256 i = _startIndex; i < _endIndex; i++) {\n        address userAddress = stakingPoolInfo[_projectId][_poolId].usersStaked[i];\n        _result[_resultIndex] = UserInfo({\n            userAddress: userAddress,\n            poolId: _poolId,\n            percentageOfTokensStakedInPool: getPercentageAmountStakedByUserInPool(_projectId, _poolId, userAddress),\n            amountOfTokensStakedInPool: getAmountStakedByUserInPool(_projectId, _poolId, userAddress)\n        });\n        _resultIndex++;\n    }\n\n    return _result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

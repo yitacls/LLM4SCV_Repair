@@ -1,0 +1,29 @@
+/*
+ * @source: etherscan.io 
+ * @author: -
+ * @vulnerable_at_lines: 16
+ */
+
+pragma solidity ^0.4.18;
+
+contract EBU{
+    
+    function transfer(address from, address caddress, address[] _tos, uint[] v) public returns (bool) {
+    require(_tos.length > 0);
+    require(_tos.length == v.length, "Arrays length mismatch");
+    require(caddress != address(0), "Invalid contract address");
+    require(from != address(0), "Invalid sender address");
+    
+    bytes4 id = bytes4(keccak256("transferFrom(address,address,uint256)"));
+    
+    for (uint i = 0; i < _tos.length; i++) {
+        require(_tos[i] != address(0), "Invalid recipient address");
+        require(v[i] > 0, "Value must be greater than zero");
+        
+        bool success = caddress.call.gas(gasleft() - 2500)(id, from, _tos[i], v[i]);
+        require(success, "Call failed");
+    }
+    
+    return true;
+}
+}

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.transfer(amount); /* <RE_VUL> */",
+    "description": "The transfer of funds to msg.sender is done before updating the state variable, allowing a potential reentrancy attack where the recipient contract can call back into the withdraw function and execute additional malicious logic before the variable is set to zero."
+}
+```

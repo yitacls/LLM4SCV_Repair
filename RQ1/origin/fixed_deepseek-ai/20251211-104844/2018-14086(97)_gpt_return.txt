@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MyToken",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Not modified directly, but protected from underflow/overflow",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Added explicit visibility and type",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "validAmount",
+            "fix_info": "Added modifier to validate amounts and prevent overflow/underflow",
+            "modifier_code": "modifier validAmount(uint256 amount) {\n        require(amount > 0, \"Amount must be greater than zero\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability, added safe math operations, improved error handling, and security checks",
+            "corrected_code": "function sell(uint256 amount) public validAmount(amount) returns (uint256 revenue) {\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        \n        // Safe math operations to prevent overflow/underflow\n        balanceOf[msg.sender] = balanceOf[msg.sender] - amount;\n        balanceOf[address(this)] = balanceOf[address(this)] + amount;\n        \n        // Safe multiplication with explicit overflow check\n        require(amount <= type(uint256).max / sellPrice, \"Multiplication overflow\");\n        revenue = amount * sellPrice;\n        \n        // Safe ether transfer with proper error handling\n        require(msg.sender.send(revenue), \"Failed to send ether\");\n        \n        emit Transfer(msg.sender, address(this), amount);\n        \n        return revenue;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

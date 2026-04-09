@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(sender == tx.origin && !isContract(sender));",
+    "description": "The contract uses 'tx.origin' for authorization instead of 'msg.sender', which makes it vulnerable to phishing attacks. A malicious contract could trick a user into calling the vulnerable contract, causing 'tx.origin' to be the user's address while 'msg.sender' is the malicious contract's address. Additionally, the contract owner has no restrictions on playing and can bypass the primary game logic, allowing them to potentially manipulate outcomes or drain funds without adhering to the same rules as regular users."
+}
+```

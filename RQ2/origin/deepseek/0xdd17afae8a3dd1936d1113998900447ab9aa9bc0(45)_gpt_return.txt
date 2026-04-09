@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){ acc.balance-=_am; LogFile.AddMessage(msg.sender,_am,\"Collect\"); }",
+    "description": "The contract uses low-level call.value() without gas stipends, allowing reentrancy attacks. After transferring Ether to the caller, the state (acc.balance) is updated. If the caller is a malicious contract with a fallback function, it can re-enter the Collect function before acc.balance is reduced, potentially draining the contract's balance multiple times. In Solidity 0.4.19, there are no built-in reentrancy guards, making this particularly dangerous. The vulnerability is exacerbated by the order of operations: external call happens before state changes."
+}
+```

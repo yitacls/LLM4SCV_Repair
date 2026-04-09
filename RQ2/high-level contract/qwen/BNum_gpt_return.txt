@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "BNum",
+    "contract_version": "0.5.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bmul",
+            "fix_info": "Added overflow check before multiplication to prevent integer overflow (SWC-101).",
+            "corrected_code": "    function bmul(uint a, uint b)\n        internal pure\n        returns (uint)\n    {\n        require(a == 0 || b <= type(uint).max / a, \"ERR_MUL_OVERFLOW\");\n        uint c0 = a * b;\n        require(a == 0 || c0 / a == b, \"ERR_MUL_OVERFLOW\");\n        uint c1 = c0 + (BONE / 2);\n        require(c1 >= c0, \"ERR_MUL_OVERFLOW\");\n        uint c2 = c1 / BONE;\n        return c2;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "bdiv",
+            "fix_info": "Added overflow check before multiplication to prevent integer overflow (SWC-101).",
+            "corrected_code": "    function bdiv(uint a, uint b)\n        internal pure\n        returns (uint)\n    {\n        require(b != 0, \"ERR_DIV_ZERO\");\n        require(a <= type(uint).max / BONE, \"ERR_DIV_INTERNAL\");\n        uint c0 = a * BONE;\n        require(a == 0 || c0 / a == BONE, \"ERR_DIV_INTERNAL\"); // bmul overflow\n        uint c1 = c0 + (b / 2);\n        require(c1 >= c0, \"ERR_DIV_INTERNAL\"); //  badd require\n        uint c2 = c1 / b;\n        return c2;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

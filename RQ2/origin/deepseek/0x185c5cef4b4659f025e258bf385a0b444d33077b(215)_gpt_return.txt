@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function autoDistribute() payable canDistr onlyWhitelist public { ... }",
+    "description": "The function contains the modifier onlyWhitelist which restricts execution to whitelisted addresses, but the function also includes 'owner.transfer(etherValue)' which transfers the sent Ether to the contract owner without any additional access control. This could allow the owner to withdraw funds sent by whitelisted users without providing the expected tokens if the Ether transfer occurs before token distribution logic is fully executed or if conditions are manipulated. Additionally, the 'canDistr' modifier might control distribution timing but doesn't restrict the owner's ability to receive funds."
+}
+```

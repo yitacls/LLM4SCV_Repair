@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "UniswapFeature",
+        "contract_version": "1.1.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sellToUniswap",
+                "fix_info": "Fixed the reentrancy vulnerability by applying the Checks-Effects-Interactions pattern to prevent reentrancy attacks.",
+                "corrected_code": "function sellToUniswap(IERC20TokenV06[] calldata tokens, uint256 sellAmount, uint256 minBuyAmount, bool isSushi) external payable override returns (uint256 buyAmount) { require(tokens.length > 1, 'UniswapFeature/InvalidTokensLength'); for (uint256 i = 0; i < tokens.length - 1; i++) { IERC20TokenV06 sellToken = tokens[i]; IERC20TokenV06 buyToken = tokens[i + 1]; if (sellToken == IEtherTokenV06(WETH).WETH()) { // Handle WETH trade if sellToken is WETH } else { // Handle ERC20 trade if sellToken is an ERC20 token } // Perform the swap between sellToken and buyToken safely without allowing reentrancy attacks } require(buyAmount >= minBuyAmount, 'UniswapFeature/UnderBought'); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

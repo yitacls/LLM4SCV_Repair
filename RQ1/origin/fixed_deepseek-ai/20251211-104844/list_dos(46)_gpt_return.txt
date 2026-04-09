@@ -1,0 +1,54 @@
+```json
+[{
+    "contract_name": "Government",
+    "contract_version": ">=0.4.0 <0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "creditorAddresses",
+            "fix_info": "Changed from address[] to mapping(uint => address) to prevent DoS from dynamic array reset operation",
+            "variable_code": "mapping(uint => address) public creditorAddresses;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "creditorAmounts",
+            "fix_info": "Changed from uint[] to mapping(uint => uint) to prevent DoS from dynamic array reset operation",
+            "variable_code": "mapping(uint => uint) public creditorAmounts;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "creditorCount",
+            "fix_info": "Added to track number of creditors with mapping approach",
+            "variable_code": "uint public creditorCount;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "payableAddress",
+            "fix_info": "Added explicit payable modifier for address variables that receive transfers",
+            "variable_code": "address payable public corruptElite;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "checkAmount",
+            "fix_info": "Added modifier to validate minimum amount requirement before execution",
+            "modifier_code": "modifier checkAmount(uint amount) {\n    require(amount >= 10 ** 18, \"Minimum amount not met\");\n    _;\n}\n",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "handleEtherTransfer",
+            "fix_info": "Added modifier to handle Ether transfers safely with transfer() instead of send()",
+            "modifier_code": "modifier handleEtherTransfer(address payable recipient, uint amount) {\n    recipient.transfer(amount);\n    _;\n}\n",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "lendGovernmentMoney",
+            "fix_info": "Fixed DoS vulnerability by replacing dynamic array resets with mapping approach, using transfer() instead of send(), and adding input validation",
+            "corrected_code": "function lendGovernmentMoney(address payable buddy) public payable returns (bool) {\n    uint amount = msg.value;\n    \n    // Input validation\n    require(amount > 0, \"Amount must be greater than 0\");\n    \n    // check if the system already broke down. If for 12h no new creditor gives new credit to the system it will break down.\n    // 12h are on average = 60*60*12/12.5 = 3456\n    if (lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp) {\n        // Return money to sender\n        msg.sender.transfer(amount);\n        \n        // Sends all contract money to the last creditor\n        if (creditorCount > 0) {\n            creditorAddresses[creditorCount - 1].transfer(profitFromCrash);\n        }\n        \n        // Send remaining balance to corrupt elite\n        if (address(this).balance > 0) {\n            corruptElite.transfer(address(this).balance);\n        }\n        \n        // Reset contract state\n        lastCreditorPayedOut = 0;\n        lastTimeOfNewCredit = block.timestamp;\n        profitFromCrash = 0;\n        // Fixed DoS: Reset creditor count instead of recreating arrays\n        creditorCount = 0;\n        round += 1;\n        \n        return false;\n    }\n    else {\n        // the system needs to collect at least 1% of the profit from a crash to stay alive\n        require(amount >= 10 ** 18, \"Minimum amount of 1 ETH required\");\n        \n        // the System has received fresh money, it will survive at least 12h more\n        lastTimeOfNewCredit = block.timestamp;\n        \n        // register the new creditor and his amount with 10% interest rate\n        creditorAddresses[creditorCount] = msg.sender;\n        creditorAmounts[creditorCount] = amount * 110 / 100;\n        creditorCount += 1;\n        \n        // now the money is distributed\n        // first the corrupt elite grabs 5% - thieves!\n        uint corruptShare = amount * 5 / 100;\n        corruptElite.transfer(corruptShare);\n        \n        // 5% are going into the economy (they will increase the value for the person seeing the crash coming)\n        uint economyShare = amount * 5 / 100;\n        if (profitFromCrash < 10000 * 10**18) {\n            profitFromCrash += economyShare;\n        }\n        \n        // if you have a buddy in the government (and he is in the creditor list) he can get 5% of your credits.\n        // Make a deal with him.\n        if (buddies[buddy] >= amount) {\n            uint buddyShare = amount * 5 / 100;\n            buddy.transfer(buddyShare);\n        }\n        \n        buddies[msg.sender] += amount * 110 / 100;\n        \n        // 90% of the money will be used to pay out old creditors\n        if (lastCreditorPayedOut < creditorCount && \n            creditorAmounts[lastCreditorPayedOut] <= address(this).balance - profitFromCrash) {\n            \n            creditorAddresses[lastCreditorPayedOut].transfer(creditorAmounts[lastCreditorPayedOut]);\n            buddies[creditorAddresses[lastCreditorPayedOut]] -= creditorAmounts[lastCreditorPayedOut];\n            lastCreditorPayedOut += 1;\n        }\n        \n        return true;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "BasicToken",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "No changes needed - keep as is",
+            "variable_code": "bool private locked;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferOrigin",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender, added zero address validation, and converted to safe arithmetic",
+            "corrected_code": "function transferOrigin(address _to, uint256 _value) public returns (bool) {\n    require(!locked, \"Contract is locked\");\n    require(msg.sender == impl, \"Only authorized implementation can call\");\n    require(_to != address(0), \"Cannot transfer to zero address\");\n    require(_value <= balances[msg.sender], \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

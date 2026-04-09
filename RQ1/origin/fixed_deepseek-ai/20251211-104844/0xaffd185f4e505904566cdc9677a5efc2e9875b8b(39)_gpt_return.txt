@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "CoxxxCoinCrowdsale",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "bank",
+                "fix_info": "Fixed unchecked low-level call vulnerability by replacing .send() with explicit call success checking and added reentrancy protection using the withdrawal pattern",
+                "corrected_code": "function bank() public {\n    require(beneficiary == msg.sender && currentBalance > 0, \"Unauthorized or zero balance\");\n    \n    uint amountToSend = currentBalance;\n    currentBalance = 0;\n    \n    require(beneficiary.send(amountToSend), \"Transfer failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

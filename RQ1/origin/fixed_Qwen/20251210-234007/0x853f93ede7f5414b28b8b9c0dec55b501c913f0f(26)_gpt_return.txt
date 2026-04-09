@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TOC",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for balance calculations and corrected the previous balances calculation to properly track the sum before transfer",
+            "corrected_code": "function _transfer(address _from, address _to, uint _value) internal {    \n    if(_to == 0x0) revert();\n    if(balances[_from] < _value) revert(); \n    if(balances[_to] + _value < balances[_to]) revert();\n    uint PreviousBalances = balances[_from] + balances[_to];\n    balances[_from] -= _value;\n    balances[_to] += _value; \n    assert(balances[_from] + balances[_to] == PreviousBalances);  \n    emit Transfer(_from, _to, _value); \n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

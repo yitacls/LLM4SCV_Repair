@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Integer Overflow",
+            "location": "balanceOf[this] += amount; and balanceOf[msg.sender] -= amount;",
+            "description": "In Solidity ^0.4.2, there is no built-in overflow protection. The operations balanceOf[this] += amount and balanceOf[msg.sender] -= amount could overflow/underflow if the amount is large enough to exceed the maximum value of uint256 (2^256-1) or if balanceOf[msg.sender] is less than amount, respectively. This could lead to unintended token balances. For example, if balanceOf[msg.sender] is 0 and amount is 1, then balanceOf[msg.sender] -= amount would underflow to 2^256-1, giving the sender a huge balance."
+        },
+        {
+            "type": "Denial-of-Service via Revert",
+            "location": "if (!msg.sender.send(amount * sellPrice)) { throw; }",
+            "description": "The sell function uses send() to transfer Ether to the seller. If the seller is a contract with a fallback function that intentionally reverts (e.g., by using revert() or throw) or runs out of gas, the send() will fail and cause the outer throw to revert the entire transaction. This could be exploited by a malicious contract to block the sell function, leading to a denial-of-service for token sales. Additionally, the multiplication amount * sellPrice could also overflow, but this is less critical if sellPrice is limited."
+        }
+    ]
+}
+```

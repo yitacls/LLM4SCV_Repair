@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MyToken",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sendCoin",
+            "fix_info": "Added address length validation to prevent short address attacks by ensuring the 'to' address is exactly 20 bytes (40 hexadecimal characters)",
+            "corrected_code": "function sendCoin(address to, uint amount) returns(bool sufficient) {\n    if (to == 0x0) throw;\n    if (balances[msg.sender] < amount) return false;\n    balances[msg.sender] -= amount;\n    balances[to] += amount;\n    Transfer(msg.sender, to, amount);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

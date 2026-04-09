@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "EthTxOrderDependenceMinimal",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No changes needed - original owner variable",
+            "variable_code": "address public owner;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "reward",
+            "fix_info": "No changes needed - original reward variable",
+            "variable_code": "uint256 public reward;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "claimed",
+            "fix_info": "No changes needed - original claimed variable",
+            "variable_code": "bool public claimed;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to owner",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setReward",
+            "fix_info": "Fixed front-running vulnerability by reordering operations (Checks-Effects-Interactions pattern) and using withdrawal pattern for transfers",
+            "corrected_code": "function setReward() public payable onlyOwner {\n        require(!claimed, \"Reward already claimed\");\n        \n        uint256 oldReward = reward;\n        reward = msg.value;\n        \n        if (oldReward > 0) {\n            owner.transfer(oldReward);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

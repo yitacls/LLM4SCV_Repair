@@ -1,0 +1,20 @@
+```json
+
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.5.12;",
+        "description": "The contract uses floating pragma which means it can be compiled with a newer compiler version, including versions that may include breaking changes and may not have been adequately tested."
+    },
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": "variables 'beginDepositTime', 'endDepositTime', 'yieldWallet', 'kickerWallet', 'threeMonthPromille', 'sixMonthPromille', 'nineMonthPromille', 'kickerDeadline', 'kickerPromille'",
+        "description": "The state variables do not explicitly declare the visibility, which makes them 'public' by default. An explicit visibility assignment can increase code clarity and avoid confusion."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function triggerWithdrawAll",
+        "description": "The function triggerWithdrawAll iterates over an array of unspecified length and performs calls which can fail. This can lead to a scenario where an action needs more gas than is currently available in a block. Such a scenario can lock actions in the contract and prevent them from being executed."
+    }
+]
+```

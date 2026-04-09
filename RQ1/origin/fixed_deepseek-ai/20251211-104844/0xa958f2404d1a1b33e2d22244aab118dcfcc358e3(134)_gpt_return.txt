@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Lottery",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyValidReferrer",
+            "fix_info": "Added modifier to validate referrer address and prevent self-referral or invalid referrals",
+            "modifier_code": "modifier onlyValidReferrer(address referrer) {\n        require(referrer != address(0), \"Referrer cannot be zero address\");\n        require(referrer != msg.sender, \"Cannot refer yourself\");\n        require(users[wave][referrer].firstTime > 0, \"Referrer must be an existing investor\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "doInvest",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender, adding input validation, and preventing duplicate referral setting",
+            "corrected_code": "function doInvest() internal {\n        uint256 investment = msg.value;\n        require(investment >= MINIMUM_DEPOSIT, \"Investment below minimum deposit\");\n        \n        address investor = msg.sender;\n        User storage user = users[wave][investor];\n        \n        if (user.firstTime == 0) {\n            user.firstTime = now;\n            user.lastPayment = now;\n            emit InvestorAdded(investor);\n        }\n        \n        // Check for referral only on first investment AND only once\n        if (user.referrer == address(0) && user.deposits.length == 0 && msg.data.length == 20) {\n            address newReferrer = _bytesToAddress(msg.data);\n            \n            // Use modifier-like validation inline (since modifiers can't have parameters in this pattern)\n            require(newReferrer != address(0), \"Referrer cannot be zero address\");\n            require(newReferrer != investor, \"Cannot refer yourself\");\n            require(users[wave][newReferrer].firstTime > 0, \"Referrer must be an existing investor\");\n            \n            user.referrer = newReferrer;\n            emit ReferrerAdded(investor, newReferrer);\n        }\n        \n        if (user.referrer != address(0)) {\n            uint256 refAmount = investment.mul(referralPercents).div(ONE_HUNDRED_PERCENTS);\n            users[wave][user.referrer].referralAmount = users[wave][user.referrer].referralAmount.add(investment);\n            \n            // Use .transfer() with proper error handling in 0.4.24\n            bool referralSuccess = user.referrer.send(refAmount);\n            require(referralSuccess, \"Referral transfer failed\");\n        }\n        \n        investment = investment.add(getDividends(investor));\n        totalInvest = totalInvest.add(investment);\n        \n        user.deposits.push(Deposit({\n            amount: investment,\n            interest: getUserInterest(investor),\n            withdrawedRate: 0\n        }));\n        \n        emit DepositAdded(investor, user.deposits.length, investment);\n        \n        uint256 marketingAndTeamFee = msg.value.mul(MARKETING_AND_TEAM_FEE).div(ONE_HUNDRED_PERCENTS);\n        \n        // Use .send() with proper error handling\n        bool feeSuccess = marketingAndTechnicalSupport.send(marketingAndTeamFee);\n        require(feeSuccess, \"Fee transfer failed\");\n        \n        emit FeePayed(investor, marketingAndTeamFee);\n        emit BalanceChanged(address(this).balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

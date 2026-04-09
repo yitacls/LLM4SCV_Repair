@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) {  // fault line",
+    "description": "The contract uses the low-level call() function which forwards all remaining gas to the external call. This occurs before updating the sender's balance (acc.balance -= _am), allowing a malicious contract that receives the ether to recursively call Collect() again through its fallback function. Since the state update occurs after the external call, each recursive call will see the original, unmodified balance and withdraw funds repeatedly, potentially draining all funds from the vulnerable contract."
+}
+```

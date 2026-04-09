@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] += _value;",
+    "description": "In Solidity version 0.4.21, integer operations are not protected by default, making them vulnerable to overflows and underflows. The addition operation `balances[_to] += _value;` could overflow if the sum exceeds the maximum value representable by uint256 (2^256 - 1), potentially causing the balance to wrap around to a very small number. Similarly, the subtraction operation `balances[msg.sender] -= _value;` could underflow if `_value` is greater than the sender's balance (though this is partially mitigated by the `require` check). To fix this vulnerability, use SafeMath library from OpenZeppelin or upgrade to Solidity 0.8.x or later where built-in overflow/underflow checks are enabled by default."
+}
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "ETH10",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "transferFunds",
+                "fix_info": "Added modifier to handle low-level calls safely and avoid reentrancy",
+                "modifier_code": "modifier transferFunds(address recipient, uint256 amount) {\n        require(recipient != address(0), \"Invalid recipient address\");\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        _;\n        (bool success, ) = recipient.call.value(amount)(\"\");\n        require(success, \"Transfer failed\");\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed unchecked low-level call by using .call.value() with proper error handling and added overflow protection",
+                "corrected_code": "function() external payable {\n        if (invested[msg.sender] != 0) {\n            uint256 amount = invested[msg.sender] * 10 / 100 * (block.number - atBlock[msg.sender]) / 6000;\n            \n            // Check for overflow and valid calculation\n            require(block.number >= atBlock[msg.sender], \"Invalid block calculation\");\n            require(amount <= address(this).balance, \"Amount exceeds contract balance\");\n            \n            // Store old values before transfer to prevent reentrancy\n            uint256 oldInvestment = invested[msg.sender];\n            uint256 oldBlock = atBlock[msg.sender];\n            \n            // Reset state before external call (CEI pattern)\n            atBlock[msg.sender] = block.number;\n            invested[msg.sender] = oldInvestment + msg.value;\n            \n            // Safe transfer using call.value() with proper error handling\n            (bool success, ) = msg.sender.call.value(amount)(\"\");\n            require(success, \"Transfer failed\");\n        } else {\n            atBlock[msg.sender] = block.number;\n            invested[msg.sender] = msg.value;\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

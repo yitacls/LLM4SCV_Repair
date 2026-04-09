@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Token",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "WithdrawToken",
+            "fix_info": "Fixed unchecked low level call by adding return value check and proper error handling",
+            "corrected_code": "function WithdrawToken(address token, uint256 amount, address to)\n    public \n    onlyOwner\n    {\n        bool result = token.call(bytes4(sha3(\"transfer(address,uint256)\")), to, amount);\n        require(result, \"Token transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

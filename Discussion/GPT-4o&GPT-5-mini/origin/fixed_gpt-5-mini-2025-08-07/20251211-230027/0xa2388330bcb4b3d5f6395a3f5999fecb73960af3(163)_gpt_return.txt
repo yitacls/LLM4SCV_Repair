@@ -1,0 +1,36 @@
+[
+  {
+    "contract_name": "BTRCTOKEN",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+      {
+        "variable_name": "cur_coin",
+        "fix_info": "Ensure cur_coin is an address and used safely for external calls. Kept as an address (no change to storage layout) but calls to it are now checked for success.",
+        "variable_code": "address public cur_coin;",
+        "change_type": "modified"
+      },
+      {
+        "variable_name": "price",
+        "fix_info": "Keep price as a uint256 storing the required price parameter for the external pay call.",
+        "variable_code": "uint256 public price;",
+        "change_type": "unchanged"
+      }
+    ],
+    "modifiers": [
+      {
+        "modifier_name": "workingFlag",
+        "fix_info": "Preserve existing modifier behaviour. Ensure it is defined elsewhere in the contract and properly restricts function execution as intended.",
+        "modifier_code": "modifier workingFlag { _; }",
+        "change_type": "unchanged"
+      }
+    ],
+    "functions": [
+      {
+        "function_name": "fallback",
+        "fix_info": "Check the result of the low-level call to avoid unchecked_low_level_calls vulnerability. Require success so the transaction reverts on failure instead of silently continuing.",
+        "corrected_code": "function () public workingFlag payable {\n    bool ret = false;\n    if (generationState) {\n        // Perform the external call and require success to avoid unchecked low-level calls\n        ret = cur_coin.call(bytes4(keccak256(\"pay(address,uint256,uint256)\")), msg.sender, msg.value, price);\n        require(ret);\n    }\n    PaymentGot(ret);\n  }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]

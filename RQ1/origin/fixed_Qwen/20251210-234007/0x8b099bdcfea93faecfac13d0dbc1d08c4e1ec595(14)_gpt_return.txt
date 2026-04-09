@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HelpMeSave",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value of send() and using require() for proper error handling. Also improved condition logic for clarity.",
+            "corrected_code": "function withdraw() public noone_else { \n        uint256 withdraw_amt = this.balance;\n        if (msg.sender != owner || withdraw_amt < 1000 ether ){ \n            withdraw_amt = 0;                     \n        }\n        require(msg.sender.send(withdraw_amt), \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

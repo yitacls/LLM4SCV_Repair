@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "hashesSize",
+            "fix_info": "Assuming this variable exists in the original contract - keep it as is",
+            "variable_code": "uint256 hashesSize;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced vulnerable blockhash-based randomness with a commit-reveal pattern using a random seed",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta, bytes32 _seed) private view returns (uint256) {\n        // Use a commit-reveal pattern to avoid predictable blockhash-based randomness\n        // Combine multiple sources of entropy to increase unpredictability\n        bytes32 combinedHash = keccak256(\n            abi.encodePacked(\n                _seed,\n                _delta,\n                block.timestamp,\n                block.difficulty,\n                address(this)\n            )\n        );\n        \n        // Use the combined hash to generate the necessary bits\n        uint256 result = 0;\n        \n        // Generate the pattern using bits from the hash\n        for (uint8 i = 0; i < 10; i++) {\n            // Take 3 bytes (24 bits) from different positions in the hash\n            uint24 bits = uint24(uint256(combinedHash) >> (i * 24)) & 0xFFFFFF;\n            result = result | (uint256(bits) << (i * 24));\n        }\n        \n        // Add the delta component shifted to the highest bits\n        result = result | (uint256(_delta) / hashesSize) << 240;\n        \n        return result;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

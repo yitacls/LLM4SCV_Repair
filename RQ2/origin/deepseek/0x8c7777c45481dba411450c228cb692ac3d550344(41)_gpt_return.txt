@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { balances[msg.sender]-=_am; ... }",
+    "description": "The contract performs an external call to msg.sender before updating the internal state (balances[msg.sender]). This allows a malicious contract to recursively call the CashOut function before the balance deduction occurs, potentially draining the entire contract balance. The vulnerability is exacerbated by the use of call.value() which forwards all remaining gas by default, enabling complex reentrant attacks. The recommended fix is to follow the checks-effects-interactions pattern: update balances first, then perform the external transfer using transfer() or send() with gas limits, or implement a reentrancy guard."
+}
+```

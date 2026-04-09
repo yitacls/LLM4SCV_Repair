@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "ETHRegistrarController",
+        "contract_version": "^0.5.0",
+        "functions": [
+            {
+                "function_name": "makeCommitment",
+                "fix_info": "Fixed the order of the keccak256 function calls to prevent Transaction Order Dependence vulnerability.",
+                "corrected_code": "function makeCommitment(string memory name, bytes32 secret) pure public returns(bytes32) {\n        bytes32 label = keccak256(bytes(name));\n        return keccak256(abi.encodePacked(label, secret));\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "register",
+                "fix_info": "Added proper validation for committing to prevent Transaction Order Dependence vulnerability.",
+                "corrected_code": "function register(string calldata name, address owner, uint duration, bytes32 secret) external payable {\n        bytes32 commitment = makeCommitment(name, secret);\n        require(commitments[commitment] == 0 || commitments[commitment] + MIN_COMMITMENT_AGE <= now);\n        if(commitments[commitment] == 0 || commitments[commitment] + MAX_COMMITMENT_AGE < now || !available(name))  {\n            msg.sender.transfer(msg.value);\n            return;\n        }\n        commitments[commitment] = now;\n        delete(commitments[commitment]);\n        uint cost = rentPrice(name, duration);\n        require(duration >= MIN_REGISTRATION_DURATION);\n        require(msg.value >= cost);\n        bytes32 label = keccak256(bytes(name));\n        uint expires = base.register(uint256(label), owner, duration);\n        emit NameRegistered(name, owner, cost, expires);\n        if(msg.value > cost) {\n            msg.sender.transfer(msg.value - cost);\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

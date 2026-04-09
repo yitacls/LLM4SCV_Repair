@@ -1,0 +1,21 @@
+[{
+    "contract_name": "CardSale",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added an access-control modifier that checks msg.sender instead of tx.origin to avoid origin-based access control vulnerability. Assumes the contract exposes an owner() view (e.g. via Ownable).",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner());\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced require(tx.origin == owner()) with the onlyOwner modifier to prevent using tx.origin for access control and to ensure only the owner (msg.sender) can grant RC.",
+            "corrected_code": "function addMeByRC() public onlyOwner {\n    rc[msg.sender] = true;\n    NewRC(msg.sender);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

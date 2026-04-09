@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_recipient.send(1);",
+    "description": "The send() function returns a boolean value indicating success or failure, but the return value is not checked. In Solidity 0.4.23, this can lead to silent failures where the ether transfer fails but the contract continues execution without handling the error. The send() call should be checked for its return value or replaced with transfer() which automatically throws on failure."
+}
+```

@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Lines 279-285: arcadeumCoin.safeTransferFrom() call before state-changing batchMint()",
+    "description": "The contract performs an external call to arcadeumCoin.safeTransferFrom() to refund excess payment before calling batchMint(). If arcadeumCoin is a malicious ERC1155 contract, it could re-enter the EternalHeroesFactory contract through the onERC1155Received() function. Since the state (token supplies) hasn't been updated yet via batchMint() when the refund is sent, the attacker could potentially manipulate the price calculation or bypass purchase limits by executing multiple purchases within the same transaction while paying only once."
+}
+```】

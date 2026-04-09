@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[owner] += mintedAmount; and totalSupply += mintedAmount;",
+    "description": "The mintToken function performs addition operations without overflow checks. In Solidity versions prior to 0.8.0, integer overflows are not automatically prevented. An attacker (or a compromised/insider owner) could call mintToken with a very large value for mintedAmount (e.g., 2^256 - balanceOf[owner]), causing balanceOf[owner] and totalSupply to overflow, wrapping around to a very small number. This could break token economics by incorrectly reducing balances and total supply, or be exploited for unauthorized profit if the overflow results in artificially inflated balances. Use SafeMath for arithmetic operations or upgrade to Solidity 0.8.0+."
+}
+```

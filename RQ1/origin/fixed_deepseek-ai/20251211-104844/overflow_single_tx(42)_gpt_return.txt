@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntegerOverflowSingleTransaction",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "count",
+            "fix_info": "Added 'count' variable declaration since it was referenced but not declared in the provided function",
+            "variable_code": "uint256 public count;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "overflowmulocalonly",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or explicit bounds checking",
+            "corrected_code": "function overflowmulocalonly(uint256 input) public {\n    require(input == 0 || count <= type(uint256).max / input, \"Multiplication overflow\");\n    uint256 res = count * input;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

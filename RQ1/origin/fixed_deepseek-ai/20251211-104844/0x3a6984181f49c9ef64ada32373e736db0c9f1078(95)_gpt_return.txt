@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Auctionify",
+    "contract_version": "^0.4.22",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "endAuction",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of send() and properly handling the return value. Also added explicit state transition after successful transfer.",
+            "corrected_code": "function endAuction() public onlyHighestBidderOrEscrow {\n    require(now >= auctionEnd, \"Auction not yet ended.\");\n    require(auctionState != AuctionStates.Ended, \"Auction has already ended.\");\n    \n    uint256 amount = bids[highestBidder];\n    bids[highestBidder] = 0; // Clear the bid amount to prevent reentrancy\n    \n    auctionState = AuctionStates.Ended;\n    emit AuctionEnded(highestBidder, amount);\n    \n    // Use transfer() instead of send() as it reverts on failure\n    beneficiary.transfer(amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

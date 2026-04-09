@@ -1,0 +1,8 @@
+```json
+{
+    "type": "Reentrancy",
+    "contract": "CryptoHouse",
+    "location": "msg.sender.transfer(amount)",
+    "description": "In Solidity, the 'transfer' function can potentially allow for reentrancy attacks. This happens when a contract calls an external contract (in this case via transfer) that has malicious code. The contract then re-enters the original contract and changes state variables (in this case pendingWithdrawals[msg.sender]) before the original call is completed. In this scenario, the malicious external contract can drain the contract's funds. To protect against this type of attack, consider using a mutex or the Checks-Effects-Interactions pattern."
+}
+```

@@ -1,0 +1,13 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function fillOrderTo",
+    "description": "The contract is vulnerable to reentrancy as it performs external calls after updating the state variable _remaining. This can enable a malicious user to re-enter the function before the state is updated, potentially manipulating the contract's state."
+},
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function fillOrderTo",
+    "description": "The contract is vulnerable to a denial-of-service (DoS) attack with block gas limit as it uses a loop to call multiple external addresses with associated data. If the loop makes too many calls, it can exceed the gas limit per block, causing transactions to fail."
+}
+```
+```

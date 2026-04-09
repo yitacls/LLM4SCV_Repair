@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool ret = med_.call(bytes4(keccak256(\"poke()\")));",
+    "description": "The low-level call to an external address (med_) does not check the return value for success/failure, nor does it handle potential exceptions. In Solidity 0.4.17, the .call() method returns false on failure instead of reverting, but the contract ignores this return value (despite storing it in 'ret'), and proceeds with execution regardless of whether the external call succeeded. This could lead to the contract continuing execution under incorrect assumptions if the external call fails silently. Additionally, the external call is made before updating critical state variables (val, zzz), which could leave the contract in an inconsistent state if the call fails. The code also lacks protection against reentrancy attacks."
+}
+```

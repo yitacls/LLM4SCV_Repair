@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "WithdrawDAO",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyTrustee",
+                "fix_info": "Added access control modifier to ensure only the trustee can call trusteeWithdraw function",
+                "modifier_code": "modifier onlyTrustee() {\n        require(msg.sender == trustee, \"Only trustee can call this function\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "trusteeWithdraw",
+                "fix_info": "1. Added onlyTrustee modifier for access control\n2. Replaced unsafe low-level call with transfer() which has built-in gas limit\n3. Used safeMath to prevent overflow/underflow in balance calculation\n4. Added require statement to check withdrawal amount is valid\n5. Store addresses in memory variables for efficiency",
+                "corrected_code": "function trusteeWithdraw() public onlyTrustee {\n        address trusteeAddress = trustee;\n        IERC20 mainDAOAddress = mainDAO;\n        \n        uint256 contractBalance = address(this).balance;\n        uint256 daoBalance = mainDAOAddress.balanceOf(address(this));\n        uint256 daoTotalSupply = mainDAOAddress.totalSupply();\n        \n        // Use SafeMath to prevent underflow\n        uint256 withdrawAmount = contractBalance.add(daoBalance).sub(daoTotalSupply);\n        \n        require(withdrawAmount > 0, \"No funds available for withdrawal\");\n        require(withdrawAmount <= contractBalance, \"Insufficient contract balance\");\n        \n        // Use transfer instead of send for better security\n        trusteeAddress.transfer(withdrawAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

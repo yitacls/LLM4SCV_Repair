@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SECToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Added SafeMath protection to prevent arithmetic overflow/underflow vulnerabilities in multiplication and balance checks",
+            "corrected_code": "function sell(uint256 amount) public {\n        require(this.balance >= SafeMath.mul(amount, sellPrice));      // checks if the contract has enough ether to buy\n        _transfer(msg.sender, this, amount);              // makes the transfers\n        msg.sender.transfer(SafeMath.mul(amount, sellPrice));          // sends ether to the seller. It's important to do this last to avoid recursion attacks\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

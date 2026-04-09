@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "IntelliShareEco",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to properly handle access control using msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "burnFrom",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and using onlyOwner modifier",
+            "corrected_code": "function burnFrom(address _from, uint256 _value) onlyOwner returns (bool success) {\n    require(balanceOf[_from] >= _value);\n    balanceOf[_from] -= _value;\n    totalSupply -= _value;\n    Burn(_from, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

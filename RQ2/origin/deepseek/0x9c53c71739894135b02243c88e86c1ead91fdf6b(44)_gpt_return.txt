@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance - 2100000);",
+    "description": "The low-level call 'send()' is used without checking the return value. In Solidity 0.4.25, 'send()' returns a boolean indicating success (true) or failure (false). If the transfer fails (e.g., if the owner is a contract without a payable fallback function, runs out of gas, or reverts), the contract will not be aware of the failure and will continue execution as if the transfer succeeded. This can leave funds stuck in the contract and cause logical inconsistencies. Best practice is to either use 'transfer()' (which automatically reverts on failure in versions ^0.4.25) or explicitly check the return value of 'send()' and handle failures appropriately."
+}
+```

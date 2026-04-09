@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by changing >= to <= in the require statement to ensure users can only withdraw amounts they own, and moved the balance update before transfer to prevent reentrancy attacks",
+            "corrected_code": "function withdraw(uint256 amount) public {\n        require(amount <= balances[msg.sender]);\n        balances[msg.sender] -= amount;\n        msg.sender.transfer(amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

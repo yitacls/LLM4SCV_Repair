@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "balances[_recipient] += _value;",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations default to unchecked, allowing integer overflows. If balances[_recipient] + _value exceeds the maximum value of uint256 (2^256 - 1), the result will wrap around, potentially making the recipient's balance extremely small instead of increasing it. This violates the ERC-20 standard and could be exploited. The vulnerability affects both the subtraction (balances[msg.sender] -= _value) and addition operations, though the addition is explicitly marked. The contract should use SafeMath or upgrade to Solidity ≥0.8.0 with built-in overflow checks."
+}
+```

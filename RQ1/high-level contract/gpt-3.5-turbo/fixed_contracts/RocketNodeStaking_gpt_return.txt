@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "RocketNodeStaking",
+        "contract_version": "1",
+        "functions": [
+            {
+                "function_name": "stakeRPL",
+                "fix_info": "Handled the return value of approve() function call",
+                "corrected_code": "require(rplToken.approve(rocketVaultAddress, _amount), 'Could not approve vault RPL deposit');",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdrawRPL",
+                "fix_info": "Ensured the order of conditions checking the cooldown period and withdrawal amount",
+                "corrected_code": "require(getNodeRPLStakedBlock(msg.sender).sub(block.number) >= rocketDAOProtocolSettingsRewards.getRewardsClaimIntervalBlocks(), 'The withdrawal cooldown period has not passed');",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

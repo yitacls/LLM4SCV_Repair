@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "The call to _addr using low-level call.value is not checking the return value or handling any potential errors, which can result in unexpected behavior or attacks such as reentrancy."
+}
+```

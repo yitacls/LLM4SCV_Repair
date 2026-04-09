@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "AniaLottery",
+    "contract_version": "0.8.24",
+    "state_variables": [
+        {
+            "variable_name": "pragma",
+            "fix_info": "Fixed floating pragma and updated to latest stable version to prevent compilation with known vulnerabilities",
+            "variable_code": "pragma solidity 0.8.24;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed unprotected ether withdrawal vulnerability by ensuring only owner can call and adding check for contract balance",
+            "corrected_code": "function withdraw() public payable onlyOwner {\n    require(address(this).balance > 0, \"No ether to withdraw\");\n    payable(msg.sender).transfer(address(this).balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

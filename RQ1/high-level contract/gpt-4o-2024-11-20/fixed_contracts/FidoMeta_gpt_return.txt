@@ -1,0 +1,41 @@
+```json
+[{
+    "contract_name": "Fidometa",
+    "contract_version": "0.8.11",
+    "state_variables": [
+        {
+            "variable_name": "_allowances",
+            "fix_info": "Renamed parameter to avoid shadowing state variables.",
+            "variable_code": "mapping(address => mapping(address => uint256)) private _allowances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_approve",
+            "fix_info": "Renamed parameter to avoid shadowing state variables (SWC-119).",
+            "corrected_code": "function _approve(address ownerAddr, address spender, uint256 amount) private {\n    require(ownerAddr != address(0), \"BEP20: approve from the zero address\");\n    require(spender != address(0), \"BEP20: approve to the zero address\");\n\n    _allowances[ownerAddr][spender] = amount;\n    emit Approval(ownerAddr, spender, amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "unlock",
+            "fix_info": "Fixed potential integer overflow/underflow vulnerability and optimized time calculation logic (SWC-101).",
+            "corrected_code": "function unlock(address target_) external {\n    require(target_ != address(0), \"Invalid target\");\n    require(_msgSender() == target_, \"Invalid target\");\n    \n    LockDetails storage lockDetails = locks[target_];\n    require(lockDetails.remainedToken != 0, \"All tokens are unlocked\");\n\n    uint256 unlockTimestamp = lockDetails.startTime + (lockDetails.initialLock * 1 days);\n    require(block.timestamp > unlockTimestamp, \"Unlocking period is not open\");\n\n    uint256 monthsElapsed = (block.timestamp - unlockTimestamp) / 30 days;\n    uint256 monthsToRelease = monthsElapsed - lockDetails.monthCount;\n\n    if (monthsToRelease > 5) {\n        monthsToRelease = 5;\n    }\n\n    require(monthsToRelease > 0, \"Releasable tokens already distributed\");\n\n    uint256 receivableTokens = (lockDetails.lockedToken * monthsToRelease * 20) / 100;\n    lockDetails.monthCount += monthsToRelease;\n    lockDetails.remainedToken -= receivableTokens;\n\n    if (lockDetails.remainedToken == 0) {\n        delete locks[target_];\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getCurrentSupply",
+            "fix_info": "Limited iteration over _excluded to prevent DoS (SWC-128).",
+            "corrected_code": "function _getCurrentSupply() private view returns (uint256, uint256) {\n    uint256 rSupply = _rTotal;\n    uint256 tSupply = _tTotal;\n    uint256 length = _excluded.length;\n\n    for (uint256 i = 0; i < length && gasleft() > 5000; i++) {\n        if (_rOwned[_excluded[i]] > rSupply || _tOwned[_excluded[i]] > tSupply) {\n            return (_rTotal, _tTotal);\n        }\n        rSupply -= _rOwned[_excluded[i]];\n        tSupply -= _tOwned[_excluded[i]];\n    }\n\n    if (rSupply < _rTotal / _tTotal) {\n        return (_rTotal, _tTotal);\n    }\n    return (rSupply, tSupply);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "takeCharges",
+            "fix_info": "Correctly applies the surcharge flags to avoid unnecessary actions (SWC-135).",
+            "corrected_code": "function takeCharges(uint256 tEcoSys, uint256 tSurcharge1, uint256 tSurcharge2, uint256 tSurcharge3) private {\n    uint256 currentRate = _getRate();\n\n    if (tEcoSys > 0) {\n        uint256 rEcosys = tEcoSys * currentRate;\n        _rOwned[_ecoSysWallet] += rEcosys;\n        if (_isExcludedFromEcoSysFee[_ecoSysWallet]) {\n            _tOwned[_ecoSysWallet] += tEcoSys;\n        }\n    }\n\n    if (tSurcharge1 > 0) {\n        uint256 rSurcharge1 = tSurcharge1 * currentRate;\n        _rOwned[_surcharge_1_Wallet] += rSurcharge1;\n        if (_isExcludedFromSurcharge1[_surcharge_1_Wallet]) {\n            _tOwned[_surcharge_1_Wallet] += tSurcharge1;\n        }\n    }\n\n    if (tSurcharge2 > 0) {\n        uint256 rSurcharge2 = tSurcharge2 * currentRate;\n        _rOwned[_surcharge_2_Wallet] += rSurcharge2;\n        if (_isExcludedFromSurcharge2[_surcharge_2_Wallet]) {\n            _tOwned[_surcharge_2_Wallet] += tSurcharge2;\n        }\n    }\n\n    if (tSurcharge3 > 0) {\n        uint256 rSurcharge3 = tSurcharge3 * currentRate;\n        _rOwned[_surcharge_3_Wallet] += rSurcharge3;\n        if (_isExcludedFromSurcharge3[_surcharge_3_Wallet]) {\n            _tOwned[_surcharge_3_Wallet] += tSurcharge3;\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

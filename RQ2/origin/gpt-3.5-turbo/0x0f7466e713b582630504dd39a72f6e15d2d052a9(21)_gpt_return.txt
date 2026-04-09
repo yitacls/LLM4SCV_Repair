@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "queue.push(Deposit(msg.sender, uint128(msg.value), uint128(msg.value*MULTIPLIER/100));",
+    "description": "The vulnerability lies in the calculation of 'uint128(msg.value*MULTIPLIER/100)' where potential arithmetic overflow can occur. The result might exceed the maximum value that can be stored in a uint128 data type, leading to unexpected behavior or loss of funds."
+}
+```  

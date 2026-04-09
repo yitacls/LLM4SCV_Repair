@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "msg.sender.send(valuePaid);",
+            "description": "The return value of the send() function is not checked. If the send fails (e.g., if the recipient is a contract that throws an exception or runs out of gas), the transaction will not be reverted, and the refund will be lost, leaving the sender's claim unsuccessful but still costing them Ether."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "msg.sender.send(excessPaid);",
+            "description": "The return value of the send() function is not checked. If the send fails, the excess payment will not be refunded, and the caller will lose that Ether while the claim still proceeds."
+        },
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "currentMonarch.etherAddress.send(compensation);",
+            "description": "The return value of the send() function is not checked. If the send fails, the compensation payment to the previous monarch will be lost, and the previous monarch will not receive their due compensation, while the new monarch still takes the throne."
+        }
+    ]
+}
+```

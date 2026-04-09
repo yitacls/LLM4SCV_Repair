@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_itemId));",
+    "description": "The function 'Transfer' has access control vulnerability. The requirement checks the transaction origin (tx.origin), instead of the current function caller (msg.sender). Using tx.origin can lead to vulnerabilities as it always represents the address that originally triggered the transaction, not necessarily the current function caller, leading to potential phishing attacks or operations not explicitly authorized by the original function caller."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner());",
+    "description": "The use of 'tx.origin' to verify the caller's identity is a known vulnerability in Solidity. Attackers can exploit this by using malicious contracts that execute the function on behalf of a user, bypassing the intended ownership check. This allows unauthorized access to the 'addMeByRC' function, potentially leading to unauthorized changes in the contract's state."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "calcHashes(uint32 _lastb, uint32 _delta) function using block.blockhash() for randomness",
+    "description": "The function uses block.blockhash() of recent/past blocks to generate pseudo-random numbers, which is vulnerable to miner manipulation. Miners can influence or predict block hashes (especially for recent blocks), allowing them to bias outcomes in their favor. For blocks older than 256, block.blockhash() returns 0, making the randomness even more predictable. This approach is unsuitable for any application requiring fair randomness (like lotteries or games)."
+}
+```

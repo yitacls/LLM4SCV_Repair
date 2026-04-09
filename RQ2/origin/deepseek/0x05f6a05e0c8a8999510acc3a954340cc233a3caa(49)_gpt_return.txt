@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of 'tx.origin' for authorization is a critical access control vulnerability. Unlike 'msg.sender', which reliably identifies the immediate caller of the function, 'tx.origin' returns the address of the original external account that initiated the transaction chain. This allows for phishing attacks where a malicious contract can trick the owner into calling a function that then calls 'mint()'—since 'tx.origin' would still be the owner's address, the authorization check would pass even though the owner did not intend to call mint directly. This could lead to unauthorized minting of tokens. Additionally, the 'assert(amount >= 0)' is redundant and wasteful as it will never fail for a 'uint256' parameter. Best practice is to use 'msg.sender == owner' for simple ownership checks, or implement a robust role-based access control system like OpenZeppelin's Ownable or AccessControl libraries in modern Solidity versions."
+}
+```

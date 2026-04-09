@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The code does not perform proper overflow/underflow checks when incrementing the recipient's balance (`balances[_to]`). In Solidity versions prior to 0.8.0, additions can result in silent overflows, leading to an incorrect balance and creating opportunities for exploitation. Specifically, if `_value` is a large enough number, it may cause `balances[_to]` to wrap around to zero or a smaller number, resulting in an inaccurate token accounting."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(success, ) = address(user).call{value: amount}(""); /* <RE_ENT>, <RE_VUL> */",
+    "description": "The function 'send' is susceptible to reentrancy as it sends ETH to an external address before updating internal state or balances. An attacker can potentially exploit this by recursively calling a function that will make reentrant calls and drain the contract's funds."
+}
+```

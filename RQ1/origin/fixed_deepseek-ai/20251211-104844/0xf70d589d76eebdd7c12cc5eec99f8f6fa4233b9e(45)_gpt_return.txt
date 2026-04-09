@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "WhaleGiveaway2",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to enforce ownership check",
+            "modifier_code": "    modifier onlyOwner() {\n        require(msg.sender == Owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Fixed unchecked low-level call by adding success check and handling return value; removed require statement since modifier handles ownership check",
+            "corrected_code": "    function Command(address adr, bytes data)\n        payable\n        public\n        onlyOwner\n    {\n        bool success = adr.call.value(msg.value)(data);\n        require(success, \"Low-level call failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

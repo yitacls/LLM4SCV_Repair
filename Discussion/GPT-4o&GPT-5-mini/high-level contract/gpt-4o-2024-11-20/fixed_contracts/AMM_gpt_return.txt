@@ -1,0 +1,49 @@
+```json
+[
+    {
+        "contract_name": "AMM",
+        "contract_version": "^0.5.2",
+        "state_variables": [
+            {
+                "variable_name": "ONE_WAD_U",
+                "fix_info": "This constant is never used and does not contribute to the code functionality. It was removed.",
+                "variable_code": "",
+                "change_type": "deleted"
+            },
+            {
+                "variable_name": "ONE_WAD_S",
+                "fix_info": "This constant is never used and does not contribute to the code functionality. It was removed.",
+                "variable_code": "",
+                "change_type": "deleted"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintShareTokenTo",
+                "fix_info": "Address unchecked low-level call vulnerability addressed using require to ensure the return value of the `mint` function is checked.",
+                "corrected_code": "function mintShareTokenTo(address guy, uint256 amount) internal {\n    require(shareToken.mint(guy, amount), \"Minting share token failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "burnShareTokenFrom",
+                "fix_info": "Address unchecked low-level call vulnerability addressed using require to ensure the return value of the `burn` function is checked.",
+                "corrected_code": "function burnShareTokenFrom(address guy, uint256 amount) internal {\n    require(shareToken.burn(guy, amount), \"Burning share token failed\");\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "funding",
+                "fix_info": "Improved readability by initializing newIndexPrice and newIndexTimestamp in a single declaration to follow best practices.",
+                "corrected_code": "function funding() public {\n    uint256 blockTime = getBlockTimestamp();\n    (uint256 newIndexPrice, uint256 newIndexTimestamp) = indexPrice();\n    if (\n        blockTime != fundingState.lastFundingTime || // condition 1\n        newIndexPrice != fundingState.lastIndexPrice || // condition 2\n        newIndexTimestamp > fundingState.lastFundingTime // condition 3\n    ) {\n        forceFunding(blockTime, newIndexPrice, newIndexTimestamp);\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "forceFunding",
+                "fix_info": "Improved readability and clarity by consolidating variable declarations.",
+                "corrected_code": "function forceFunding(uint256 blockTime, uint256 newIndexPrice, uint256 newIndexTimestamp) internal {\n    if (fundingState.lastFundingTime == 0) {\n        // funding initialization required. but in this case, it's safe to just return.\n        return;\n    }\n    IPerpetualProxy.PoolAccount memory pool = perpetualProxy.getPoolAccount();\n    if (pool.positionSize == 0) {\n        // empty pool. it's safe to just return.\n        return;\n    }\n\n    if (newIndexTimestamp > fundingState.lastFundingTime) {\n        nextStateWithTimespan(pool, newIndexPrice, newIndexTimestamp);\n    }\n    nextStateWithTimespan(pool, newIndexPrice, blockTime);\n\n    emit UpdateFundingRate(fundingState);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

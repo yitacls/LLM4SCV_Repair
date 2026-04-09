@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "Line 294: postponeSale function",
+    "description": "This function iterates through all roundIds and updates their start times using .add() method. If the roundIds array grows too large due to many rounds being added, the gas cost could exceed the block gas limit, causing the transaction to fail permanently. This prevents the admin from postponing the sale when needed, resulting in a Denial of Service vulnerability."
+}
+```

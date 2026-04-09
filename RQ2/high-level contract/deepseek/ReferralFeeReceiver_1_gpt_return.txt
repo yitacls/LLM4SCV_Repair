@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "Line 38-50: function updateReward(address referral, uint256 amount) external override",
+    "description": "The updateReward function lacks access control and can be called by any external caller, allowing unauthorized users to arbitrarily update rewards for any referral address. This could lead to manipulation of reward distributions, incorrect balance calculations, and potentially enable draining of funds through subsequent claim functions. The function should be restricted to only authorized contracts or implement proper authentication mechanisms."
+}
+```

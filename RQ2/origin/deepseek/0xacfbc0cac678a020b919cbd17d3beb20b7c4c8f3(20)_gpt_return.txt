@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = msg.sender.send(address(this).balance);",
+    "description": "The return value of the low-level `send` call is not checked, which can lead to silent failures. In Solidity 0.4.21, `send` returns `false` if the transfer fails (e.g., if the recipient is a contract that runs out of gas or reverts), but this contract ignores that return value and proceeds normally. An attacker could potentially exploit this by causing the `send` to fail while the contract continues execution. The `onlyOwner` modifier prevents arbitrary calls but doesn't mitigate the unchecked call vulnerability. Best practice is to either revert on failure (using `transfer` in <0.8.0 or handling `send`'s return value) or implement explicit error handling."
+}
+```

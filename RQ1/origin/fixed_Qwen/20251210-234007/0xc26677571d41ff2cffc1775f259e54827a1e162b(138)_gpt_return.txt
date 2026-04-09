@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CardSale",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced tx.origin with msg.sender for proper access control to prevent unauthorized calls from contracts",
+            "corrected_code": "function addMeByRC() public {\n        require(msg.sender == owner());\n        rc[msg.sender] = true;\n        NewRC(msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

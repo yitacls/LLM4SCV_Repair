@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "In the Solidity programming language, low level calls such as '.call()', '.callcode()', '.delegatecall()', and '.send()' should be avoided whenever possible due to the possibility of unexpected behavior. This piece of code does not handle the potential failure of the '.send()' method, which can lead to an imbalance in the contract's state. This can compromise the security of the contract as the function will continue execution even if the '.send()' call fails. It is recommended to use '.transfer()' instead as it throws an error and stops execution of the function if the call fails."
+}
+```

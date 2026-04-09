@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) { ... }",
+    "description": "The function uses multiple previous block hashes (block.blockhash) to generate a pseudo-random value. This is vulnerable because: 1) Block hashes are publicly viewable and can be known in advance by miners, allowing them to manipulate or predict outcomes. 2) The function uses 10 consecutive block hashes (from _lastb to _lastb+9), making it easier for an attacker to compute the result if they know the starting block number. 3) In Solidity 0.4.13, block.blockhash returns zero for blocks more than 256 blocks old, adding unpredictability but not security. This pattern is unsafe for any application requiring true randomness (e.g., lotteries, gambling)."
+}
+```

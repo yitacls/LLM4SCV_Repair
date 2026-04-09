@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SHORT_ADDRESSES_ATTACK",
+    "location": "function sendCoin(address to, uint amount) returns(bool sufficient)",
+    "description": "The contract does not validate the length of the 'to' address parameter in the sendCoin function. In Solidity 0.4.11, when an Ethereum transaction is called with a recipient address that is shorter than 20 bytes (e.g., 19 bytes), the EVM automatically pads the address with trailing zeros to reach 20 bytes. An attacker can craft a malicious contract with a short address (such as 0x1234... with 19 bytes) and trick a user into sending tokens to it. When the user's client (like a wallet UI) encodes the transaction, it may append extra zeros that shift the 'amount' parameter, causing more tokens to be transferred than intended. For instance, if the address is 19 bytes, the 'amount' parameter shifts right by 8 bits, effectively multiplying the amount by 256, leading to a significant loss of funds. This vulnerability arises because the contract lacks address length validation and relies on the caller to provide a correct 20-byte address."
+}
+```

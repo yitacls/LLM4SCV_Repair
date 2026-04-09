@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "The mintToken function does not check for integer overflow when incrementing balanceOf[target] and totalSupply. In Solidity versions prior to 0.8.0, arithmetic operations wrap around on overflow without reverting (due to the default checked behavior of the EVM). This could allow an attacker to mint tokens that cause the balance or total supply to overflow to a very low value, disrupting the token economics. For example, if balanceOf[target] is close to type(uint256).max, adding mintedAmount could cause it to wrap around to a small number, effectively reducing the user's balance instead of increasing it. The same vulnerability applies to totalSupply. This violates the ERC-20 standard's expectation that totalSupply accurately reflects the sum of all balances."
+}
+```

@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "theRelayer",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "target",
+                "fix_info": "Added for context - assumed to be existing as per original function usage",
+                "variable_code": "address public target;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "owner",
+                "fix_info": "Added for context - assumed to be existing as per original require statement",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added to improve code organization and reusability",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed unchecked low-level call vulnerability by adding return value check, using onlyOwner modifier, and implementing proper gas forwarding logic. Added explicit 'fallback' function declaration for Solidity 0.4.x compatibility.",
+                "corrected_code": "function() external payable onlyOwner {\n        require(gasleft() > 400000, \"Insufficient gas to forward call\");\n        \n        uint256 gasToForward = 400000 - 200;\n        gasToForward -= gasToForward % 8191;\n        gasToForward += 388;\n        \n        // Ensure we don't use more gas than available\n        require(gasToForward <= gasleft(), \"Calculated gas exceeds available gas\");\n        \n        // Store the return value of the low-level call\n        bool success = target.call.gas(gasToForward)(msg.data);\n        \n        // Check if the call was successful\n        require(success, \"Low-level call to target failed\");\n        \n        // Forward any returned value (though fallback functions typically don't return)\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

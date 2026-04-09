@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "massHarvest function",
+    "description": "The loop in massHarvest function can cause a DoS attack as it iterates up to NR_OF_EPOCHS without any gas limits per iteration."
+}
+```

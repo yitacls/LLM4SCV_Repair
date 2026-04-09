@@ -1,0 +1,8 @@
+```json
+{
+    "type": "Arithmetic",
+    "contract": "RENAULT_301201",
+    "location": "balanceOf[to] += value;",
+    "description": "This line is vulnerable to an overflow attack. If the 'value' variable is very large, 'balanceOf[to]' could exceed the maximum limit for a uint256, causing it to overflow. This means that the value will wrap around to zero, effectively ignoring the addition, and possibly resulting in balance inconsistencies in the contract."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function rand(uint max) constant private returns (uint256 result){\n        uint256 factor = FACTOR * 100 / max;\n        uint256 lastBlockNumber = block.number - 1;\n        uint256 hashVal = uint256(block.blockhash(lastBlockNumber));\n\n        return uint256((uint256(hashVal) / factor)) % max;\n    }",
+    "description": "The randomness generation in this function is predictable and vulnerable to manipulation. It uses block.blockhash() which can be influenced by miners, and the formula can be reverse-engineered by attackers. In Solidity ^0.4.0, block.blockhash() is deprecated and has known security issues. Miners can potentially manipulate the block hash or wait until they have a favorable hash before including the transaction, making the randomness exploitable."
+}
+```

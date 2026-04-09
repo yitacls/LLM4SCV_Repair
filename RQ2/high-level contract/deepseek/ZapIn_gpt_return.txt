@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "Lines 53-54: uint256 amountInTo0 = (amountIn * 1e18) / (SwapHelper.getRatioFromRange(tickPool, tickLower, tickUpper) + 1e18); uint256 amountInTo1 = amountIn - amountInTo0;",
+    "description": "The calculation at line 53 multiplies amountIn by 1e18, which could overflow if amountIn is sufficiently large (approximately amountIn > type(uint256).max / 1e18). Additionally, line 54 performs subtraction without checking if amountInTo0 <= amountIn, which could underflow if the division in line 53 results in amountInTo0 > amountIn. Given that Solidity 0.7.6 does not have built-in overflow/underflow checks, these operations could lead to incorrect token allocation amounts and potential loss of funds."
+}
+```

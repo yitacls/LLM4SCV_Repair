@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin for authentication is vulnerable to phishing attacks. In Solidity ^0.4.16, tx.origin refers to the original external account that initiated the transaction, not necessarily the caller of the function. An attacker can create a malicious contract that calls this withdrawEther function, and if the owner interacts with the malicious contract, tx.origin will still be the owner's address, allowing unauthorized access to withdraw funds. This should be replaced with msg.sender for proper access control."
+}
+```

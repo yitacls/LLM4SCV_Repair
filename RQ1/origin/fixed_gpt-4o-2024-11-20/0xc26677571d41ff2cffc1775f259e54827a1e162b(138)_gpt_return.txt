@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "CardSale",
+        "contract_version": "^0.4.19",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added a reusable modifier to restrict access to the owner, avoiding reliance on `tx.origin`.",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner()); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "addMeByRC",
+                "fix_info": "Replaced the faulty `tx.origin` check with a proper `onlyOwner` modifier to mitigate access control vulnerabilities.",
+                "corrected_code": "function addMeByRC() public onlyOwner { rc[msg.sender] = true; emit NewRC(msg.sender); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

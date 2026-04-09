@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "L352-L386 in function exitTempusAMMAndRedeem",
+            "description": "The function `exitTempusAMMAndRedeem` allows for executing external calls (e.g., `tempusAMM.transferFrom` and `redeemToBacking` or `redeemToYieldBearing`) without adequate reentrancy guards, which could lead to reentrancy attacks, allowing an attacker to manipulate contract state or drain funds."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "L395-L436 in function completeExitAndRedeem",
+            "description": "The function `completeExitAndRedeem` executes external calls such as `tempusAMM.transferFrom` and `redeemToBacking` or `redeemToYieldBearing`, with no proper reentrancy safeguards. This could allow attackers to re-enter the function and perform malicious actions, potentially draining funds or corrupting state."
+        }
+    ]
+}
+```

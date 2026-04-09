@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "multi_user_wallet",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to owner only using msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender and using onlyOwner modifier",
+            "corrected_code": "function clear() public onlyOwner\n{\n    selfdestruct(owner);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

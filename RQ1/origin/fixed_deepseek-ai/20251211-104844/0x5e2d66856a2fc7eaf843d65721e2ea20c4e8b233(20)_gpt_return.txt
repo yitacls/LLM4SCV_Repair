@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StorageBase",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Added proper Ether transfer handling with gas limit, explicit call value, and require() statement to prevent silent failures. The original function used the deprecated .send() method which forwards limited gas (2300) and returns a boolean without checking it. This fix changes to .transfer() which automatically reverts on failure, adds explicit address payable conversion, and includes proper error handling.",
+            "corrected_code": "function withdrawBalance() external onlyOwner {\n    address payable owner = address(uint160(msg.sender));\n    owner.transfer(address(this).balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

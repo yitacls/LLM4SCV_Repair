@@ -1,0 +1,47 @@
+```json
+{
+    "type": "SWC-103-Floating Pragma",
+    "location": "pragma solidity 0.8.11;",
+    "description": "The pragma solidity version is fixed at 0.8.11, which may not include the latest bug fixes and optimizations available in newer compiler versions. It's recommended to use a fixed pragma version to prevent unexpected behaviors when compiling the contract."
+}
+{
+    "type": "SWC-119-Shadowing State Variables",
+    "location": "L512 - L521",
+    "description": "The state variables _previousCommunityCharge, _previousEcoSysFee, _previousSurcharge1, _previousSurcharge2, _previousSurcharge3 are declared closely, and there is a risk of accidentally shadowing variables due to similar names. This can lead to unintended behavior and potential bugs in the code."
+}
+{
+    "type": "SWC-135-Code With No Effects",
+    "location": "L555 - L587",
+    "description": "In the setCharges function, the logic to set the charges (community_charge, ecoSysFee, surcharge1, surcharge2, surcharge3) might not have any effect as the changes made are not used or propagated further in the contract. This can indicate a logic error or an unused feature."
+}
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "L775 - L782",
+    "description": "The loop over the excluded accounts in _getCurrentSupply, specifically the variable cacheLength, might cause a gas limit issue if there are too many excluded accounts. This could potentially lead to a denial of service attack by consuming excessive gas."
+}
+{
+    "type": "SWC-135-Code With No Effects",
+    "location": "L788 - L832",
+    "description": "The takeCharges function seems to calculate the charges but doesn't actually use the calculated values to perform any practical actions. This indicates that the code block might not have any effect in the context of the contract operations."
+}
+{
+    "type": "SWC-135-Code With No Effects",
+    "location": "L978 - L980",
+    "description": "The _transferBothExcluded function contains a code block that assigns values to different variables but doesn't utilize these values to perform any further actions, making the code block redundant and potentially unnecessary."
+}
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "L1009-L1010",
+    "description": "In the unlock function, the calculation of timePassed might lead to an integer overflow if the timestamps are far apart. This could result in incorrect computations and unexpected behavior."
+}
+{
+    "type": "SWC-135-Code With No Effects",
+    "location": "L1043 - L1046",
+    "description": "The condition to check if an address is already in a vesting period (locks[recipient].lockedToken == 0) is immediately followed by an external transfer operation, suggesting that the check might not have any practical effect on the subsequent operation."
+}
+{
+    "type": "SWC-135-Code With No Effects",
+    "location": "L1060 - L1070",
+    "description": "The _transferFromExcluded function contains calculations and assignments that are not further utilized in the function's logic. This may indicate redundant or unnecessary code that does not have any meaningful impact on the contract behavior."
+}
+```

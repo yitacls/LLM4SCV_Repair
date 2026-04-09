@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "TIME_MANIPULATION",
+        "location": "require(now != pastBlockTime);",
+        "description": "The contract uses 'now' (alias for block.timestamp) to prevent multiple transactions per block, but miners can manipulate block timestamps within a small range, potentially allowing them to bypass this restriction or influence the outcome of the randomness check."
+    },
+    {
+        "type": "TIME_MANIPULATION",
+        "location": "if(now % 15 == 0)",
+        "description": "The contract uses block.timestamp for generating 'randomness' to determine the winner. Since miners have some control over the timestamp of blocks they mine, they can manipulate the timestamp to make it divisible by 15, thereby increasing their chances of winning the jackpot."
+    }
+]
+```

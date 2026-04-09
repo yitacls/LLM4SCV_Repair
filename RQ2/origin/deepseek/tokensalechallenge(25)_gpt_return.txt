@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "require(msg.value == numTokens * PRICE_PER_TOKEN);",
+    "description": "This multiplication can cause an integer overflow. If PRICE_PER_TOKEN is greater than 0 and numTokens is large enough such that numTokens * PRICE_PER_TOKEN exceeds the maximum value of uint256 (2^256 - 1), the multiplication will wrap around, potentially allowing an attacker to bypass the price check by providing a small msg.value that matches the overflowed result."
+}
+```

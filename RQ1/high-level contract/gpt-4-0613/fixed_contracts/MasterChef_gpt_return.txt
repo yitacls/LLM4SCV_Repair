@@ -1,0 +1,60 @@
+```json
+[
+    {
+        "contract_name": "MasterChef",
+        "contract_version": "0.6.7",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "add",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attack.",
+                "corrected_code": "function add(uint256 _allocPoint, IERC20 _lpToken, bool _withUpdate, address _strategy) public onlyOwner nonReentrant {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "set",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attack.",
+                "corrected_code": "function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate) public onlyOwner nonReentrant {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "deposit",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attack.",
+                "corrected_code": "function deposit(uint256 _pid, uint256 _amount) public nonReentrant {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "withdraw",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attack.",
+                "corrected_code": "function withdraw(uint256 _pid, uint256 _shares) public nonReentrant {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "emergencyWithdraw",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attack.",
+                "corrected_code": "function emergencyWithdraw(uint256 _pid) public nonReentrant {...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "safePudTransfer",
+                "fix_info": "Checked the return value of the transfer call.",
+                "corrected_code": "function safePudTransfer(address _to, uint256 _amount) internal {... require(pud.transfer(_to, amount), 'Transfer failed.'); ...}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "balance",
+                "fix_info": "Added nonReentrant modifier to prevent reentrancy attack.",
+                "corrected_code": "function balance(uint256 _pid) public view nonReentrant returns (uint256) {...}",
+                "change_type": "modified"
+            },
+             {
+                "function_name": "setPoolStrategy",
+                "fix_info": "Checked the return value of the harvest and withdrawAll calls.",
+                "corrected_code": "function setPoolStrategy(uint256 _pid,address _strategy) public onlyOwner {... require(IStrategy(pool.strategy).harvest(), 'Harvest failed.'); ... require(IStrategy(pool.strategy).withdrawAll(_strategy), 'Withdraw failed.'); ...}",
+                "change_type": "modified"
+            } 
+        ]
+    }
+]
+```

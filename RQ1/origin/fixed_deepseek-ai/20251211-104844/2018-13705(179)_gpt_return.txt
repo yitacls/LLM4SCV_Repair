@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "PMHToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change needed - SafeMath protection will be applied in the function",
+            "variable_code": "",
+            "change_type": "none"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No change needed - SafeMath protection will be applied in the function",
+            "variable_code": "",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Assuming this modifier is correctly implemented to restrict access",
+            "modifier_code": "",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed potential integer overflow by using SafeMath for arithmetic operations and added input validation",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    // Use SafeMath functions to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount); // Updates target's balance safely\n    totalSupply = totalSupply.add(mintedAmount); // Updates totalSupply safely\n    \n    _updateTokensAvailable(balanceOf[this]); // Update the balance of tokens available if necessary\n    Transfer(0, this, mintedAmount);      // Notifies the blockchain about the tokens created\n    Transfer(this, target, mintedAmount); // Notifies the blockchain about the transfer to target\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

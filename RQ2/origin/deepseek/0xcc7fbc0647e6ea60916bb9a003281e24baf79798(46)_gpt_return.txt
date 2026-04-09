@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "spender.receiveApproval(msg.sender, _value, this, _extraData);",
+    "description": "The function approveAndCall makes an external call to the _spender address before updating the contract's internal state (the approval is already set via approve(), but the external call could potentially trigger a reentrant call back into this contract or another function in the same transaction). In Solidity ^0.4.19, there are no built-in reentrancy guards (like the Checks-Effects-Interactions pattern enforcement). If _spender is a malicious contract, it could call back into ESTCoins (e.g., by calling approveAndCall again or another function) before the first call completes, potentially exploiting inconsistent state (e.g., double-spending allowances or other race conditions related to approvals and transfers). Additionally, the function does not check the return value of the external call, which may lead to unexpected behavior if the call fails. This is a form of reentrancy vulnerability, though typically more associated with state changes after external calls. Here, the approve() is done before the call, but the contract state could still be manipulated if other functions are called reentrantly based on the same approval."
+}
+```

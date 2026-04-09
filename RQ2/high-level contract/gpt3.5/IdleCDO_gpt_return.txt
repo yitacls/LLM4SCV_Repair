@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _deposit(uint256 _amount, address _tranche) internal returns (uint256 _minted)",
+    "description": "The _deposit function allows a reentrancy vulnerability as the transfer of underlyings is done after minting tranches tokens. An attacker can potentially call back into the contract and execute additional logic before the transfer, which can lead to unexpected behavior."
+}
+```

@@ -1,0 +1,27 @@
+[{
+    "contract_name": "LatticeStakingPool",
+    "contract_version": "0.8.6",
+    "state_variables": [
+        {
+            "variable_name": "MAX_WHITELIST_BATCH",
+            "fix_info": "Added a batch size limit to prevent DoS by block gas limit when owner attempts to whitelist too many addresses in a single transaction.",
+            "variable_code": "uint256 public constant MAX_WHITELIST_BATCH = 200;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "whitelistAddresses",
+            "fix_info": "Limited the maximum number of addresses processed per call to a safe constant (MAX_WHITELIST_BATCH). This prevents transactions from running out of gas when attempting to push a very large array into storage. Preserves original functionality while forcing the owner to call in smaller batches if needed.",
+            "corrected_code": "function whitelistAddresses(\n        uint256 _projectId,\n        address[] memory _newAddressesToWhitelist\n    ) external {\n        require(msg.sender == owner, \"whitelistAddresses: Caller is not the owner\");\n        require(_projectId < projects.length, \"whitelistAddresses: Invalid project ID.\");\n        require(_newAddressesToWhitelist.length > 0, \"whitelistAddresses: Addresses array is empty.\");\n        require(_newAddressesToWhitelist.length <= MAX_WHITELIST_BATCH, \"whitelistAddresses: batch too large\");\n\n        for (uint256 i = 0; i < _newAddressesToWhitelist.length; i++) {\n            address addr = _newAddressesToWhitelist[i];\n            if (!projectIdToWhitelistedAddress[_projectId][addr]) {\n                projectIdToWhitelistedAddress[_projectId][addr] = true;\n                projectIdToWhitelistedArray[_projectId].push(addr);\n            }\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getWhitelistedAddressesForProject",
+            "fix_info": "Replaced the unbounded view that returned the entire whitelisted array with a paginated getter. This prevents attempts to return an excessively large array in a single call and enables safe retrieval of entries in pages by the owner.",
+            "corrected_code": "function getWhitelistedAddressesForProject(\n        uint256 _projectId,\n        uint256 _pageNumber,\n        uint256 _pageSize\n    ) external view returns (address[] memory) {\n        require(msg.sender == owner, \"getWhitelistedAddressesForProject: Caller is not the owner\");\n        require(_projectId < projects.length, \"getWhitelistedAddressesForProject: Invalid project ID.\");\n        require(_pageSize > 0, \"getWhitelistedAddressesForProject: Invalid page size.\");\n        require(_pageNumber > 0, \"getWhitelistedAddressesForProject: Invalid page number.\");\n\n        uint256 total = projectIdToWhitelistedArray[_projectId].length;\n        if (total == 0) {\n            return new address[](0);\n        }\n\n        uint256 start = (_pageNumber - 1) * _pageSize;\n        require(start < total, \"getWhitelistedAddressesForProject: Specified parameters exceed number of whitelisted addresses.\");\n\n        uint256 end = _pageNumber * _pageSize;\n        if (end > total) {\n            end = total;\n        }\n\n        uint256 len = end - start;\n        address[] memory result = new address[](len);\n        for (uint256 i = 0; i < len; i++) {\n            result[i] = projectIdToWhitelistedArray[_projectId][start + i];\n        }\n\n        return result;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

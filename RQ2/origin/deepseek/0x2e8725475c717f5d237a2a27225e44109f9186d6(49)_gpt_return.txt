@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "The contract uses tx.origin for authorization, which is vulnerable to phishing attacks. tx.origin returns the original externally-owned account (EOA) that initiated the transaction chain, not the immediate caller. A malicious contract could trick the owner into calling a function that then calls this mint() function, passing the authorization check since tx.origin would still be the owner's address. This allows unauthorized minting. Furthermore, the assert(amount >= 0) is redundant (amount is uint256, so it's always >= 0) and consumes all gas on failure in Solidity 0.4.x, but this is a separate issue."
+    }
+}
+```

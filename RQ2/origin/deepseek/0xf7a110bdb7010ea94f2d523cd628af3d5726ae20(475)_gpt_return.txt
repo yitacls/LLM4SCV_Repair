@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authorization creates a phishing vulnerability. The contract compares tx.origin (the original EOA that initiated the transaction chain) with owner, rather than using msg.sender. A malicious contract could trick the owner into calling it, and then that contract calls addMeByRC(). The tx.origin would still be the owner's address, passing the requirement, while msg.sender would be the malicious contract's address — but the contract logs and sets rc[msg.sender] for the malicious contract, not the owner. This allows an attacker to gain unauthorized access by deceiving the owner into interacting with a malicious contract. This is a classic access control vulnerability specific to Solidity versions before 0.5.0."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner, \"Only for contract Owner\");",
+    "description": "Using tx.origin for authentication is a security vulnerability. While the modifier is named 'onlyOwner', it checks tx.origin instead of msg.sender. The tx.origin variable returns the original external account that started the transaction chain, which can be manipulated by malicious contracts to bypass ownership checks. An attacker could create a contract that calls this function, making tx.origin equal to the original transaction sender (possibly the owner), even if the immediate caller (msg.sender) is the attacker's contract. This could allow unauthorized access to owner-only functions."
+}
+```

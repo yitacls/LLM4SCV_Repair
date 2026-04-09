@@ -1,0 +1,24 @@
+```json
+[
+  {
+    "contract_name": "EternalHeroesFactory",
+    "contract_version": "^0.5.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "_buy",
+        "fix_info": "Added reentrancy guard to prevent possible reentrancy attacks. The function now uses a mutex guard to prevent reentrant execution.",
+        "corrected_code": "    uint256 private _reentrancyStatus = 1; // 1 = not entered, 2 = entered\n\n    modifier nonReentrant() {\n        require(_reentrancyStatus != 2, \"EternalHeroesFactory: REENTRANCY_PROTECTION\");\n        _reentrancyStatus = 2;\n        _;\n        _reentrancyStatus = 1;\n    }\n\n    function _buy(\n        uint256[] memory _ids,\n        uint256[] memory _amounts,\n        uint256[] memory _expectedTiers,\n        uint256 _arcAmount,\n        address _recipient\n    ) internal nonReentrant {\n        uint256 nTokens = _ids.length;\n        uint256 tier_size = tierSize;\n\n        uint256[] memory current_supplies = factoryManager.getCurrentSupplies(_ids);\n        uint256 total_cost = 0;\n        uint256[] memory amounts_to_mint = new uint256[](nTokens);\n\n        for (uint256 i = 0; i < nTokens; i++) {\n            uint256 id = _ids[i];\n            uint256 supply = current_supplies[i];\n            uint256 to_mint = 0;\n            uint256 amount = _amounts[i];\n\n            require(isPurchasable[id], \"EternalHeroesFactory#_buy: ID_NOT_PURCHASABLE\");\n\n            if (i > 0) {\n                require(_ids[i - 1] < id, \"EternalHeroesFactory#_buy: UNSORTED_OR_DUPLICATE_TOKEN_IDS\");\n            }\n\n            uint256 current_tier = supply.div(tier_size);\n\n            if (_expectedTiers[i] != current_tier) {\n                amounts_to_mint[i] = 0;\n                continue;\n            }\n\n            uint256 current_price = floorPrice.add(current_tier.mul(priceIncrement));\n            uint256 amount_left = tier_size.sub(supply.mod(tier_size));\n            to_mint = amount < amount_left ? amount : amount_left;\n\n            total_cost = total_cost.add(to_mint.mul(current_price));\n            amounts_to_mint[i] = to_mint;\n        }\n\n        uint256 refundAmount = _arcAmount.sub(total_cost);\n        if (refundAmount > 0) {\n            arcadeumCoin.safeTransferFrom(address(this), _recipient, arcadeumCoinID, refundAmount, \"\");\n        }\n\n        factoryManager.batchMint(_recipient, _ids, amounts_to_mint, \"\");\n        emit AssetsPurchased(_recipient, _ids, amounts_to_mint, total_cost);\n    }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "withdraw",
+        "fix_info": "Added reentrancy guard using the nonReentrant modifier to prevent reentrancy vulnerabilities during the withdrawal of funds.",
+        "corrected_code": "    function withdraw(address _recipient) external onlyOwner nonReentrant {\n        require(_recipient != address(0x0), \"EternalHeroesFactory#withdraw: INVALID_RECIPIENT\");\n        uint256 thisBalance = arcadeumCoin.balanceOf(address(this), arcadeumCoinID);\n        arcadeumCoin.safeTransferFrom(address(this), _recipient, arcadeumCoinID, thisBalance, \"\");\n    }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

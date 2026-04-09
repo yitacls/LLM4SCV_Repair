@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "LocusOne",
+    "contract_version": "^0.4.20",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_split",
+            "fix_info": "Fixed unchecked low-level call by using require() to check the return value of send() and also replaced send() with transfer() for automatic gas stipend and revert on failure",
+            "corrected_code": "function _split(uint _stake) internal {\n        if (msg.value < 0.05 ether || msg.value > 1000000 ether)\n            revert();\n        devAcct = 0x1daa0BFDEDfB133ec6aEd2F66D64cA88BeC3f0B4;\n        potAcct = 0x708294833AEF21a305200b3463A832Ac97852f2e;        \n        fee = div(_stake, 5);\n        pot = sub(_stake, fee);\n        require(devAcct.send(fee));\n        potAcct.transfer(pot);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.send(msg.value);",
+    "description": "The contract allows anyone to send ether directly to the owner without any access control or permission check, which is a security risk. This can potentially lead to a loss of funds or unauthorized access to the owner's account."
+}
+```

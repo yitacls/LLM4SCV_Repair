@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to msg.sender before updating the account balance. An attacker can create a malicious contract that calls back into the Collect function recursively before the balance is decremented, allowing them to withdraw more funds than they should be able to. The balance update (acc.balance-=_am) happens after the external call, which is the classic reentrancy pattern vulnerability."
+}
+```

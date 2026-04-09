@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of `tx.origin` to verify ownership or access control can be exploited. Attackers can perform phishing attacks by tricking a legitimate owner into initiating a transaction from their wallet through a malicious contract. Using `msg.sender` is the recommended approach for access control to ensure the call originates directly from the intended entity."
+}
+```

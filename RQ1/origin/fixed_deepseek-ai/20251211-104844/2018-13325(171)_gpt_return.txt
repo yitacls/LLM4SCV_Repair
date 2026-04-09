@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "GrowToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "sellPrice",
+            "fix_info": "Changed to uint256 and added SafeMath overflow protection",
+            "variable_code": "uint256 public sellPrice;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for multiplication and ensuring safe ether transfer using .call.value() pattern",
+            "corrected_code": "function _sell(address _from, uint256 amount) internal returns (uint256 revenue) {\n    require(sellOpen);\n    require(!frozenAccount[_from]);\n    require(amount > 0);\n    require(sellPrice > 0);\n    require(_from != owner);\n    \n    // Transfer tokens to owner\n    _transfer(_from, owner, amount);\n    \n    // Safe multiplication to prevent overflow\n    revenue = amount.mul(sellPrice);\n    \n    // Safe ether transfer to prevent reentrancy and ensure proper gas handling\n    require(address(this).balance >= revenue, \"Insufficient contract balance\");\n    (bool success,) = _from.call.value(revenue)(\"\");\n    require(success, \"Ether transfer failed\");\n    \n    emit SellToken(_from, sellPrice, amount, revenue);\n    \n    return revenue;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

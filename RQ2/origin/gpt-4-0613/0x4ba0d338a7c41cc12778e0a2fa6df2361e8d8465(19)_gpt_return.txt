@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "deposits[msg.sender] += msg.value;",
+    "description": "The contract ICO_Hold is vulnerable to an Arithmetic issue, specifically, an Integer Overflow and Underflow issue. This issue happens when an arithmetic operation reaches the maximum or minimum size of an integer. In this case, if msg.value is very large, it might cause an overflow making deposits[msg.sender] a very small number, therefore, an attacker could use this to their advantage."
+}
+```

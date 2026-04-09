@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Deck",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deal",
+            "fix_info": "The vulnerability arises from using predictable block-related data like block.number, block.timestamp, and blockhash for randomness. Instead, it's fixed by adding a randomness source provided externally (via Oracle or VRF) to ensure unpredictability.",
+            "corrected_code": "function deal(address player, uint8 cardNumber, uint256 randomSeed) internal pure returns (uint8) {\n    require(randomSeed != 0, \"Random seed cannot be zero\");\n    return uint8(uint256(keccak256(abi.encodePacked(randomSeed, player, cardNumber))) % 52);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

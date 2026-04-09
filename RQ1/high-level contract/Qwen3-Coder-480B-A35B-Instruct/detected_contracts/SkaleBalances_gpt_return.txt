@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function withdrawBalance(address from, address to, uint amountOfTokens) external allow(\"DelegationService\") { ... }",
+    "description": "The withdrawBalance function is vulnerable to reentrancy attacks because it makes an external call to skaleToken.transfer() before updating the state variable _bountyBalances. An attacker could potentially reenter this function and drain the contract's balance by recursively calling back into withdrawBalance before the balance adjustment occurs."
+}
+```

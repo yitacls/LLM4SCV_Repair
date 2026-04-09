@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "require(tx.origin == owner);  // fault line",
+  "description": "The mint function authorizes the caller using tx.origin instead of msg.sender. Using tx.origin for access control is insecure: if the owner (an EOA) is tricked into interacting with a malicious contract, that malicious contract can call HXL.mint() and tx.origin will still be the owner's address, allowing the attacker to bypass the intended check and mint tokens. Relying on tx.origin also prevents legitimate contract-based owners (multisigs or owner contracts) from interacting correctly. Additionally, the code uses assert(amount >= 0) which is redundant for uint256 and is an improper use of assert for input validation. Recommended fixes: replace the check with require(msg.sender == owner) or adopt a well-audited access control pattern (e.g., Ownable or role-based access control from OpenZeppelin), remove or replace assert(amount >= 0) with proper input validation (e.g., require(amount > 0) if zero mints are disallowed), and consider emitting events and adding proper admin controls for minting."
+}

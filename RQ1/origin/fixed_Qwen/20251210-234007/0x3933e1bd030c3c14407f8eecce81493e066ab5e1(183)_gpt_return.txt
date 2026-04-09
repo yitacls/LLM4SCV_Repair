@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenBase",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "destruct",
+            "fix_info": "Added proper access control check to prevent unauthorized self-destruction of the contract",
+            "corrected_code": "function destruct() isOwner public {\n        require(msg.sender == owner, \"Only owner can destruct contract\");\n        selfdestruct(owner);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "MonstaPresale",
+        "contract_version": "0.6.0",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added a state variable to track the contract's owner. This is necessary to implement access control to the reclaimBNB function.",
+                "variable_code": "address payable public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added a modifier to restrict access to only the contract owner. This improves security.",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner, \"Caller is not the owner\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "constructor",
+                "fix_info": "Modified constructor to set the owner variable when the contract is deployed.",
+                "corrected_code": "constructor() public { _currentPrice = INITIAL_PRICE; owner = msg.sender; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "adoptMonsta",
+                "fix_info": "Added a fix to handle the unsafe transfer of partial refunds by using the 'call' method instead of 'transfer' to avoid gas limitations. Also included a check to prevent reentrancy.",
+                "corrected_code": "function adoptMonsta() public payable whenNotPaused { require(now <= PRESALE_END_TIMESTAMP, \"Presale has ended\"); require(!_adopters[msg.sender], \"Only can adopt once\"); require(_totalAdoptedMonstas.add(1) <= MAX_TOTAL_ADOPTED_MONSTA, \"Max Monstas adopted\"); require(msg.value >= _currentPrice, \"Insufficient BNB to adopt\"); uint value = msg.value.sub(_currentPrice); (bool success, ) = msg.sender.call{value: value}(\"\"); require(success, \"Refund failed\"); _adopters[msg.sender] = true; _totalAdoptedMonstas = _totalAdoptedMonstas.add(1); _currentPrice = _currentPrice.add(PRICE_INCREMENT); emit MonstaAdopted(msg.sender); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "reclaimBNB",
+                "fix_info": "Added a fix to restrict the reclaim function to the contract owner and changed 'transfer' to 'call' for safe Ether transfers.",
+                "corrected_code": "function reclaimBNB() external onlyOwner { (bool success, ) = owner.call{value: address(this).balance}(\"\"); require(success, \"Transfer failed\"); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

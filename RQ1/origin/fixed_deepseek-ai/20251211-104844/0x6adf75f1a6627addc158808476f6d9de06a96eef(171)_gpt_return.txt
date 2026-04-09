@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "reserveFundContract",
+            "fix_info": "Proper visibility and access control",
+            "variable_code": "address public reserveFundContract;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyReserveFundContract",
+            "fix_info": "Modified to properly validate msg.sender instead of relying on public visibility",
+            "modifier_code": "modifier onlyReserveFundContract() {\n    require(\n        msg.sender == reserveFundContract,\n        \"Only reserve fund contract can call this\"\n    );\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed access control vulnerability by properly implementing tx.origin protection and removing trust in tx.origin for authorization",
+            "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public {\n    require(_to != address(0x0), \"User address can not be empty\");\n    require(_deposited > 0, \"Package value must be > 0\");\n    \n    Balance storage balance = userWallets[_to];\n    bool firstDeposit = balance.deposited.length == 0;\n    \n    balance.deposited.push(_deposited);\n    uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n    uint profitSourceIncreaseAmount = _deposited * 10;\n    \n    balance.totalDeposited = balance.totalDeposited.add(_deposited);\n    balance.profitableBalance = balance.profitableBalance.add(profitableIncreaseAmount);\n    balance.profitSourceBalance = balance.profitSourceBalance.add(profitSourceIncreaseAmount);\n    \n    if (_source == 2) {\n        // Instead of using tx.origin for authorization, track referrals separately\n        // with proper access control\n        address referrer = citizen.getReferrer(_to);\n        \n        if (referrer != address(0)) {\n            Balance storage referrerBalance = userWallets[referrer];\n            // Ensure referrer has enough profit balance before subtracting\n            require(\n                referrerBalance.profitBalance >= _deposited,\n                \"Referrer has insufficient profit balance\"\n            );\n            referrerBalance.profitBalance = referrerBalance.profitBalance.sub(_deposited);\n            \n            emit ProfitBalanceChanged(referrer, _to, int(_deposited) * -1, 1);\n        }\n    }\n    \n    citizen.addF1DepositedToInviter(_to, _deposited);\n    addRewardToInviters(_to, _deposited, _source, _sourceAmount);\n    \n    if (firstDeposit) {\n        citizen.increaseInviterF1HaveJoinedPackage(_to);\n    }\n    \n    if (profitableIncreaseAmount > 0) {\n        emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n        emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setReserveFundContract",
+            "fix_info": "Added function to manage reserveFundContract address with proper access control",
+            "corrected_code": "function setReserveFundContract(address _reserveFundContract) public onlyOwner {\n    require(_reserveFundContract != address(0), \"Invalid address\");\n    reserveFundContract = _reserveFundContract;\n    emit ReserveFundContractUpdated(_reserveFundContract);\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

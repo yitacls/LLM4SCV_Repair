@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function view_gas(string GAS)public{\n        require(tx.origin == owner);  // fault line\n        gas_fee = GAS;\n    }",
+    "description": "This function uses tx.origin for authorization, which is vulnerable to phishing attacks. An attacker can trick the contract owner into initiating a transaction from the owner's wallet to a malicious contract, which then calls this function. Since tx.origin would still be the owner's address, the malicious contract would successfully pass the require() check and gain unauthorized access to change the gas_fee variable. The proper authorization mechanism should use msg.sender instead of tx.origin to ensure only the directly calling contract or EOA is verified. This vulnerability exists in Solidity ^0.4.24 where such patterns were common but insecure."
+}
+```

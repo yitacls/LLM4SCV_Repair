@@ -1,0 +1,54 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity 0.8.11;",
+        "description": "The contract uses a specific compiler version (0.8.11) which is good, but the comment indicates a floating pragma issue. However, the pragma is fixed and not floating, so the label may be misapplied. Using fixed versions is recommended to avoid compilation issues across different environments."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "function _approve(address owner, address spender, uint256 amount)",
+        "description": "The _approve function uses 'owner' as a parameter name, which shadows the state variable '_owner'. This may lead to confusion and unintended behavior. It is recommended to rename the parameter to avoid shadowing."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function setCharges(...)",
+        "description": "The setCharges function parameters shadow the state variables _community_charge, _ecoSysFee, _surcharge1, _surcharge2, _surcharge3. This can lead to confusion. Although Solidity allows shadowing, it's better to rename parameters to avoid ambiguity and improve code clarity."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "setCharges function",
+        "description": "In the setCharges function, the lines assigning values to _community_charge, _ecoSysFee, etc. might appear to have no effect in certain contexts due to shadowing or lack of proper state update visibility. However, the assignments do update the state. The audit tool might flag this incorrectly if it misinterprets scope or usage. Nonetheless, it's crucial to ensure assignments affect the intended state variables."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "_getCurrentSupply function loop over _excluded array",
+        "description": "The _getCurrentSupply function iterates over the _excluded array which can grow indefinitely. If the array becomes too large, the function may exceed the block gas limit, causing denial of service for functions that depend on it like _getRate. This could halt transfers and other critical operations."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "takeCharges function",
+        "description": "The takeCharges function processes fees but has checks like `if (_isExcludedFromSurcharge1[_surcharge_2_Wallet])` which incorrectly references surcharge1 exclusion for surcharge2 wallet, creating potential inconsistencies. Additionally, some conditional checks might not alter state in visible ways, flagged as no-effect code unnecessarily. The function should correctly reference respective exclusion mappings."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "unlock function time calculations",
+        "description": "In the unlock function, unchecked arithmetic operations on timestamps and month calculations could potentially lead to overflows or underflows if not handled carefully, even though Solidity 0.8.x has built-in overflow checks. However, explicit checks or SafeMath-like patterns are advisable for clarity and robustness, especially with time-based arithmetic."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "transferWithLock function requirement checks",
+        "description": "The requirement `require(initialLock >= 0, ...)` is redundant since uint256 cannot be negative. Such checks consume gas without adding value, and should be removed to optimize contract efficiency."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "_transferBothExcluded fallback in _tokenTransfer",
+        "description": "In _tokenTransfer, the else clause defaults to _transferStandard. While functional, if the condition list grows and mismatches occur, this default might mask logic errors. A more explicit handling or revert on unhandled cases can prevent silent failures."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "_transferFromExcluded and similar transfer functions",
+        "description": "These functions perform token transfers considering reward exclusions. If the logic for exclusion handling is inconsistent or if the _doTransfer function doesn't correctly reflect changes for all cases, it might appear as no-effect code. Ensuring each path properly updates state is crucial."
+    }
+]
+```

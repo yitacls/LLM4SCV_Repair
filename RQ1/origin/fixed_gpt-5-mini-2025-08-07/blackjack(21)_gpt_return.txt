@@ -1,0 +1,54 @@
+[
+    {
+        "contract_name": "Deck",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added an owner address so only the contract owner can set the entropy seed. This prevents arbitrary external changes and provides controlled entropy injection.",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "seed",
+                "fix_info": "Added a contract-controlled entropy seed (bytes32). This seed is set by the owner and combined with a nonce to make the randomness resistant to miner manipulation compared to using only block data and caller address.",
+                "variable_code": "bytes32 private seed;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "nonce",
+                "fix_info": "Added a monotonic nonce (uint256) incremented on each deal to ensure unique inputs to keccak256 and avoid repetition of outputs for the same seed.",
+                "variable_code": "uint256 private nonce;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added onlyOwner modifier so only the contract owner can set the seed.",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "Deck (constructor)",
+                "fix_info": "Added constructor to initialise the owner and nonce. Keeps ownership logic simple and deterministic.",
+                "corrected_code": "function Deck() public { owner = msg.sender; nonce = 0; }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "setSeed",
+                "fix_info": "Added an owner-only function to set the contract-controlled seed. This provides an off-chain entropy injection point (e.g. owner can periodically set new unpredictable seeds) improving randomness quality over pure on-chain values.",
+                "corrected_code": "function setSeed(bytes32 _seed) public onlyOwner {\n    seed = _seed;\n}",
+                "change_type": "added"
+            },
+            {
+                "function_name": "deal",
+                "fix_info": "Replaced use of only block data for randomness with a contract-controlled seed and nonce combined with the latest blockhash and caller info. Increments a nonce each call to avoid reuse. Still returns a card in range 0-51 but is made significantly harder for miners to bias because they do not know the private seed.",
+                "corrected_code": "function deal(address player, uint8 cardNumber) internal returns (uint8) {\n    // Use a contract-controlled seed plus a monotonic nonce and recent blockhash for entropy.\n    // Increment nonce to ensure unique inputs for each invocation.\n    nonce += 1;\n    // Use previous block hash (block.number - 1) to avoid the current blockhash being zero.\n    // Combine: seed (owner-provided), nonce, recent blockhash, player and cardNumber.\n    bytes32 h = keccak256(seed, nonce, block.blockhash(block.number - 1), player, cardNumber, now);\n    return uint8(uint256(h) % 52);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]

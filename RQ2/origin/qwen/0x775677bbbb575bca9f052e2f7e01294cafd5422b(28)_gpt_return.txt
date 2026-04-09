@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "VOTING_END_TIME = now + max(durationHrs,1) * 1 hours;",
+    "description": "The multiplication operation max(durationHrs,1) * 1 hours can cause an arithmetic overflow if durationHrs is extremely large. In Solidity 0.4.11, arithmetic operations are not protected against overflow by default, which could result in unexpected behavior or incorrect voting end times. An attacker could potentially provide a very large durationHrs value that causes the multiplication to overflow, resulting in a much smaller VOTING_END_TIME than intended."
+}
+```

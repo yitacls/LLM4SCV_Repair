@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "MyAdvancedToken7",
+        "contract_version": "^0.4.13",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Add overflow check before updating balances and sending ether.",
+                "corrected_code": "function sell(uint256 amount) {
+        require(balanceOf[msg.sender] >= amount); // Check if sender has enough to sell
+        balanceOf[this] += amount; // Add the amount to owner's balance
+        balanceOf[msg.sender] -= amount; // Subtract the amount from seller's balance
+        
+        uint256 totalPrice = amount * sellPrice;
+        require(totalPrice / amount == sellPrice); // Check for potential overflow
+        
+        if (!msg.sender.send(totalPrice)) { // Send ether to the seller
+            revert(); // Avoid recursion attacks
+        } else {
+            Transfer(msg.sender, this, amount); // Execute an event reflecting the change
+        }
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

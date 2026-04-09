@@ -1,0 +1,20 @@
+```json
+[
+    {
+        "contract_name": "CYBRPurchaseAddress",
+        "contract_version": "^0.4.23",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Use call.value() instead of directly sending Ether to the wallet address.",
+                "corrected_code": "function () external payable {
+    wallet.call.value(msg.value)();
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

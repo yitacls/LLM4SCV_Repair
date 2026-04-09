@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "The mintToken function lacks overflow protection for unsigned integer additions. In Solidity version ^0.4.16, there is no built-in overflow checking for uint256. If balanceOf[target] + mintedAmount exceeds 2^256 - 1, it will wrap around to a small number, corrupting the account's balance. Similarly, totalSupply could overflow if totalSupply + mintedAmount exceeds the maximum uint256 value. This could be exploited to mint an excessive amount of tokens or cause incorrect token accounting. This vulnerability is fixed in Solidity 0.8.0+ with built-in overflow checks or by using SafeMath library in earlier versions."
+}
+```

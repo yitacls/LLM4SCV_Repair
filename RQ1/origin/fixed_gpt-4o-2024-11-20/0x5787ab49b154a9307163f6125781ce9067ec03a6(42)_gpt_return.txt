@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PwnFoMo3D",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "gotake",
+                "fix_info": "Replaced the low-level call with a checks-effects-interactions pattern implementation and proper return value checks.",
+                "corrected_code": "function gotake() public {\n    uint256 buyPrice = fomo3d.getBuyPrice();\n    uint256 amountToSend = buyPrice * 2;\n\n    // Check if the amountToSend is non-zero to avoid wasting gas\n    require(amountToSend > 0, \"Invalid amount to send, must be greater than 0\");\n\n    // Ensure the call is successful and handle errors\n    (bool success, ) = address(fomo3d).call.value(amountToSend)(\"\");\n    require(success, \"Low-level call failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

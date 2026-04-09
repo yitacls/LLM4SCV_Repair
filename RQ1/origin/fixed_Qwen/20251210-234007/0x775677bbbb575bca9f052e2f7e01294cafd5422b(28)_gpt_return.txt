@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PresalerVoting",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "startVoting",
+            "fix_info": "Fixed potential arithmetic overflow by using SafeMath for multiplication operation",
+            "corrected_code": "function startVoting(uint startBlockNr, uint durationHrs) onlyOwner {\n        VOTING_START_BLOCKNR = max(block.number, startBlockNr);\n        VOTING_END_TIME = now + (max(durationHrs,1) * 1 hours);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

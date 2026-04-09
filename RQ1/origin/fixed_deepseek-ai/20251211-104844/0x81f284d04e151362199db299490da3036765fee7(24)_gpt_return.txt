@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "QatarCoin",
+        "contract_version": "^0.4.11",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Ensure proper overflow/underflow protection through SafeMath",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and added proper function visibility and return type",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n    require(_to != address(0), \"Cannot transfer to zero address\");\n    require(balances[msg.sender] >= _value, \"Insufficient balance\");\n    require(_value > 0, \"Transfer value must be positive\");\n    \n    // Safe subtraction using require (SafeMath pattern for Solidity 0.4.x)\n    require(balances[msg.sender] >= _value);\n    balances[msg.sender] = balances[msg.sender] - _value;\n    \n    // Safe addition using require (SafeMath pattern for Solidity 0.4.x)\n    uint256 newBalance = balances[_to] + _value;\n    require(newBalance >= balances[_to], \"Overflow detected\");\n    balances[_to] = newBalance;\n    \n    Transfer(msg.sender, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

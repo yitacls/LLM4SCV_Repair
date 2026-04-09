@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "Accounts",
+        "contract_version": "0.5.14",
+        "functions": [
+            {
+                "function_name": "getBorrowETH",
+                "fix_info": "Fixed the function to prevent DoS with block gas limit vulnerability.",
+                "corrected_code": "function getBorrowETH(address _accountAddr) public view returns (uint256 borrowETH) { uint tokenNum = globalConfig.tokenInfoRegistry().getCoinLength(); for(uint i = 0; i < tokenNum; i++) { if(isUserHasBorrows(_accountAddr, uint8(i))) { address tokenAddress = globalConfig.tokenInfoRegistry().addressFromIndex(i); uint divisor = INT_UNIT; if(tokenAddress != ETH_ADDR) { divisor = 10 ** uint256(globalConfig.tokenInfoRegistry().getTokenDecimals(tokenAddress)); } borrowETH = borrowETH.add(getBorrowBalanceCurrent(tokenAddress, _accountAddr).mul(globalConfig.tokenInfoRegistry().priceFromIndex(i)).div(divisor)); if(gasleft() < 100000) revert('Out of gas'); } } return borrowETH; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

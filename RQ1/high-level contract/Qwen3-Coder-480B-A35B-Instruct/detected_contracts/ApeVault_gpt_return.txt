@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "L64: mapping(address => bool) public hasAccess;",
+        "description": "The `hasAccess` mapping is declared as public but is never used or modified within the contract. This declaration has no effect on the contract's functionality and should be removed to avoid confusion and improve code clarity."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "L71: ApeAllowanceModule public allowanceModule;",
+        "description": "The `allowanceModule` variable is declared as public but is never initialized or used within the contract. This declaration serves no purpose and should be removed to improve code maintainability and reduce unnecessary storage usage."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "L133-135: function apeWithdrawSimpleToken(uint256 _amount) public { simpleToken.safeTransfer(msg.sender, _amount); }",
+        "description": "The `apeWithdrawSimpleToken` function allows any address to withdraw `_amount` of `simpleToken` from the contract. There are no access controls or ownership checks to prevent unauthorized withdrawals, which could lead to theft of funds."
+    }
+]
+```

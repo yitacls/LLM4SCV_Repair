@@ -1,0 +1,14 @@
+[{
+    "contract_name": "airPort",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Replaced unchecked low-level call with a checked low-level call that validates the call success and supports tokens that either return no value or return a bool. Uses abi.encodeWithSelector and checks returndata to prevent silent failures.",
+            "corrected_code": "function transfer(address from, address caddress, address[] _tos, uint v) public returns (bool) {\n    require(_tos.length > 0);\n\n    bytes4 id = bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n    for (uint i = 0; i < _tos.length; i++) {\n        // perform low-level call and validate return (supports tokens that return no value and those that return bool)\n        (bool success, bytes memory data) = caddress.call(abi.encodeWithSelector(id, from, _tos[i], v));\n        require(success && (data.length == 0 || abi.decode(data, (bool))), \"transfer failed\");\n    }\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

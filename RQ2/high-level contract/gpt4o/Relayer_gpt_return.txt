@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The contract uses an outdated Solidity compiler version (0.7.6). The latest compiler version should be used to benefit from the latest features and security improvements, as older versions may have known vulnerabilities."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.7.6;",
+        "description": "The use of a floating pragma (`^`) allows the contract to compile with multiple versions of Solidity. This could lead to potential incompatibilities or deployment with unintended compiler versions. A fixed pragma version should be specified to ensure consistent behavior."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "using SafeMath for uint;\nusing SafeMath for uint128;\nusing SafeMath for uint64;",
+        "description": "Although the contract uses SafeMath for arithmetic operations, the use of Solidity 0.8.0 and above natively includes overflow and underflow protection without relying on SafeMath. Migrating to the latest compiler would remove the need for external libraries like SafeMath, simplifying the code while maintaining security."
+    }
+]
+```

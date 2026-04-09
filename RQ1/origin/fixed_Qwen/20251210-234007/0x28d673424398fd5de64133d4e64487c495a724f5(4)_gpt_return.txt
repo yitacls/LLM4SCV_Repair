@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Opportunity",
+    "contract_version": "^0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding return value check and using transfer instead of send for better gas management",
+            "corrected_code": "function () external payable {\n        uint256 amount = address(this).balance - msg.value;\n        (bool success, ) = msg.sender.call.value(amount)(\"\");\n        require(success, \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

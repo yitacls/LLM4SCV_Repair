@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "addr.call.value(0 wei)();",
+    "description": "This contract contains a low-level call 'addr.call.value(0 wei)();' that is not checked for its return value. If the called contract throws an error, the current contract will not be aware of it and may continue execution as if the call succeeded. This can lead to unpredictable behavior and potential security vulnerabilities. It's recommended to always check the return value of external calls and handle any potential errors."
+}
+```

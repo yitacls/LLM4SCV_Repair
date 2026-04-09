@@ -1,0 +1,54 @@
+```json
+[
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "return( ( uint(block.blockhash(_lastb  )) & 0xFFFFFF )",
+        "description": "Using block.blockhash for randomness is insecure as it can be predicted or manipulated by miners. This could allow malicious actors to influence the outcome of pseudorandomness."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+1)) & 0xFFFFFF ) << 24 )",
+        "description": "Using block.blockhash with an offset is insecure for randomness generation because the hash values could be influenced or predicted, providing attackers with the ability to control or guess the outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+2)) & 0xFFFFFF ) << 48 )",
+        "description": "This calculation relies on block.blockhash for randomness, which is insecure as it makes the system susceptible to miner manipulation or value prediction."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+3)) & 0xFFFFFF ) << 72 )",
+        "description": "The use of block.blockhash here poses a security risk for randomness due to its predictability and susceptibility to being influenced by blockchain miners."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+4)) & 0xFFFFFF ) << 96 )",
+        "description": "Using block.blockhash(_lastb+4) for randomness is insecure, as miners can predict or manipulate block hashes to control the randomness outcome."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+5)) & 0xFFFFFF ) << 120 )",
+        "description": "This statement relies on block.blockhash(_lastb+5) for randomness, leaving the contract vulnerable to manipulation by miners or prediction of the hash."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+6)) & 0xFFFFFF ) << 144 )",
+        "description": "Using block.blockhash for randomness generation in this statement can cause predictable results, giving attackers the ability to influence the output."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+7)) & 0xFFFFFF ) << 168 )",
+        "description": "Here, block.blockhash is used to derive randomness, which is insecure as it allows adversaries to manipulate or predict the randomness."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+8)) & 0xFFFFFF ) << 192 )",
+        "description": "This line uses block.blockhash(_lastb+8) for randomness, which undermines the security due to the capability of miners to influence or predict block hashes."
+    },
+    {
+        "type": "BAD_RANDOMNESS",
+        "location": "( ( uint(block.blockhash(_lastb+9)) & 0xFFFFFF ) << 216 )",
+        "description": "The dependency on block.blockhash(_lastb+9) for randomness makes this statement insecure, as it allows block producers to tamper with or predict the outcome."
+    }
+]
+```

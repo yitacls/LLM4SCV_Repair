@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Vault",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for addition and ensured proper error handling for transfers",
+            "corrected_code": "function () public payable {\n        eth_stored[msg.sender] = SafeMath.add(eth_stored[msg.sender], msg.value);\n        emit Contribution(msg.sender, msg.value);\n        uint256 client_share = msg.value*3/10;\n        uint256 our_share = msg.value - client_share;\n        require(client_wallet.send(client_share));\n        require(primary_wallet.send(our_share));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

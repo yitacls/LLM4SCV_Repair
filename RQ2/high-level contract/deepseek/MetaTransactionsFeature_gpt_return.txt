@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "Lines 100-107: refundsAttachedEth modifier and lines 140-155: executeMetaTransaction() function",
+            "description": "The refundsAttachedEth modifier transfers remaining ETH to msg.sender after function execution without following the checks-effects-interactions pattern. This could enable reentrancy attacks when combined with the nonReentrant modifier's REENTRANCY_MTX flag, potentially allowing recursive calls if the same reentrancy guard is not protecting against cross-function reentrancy. Additionally, the modifier transfers ETH before state changes are fully finalized, which violates the checks-effects-interactions principle."
+        }
+    ]
+}
+```

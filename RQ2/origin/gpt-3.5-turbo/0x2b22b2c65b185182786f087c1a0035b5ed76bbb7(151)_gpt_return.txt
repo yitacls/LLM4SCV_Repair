@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "function withdrawFrom(address _addr) internal returns(bool) {",
+    "description": "This vulnerability arises from the use of send() for value transfers, as it does not provide enough control or handle potential errors. If the send operation fails, it will return false, but the function does not check this result. This can lead to funds getting stuck or unexpected behavior."
+}
+```

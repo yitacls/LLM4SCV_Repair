@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "hodlers[msg.sender] += msg.value;",
+    "description": "The contract is vulnerable to arithmetic overflow because it uses Solidity version ^0.4.13 which does not have automatic overflow protection. The addition operation 'hodlers[msg.sender] += msg.value' can overflow if the sum exceeds the maximum value that can be stored in the variable, potentially allowing attackers to manipulate their hodler balance or cause unexpected behavior."
+}
+```

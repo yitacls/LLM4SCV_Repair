@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "reentrancy",
+            "location": "(bool success, ) = msg.sender.call{value: amount}(\"\");",
+            "description": "The contract performs an external call (ETH transfer) to msg.sender before updating the internal state (balances and totalSupply). This allows a malicious contract to re-enter the withdraw function repeatedly, draining funds since the state hasn't been updated yet. The vulnerability exists despite the require check because the state reduction occurs after the external call."
+        }
+    ]
+}
+```

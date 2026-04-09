@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "WOOPStake",
+        "contract_version": "^0.6.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_withdrawReward",
+                "fix_info": "Fixes reentrancy vulnerability by ensuring state updates occur before external calls. Introduced the Checks-Effects-Interactions pattern.",
+                "corrected_code": "function _withdrawReward(\n    address sc,\n    address account,\n    uint256 amount\n) internal Active nonReentrant returns (uint256) {\n    IERC20 _token = IERC20(sc);\n\n    uint256 rew = rewarded(sc, account);\n\n    require(amount <= rew, \"WO:amew\");\n    require(amount <= getMyTokensBalance(sc), \"WO:-tk\");\n\n    uint256 remainder = rew.sub(amount);\n\n    // Update reward balance before making the external token transfer (Checks-Effects-Interactions pattern).\n    _doreward(sc, account, remainder);\n\n    bool success = _token.transfer(account, amount);\n    require(success, \"WO:trf\");\n\n    emit RewardWithdrawed(sc, account, amount, remainder);\n\n    return amount;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdrawRewardCOIN",
+                "fix_info": "Fixes reentrancy vulnerability by using Checks-Effects-Interactions pattern and ensuring safe ether transfer.",
+                "corrected_code": "function _withdrawRewardCOIN(address account, uint256 amount)\n    internal\n    Active\n    nonReentrant\n    returns (uint256)\n{\n    uint256 rew = rewardedCOIN(account);\n\n    require(amount <= rew, \"WO:am++\");\n    require(amount <= getMyCoinBalance(), \"WO:tk-\");\n\n    uint256 remainder = rew.sub(amount);\n\n    // Update reward balance before making the external ether transfer (Checks-Effects-Interactions pattern).\n    _dorewardCOIN(account, remainder);\n\n    (bool success, ) = account.call{value: amount}(\"\");\n    require(success, \"WO:failed transfer\");\n\n    emit RewardCOINWithdrawed(account, amount, remainder);\n\n    return amount;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "processReward",
+                "fix_info": "The function is modified to avoid reentrancy attacks by applying Checks-Effects-Interactions pattern and isolating external calls.",
+                "corrected_code": "function processReward(address sc, uint256 amount)\n    public\n    nonReentrant\n    Active\n    hasApprovedTokens(sc, _msgSender(), amount)\n    ProviderHasToken(sc, amount)\n    returns (bool)\n{\n    if (!ERC20Exist(sc)) {\n        newERC20(sc);\n    }\n\n    processRewardInfo memory slot;\n\n    IERC20 _token = IERC20(sc);\n    require(_token.transferFrom(_msgSender(), address(this), amount), \"WO:etr\");\n\n    slot.dealed = _processReward_2(sc, amount);\n\n    uint256 leftover = amount.sub(slot.dealed);\n\n    if (leftover > 0) {\n        // Perform token transfer after all state updates.\n        require(_token.transfer(_remainder, leftover), \"WO:trf\");\n        emit NewLeftover(sc, _remainder, leftover);\n    }\n\n    return true;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_withdrawAllrewardsCOIN",
+                "fix_info": "Fixes DoS vulnerability by batching operations and ensuring all accounts are processed safely.",
+                "corrected_code": "function _withdrawAllrewardsCOIN()\n    internal\n    SolvencyCOIN\n    nonReentrant\n    returns (uint256)\n{\n    uint256 total = 0;\n    uint256 rew = 0;\n    Stake memory p;\n\n    uint256 last = _stakes.getLastIndexStakes();\n\n    for (uint256 i = 0; i <= last; i++) {\n        (p.account, p.bal, p.autoCompound, p.flag) = _stakes.getStakeByIndex(i);\n\n        if (p.flag == 1) {\n            rew = rewardedCOIN(p.account);\n\n            if (rew > 0) {\n                _withdrawRewardCOIN(p.account, rew);\n                total = total.add(rew);\n            }\n        }\n    }\n\n    uint256 eth_reserve = address(this).balance;\n\n    if (eth_reserve > 0) {\n        address payable ow = address(uint160(_remainder));\n        (bool success, ) = ow.call{value: eth_reserve}(\"\");\n        require(success, \"WO:eth trf\");\n    }\n\n    return total;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

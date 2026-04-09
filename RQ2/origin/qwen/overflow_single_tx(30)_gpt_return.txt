@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Underflow",
+    "location": "count -= input;",
+    "description": "The function performs subtraction operation on unsigned integer without checking if the result will be negative, which can cause underflow in Solidity version ^0.4.23 that lacks built-in overflow protection. When count is less than input, the result wraps around to a very large positive number due to unsigned integer underflow."
+}
+```

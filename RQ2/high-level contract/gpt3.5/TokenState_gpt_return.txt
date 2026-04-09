@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "Function getLockedCount(address holder) at line 49",
+            "description": "Loop over delegationIds without considering gas limit, which could cause a denial of service attack if the array is too large."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "Function endingDelegatedToUnlocked(uint delegationId, DelegationController.Delegation memory delegation) at line 173",
+            "description": "Potential vulnerability due to unprotected ether withdrawal. Additional security measures should be implemented."
+        }
+    ]
+}
+```

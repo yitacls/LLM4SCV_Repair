@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses `tx.origin` for authorization in the `changeOwner` function, which is vulnerable to phishing attacks. `tx.origin` returns the original externally owned account (EOA) that initiated the transaction chain, not the immediate caller. An attacker can trick the owner into interacting with a malicious contract, which then calls `FUTX.changeOwner()`. Since `tx.origin` will still be the owner's address, the malicious call will succeed, transferring ownership to the attacker's specified address (`_receiver`). This violates the principle of least privilege and introduces a significant trust assumption. The function should use `msg.sender` for authorization instead of `tx.origin`. Additionally, the function lacks a zero-address check for `_receiver`, which could permanently lock contract ownership if set to address(0)."
+}
+```

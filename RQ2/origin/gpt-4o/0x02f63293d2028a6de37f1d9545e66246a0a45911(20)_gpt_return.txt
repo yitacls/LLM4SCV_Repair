@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "DragonsBurned += _amount;",
+    "description": "The vulnerability lies in the potential for arithmetic overflow in the addition operation. In Solidity version ^0.4.11, arithmetic operations do not include automatic overflow or underflow checks. If the value of DragonsBurned plus _amount exceeds the maximum value of a uint256, it will wrap around to 0 or a smaller value, creating incorrect state behavior. This could lead to unexpected behaviors or exploitation."
+}
+```

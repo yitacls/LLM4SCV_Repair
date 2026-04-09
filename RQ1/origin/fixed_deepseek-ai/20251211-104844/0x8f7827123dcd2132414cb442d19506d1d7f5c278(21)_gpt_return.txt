@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "billy_webside",
+    "contract_version": ">=0.4.24 <0.5.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "No change needed for owner variable",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "gas_fee",
+            "fix_info": "Changed type from string to uint256 to represent gas fees more appropriately",
+            "variable_code": "uint256 public gas_fee;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "view_gas",
+            "fix_info": "Removed tx.origin vulnerability, changed parameter type to uint256, added onlyOwner modifier",
+            "corrected_code": "function view_gas(uint256 GAS) public onlyOwner {\n        gas_fee = GAS;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

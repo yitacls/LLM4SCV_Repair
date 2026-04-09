@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool ret = med_.call(bytes4(keccak256(\"poke()\")));",
+    "description": "The low-level call to med_.call() does not check the return value properly. In Solidity ^0.4.17, the call will always return true even if the called function reverts or fails, making the bool ret assignment meaningless. The return value of call() should be properly checked to ensure the external call succeeded, otherwise it could lead to unexpected behavior when the poke() function fails to execute."
+}
+```

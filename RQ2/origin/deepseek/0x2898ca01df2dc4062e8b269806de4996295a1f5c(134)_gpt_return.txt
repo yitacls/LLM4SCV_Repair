@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "In Solidity version ^0.4.11, the 'send()' function returns a boolean indicating success or failure. This return value is stored in 'res' but is not checked. If the low-level call to 'send()' fails (e.g., due to insufficient gas, a revert in the fallback function of 'nftAddress', or if 'nftAddress' is a contract without a payable fallback function), the transaction will not revert, and the contract state will remain unchanged while the user's expected balance withdrawal fails silently. This can lead to locked funds and incorrect contract behavior. The issue is fixed by checking the return value and reverting on failure, e.g., 'require(nftAddress.send(this.balance));', or using 'transfer()' in Solidity >=0.4.13."
+}
+```

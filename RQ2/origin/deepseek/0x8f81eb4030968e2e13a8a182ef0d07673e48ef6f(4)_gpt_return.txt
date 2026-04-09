@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic Integer Overflow",
+        "location": "return (a + b >= a);",
+        "description": "The safeToAdd() function is vulnerable to integer overflow in Solidity versions prior to 0.8.0 due to unchecked arithmetic operations. When adding two unsigned integers (uint) that exceed the maximum value of 2^256 - 1, the addition will wrap around (overflow) and the condition (a + b >= a) will incorrectly return true. For example, if a = type(uint).max and b = 1, then a + b = 0 (due to overflow), and 0 >= type(uint).max evaluates to false, which incorrectly suggests the addition is unsafe. However, the overflow has already occurred during the computation of a + b in the condition check itself, making this check fundamentally flawed. In Solidity 0.4.25, use SafeMath library or inline require statements with explicit overflow checks (e.g., require(a + b >= a)) to properly validate arithmetic operations."
+    }
+}
+```

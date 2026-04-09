@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "tokenReward.transfer(msg.sender, (amount / price) * 1 ether);",
+    "description": "The calculation (amount / price) * 1 ether is susceptible to an integer division vulnerability. In Solidity <0.8.0, division truncates any remainder. If 'amount' is less than 'price', (amount / price) evaluates to 0, making the entire expression 0 regardless of the multiplication. Additionally, if 'price' is 0, the division will revert due to division by zero. This can lead to investors receiving zero tokens despite sending Ether, especially for small contributions where amount < price."
+}
+```

@@ -1,0 +1,34 @@
+```json
+[
+  {
+    "type": "Integer Overflow",
+    "location": "amount += _value[j]*10**uint256(decimals);",
+    "description": "The 'amount' variable can overflow during the accumulation of transfer values, potentially allowing transfers of more tokens than the sender's actual balance."
+  },
+  {
+    "type": "Integer Overflow",
+    "location": "balanceOf[_toI] += _valueI;",
+    "description": "The recipient's balance can overflow, potentially causing unexpected behavior or loss of tokens."
+  },
+  {
+    "type": "Integer Underflow",
+    "location": "balanceOf[msg.sender] -= _valueI;",
+    "description": "The sender's balance can underflow if the subtraction operation results in a negative value, potentially causing incorrect balance calculations."
+  },
+  {
+    "type": "Missing Events for Critical Operations",
+    "location": "balanceOf[msg.sender] -= _valueI;",
+    "description": "The balance deduction from sender is not emitted as an event, making it harder to track token movements and audit the contract."
+  },
+  {
+    "type": "Reentrancy Vulnerability",
+    "location": "for(uint8 i; i<len; i++){...}",
+    "description": "The function makes external calls (via Transfer event) before updating all state variables completely, potentially allowing reentrancy attacks."
+  },
+  {
+    "type": "Unchecked Transfer Amounts",
+    "location": "uint8 len = uint8(_to.length);",
+    "description": "Converting array length to uint8 may cause truncation if the array length exceeds 255, potentially leading to incomplete transfers or unexpected behavior."
+  }
+]
+```

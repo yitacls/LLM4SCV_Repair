@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "X3ProfitInMonthV2",
+    "contract_version": "^0.5.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_payout",
+            "fix_info": "Fixed unchecked low-level call by replacing addr.send() with addr.transfer() to ensure proper error handling and revert on failure",
+            "corrected_code": "function _payout(address payable addr, uint amount, bool retDep) private {\n        if(amount == 0)\n            return;\n\t\tif(amount > address(this).balance) amount = address(this).balance;\n\t\tif(amount == 0){\n\t\t\trestart();\n\t\t\treturn;\n\t\t}\n\t\tInvestor storage inv = investors[addr];\n        uint activDep = inv.deposit - inv.lockedDeposit;\n\t\tif(!retDep && !isProfitStarted && amount + inv.withdrawn > activDep / 2 )\n\t\t{\n\t\t\tif(inv.withdrawn < activDep / 2)\n    \t\t\tamount = (activDep/2) - inv.withdrawn;\n\t\t\telse{\n    \t\t\tif(inv.withdrawn >= activDep)\n    \t\t\t{\n    \t\t\t\t_delete(addr);\n    \t\t\t\treturn;\n    \t\t\t}\n    \t\t\tamount = activDep - inv.withdrawn;\n    \t\t\t_delete(addr);\n\t\t\t}\n\t\t}\n        uint interestPure = amount * (PERCENT_DIVIDER - PERCENT_MAIN_FUND) / PERCENT_DIVIDER;\n        uint advTax = amount - interestPure;\n        bool isDebt = inv.lockedDeposit > 0 && inv.withdrawnPure < inv.lockedDeposit;\n\t\tinv.withdrawnPure += interestPure;\n\t\tinv.withdrawn += amount;\n\t\tinv.time = now;\n        if(advTax > 0)\n        {\n            (bool success, bytes memory data) = ADDRESS_MAIN_FUND.call.value(advTax)(\"\");\n            if(success) \n                countOfAdvTax += advTax;\n            else\n                inv.withdrawn -= advTax;\n        }\n        addr.transfer(interestPure);\n        if(isDebt && inv.withdrawnPure >= inv.lockedDeposit)\n        {\n            amountReturnDebt += inv.lockedDeposit;\n            countOfReturnDebt++;\n        }\n\t\tif(address(this).balance == 0)\n\t\t\trestart();\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

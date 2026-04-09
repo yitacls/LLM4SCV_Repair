@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_recipient.send(1);",
+    "description": "The contract uses the low-level 'send' function without checking its return value. In Solidity 0.4.23, 'send' returns a boolean indicating success/failure. If the recipient is a contract that runs out of gas during execution of its fallback function (by hitting the 2300 gas stipend limit), or if it intentionally reverts, 'send' will return false but the transaction will NOT automatically revert. This creates a silent failure where the ether transfer fails but no error is propagated, potentially breaking contract logic. This should be replaced with 'transfer()' (which automatically reverts on failure) or the return value should be explicitly checked and handled."
+}
+```

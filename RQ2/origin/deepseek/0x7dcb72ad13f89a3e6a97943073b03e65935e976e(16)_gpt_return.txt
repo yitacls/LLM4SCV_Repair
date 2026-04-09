@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "controlSum += uint160(addrs[i]);",
+    "description": "In Solidity 0.4.11, arithmetic operations are vulnerable to integer overflow/underflow as there were no built-in checks. The 'controlSum' variable (assumed to be uint256) accumulates the uint160 values of addresses. If the sum exceeds 2^256 - 1, it will wrap around to 0, corrupting the checksum and potentially breaking the contract logic that depends on this sum for validation. This vulnerability could be exploited by an attacker adding carefully chosen addresses to manipulate the controlSum to a desired value."
+}
+```

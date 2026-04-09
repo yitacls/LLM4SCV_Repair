@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "YieldFarmLP",
+    "contract_version": "0.6.0",
+    "state_variables": [
+        {
+            "variable_name": "pragma",
+            "fix_info": "Fixed floating pragma to specific version to prevent compilation with vulnerable compiler versions",
+            "variable_code": "pragma solidity 0.6.12;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "massHarvest",
+            "fix_info": "Added gas optimization by limiting iterations and implementing early return mechanism to prevent DoS",
+            "corrected_code": "function massHarvest() external returns (uint){\n        uint totalDistributedValue;\n        uint epochId = _getEpochId().sub(1); \n        \n        if (epochId > NR_OF_EPOCHS) {\n            epochId = NR_OF_EPOCHS;\n        }\n        \n        uint128 startIndex = lastEpochIdHarvested[msg.sender] + 1;\n        \n        if (startIndex > epochId) {\n            return 0;\n        }\n        \n        uint128 endIndex = startIndex + 10 > epochId ? epochId : startIndex + 10;\n        \n        for (uint128 i = startIndex; i <= endIndex; i++) {\n            totalDistributedValue += _harvest(i);\n        }\n        \n        emit MassHarvest(msg.sender, endIndex - lastEpochIdHarvested[msg.sender], totalDistributedValue);\n        \n        if (totalDistributedValue > 0) {\n            require(_bond.transferFrom(_communityVault, msg.sender, totalDistributedValue), \"Transfer failed\");\n        }\n        \n        return totalDistributedValue;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

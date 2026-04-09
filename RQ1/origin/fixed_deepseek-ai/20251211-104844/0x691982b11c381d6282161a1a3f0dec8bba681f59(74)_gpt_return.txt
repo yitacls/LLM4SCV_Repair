@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "MyToken",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "_balanceOf",
+                "fix_info": "Explicitly declared to follow best practices",
+                "variable_code": "mapping(address => uint256) private _balanceOf;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "whenTransferAllowed",
+                "fix_info": "Safety check added to ensure proper condition verification",
+                "modifier_code": "modifier whenTransferAllowed() {\n        require(_transferAllowed, \"Transfers are currently disabled\");\n        _;\n    }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath library, added explicit return statement for true case, removed unnecessary return false, fixed condition braces issue",
+                "corrected_code": "function transfer(address _to, uint256 _value) whenTransferAllowed public returns (bool) {\n        require(_to != address(0), \"Cannot transfer to zero address\");\n        require(_value <= balanceOf(msg.sender), \"Insufficient balance\");\n        \n        _balanceOf[msg.sender] = _balanceOf[msg.sender].sub(_value);\n        _balanceOf[_to] = _balanceOf[_to].add(_value);\n        \n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "balanceOf",
+                "fix_info": "Added getter function for balance",
+                "corrected_code": "function balanceOf(address _owner) public view returns (uint256) {\n        return _balanceOf[_owner];\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

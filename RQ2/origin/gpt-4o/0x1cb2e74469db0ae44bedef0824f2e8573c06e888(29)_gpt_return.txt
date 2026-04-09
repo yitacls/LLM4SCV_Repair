@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of 'tx.origin' for authentication is vulnerable to phishing attacks. If a user interacts with a malicious contract that then calls this function, 'tx.origin' will match the user's address, bypassing the intended ownership check. This exposes the contract to external attackers who can trick the rightful owner into making unintended changes, such as transferring ownership to a malicious address."
+}
+```

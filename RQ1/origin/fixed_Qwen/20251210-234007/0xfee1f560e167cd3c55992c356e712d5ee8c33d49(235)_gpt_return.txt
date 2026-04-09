@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "XEther",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "payoutInvestors",
+            "fix_info": "Fixed unchecked low-level call by using transfer() instead of send() and added proper error handling",
+            "corrected_code": "function payoutInvestors() public {\n        uint256 paymentAmount = 0;\n        bool isSuccess = false;\n        uint256[] memory payouts = new uint256[](investorsCount);\n        bool[] memory statuses = new bool[](investorsCount);\n        uint256 mFeeAmount = feeAmount;\n        uint256 iteration = curIteration;\n        for (uint256 i = 0; i < investorsCount; i++) {\n            uint256 iEarned = investorsEarned[i];\n            if (iEarned == 0) {\n                continue;\n            }\n            paymentAmount = iEarned * toGwei; \n            mFeeAmount -= iEarned;\n            investorsEarned[i] = 0;\n            isSuccess = true;\n            try investorsAddress[i].transfer(paymentAmount) {\n                // Transfer successful\n            } catch {\n                isSuccess = false;\n                mFeeAmount += iEarned;\n                investorsEarned[i] = iEarned;\n            }\n            payouts[i] = iEarned;\n            statuses[i] = isSuccess;\n        }\n        emit EvInvestorsPayout(iteration, bankAmount, payouts, statuses);\n        feeAmount = mFeeAmount;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

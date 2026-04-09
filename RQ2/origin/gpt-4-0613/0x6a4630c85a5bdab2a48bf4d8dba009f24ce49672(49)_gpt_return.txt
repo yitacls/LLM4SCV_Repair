@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "In Solidity, you should not use 'tx.origin' for authorization because it represents the sender of the transaction, not the current function caller. This might lead to unexpected authorizations, allowing potentially malicious contracts to change the state of your contract, if one of the users interacts with them. It is safer to use 'msg.sender' for authorization."
+}
+```

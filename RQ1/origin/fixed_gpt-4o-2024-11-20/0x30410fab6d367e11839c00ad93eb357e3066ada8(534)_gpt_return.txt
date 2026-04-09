@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "BetHorde",
+        "contract_version": "^0.8.7",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "OnlyOwner",
+                "fix_info": "Replaced tx.origin with msg.sender to properly check the caller of the function. Prevents phishing attacks where a malicious contract tricks the owner into making a call.",
+                "modifier_code": "modifier OnlyOwner() { require(msg.sender == state.owner, \"Owner\"); _; }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": []
+    }
+]
+```

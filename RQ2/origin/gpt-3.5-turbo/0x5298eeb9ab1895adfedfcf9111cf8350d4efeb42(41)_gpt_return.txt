@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unprotected_balance",
+        "location": "owner8.call(ethersum8);  // fault line",
+        "description": "The vulnerability allows an attacker to potentially re-enter the contract's function before it completes its execution, resulting in an unprotected balance state. This can lead to re-entrancy attacks where an attacker can manipulate the contract's state and exploit the unsecured balance."
+}
+```

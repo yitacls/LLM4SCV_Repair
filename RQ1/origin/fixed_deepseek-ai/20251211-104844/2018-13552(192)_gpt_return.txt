@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "Trabet_Coin",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "mintToken",
+        "fix_info": "Added SafeMath overflow checks to prevent integer overflow vulnerability",
+        "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyCrowdsaleAgent public {\n    require(balanceOf[target] + mintedAmount >= balanceOf[target]);\n    require(totalSupply + mintedAmount >= totalSupply);\n    \n    balanceOf[target] += mintedAmount;\n    totalSupply += mintedAmount;\n    emit Transfer(this, target, mintedAmount);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

@@ -1,0 +1,20 @@
+Looking at the CToken contract, I can identify the reentrancy vulnerability in the `_setComptroller` function. The vulnerability is marked with a comment "SWC-107-Reentrancy: L930-947" and occurs because the function calls an external contract (`newComptroller.isComptroller()`) before making state changes, which could potentially lead to reentrant calls.
+
+The issue is that `_setComptroller` doesn't use the `nonReentrant` modifier, and it calls an external function before updating state, which creates a reentrancy risk.
+
+```json
+[{
+    "contract_name": "CToken",
+    "contract_version": "^0.8.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_setComptroller",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy vulnerability when setting new comptroller",
+            "corrected_code": "    function _setComptroller(ComptrollerInterface newComptroller) override public nonReentrant returns (uint) {\n        // Check caller is admin\n        if (msg.sender != admin) {\n            revert SetComptrollerOwnerCheck();\n        }\n\n        ComptrollerInterface oldComptroller = comptroller;\n        // Ensure invoke comptroller.isComptroller() returns true\n        require(newComptroller.isComptroller(), \"marker method returned false\");\n\n        // Set market's comptroller to newComptroller\n        comptroller = newComptroller;\n\n        // Emit NewComptroller(oldComptroller, newComptroller)\n        emit NewComptroller(oldComptroller, newComptroller);\n\n        return NO_ERROR;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

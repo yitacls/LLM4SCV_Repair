@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses `tx.origin` for access control instead of `msg.sender`, making it vulnerable to phishing attacks. A malicious contract could trick the owner into calling a function that initiates a sequence where the owner's address passes the `tx.origin` check. Furthermore, as this is a version 0.4.25 contract, the function lacks visibility specifiers (is implicitly `public`) and there's no access control modifier, allowing unrestricted calls that will only fail during execution if the condition isn't met, which is gas-inefficient. The proper practice is to use `require(msg.sender == owner);` combined with an `onlyOwner` modifier for robust access control."
+}
+```

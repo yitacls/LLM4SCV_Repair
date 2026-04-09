@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function changeOwner(address _newOwner)\n         public\n     {\n        owner = _newOwner;\n     }",
+    "description": "The changeOwner function is marked as public without any access control checks, allowing any address to call this function and change the contract owner. This critical vulnerability enables unauthorized parties to take full control of the contract and its assets. The function should include a modifier or require statement to verify that only the current owner can call this function."
+}
+```

@@ -1,0 +1,50 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [
+            {
+                "variable_name": "randomOracle",
+                "fix_info": "Added: Replace blockhash-based randomness with Chainlink VRF or similar oracle pattern",
+                "variable_code": "address private randomOracle; // Replaced with oracle-based randomness",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "commitRevealNonce",
+                "fix_info": "Added: Nonce for commit-reveal scheme to prevent front-running",
+                "variable_code": "mapping(address => uint256) private commitRevealNonce;",
+                "change_type": "added"
+            },
+            {
+                "variable_name": "pendingReveals",
+                "fix_info": "Added: Store pending reveals for commit-reveal randomness",
+                "variable_code": "mapping(address => bytes32) private pendingReveals;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOracle",
+                "fix_info": "Added: Restrict randomness submission to trusted oracle",
+                "modifier_code": "modifier onlyOracle() {\n    require(msg.sender == randomOracle, \"Caller is not the oracle\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "won",
+                "fix_info": "Modified: Replaced vulnerable blockhash-based randomness with commit-reveal scheme to prevent miners from manipulating outcomes",
+                "corrected_code": "function won() public {\n    Bet memory player = bets[msg.sender];\n    \n    // Handle initialization and edge cases\n    if(player.blockNum == 0) { // create a new player\n        bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n        return;\n    }\n    \n    if((player.value == 0) || (player.blockNum == 1)) {\n        payWallet();\n        return;\n    }\n    \n    require(block.number > player.blockNum, \"Bet not yet mature\");\n    \n    // Check if bet is too old\n    if(player.blockNum + (10 * hashesSize) <= block.number) { \n        LogLate(msg.sender, player.blockNum, block.number);\n        bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n        return;\n    }\n    \n    uint prize = 0;\n    uint32 hash = 0;\n    \n    // Commit-reveal based randomness instead of blockhash\n    if(block.number < player.blockNum + 256) {\n        // Use commit-reveal randomness\n        bytes32 committedHash = pendingReveals[msg.sender];\n        \n        if(committedHash != 0) {\n            // Generate deterministic hash from committed value and nonce\n            bytes32 revealedHash = keccak256(abi.encodePacked(\n                committedHash, \n                commitRevealNonce[msg.sender], \n                block.timestamp\n            ));\n            \n            hash = uint32(uint256(revealedHash) % 0x1000000); // 24-bit hash\n            prize = betPrize(player, uint24(hash));\n            \n            // Increment nonce and clear pending reveal\n            commitRevealNonce[msg.sender]++;\n            delete pendingReveals[msg.sender];\n        } else {\n            // No pending reveal, refund\n            prize = uint(player.value);\n        }\n    }\n    else {\n        if(hashFirst > 0) { \n            // Use commit-reveal for older blocks\n            bytes32 committedHash = pendingReveals[msg.sender];\n            \n            if(committedHash != 0) {\n                hash = uint32(uint256(keccak256(abi.encodePacked(\n                    committedHash, \n                    commitRevealNonce[msg.sender], \n                    player.blockNum\n                ))) % 0x1000000);\n                \n                if(hash == 0x1000000) { \n                    prize = uint(player.value);\n                }\n                else {\n                    prize = betPrize(player, uint24(hash));\n                }\n                \n                commitRevealNonce[msg.sender]++;\n                delete pendingReveals[msg.sender];\n            }\n            else {\n                LogLate(msg.sender, player.blockNum, block.number);\n                bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n                return;\n            }\n        }\n        else {\n            LogLate(msg.sender, player.blockNum, block.number);\n            bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n            return;\n        }\n    }\n    \n    // Reset player bet\n    bets[msg.sender] = Bet({value: 0, betHash: 0, blockNum: 1});\n    \n    // Process win/loss\n    if(prize > 0) {\n        LogWin(msg.sender, uint(player.betHash), uint(hash), prize);\n        if(prize > maxWin) {\n            maxWin = prize;\n            LogRecordWin(msg.sender, prize);\n        }\n        pay(prize);\n    }\n    else {\n        LogLoss(msg.sender, uint(player.betHash), uint(hash));\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "commitReveal",
+                "fix_info": "Added: New function for commit-reveal randomness submission",
+                "corrected_code": "function commitReveal(bytes32 _hash) public {\n    pendingReveals[msg.sender] = _hash;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

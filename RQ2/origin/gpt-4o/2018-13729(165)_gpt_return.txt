@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[owner] += totalTokenToMint; // <IO_VUL>",
+    "description": "This line is vulnerable to an integer overflow. In Solidity version ^0.4.17, arithmetic operations such as addition do not check for overflows. If the value of `totalTokenToMint` combined with `balanceOf[owner]` exceeds the maximum value of a uint256, it will wrap around to a smaller number, potentially causing incorrect contract behavior. The vulnerability can be exploited to manipulate balances and inflate the owner's holdings."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "This statement is vulnerable to an integer overflow issue. In Solidity version ^0.4.16, arithmetic operations do not automatically check for overflow or underflow conditions. Consequently, if the value of `balances[_to]` is close to the maximum value of a `uint256`, adding `_value` could result in an overflow, causing an incorrect balance for `_to`. This could be exploited by a malicious actor to manipulate account balances."
+}
+```

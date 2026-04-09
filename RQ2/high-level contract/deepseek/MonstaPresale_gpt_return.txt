@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function reclaimBNB() external onlyOwner { owner.transfer(address(this).balance); }",
+    "description": "The reclaimBNB() function allows the contract owner to withdraw all BNB from the contract. While it uses the onlyOwner modifier, this is insufficient protection as the owner could be a malicious actor or the owner's account could be compromised. A better approach would be to implement a withdrawal pattern where funds can only be withdrawn to a pre-approved secure address, or implement a timelock/multisig requirement for large withdrawals. Additionally, there's no mechanism to prevent the owner from withdrawing funds that should be reserved for refunds or other contractual obligations."
+}
+```

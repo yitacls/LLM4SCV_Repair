@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The issue arises from the lack of checks for overflows and underflows. If the '_value' is very large, addition to 'balances[_to]' can cause an overflow, resulting in a wrong balance. Similarly, subtraction from 'balances[msg.sender]' may underflow if '_value' is larger than 'balances[msg.sender]'. This can result in the sender having an extraordinarily high balance."
+}
+```

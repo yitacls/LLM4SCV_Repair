@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "NexxusToken",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflow/underflow vulnerabilities",
+            "variable_code": "using SafeMath for uint256;\nuint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "balances",
+            "fix_info": "Added mapping declaration to ensure proper state variable initialization",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable declaration",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict minting to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath, added onlyOwner modifier, and fixed event emission syntax",
+            "corrected_code": "function mintToken(uint256 _amount) public onlyOwner {\n    totalSupply = totalSupply.add(_amount);\n    balances[owner] = balances[owner].add(_amount);\n    emit Transfer(address(0), owner, _amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,28 @@
+[{
+    "contract_name": "Private_Bank",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "Add a reentrancy guard flag to prevent reentrant calls.",
+            "variable_code": "bool private locked;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Reentrancy guard modifier to prevent nested (reentrant) calls.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!locked);\n    locked = true;\n    _;\n    locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "CashOut",
+            "fix_info": "Apply checks-effects-interactions pattern, decrement balance before transfer and use transfer (safe gas stipend). Also apply nonReentrant modifier.",
+            "corrected_code": "function CashOut(uint _am) public payable nonReentrant {\n    require(_am <= balances[msg.sender]);\n\n    // Effects: update state before external interactions\n    balances[msg.sender] -= _am;\n\n    // Interaction: transfer funds (throws on failure)\n    msg.sender.transfer(_am);\n\n    // External logging call after state update and transfer\n    TransferLog.AddMessage(msg.sender, _am, \"CashOut\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function deposit(uint256 _pid, uint256 _amount) public { ... }",
+        "description": "The deposit function is vulnerable to reentrancy attacks because it makes external calls (safeTransferFrom and safePudTransfer) before updating the contract's state. An attacker could potentially re-enter this function and manipulate their share balance or drain funds."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function withdraw(uint256 _pid, uint256 _shares) public { ... }",
+        "description": "The withdraw function is vulnerable to reentrancy attacks as it performs external calls (IStrategy.withdraw and safeTransfer) before updating the user's shares and reward debt. This could allow an attacker to withdraw more funds than they're entitled to."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function emergencyWithdraw(uint256 _pid) public { ... }",
+        "description": "The emergencyWithdraw function is susceptible to reentrancy because it calls IStrategy.withdraw and safeTransfer before resetting the user's shares and reward debt to zero, potentially allowing repeated withdrawals."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function add(uint256 _allocPoint, IERC20 _lpToken, bool _withUpdate, address _strategy) public onlyOwner { ... }",
+        "description": "The add function may be vulnerable to reentrancy if _withUpdate is true, as it calls massUpdatePools which can trigger external calls through updatePool, before updating the contract's state."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate) public onlyOwner { ... }",
+        "description": "The set function is potentially vulnerable to reentrancy when _withUpdate is true, as it calls massUpdatePools which performs external operations through updatePool before state changes are completed."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function setPoolStrategy(uint256 _pid,address _strategy) public onlyOwner { ... }",
+        "description": "The setPoolStrategy function is vulnerable to reentrancy because it calls IStrategy.harvest and IStrategy.withdrawAll before updating the pool's strategy address, which could be exploited if these functions make external calls."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function safePudTransfer(address _to, uint256 _amount) internal { ... }",
+        "description": "The safePudTransfer function does not check the return value of the pud.transfer call, which could fail silently. This might lead to incorrect assumptions about successful transfers and could result in loss of funds."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "function setPoolStrategy(uint256 _pid,address _strategy) public onlyOwner { ... }",
+        "description": "In the setPoolStrategy function, the calls to IStrategy.harvest() and IStrategy.withdrawAll(_strategy) do not check return values, which might lead to unnoticed failures in these critical operations."
+    }
+]
+```

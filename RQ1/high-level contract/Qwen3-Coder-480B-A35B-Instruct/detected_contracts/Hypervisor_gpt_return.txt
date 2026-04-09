@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function deposit(...) external override returns (uint256 shares) { ... }",
+        "description": "The deposit function does not properly handle Ether withdrawals, potentially allowing unauthorized withdrawal of Ether from the contract."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function withdraw(...) external override returns (uint256 amount0, uint256 amount1) { ... }",
+        "description": "The withdraw function is vulnerable to reentrancy attacks because it performs external calls (token transfers) before updating the contract's state (burning shares)."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "if (payer == address(this)) { ... } else { ... }",
+        "description": "The code in the uniswapV3MintCallback function has no effect when the payer is address(this), as it transfers tokens to itself, which is redundant and does not change the contract's state."
+    }
+]
+```

@@ -1,0 +1,31 @@
+【
+```json
+[
+  {
+    "contract_name": "ApeVaultWrapperImplementation",
+    "contract_version": "^0.8.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "apeWithdrawSimpleToken",
+        "fix_info": "Added a onlyOwner modifier to the function to prevent anyone from withdrawing assets. It is important to prevent unauthorized access to balance withdrawal to ensure the safety of contractual assets.",
+        "corrected_code": "function apeWithdrawSimpleToken(uint256 _amount) public onlyOwner { \n  simpleToken.safeTransfer(msg.sender, _amount); \n }",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "init",
+        "fix_info": "The variable 'allowanceModule' is declared but never used in the contract. To avoid any confusion or unnecessary gas costs it is removed entirely.",
+        "corrected_code": "function init(address _apeRegistry, address _token, address _registry, address _simpleToken, address _newOwner) external { \n require(!setup); \n setup = true; \n apeRegistry = _apeRegistry;  \n if (_token != address(0)) vault = VaultAPI(RegistryAPI(_registry).latestVault(_token)); \n simpleToken = IERC20(_simpleToken); \n token = IERC20(_token); \n registry = RegistryAPI(_registry); \n _owner = _newOwner;  \n emit OwnershipTransferred(address(0), _newOwner);  \n }", 
+        "change_type": "modified"
+      },
+      {
+        "function_name": "hasAccess",
+        "fix_info": "The mapping 'hasAccess' is declared but never used in the contract. To avoid any confusion or unnecessary gas costs it is removed entirely.",
+        "corrected_code": "", 
+        "change_type": "Deleted"
+      }
+    ]
+  }
+]
+```】

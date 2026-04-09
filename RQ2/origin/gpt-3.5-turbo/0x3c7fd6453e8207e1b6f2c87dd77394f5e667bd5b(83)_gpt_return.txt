@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);  // fault line",
+    "description": "The use of tx.origin for access control can lead to vulnerabilities as it does not ensure the caller is the contract owner. It is recommended to use msg.sender for access control in Solidity to prevent potential attacks like transaction replay or man-in-the-middle attacks."
+}
+```  

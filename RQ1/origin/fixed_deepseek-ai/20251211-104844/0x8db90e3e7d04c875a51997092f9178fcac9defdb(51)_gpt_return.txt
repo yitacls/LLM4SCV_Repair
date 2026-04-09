@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "PortalToken",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "balance",
+                "fix_info": "Used in the function but not declared in provided snippet. Assuming mapping(address => uint256) balance;",
+                "variable_code": "mapping(address => uint256) public balance;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "doTransfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for uint256 operations and added explicit condition to check for overflow in addition",
+                "corrected_code": "function doTransfer(address _from, address _to, uint256 _value) internal returns (bool success) {\n    require(_value > 0, \"Transfer value must be positive\");\n    require(balance[_from] >= _value, \"Insufficient balance\");\n    require(balance[_to] + _value >= balance[_to], \"Balance overflow error\");\n    \n    balance[_from] = balance[_from] - _value;\n    balance[_to] = balance[_to] + _value;\n    \n    emit Transfer(_from, _to, _value);\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

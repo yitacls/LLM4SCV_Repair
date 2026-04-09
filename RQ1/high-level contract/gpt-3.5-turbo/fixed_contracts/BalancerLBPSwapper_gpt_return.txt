@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "BalancerLBPSwapper",
+        "contract_version": "^0.8.0",
+        "functions": [
+            {
+                "function_name": "init",
+                "fix_info": "Added a check to ensure that the function can only be called by the owner during initialization.",
+                "corrected_code": "function init(IWeightedPool _pool) external onlyOwner { require(address(pool) == address(0), 'BalancerLBPSwapper: initialized'); pool = _pool; IVault _vault = _pool.getVault(); vault = _vault; require(_pool.getOwner() == address(this), 'BalancerLBPSwapper: contract not pool owner'); bytes32 _pid = _pool.getPoolId(); pid = _pid; (IERC20[] memory tokens,,) = _vault.getPoolTokens(_pid); require(tokens.length == 2, 'BalancerLBPSwapper: pool does not have 2 tokens'); require((tokenSpent == address(tokens[0]) || tokenSpent == address(tokens[1])), 'BalancerLBPSwapper: tokenSpent not in pool'); require((tokenReceived == address(tokens[0]) || tokenReceived == address(tokens[1])), 'BalancerLBPSwapper: tokenReceived not in pool'); assets = new IAsset[](2); assets[0] = IAsset(address(tokens[0])); assets[1] = IAsset(address(tokens[1])); ... }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "swap",
+                "fix_info": "Ensured that withdrawal of LP tokens and liquidity provision are done atomically to prevent reentrancy vulnerability.",
+                "corrected_code": "// 1. Withdraw existing LP tokens (if currently held) and 3. Provide new liquidity atomically\nif (bptBalance != 0) { ... } else { _initializePool(); } ...",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

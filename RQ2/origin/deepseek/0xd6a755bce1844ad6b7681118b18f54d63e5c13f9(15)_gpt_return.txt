@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "balanceOf[msg.sender] += msg.value;",
+    "description": "In Solidity ^0.4.11, integer arithmetic operations do not automatically check for overflow/underflow. The 'balanceOf' mapping likely uses uint256 values. If 'balanceOf[msg.sender] + msg.value' exceeds 2^256 - 1, the addition will wrap around to a very small number (modulo 2^256), causing an overflow. This allows an attacker to deposit a specific amount that causes their balance to wrap to an arbitrarily high value, enabling unauthorized withdrawals of funds. This vulnerability should be fixed by using SafeMath or upgrading to Solidity ^0.8.0 which includes built-in overflow checks."
+}
+```

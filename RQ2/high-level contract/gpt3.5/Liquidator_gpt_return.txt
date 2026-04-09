@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "L35",
+    "description": "The vulnerability occurs at line 35 where the function TransferHelper.safeTransfer is called to transfer the balance of the collateral to the pair address without ensuring that the transfer is secure. This could potentially lead to a scenario where ether could be withdrawn from the contract without proper authorization, posing a security risk."
+}
+```

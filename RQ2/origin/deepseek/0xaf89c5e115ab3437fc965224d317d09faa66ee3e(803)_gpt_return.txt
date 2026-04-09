@@ -1,0 +1,7 @@
+```json
+{
+    "vulnerability_type": "Reentrancy",
+    "location": "(bool success, ) = recipient.call{value: amount}(\"\");",
+    "description": "The function `_sendFunds` does not follow the checks-effects-interactions pattern. It transfers ether to an external recipient address via a low-level `call` before any state changes are finalized in the calling function. If `recipient` is a malicious contract, it could reenter the `Editions` contract by calling back into it before the first execution completes, potentially draining funds or causing inconsistent state. While the balance check (`require(address(this).balance >= amount)`) occurs before the call, it might not prevent reentrancy if the contract's state (e.g., balances tracked in state variables) is updated after the transfer. The function should implement reentrancy guards (e.g., OpenZeppelin's `ReentrancyGuard`) or ensure all state changes are made before external calls."
+}
+```

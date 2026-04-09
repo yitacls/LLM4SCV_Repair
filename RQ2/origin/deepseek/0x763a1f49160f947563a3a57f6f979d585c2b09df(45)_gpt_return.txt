@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value( fomo3d.getBuyPrice() *2 )();",
+    "description": "The low-level call to the fomo3d contract does not check the return value for success/failure. In Solidity versions before 0.4.24, low-level calls like call.value()() always return false on failure rather than reverting. If the external call fails (e.g., due to out-of-gas, insufficient balance, or the callee reverting), execution continues to the subsequent fomo3d.withdraw() call without handling the failed transaction. This can lead to inconsistent contract state and unexpected behavior. The vulnerability could be mitigated by checking the return value or using higher-level transfer/send functions that forward limited gas and revert on failure."
+}
+```

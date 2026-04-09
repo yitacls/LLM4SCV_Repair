@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "bool callResult = msg.sender.call.value(oCredit)();\n        require (callResult);\n        credit[msg.sender] = 0;",
+    "description": "The contract updates the caller's credit balance after making an external call. In Solidity ^0.4.19, the called contract can re-enter the withdrawAll function before the credit[msg.sender] = 0; statement executes, allowing the attacker to withdraw funds multiple times. The balance is reduced before the external call, but the caller's credit is not zeroed out until after the call, creating a reentrancy vulnerability."
+}
+```

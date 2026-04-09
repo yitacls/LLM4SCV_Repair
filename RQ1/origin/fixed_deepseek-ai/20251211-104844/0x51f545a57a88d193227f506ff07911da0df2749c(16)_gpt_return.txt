@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MEXICO_WINS",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using Solidity 0.8.x's built-in overflow protection and added input validation",
+            "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {\n    require(to != address(0), \"MEXICO_WINS: transfer to zero address\");\n    require(balanceOf[msg.sender] >= value, \"MEXICO_WINS: insufficient balance\");\n    \n    balanceOf[msg.sender] -= value;\n    balanceOf[to] += value;\n    \n    emit Transfer(msg.sender, to, value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "if(balances[to] + value < balances[to]) return false;",
+    "description": "The overflow check logic is incorrect. It should revert on overflow, but instead it returns false when an overflow would occur. In Solidity ^0.4.2, arithmetic operations can overflow silently, and the check 'balances[to] + value < balances[to]' will never be true for normal arithmetic. This means the overflow protection is ineffective and could allow integer overflow vulnerabilities when adding value to balances[to]."
+}
+```

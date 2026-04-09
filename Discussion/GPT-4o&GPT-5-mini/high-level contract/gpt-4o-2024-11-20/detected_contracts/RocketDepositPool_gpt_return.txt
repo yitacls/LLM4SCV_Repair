@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "for (uint256 i = 0; i < rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments(); ++i) { ... } (Lines 116-129)",
+            "description": "The `assignDeposits` function contains a for-loop that iterates up to the `getMaximumDepositAssignments` value. If this value is high, or if there are many minipools in the queue, this loop could consume a significant amount of gas and potentially cause the function to reach the block gas limit. This would result in a denial of service for function callers, as the transaction would fail. It also exposes the contract to potential griefing attacks where users manipulate the state to overload the minipool queue."
+        }
+    ]
+}
+```

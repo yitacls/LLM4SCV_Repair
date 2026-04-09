@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "FidgETHSpinner",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fidget",
+            "fix_info": "Fixed arithmetic overflow vulnerability in token calculation and added safe math operations. Also fixed potential underflow in juicyBonus decrement.",
+            "corrected_code": "function fidget(address _to) payable {\n    require(_to != 0x0); \n    require(_to != address(0)); \n    require(block.number <= endBlock);\n    require(msg.value >= 0.03 ether);\n    \n    // Prevent underflow when decrementing juicyBonus\n    uint rate = normalRate * ((juicyBonus > 1) ? juicyBonus-- : juicyBonus);\n    \n    // Safe multiplication to prevent overflow\n    uint tokens = safeMul(msg.value, rate);\n    \n    weiRaised = safeAdd(weiRaised, msg.value);\n    juicyBonus = (juicyBonus < 1) ? 1 : juicyBonus;\n    spin(_to, tokens);\n    Fidget(msg.sender, _to, msg.value, juicyBonus, rate, tokens);\n    wallet.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

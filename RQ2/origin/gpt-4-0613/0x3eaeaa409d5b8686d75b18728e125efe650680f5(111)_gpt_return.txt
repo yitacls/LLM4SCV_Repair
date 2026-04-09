@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract_name": "MakroCoin",
+    "location": "require(tx.origin == owner);",
+    "description": "The code uses tx.origin for authorization which is a security flaw. Tx.origin is an attribute of a transaction that provides the address of the sender of the first transaction in the chain of calls. A malicious contract can make the 'owner' send a transaction that calls this contract, and the transaction will be authorized as it appears to the contract that the 'owner' is calling it directly. Instead, it should use the ‘msg.sender’ for authorization; it always contains the direct sender of the message, which is safer and more predictable."
+}
+```

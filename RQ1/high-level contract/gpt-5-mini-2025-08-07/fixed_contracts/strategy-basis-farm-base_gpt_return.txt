@@ -1,0 +1,26 @@
+[{
+    "contract_name": "StrategyBasisFarmBase",
+    "contract_version": "^0.6.7",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Checked the external call to the staking pool's deposit function using a low-level call; require that the call succeeded and, if data is returned, that it decodes to true. Preserved original approve logic.",
+            "corrected_code": "function deposit() public override {\n    uint256 _lp = IERC20(lp).balanceOf(address(this));\n    if (_lp > 0) {\n        IERC20(lp).safeApprove(pool, 0);\n        IERC20(lp).safeApprove(pool, _lp);\n        (bool success, bytes memory data) = pool.call(\n            abi.encodeWithSelector(IStakingRewards.deposit.selector, poolId, _lp)\n        );\n        require(success && (data.length == 0 || abi.decode(data, (bool))), \"deposit failed\");\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_withdrawSome",
+            "fix_info": "Checked the external call to the staking pool's withdraw function using a low-level call; require that the call succeeded and, if data is returned, that it decodes to true. Returned the requested amount to preserve behavior.",
+            "corrected_code": "function _withdrawSome(uint256 _amount) internal override returns (uint256) {\n    (bool success, bytes memory data) = pool.call(\n        abi.encodeWithSelector(IStakingRewards.withdraw.selector, poolId, _amount)\n    );\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"withdraw failed\");\n    return _amount;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "harvest",
+            "fix_info": "Checked the external call to claimReward with a low-level call and ensured success; replaced unchecked ERC20.transfer (dust donation for token1) with safeTransfer to validate return value. Preserved original harvest logic and approvals.",
+            "corrected_code": "function harvest() public override onlyBenevolent {\n    // Anyone can harvest it at any given time.\n    // I understand the possibility of being frontrun\n    // But ETH is a dark forest, and I wanna see how this plays out\n    // i.e. will be be heavily frontrunned?\n    //      if so, a new strategy will be deployed.\n    address[] memory _path = new address[](2);\n\n    // Collects Rewards tokens (use low-level call and validate)\n    (bool success, bytes memory data) = pool.call(\n        abi.encodeWithSelector(IStakingRewards.claimReward.selector, poolId)\n    );\n    require(success && (data.length == 0 || abi.decode(data, (bool))), \"claimReward failed\");\n\n    uint256 _rewards = IERC20(rewards).balanceOf(address(this));\n    uint256 _token1 = 0;\n\n    if (_rewards > 0) {\n        // x % is locked up for future gov\n        uint256 _keepRewards = _rewards.mul(keepRewards).div(keepRewardsMax);\n        IERC20(rewards).safeTransfer(IController(controller).treasury(), _keepRewards);\n\n        if (rewards == token1) {\n            _token1 = _rewards.sub(_keepRewards);\n        } else {\n            // swap rewards to token1\n            _swapUniswapWithPath(path, _rewards.sub(_keepRewards));\n            _token1 = IERC20(token1).balanceOf(address(this));\n        }\n    }\n\n    // Swap half token1 for token2\n    if (_token1 > 0) {\n        _path[0] = token1;\n        _path[1] = token2;\n        _swapUniswapWithPath(_path, _token1.div(2));\n    }\n\n    // Adds in liquidity for token1/token2\n    _token1 = IERC20(token1).balanceOf(address(this));\n    uint256 _token2 = IERC20(token2).balanceOf(address(this));\n\n    if (_token1 > 0 && _token2 > 0) {\n        IERC20(token1).safeApprove(univ2Router2, 0);\n        IERC20(token1).safeApprove(univ2Router2, _token1);\n\n        IERC20(token2).safeApprove(univ2Router2, 0);\n        IERC20(token2).safeApprove(univ2Router2, _token2);\n\n        UniswapRouterV2(univ2Router2).addLiquidity(\n            token1,\n            token2,\n            _token1,\n            _token2,\n            0,\n            0,\n            address(this),\n            now + 60\n        );\n\n        // Donates DUST (use safeTransfer to ensure the token returns/behaves correctly)\n        IERC20(token1).safeTransfer(IController(controller).treasury(), IERC20(token1).balanceOf(address(this)));\n        IERC20(token2).safeTransfer(IController(controller).treasury(), IERC20(token2).balanceOf(address(this)));\n    }\n\n    // We want to get back BAS LP tokens\n    _distributePerformanceFeesAndDeposit();\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

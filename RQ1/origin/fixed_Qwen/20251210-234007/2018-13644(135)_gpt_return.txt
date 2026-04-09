@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "RoyalClassicCoin",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to use SafeMath for overflow protection",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath operations to prevent arithmetic overflow vulnerabilities",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner{\n        balances[target] = balances[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        \n        Transfer(0, owner, mintedAmount);\n        Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

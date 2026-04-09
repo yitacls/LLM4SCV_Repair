@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Coin",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Added SafeMath library usage to prevent integer overflow when adding balances",
+            "corrected_code": "function mint(address receiver, uint amount) {\n        if (msg.sender != minter) return;\n        balances[receiver] = balances[receiver].add(amount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

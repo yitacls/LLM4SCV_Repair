@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "frozenAccount[msg.sender] += _value;",
+    "description": "This line is vulnerable to an arithmetic overflow or underflow. If the value of _value is large enough, it could cause unexpected behavior in the calculation, potentially resulting in negative values or unintended consequences."
+}
+```

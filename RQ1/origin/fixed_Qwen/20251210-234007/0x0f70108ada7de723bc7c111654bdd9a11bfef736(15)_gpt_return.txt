@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "theRelayer",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added return value check for low-level call to prevent unchecked return value vulnerability",
+            "corrected_code": "function () public {\n        require(msg.sender == owner);\n        require(gasleft() > 400000);\n        uint256 gasToForward = 400000 - 200;\n        gasToForward -= gasToForward % 8191;\n        gasToForward += 388;\n        require(target.call.gas(gasToForward)(msg.data));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

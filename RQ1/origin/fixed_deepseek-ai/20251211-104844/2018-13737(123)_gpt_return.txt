@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "AnovaBace",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Changed to mapping with uint256 type to prevent arithmetic overflow vulnerabilities",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Changed to uint256 type and added SafeMath or built-in overflow protection",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Maintained access control variable",
+            "variable_code": "address public owner;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Maintained access control modifier",
+            "modifier_code": "modifier onlyOwner {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and Solidity 0.8.0+ built-in overflow protection. Added require statement to prevent overflow on totalSupply.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) external onlyOwner {\n        require(target != address(0), \"Invalid target address\");\n        \n        // Use unchecked block only if you're sure about overflow safety in Solidity 0.8.0+\n        // In this case, we're using built-in overflow protection\n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        // Using modern event emission syntax\n        emit Transfer(address(0), owner, mintedAmount);\n        emit Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

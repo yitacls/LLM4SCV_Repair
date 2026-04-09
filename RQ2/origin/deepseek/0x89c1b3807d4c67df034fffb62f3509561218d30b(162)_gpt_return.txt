@@ -1,0 +1,12 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": [
+        "SGX_ADDRESS.send(CANCELLATION_FEE);",
+        "SGX_ADDRESS.send(fee);", 
+        "requests[requestId].requester.call.gas(2300).value(fee)();",
+        "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);"
+    ],
+    "description": "The contract uses low-level calls (send() and call()) without checking their return values. In Solidity 0.4.9, send() and call() return false on failure rather than reverting. This can lead to several vulnerabilities: 1) When sending cancellation fees or delivery fees to SGX_ADDRESS, failed transfers won't be detected. 2) When refunding the requester on TC errors, failed refunds won't be handled. 3) When calling the callback function, failed external calls won't be noticed. In all cases, the contract will continue execution despite failed transfers/calls, potentially leaving funds stuck or breaking expected application logic."
+}
+```

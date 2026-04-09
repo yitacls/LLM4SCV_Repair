@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TattooMoneyPublicSaleIV",
+    "contract_version": "^0.8.7",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Changed tx.origin to msg.sender for proper access control to prevent phishing attacks",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Only for contract Owner\");\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": []
+}]
+```

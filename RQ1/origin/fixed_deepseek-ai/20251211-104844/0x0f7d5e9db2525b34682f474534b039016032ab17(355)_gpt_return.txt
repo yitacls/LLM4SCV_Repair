@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "PlayerBook",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Ensure owner address is payable in Solidity 0.4.24 to use .transfer()",
+                "variable_code": "address payable public owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "registerNameCore",
+                "fix_info": "Replaced vulnerable .send() with .transfer() for secure Ether transfer and added require() for transfer success",
+                "corrected_code": "function registerNameCore(uint256 _pID, address _addr, uint256 _affID, bytes32 _name, bool _isNewPlayer, bool _all)\n    private\n    {\n        if (pIDxName_[_name] != 0)\n            require(plyrNames_[_pID][_name] == true, \"sorry that names already taken\");\n        plyr_[_pID].name = _name;\n        pIDxName_[_name] = _pID;\n        if (plyrNames_[_pID][_name] == false)\n        {\n            plyrNames_[_pID][_name] = true;\n            plyr_[_pID].names++;\n            plyrNameList_[_pID][plyr_[_pID].names] = _name;\n        }\n        uint fee = address(this).balance;\n        if (fee > 0) {\n            require(owner.send(fee), \"Ether transfer failed\");\n        }\n        if (_all == true)\n            for (uint256 i = 1; i <= gID_; i++)\n                games_[i].receivePlayerInfo(_pID, _addr, _name, _affID);\n        emit onNewName(_pID, _addr, _name, _isNewPlayer, _affID, plyr_[_affID].addr, plyr_[_affID].name, msg.value, now);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

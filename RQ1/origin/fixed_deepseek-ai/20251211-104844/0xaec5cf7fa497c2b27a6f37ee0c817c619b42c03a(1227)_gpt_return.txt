@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "ClockAuction",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "withdrawBalance",
+        "fix_info": "Fixed unchecked low-level call by replacing deprecated 'send()' with 'transfer()' and adding explicit address payable cast to comply with Solidity 0.4.25. Added require() for transfer success check.",
+        "corrected_code": "function withdrawBalance() external {\n    address nftAddress = address(nonFungibleContract);\n    require(\n        msg.sender == owner ||\n        msg.sender == nftAddress\n    );\n    require(address(this).balance > 0);\n    address payable payableNftAddress = address(uint160(nftAddress));\n    payableNftAddress.transfer(address(this).balance);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

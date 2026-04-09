@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "Integer Overflow and Underflow",
+            "location": "Line 129-134: endTimestamp += _amount.div(rewardPerSecond);",
+            "description": "The fund() function uses unsafe addition to update endTimestamp. If rewardPerSecond is zero or small enough that _amount.div(rewardPerSecond) results in a very large number, adding it to endTimestamp could cause integer overflow, making endTimestamp wrap around to a small value, potentially disrupting the reward distribution schedule and timing calculations."
+        },
+        {
+            "type": "Integer Overflow and Underflow",
+            "location": "Line 207-214: rewardPerSecond.mul(lastTimestamp - startTimestamp).sub(paidOut);",
+            "description": "In the totalPending() function, the calculation of lastTimestamp - startTimestamp is performed without checking that lastTimestamp is greater than startTimestamp. If lastTimestamp is less than startTimestamp (which shouldn't happen in normal operation but could due to bugs or manipulation), this subtraction would underflow, causing incorrect reward calculations."
+        },
+        {
+            "type": "Integer Overflow and Underflow",
+            "location": "Line 472-475: paidOut += _amount;",
+            "description": "The erc20Transfer() function uses unsafe addition to update the paidOut state variable. If _amount is sufficiently large such that paidOut + _amount exceeds the maximum value of uint256 (2^256 - 1), it will overflow and wrap around to a small value, breaking the accounting of total rewards paid out and potentially allowing infinite reward claims."
+        }
+    ]
+}
+```

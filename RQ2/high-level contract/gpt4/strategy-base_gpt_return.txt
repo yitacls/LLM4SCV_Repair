@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "_swapUniswap function (Line 237 - Line 268)",
+        "description": "The return value of an external call is not checked. This could lead to unexpected behavior if the called contract has an error or reverts."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "_swapUniswapWithPath function (Line 271 - Line 288)",
+        "description": "The return value of an external call is not checked. This could lead to unexpected behavior if the called contract has an error or reverts."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "_swapSushiswap function (Line 291 - Line 322)",
+        "description": "The return value of an external call is not checked. This could lead to unexpected behavior if the called contract has an error or reverts."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "_swapSushiswapWithPath function (Line 325 - Line 342)",
+        "description": "The return value of an external call is not checked. This could lead to unexpected behavior if the called contract has an error or reverts."
+    }
+]
+```

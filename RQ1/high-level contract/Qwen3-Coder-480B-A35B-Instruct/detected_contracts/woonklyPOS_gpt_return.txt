@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function processReward(address sc, uint256 amount) public nonReentrant Active hasApprovedTokens(sc, _msgSender(), amount) ProviderHasToken(sc, amount) returns (bool)",
+        "description": "The processReward function is marked as nonReentrant, but it calls _processReward_2 which iterates over stakes and performs external calls via _increaseRewards or _stakes.addToStake. If any of these calls re-enter the contract before state changes are completed, it could lead to unexpected behavior or exploitation."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "for (uint256 i = 0; i < (last + 1); i++) { ... _withdrawRewardCOIN(p.account, rew); ... }",
+        "description": "In _withdrawAllrewardsCOIN, a loop iterates through all stakes and calls _withdrawRewardCOIN for each. If any single transfer fails (e.g., due to insufficient gas or recipient being a contract without receive function), the entire transaction will revert, causing a DoS. This affects the ability to close stakes or distribute rewards entirely."
+    }
+]
+```

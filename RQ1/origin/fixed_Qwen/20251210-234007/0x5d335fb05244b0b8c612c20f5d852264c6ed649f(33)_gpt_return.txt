@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "trump",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Replaced tx.origin with msg.sender to prevent phishing attacks and follow best practices for access control",
+            "corrected_code": "function clear() public\n    {\n        require(msg.sender == owner);\n        selfdestruct(owner);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

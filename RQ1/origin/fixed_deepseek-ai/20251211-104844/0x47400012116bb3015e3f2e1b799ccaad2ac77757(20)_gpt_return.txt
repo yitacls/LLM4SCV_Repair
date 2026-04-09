@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.4.11",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Added overflow/underflow protection for Solidity 0.4.11 using SafeMath library",
+            "variable_code": "mapping(address => uint256) balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyPayloadSize",
+            "fix_info": "Fixed potential integer overflow in size check",
+            "modifier_code": "modifier onlyPayloadSize(uint size) {\n        require(msg.data.length == size + 4); // +4 for function selector\n        _;\n    }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed potential integer overflow in balance addition and underflow in subtraction using SafeMath patterns",
+            "corrected_code": "function transfer(address _recipient, uint _value) onlyPayloadSize(2*32) public {\n        require(balances[msg.sender] >= _value && _value > 0);\n        require(balances[_recipient] + _value >= balances[_recipient]); // Overflow check\n        \n        balances[msg.sender] = balances[msg.sender] - _value; // Explicit subtraction\n        balances[_recipient] = balances[_recipient] + _value; // Explicit addition\n        \n        Transfer(msg.sender, _recipient, _value);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

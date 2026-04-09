@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] += _value;",
+    "description": "In Solidity version ^0.4.16, integer arithmetic operations do not automatically check for overflow or underflow. The line 'balances[_to] += _value;' and 'balances[_from] -= _value;' are vulnerable to integer overflow and underflow respectively. An attacker could transfer a very large _value to cause an overflow in the recipient's balance (wrapping it to a small value), or cause underflow in the sender's balance. This vulnerability was mitigated in Solidity 0.8.0 with built-in overflow checks, but in 0.4.x requires the use of SafeMath library or explicit checks."
+}
+```

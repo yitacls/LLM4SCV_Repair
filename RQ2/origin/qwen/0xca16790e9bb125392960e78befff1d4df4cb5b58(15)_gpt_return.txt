@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "players[winner].send(this.balance);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.25, send() can fail silently (e.g., due to gas limitations or recipient contract issues) and return false, but the contract doesn't handle this case. This could result in the winner not receiving their prize money, while the contract state is still reset, leading to fund loss. The send() call should be checked for success, or better yet, use transfer() which automatically throws on failure."
+}
+```

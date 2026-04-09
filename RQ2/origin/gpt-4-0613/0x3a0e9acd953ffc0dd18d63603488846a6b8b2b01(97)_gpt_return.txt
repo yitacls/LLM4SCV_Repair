@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.call.value(_wei);",
+    "description": "This code is vulnerable to unchecked low level calls. Low level calls like '.call' return a boolean status code that often gets overlooked even though it may indicate the call's success or failure. In this case, there's no check of the return value after making the call. This could potentially lead to unexpected behavior as the execution continues even when the call fails, triggering financial loss or other serious consequences."
+}
+```

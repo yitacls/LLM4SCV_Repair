@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SaleAuction",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing deprecated `send()` with `transfer()`, which automatically reverts on failure. Added `address payable` type conversion for compatibility with Solidity 0.4.x. The `send()` method returns `false` on failure without reverting, creating a security risk where failed transfers appear successful.",
+            "corrected_code": "function withdrawBalance() external {\n    address nftAddress = address(nonFungibleContract);\n    require(msg.sender == nftAddress);\n    // Convert to payable address and use transfer() which reverts on failure\n    address payable payableAddress = address(uint160(nftAddress));\n    payableAddress.transfer(this.balance);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

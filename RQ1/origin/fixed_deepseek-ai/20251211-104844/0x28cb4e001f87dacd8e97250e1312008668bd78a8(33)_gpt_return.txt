@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "multi_user_wallet",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added as the original code assumes owner exists but isn't declared",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with msg.sender",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Replaced tx.origin with msg.sender and added onlyOwner modifier for proper access control",
+            "corrected_code": "function clear() public onlyOwner {\n        selfdestruct(owner);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

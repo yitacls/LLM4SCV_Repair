@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "_0xEtherToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Changed visibility from implicit internal to explicit private to prevent unintended access and added onlyOwner modifier pattern",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check with proper msg.sender authentication and owner state variable validation",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferAnyERC20Token",
+            "fix_info": "Replaced vulnerable tx.origin check with onlyOwner modifier, added token address validation, and improved error handling for safe ERC20 transfers",
+            "corrected_code": "function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {\n        require(tokenAddress != address(0), \"Invalid token address\");\n        require(tokens > 0, \"Token amount must be greater than zero\");\n        \n        ERC20Interface token = ERC20Interface(tokenAddress);\n        success = token.transfer(owner, tokens);\n        require(success, \"ERC20 transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

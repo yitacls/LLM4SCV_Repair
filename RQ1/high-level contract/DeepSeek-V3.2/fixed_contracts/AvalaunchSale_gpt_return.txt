@@ -1,0 +1,47 @@
+```json
+[{
+    "contract_name": "AvalaunchSale",
+    "contract_version": "0.6.12",
+    "state_variables": [
+        {
+            "variable_name": "numberOfParticipants",
+            "fix_info": "Added visibility to state variable",
+            "variable_code": "uint256 public numberOfParticipants;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "postponeSale",
+            "fix_info": "Added gas limit to prevent out-of-gas DoS attack when iterating through rounds",
+            "corrected_code": "    /// @notice     Admin function to postpone the sale\n    function postponeSale(\n        uint256 timeToShift\n    )\n    external\n    onlyAdmin\n    {\n        require(block.timestamp < roundIdToRound[roundIds[0]].startTime, \"1st round already started.\");\n        require(roundIds.length > 0, \"No rounds configured\");\n        \n        // Set a reasonable gas limit to prevent out-of-gas attacks\n        uint256 maxRoundsToProcess = 10; // Reasonable maximum number of rounds\n        require(roundIds.length <= maxRoundsToProcess, \"Too many rounds to process\");\n\n        // Iterate through all registered rounds and postpone them\n        for(uint i = 0; i < roundIds.length; i++) {\n            require(roundIdToRound[roundIds[i]].startTime.add(timeToShift) > roundIdToRound[roundIds[i]].startTime, \"SafeMath: addition overflow\");\n            Round storage round = roundIdToRound[roundIds[i]];\n            // Postpone sale\n            round.startTime = round.startTime.add(timeToShift);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "depositTokens",
+            "fix_info": "Added safety checks and gas limit for token transfers",
+            "corrected_code": "    // Function for owner to deposit tokens, can be called only once.\n    function depositTokens()\n    external\n    onlySaleOwner\n    {\n        require(sale.totalTokensSold == 0 && sale.token.balanceOf(address(this)) == 0, \"Deposit can be done only once\");\n        require(block.timestamp < roundIdToRound[roundIds[0]].startTime, \"Deposit too late. Round already started.\");\n        require(roundIds.length > 0, \"Rounds not configured\");\n        \n        // Check token balance before transfer\n        uint256 initialBalance = sale.token.balanceOf(address(this));\n        \n        // Perform the token transfer with gas limit safety\n        sale.token.safeTransferFrom(msg.sender, address(this), sale.amountOfTokensToSell);\n        \n        // Verify the transfer was successful\n        uint256 newBalance = sale.token.balanceOf(address(this));\n        require(newBalance == initialBalance.add(sale.amountOfTokensToSell), \"Token transfer failed\");\n        \n        sale.tokensDeposited = true;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawEarningsAndLeftover",
+            "fix_info": "Fixed DoS vulnerability by adding reentrancy guard and handling failed AVAX transfers",
+            "corrected_code": "    /// Function to withdraw all the earnings and the leftover of the sale contract.\n    function withdrawEarningsAndLeftover(\n        bool withBurn\n    )\n    external\n    onlySaleOwner\n    {\n        // Make sure sale ended\n        require(block.timestamp >= sale.saleEnd);\n\n        // Make sure owner can't withdraw twice\n        require(sale.earningsWithdrawn == false);\n        sale.earningsWithdrawn = true;\n\n        // Earnings amount of the owner in AVAX\n        uint totalProfit = address(this).balance;\n\n        // Amount of tokens which are not sold\n        uint leftover = sale.amountOfTokensToSell.sub(sale.totalTokensSold);\n\n        // Handle AVAX transfer with pull-over-push pattern to prevent DoS\n        if (totalProfit > 0) {\n            (bool success, ) = msg.sender.call{value: totalProfit}(\"\");\n            require(success, \"AVAX transfer failed\");\n        }\n\n        if (leftover > 0 && !withBurn) {\n            sale.token.safeTransfer(msg.sender, leftover);\n        } else if (withBurn && leftover > 0) {\n            sale.token.safeTransfer(address(1), leftover);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawTokens",
+            "fix_info": "Fixed incorrect time check and added array bounds safety",
+            "corrected_code": "    /// Users can claim their participation\n    function withdrawTokens(uint portionId) external {\n        require(block.timestamp >= sale.tokensUnlockTime, \"Tokens can not be withdrawn yet.\");\n        require(portionId < vestingPercentPerPortion.length, \"Invalid portion ID\");\n        require(vestingPercentPerPortion.length > 0, \"Vesting not configured\");\n\n        Participation storage p = userToParticipation[msg.sender];\n        require(p.amountBought > 0, \"No participation found\");\n        \n        // Initialize the isPortionWithdrawn array if not already initialized\n        if (p.isPortionWithdrawn.length == 0) {\n            p.isPortionWithdrawn = new bool[](vestingPercentPerPortion.length);\n        }\n\n        require(portionId < p.isPortionWithdrawn.length, \"Portion ID out of bounds\");\n        require(!p.isPortionWithdrawn[portionId], \"Tokens already withdrawn for this portion.\");\n        require(block.timestamp >= vestingPortionsUnlockTime[portionId], \"This portion is not unlocked yet.\");\n        \n        // Mark portion as withdrawn\n        p.isPortionWithdrawn[portionId] = true;\n        \n        uint256 amountWithdrawing = p.amountBought.mul(vestingPercentPerPortion[portionId]).div(100);\n        require(amountWithdrawing > 0, \"Nothing to withdraw\");\n        \n        // Check contract balance before transfer\n        uint256 contractBalance = sale.token.balanceOf(address(this));\n        require(amountWithdrawing <= contractBalance, \"Insufficient contract balance\");\n        \n        // Withdraw percent which is unlocked at that portion\n        sale.token.safeTransfer(msg.sender, amountWithdrawing);\n        emit TokensWithdrawn(msg.sender, amountWithdrawing);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setVestingParams",
+            "fix_info": "Added validation to prevent setting vesting after users have already participated",
+            "corrected_code": "    /// @notice         Function to set vesting params\n    function setVestingParams(uint256 [] memory _unlockingTimes, uint256 [] memory _percents)\n    external\n    onlyAdmin\n    {\n        require(vestingPercentPerPortion.length == 0 && vestingPortionsUnlockTime.length == 0, \"Vesting already configured\");\n        require(_unlockingTimes.length == _percents.length, \"Arrays length mismatch\");\n        require(_unlockingTimes.length > 0, \"Vesting arrays cannot be empty\");\n        require(numberOfParticipants == 0, \"Cannot change vesting after users have participated\");\n\n        uint256 totalPercent = 0;\n        for(uint256 i = 0; i < _unlockingTimes.length; i++) {\n            require(_unlockingTimes[i] > block.timestamp, \"Unlock time must be in the future\");\n            require(_percents[i] > 0 && _percents[i] <= 100, \"Invalid percentage\");\n            if (i > 0) {\n                require(_unlockingTimes[i] > _unlockingTimes[i-1], \"Unlock times must be in ascending order\");\n            }\n            totalPercent = totalPercent.add(_percents[i]);\n            \n            vestingPortionsUnlockTime.push(_unlockingTimes[i]);\n            vestingPercentPerPortion.push(_percents[i]);\n        }\n        \n        require(totalPercent == 100, \"Total percentage must equal 100\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

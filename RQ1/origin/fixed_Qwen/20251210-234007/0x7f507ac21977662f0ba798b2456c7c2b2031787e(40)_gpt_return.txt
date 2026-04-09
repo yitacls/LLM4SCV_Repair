@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TokenDestructible",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "destroy",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and proper error handling. Also updated to use transfer() instead of call() for ERC20 tokens.",
+            "corrected_code": "function destroy(address[] tokens) onlyOwner public {\n    for(uint256 i = 0; i < tokens.length; i++) {\n      ERC20Basic token = ERC20Basic(tokens[i]);\n      uint256 balance = token.balanceOf(this);\n      require(token.transfer(owner, balance));\n    }\n    selfdestruct(owner);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

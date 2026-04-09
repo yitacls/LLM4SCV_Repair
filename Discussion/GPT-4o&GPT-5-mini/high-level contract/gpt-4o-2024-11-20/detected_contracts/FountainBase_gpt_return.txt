@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "L290-291",
+            "description": "The `_depositAngel` function calls external contract `angel.deposit()` before updating the local state variable `info.totalBalance`. This could allow an attacker to re-enter the function and manipulate the state to their advantage."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "L295-L308",
+            "description": "The `_withdrawAngel` function calls external contract `angel.withdraw()` before updating the local state variable `info.totalBalance`. This could allow an attacker to re-enter the function and manipulate the state to their advantage."
+        }
+    ]
+}
+```

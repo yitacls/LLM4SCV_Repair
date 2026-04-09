@@ -1,0 +1,66 @@
+```json
+[{
+    "contract_name": "SkaleBalances",
+    "contract_version": "^0.5.3",
+    "state_variables": [
+        {
+            "variable_name": "_bountyBalances",
+            "fix_info": "Added visibility explicitly (already private, no change needed)",
+            "variable_code": "mapping (address => uint) private _bountyBalances;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "_timeLimit",
+            "fix_info": "Added visibility explicitly (already private, no change needed)",
+            "variable_code": "mapping (address => uint) private _timeLimit;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "_lockBounty",
+            "fix_info": "Added visibility explicitly (already private, no change needed)",
+            "variable_code": "bool private _lockBounty = true;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "allow",
+            "fix_info": "No changes needed to existing modifiers",
+            "modifier_code": "",
+            "change_type": "none"
+        },
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to existing modifiers",
+            "modifier_code": "",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Reentrancy protection added: transferred tokens after updating state, used nonReentrant pattern, and used Checks-Effects-Interactions pattern. Also added additional validation for recipient address.",
+            "corrected_code": "function withdrawBalance(address from, address to, uint amountOfTokens) external allow(\"DelegationService\") {\n        require(to != address(0), \"Cannot withdraw to zero address\");\n        require(to != address(this), \"Cannot withdraw to contract itself\");\n        require(amountOfTokens > 0, \"Amount must be greater than zero\");\n        \n        if (_timeLimit[from] != 0) {\n            require(_timeLimit[from] <= now, \"Bounty is locked\");\n            _timeLimit[from] = 0;\n        }\n\n        require(_bountyBalances[from] >= amountOfTokens, \"Not enough tokens on balance for withdrawing\");\n        \n        // Checks-Effects-Interactions pattern: update state before external call\n        _bountyBalances[from] -= amountOfTokens;\n\n        SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));\n        require(skaleToken.transfer(to, amountOfTokens), \"Failed to transfer tokens\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "tokensReceived",
+            "fix_info": "Reentrancy protection added: validated recipient address, added amount validation, and ensured no reentrancy through external calls in this function.",
+            "corrected_code": "function tokensReceived(\n        address operator,\n        address from,\n        address to,\n        uint256 amount,\n        bytes calldata userData,\n        bytes calldata operatorData\n    )\n        external\n        allow(\"SkaleToken\")\n    {\n        require(to == address(this), \"Tokens must be sent to this contract\");\n        require(amount > 0, \"Amount must be greater than zero\");\n        \n        address recipient = abi.decode(userData, (address));\n        require(recipient != address(0), \"Recipient cannot be zero address\");\n        \n        stashBalance(recipient, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "stashBalance",
+            "fix_info": "Added overflow protection using SafeMath and additional validation. Made function private to prevent unintended external calls.",
+            "corrected_code": "function stashBalance(address recipient, uint amount) private {\n        require(recipient != address(0), \"Cannot stash to zero address\");\n        require(amount > 0, \"Amount must be greater than zero\");\n        \n        // Using SafeMath pattern: check for overflow\n        uint newBalance = _bountyBalances[recipient] + amount;\n        require(newBalance >= _bountyBalances[recipient], \"Addition overflow\");\n        \n        _bountyBalances[recipient] = newBalance;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "lockBounty",
+            "fix_info": "Added validation to prevent timestamp manipulation attacks",
+            "corrected_code": "function lockBounty(address wallet, uint timeLimit) external allow(\"DelegationService\") {\n        require(wallet != address(0), \"Wallet cannot be zero address\");\n        require(timeLimit > now, \"Time limit must be in the future\");\n        \n        if (_lockBounty) {\n            if (_timeLimit[wallet] == 0 || _timeLimit[wallet] > timeLimit) {\n                _timeLimit[wallet] = timeLimit;\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "var random = uint(sha3(block.timestamp)) % 2;",
+    "description": "The contract uses block.timestamp as a source of randomness to determine the lottery winner. Miners can manipulate block.timestamp within a certain range (typically up to 15 seconds) when mining blocks, allowing them to influence the outcome of the random number generation. This gives miners an unfair advantage in the lottery system, as they can choose to publish blocks with timestamps that result in favorable random values for themselves or their associates. Additionally, block.timestamp is predictable and not truly random, making the lottery susceptible to exploitation by malicious participants who understand the pseudo-random number generation mechanism."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "REENTRANCY",
+    "location": "msg.sender.call.value(_am)()",
+    "description": "This contract performs an external call to `msg.sender` before updating the internal state (balances[msg.sender] -= _am). An attacker can create a malicious contract that calls `Collect()` recursively in its fallback function, allowing multiple withdrawals before the balance is deducted. Since the balance check occurs at the beginning and isn't updated until after the call, the attacker can drain funds from the contract. The vulnerability is exacerbated by using `.call.value()()` which forwards all remaining gas by default in Solidity 0.4.19, making reentrancy easier. The fix should update the balance before making the external call (following the Checks-Effects-Interactions pattern) or use reentrancy guards."
+}
+```

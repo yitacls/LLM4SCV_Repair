@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Pie",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added onlyOwner modifier to improve access control and code reusability",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == Owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Fixed the unchecked low-level call by checking the return value, using transfer for Ether transfers if that's the intent, or properly handling the call result. Also improved function visibility and naming conventions.",
+            "corrected_code": "function command(address adr, bytes data) external payable onlyOwner {\n        // Check if we're sending Ether - if so, use transfer for security\n        if (msg.value > 0) {\n            adr.transfer(msg.value);\n        }\n        \n        // Make the low-level call and check for success\n        bool success = adr.call(data);\n        require(success, \"Low-level call failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

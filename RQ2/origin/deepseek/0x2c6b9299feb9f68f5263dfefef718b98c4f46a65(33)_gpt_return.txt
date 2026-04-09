@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract uses tx.origin for authorization instead of msg.sender. This creates a security vulnerability where a malicious contract could trick the owner into calling it, causing the owner's transaction to execute clear() on the vulnerable contract. Additionally, the contract lacks a proper transferOwnership mechanism and ownership validation."
+        },
+        {
+            "type": "access_control",
+            "location": "function clear() public { ... }",
+            "description": "The clear() function exposes selfdestruct capability to anyone who can pass the flawed tx.origin check. If the ownership check is bypassed or compromised, an attacker can permanently destroy the contract and divert any remaining funds to themselves, resulting in complete loss of contract functionality and funds."
+        }
+    ]
+}
+```

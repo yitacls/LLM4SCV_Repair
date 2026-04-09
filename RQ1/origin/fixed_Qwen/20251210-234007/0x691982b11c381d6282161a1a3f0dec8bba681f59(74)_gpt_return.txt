@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MyToken",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library or manual overflow checks. Added explicit revert on balance underflow and ensured proper balance updates.",
+            "corrected_code": "function transfer(address _to, uint _value) whenTransferAllowed public returns (bool success) {\n    require(_to != address(0) && _value <= balanceOf(msg.sender));\n    \n    // Check for underflow\n    require(_balanceOf[msg.sender] >= _value);\n    \n    _balanceOf[msg.sender] = _balanceOf[msg.sender] - _value;\n    _balanceOf[_to] = _balanceOf[_to] + _value;\n    \n    Transfer(msg.sender, _to, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

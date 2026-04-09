@@ -1,0 +1,13 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": [
+        "address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;",
+        "address seed2 = contestants[uint(msg.sender) % totalTickets].addr;",
+        "uint seed3 = block.difficulty;",
+        "bytes32 randHash = keccak256(seed1, seed2, seed3);",
+        "uint winningNumber = uint(randHash) % totalTickets;"
+    ],
+    "description": "The contract uses predictable on-chain variables for random number generation, making it vulnerable to manipulation. Specifically: 1) block.coinbase (miner's address) can be influenced by miners, 2) msg.sender is the transaction sender (often predictable), and 3) block.difficulty (now block.prevrandao) was historically manipulable by miners. As a result, malicious actors (especially miners) can predict or influence the winning number by carefully crafting transactions or mining blocks with favorable values, compromising the fairness of the raffle."
+}
+```

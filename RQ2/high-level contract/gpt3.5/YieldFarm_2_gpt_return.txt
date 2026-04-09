@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.6.0;",
+            "description": "The solidity pragma statement is a floating pragma. It is recommended to pin the pragma version to a specific one to prevent unexpected behavior due to future compiler updates."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) {",
+            "description": "There is a potential for denial of service due to iterating over a large number of epochs in massHarvest function. This can cause the function call to exceed the block gas limit and fail."
+        }
+    ]
+}
+```  

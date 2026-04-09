@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function uses tx.origin for authorization instead of msg.sender, which creates a phishing vulnerability. While it restricts minting to the owner, any contract interaction initiated by the owner (e.g., through a malicious dApp) can pass this check and mint tokens because tx.origin refers to the original EOA that initiated the transaction chain, not the immediate caller. Additionally, the assert(amount >= 0) statement is redundant and wasteful since uint256 amounts are always non-negative. The proper authorization should use require(msg.sender == owner) to verify the immediate caller's identity."
+}
+```

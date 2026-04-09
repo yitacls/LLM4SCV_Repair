@@ -1,0 +1,24 @@
+Here we have found that the functions may have potential reentrancy problems, especially the functions trade(), claim etc., which involve external calls like token transfers which can lead to malicious contracts manipulating the state of our contract in the middle of execution. The best practice to avoid this issue is to use Checks-Effects-Interactions pattern i.e., doing all with state updates before calling external contracts. 
+
+```json
+[{
+    "contract_name": "ReferralFeeReceiver",
+    "contract_version": "^0.6.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "trade",
+            "fix_info": "Updated the function to follow the Checks-Effects-Interactions pattern to mitigate potential reentrancy attack.",
+            "corrected_code": "function trade(Mooniswap mooniswap, IERC20[] memory path) external validPool(mooniswap) validPath(path) {\n    TokenInfo storage token = tokenInfo[mooniswap];\n    uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;\n    EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];\n    require(firstUnprocessedEpoch.add(1) == token.currentEpoch, \"Prev epoch already finalized\");\n\n    IERC20[] memory tokens = mooniswap.getTokens();\n    uint256 availableBalance;\n    if (path[0] == tokens[0]) {\n        availableBalance = epochBalance.token0Balance;\n    } else if (path[0] == tokens[1]) {\n        availableBalance = epochBalance.token1Balance;\n    } else {\n        revert(\"Invalid first token\");\n    }\n\n    (uint256 amount, uint256 returnAmount) = _maxAmountForSwap(path, availableBalance);\n    uint256 receivedAmount;\n    if (returnAmount == 0) {\n        // get rid of dust\n        if (availableBalance > 0) {\n            require(availableBalance == amount, \"availableBalance is not dust\");\n            for (uint256 i = 0; i + 1 < path.length; i += 1) {\n                Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);\n                require(_validateSpread(_mooniswap), \"Spread is too high\");\n            }\n            if (path[0].isETH()) {\n                tx.origin.transfer(availableBalance);\n            } else {\n                path[0].safeTransfer(address(mooniswap), availableBalance);\n            }\n        }\n    } else {\n        receivedAmount = _swap(path, amount, payable(address(this)));\n    }\n\n    epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);\n\n    if (path[0] == tokens[0]) {\n        epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);\n    } else {\n        epochBalance.token1Balance = epochBalance.token1Balance.sub(amount);\n    }\n\n    if (epochBalance.token0Balance == 0 && epochBalance.token1Balance == 0) {\n        token.firstUnprocessedEpoch = firstUnprocessedEpoch.add(1);\n    }\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Updated the function to follow the Checks-Effects-Interactions pattern to mitigate potential reentrancy attack.",
+            "corrected_code": "function claim(Mooniswap[] memory pools) external {\n    UserInfo storage user = userInfo[msg.sender];\n    uint256 balance = user.balance;\n    for (uint256 i = 0; i < pools.length; ++i) {\n        Mooniswap mooniswap = pools[i];\n        TokenInfo storage token = tokenInfo[mooniswap];\n        _collectProcessedEpochs(user, token, mooniswap, token.currentEpoch);\n    }\n\n    if (balance > 1) {\n        // Avoid erasing storage to decrease gas footprint for referral payments\n        user.balance = 1;\n        inchToken.transfer(msg.sender, balance - 1);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "sender.send(amount);",
+    "description": "The function send() is a low level call which does not throw an exception when it fails, but instead returns 'false'. This can permit the contract to silently fail. The contract in question does not check the return value of the low level call, allowing for unchecked behaviour. This behaviour could be potentially abused to cause the contract to behave in ways which were not anticipated by the developers. It is considered best practice to always check the return value of send and require that it is true, to ensure that the function fails when the call fails." 
+}
+```

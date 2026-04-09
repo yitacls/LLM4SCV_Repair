@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw() onlyOwner public {",
+    "description": "The 'withdraw' function does not check for proper access control and can be called by anyone, allowing anyone to withdraw the contract's balance."
+}
+```

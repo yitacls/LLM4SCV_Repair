@@ -1,0 +1,20 @@
+[{
+    "contract_name": "AvalaunchSale",
+    "contract_version": "0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "postponeSale",
+            "fix_info": "Added a guard to ensure rounds are set before accessing roundIds[0]. This prevents accidental reverts/DoS when roundIds is empty.",
+            "corrected_code": "function postponeSale(\n    uint256 timeToShift\n)\nexternal\nonlyAdmin\n{\n    require(roundIds.length > 0, \"postponeSale: No rounds set\");\n    require(block.timestamp < roundIdToRound[roundIds[0]].startTime, \"1st round already started.\");\n\n    // Iterate through all registered rounds and postpone them\n    for (uint i = 0; i < roundIds.length; i++) {\n        Round storage round = roundIdToRound[roundIds[i]];\n        // Postpone sale\n        round.startTime = round.startTime.add(timeToShift);\n    }\n}\n",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "depositTokens",
+            "fix_info": "Removed external call to token.balanceOf (which could revert and cause DoS). Added a check that rounds exist before referencing roundIds[0]. Rely on the tokensDeposited boolean and totalTokensSold to ensure deposit only once.",
+            "corrected_code": "function depositTokens()\nexternal\nonlySaleOwner\n{\n    // Ensure rounds are set before checking their start time\n    require(roundIds.length > 0, \"depositTokens: No rounds set\");\n\n    // Ensure deposit happens only once and before first round\n    require(sale.totalTokensSold == 0 && !sale.tokensDeposited, \"Deposit can be done only once\");\n    require(block.timestamp < roundIdToRound[roundIds[0]].startTime, \"Deposit too late. Round already started.\");\n\n    // Transfer tokens from owner to contract\n    sale.token.safeTransferFrom(msg.sender, address(this), sale.amountOfTokensToSell);\n    sale.tokensDeposited = true;\n}\n",
+            "change_type": "modified"
+        }
+    ]
+}]

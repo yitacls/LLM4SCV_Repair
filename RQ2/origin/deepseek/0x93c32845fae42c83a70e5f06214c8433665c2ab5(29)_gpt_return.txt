@@ -1,0 +1,11 @@
+【```json
+{
+    "vulnerability": [
+        {
+            "type": "Reentrancy",
+            "location": "msg.sender.call.value(_am)()",
+            "description": "The contract makes an external call to `msg.sender` using `call.value()` before updating the internal state (deducting `_am` from `acc.balance`). This allows a malicious contract at `msg.sender` to re-enter the `Collect` function repeatedly, potentially draining all funds from `acc.balance` before the balance is finally reduced. The issue is compounded by the use of Solidity version ^0.4.25, which lacks built-in reentrancy protection mechanisms."
+        }
+    ]
+}
+```】

@@ -1,0 +1,77 @@
+```json
+[{
+    "contract_name": "Fidometa",
+    "contract_version": "0.8.11",
+    "state_variables": [
+        {
+            "variable_name": "_tTotal",
+            "fix_info": "Removed SafeMath usage as Solidity 0.8.11 has built-in overflow protection",
+            "variable_code": "uint256 private _tTotal = 15000000000 * 10**uint256(decimals);",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "_maxTxAmount",
+            "fix_info": "Made explicitly public for clarity",
+            "variable_code": "uint256 public _maxTxAmount = 5000000 * 10**uint256(decimals);",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_approve",
+            "fix_info": "Fixed shadowing of function parameter 'owner' that shadows Ownable.owner()",
+            "corrected_code": "    function _approve(\n        address ownerAccount,\n        address spender,\n        uint256 amount\n    ) private {\n        require(ownerAccount != address(0), \"BEP20: approve from the zero address\");\n        require(spender != address(0), \"BEP20: approve to the zero address\");\n        _allowances[ownerAccount][spender] = amount;\n        emit Approval(ownerAccount, spender, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "setCharges",
+            "fix_info": "Added missing percentage calculation logic instead of just setting values",
+            "corrected_code": "    function setCharges(\n        uint256 community_charge,\n        uint256 ecoSysFee,\n        uint256 surcharge1,\n        uint256 surcharge2,\n        uint256 surcharge3\n    ) external onlyOwner {\n        require(\n            community_charge <= 100,\n            \"Community Charge % should be less than equal to 100%\"\n        );\n        require(\n            ecoSysFee <= 100,\n            \"EcoSysFee % should be less than equal to 100%\"\n        );\n        require(\n            surcharge1 <= 100,\n            \"surcharge1 % should be less than equal to 100%\"\n        );\n        require(\n            surcharge2 <= 100,\n            \"surcharge2 % should be less than equal to 100%\"\n        );\n        require(\n            surcharge3 <= 100,\n            \"surcharge3 % should be less than equal to 100%\"\n        );\n        // Convert percentages to basis points (multiply by 10^9 for 9 decimals)\n        _community_charge = community_charge * 10**9;\n        _ecoSysFee = ecoSysFee * 10**9;\n        _surcharge1 = surcharge1 * 10**9;\n        _surcharge2 = surcharge2 * 10**9;\n        _surcharge3 = surcharge3 * 10**9;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getCurrentSupply",
+            "fix_info": "Fixed potential DoS issue by using local variable instead of storage array length in loop",
+            "corrected_code": "    function _getCurrentSupply() private view returns (uint256, uint256) {\n        uint256 rSupply = _rTotal;\n        uint256 tSupply = _tTotal;\n        uint256 excludedLength = _excluded.length;\n        \n        for (uint256 i = 0; i < excludedLength; i++) {\n            if (\n                _rOwned[_excluded[i]] > rSupply ||\n                _tOwned[_excluded[i]] > tSupply\n            ) return (_rTotal, _tTotal);\n            rSupply = rSupply - _rOwned[_excluded[i]];\n            tSupply = tSupply - _tOwned[_excluded[i]];\n        }\n        if (rSupply < _rTotal / _tTotal) return (_rTotal, _tTotal);\n        return (rSupply, tSupply);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "takeCharges",
+            "fix_info": "Fixed code with no effects by adding proper token transfers and avoiding storage writes for excluded accounts",
+            "corrected_code": "    function takeCharges(\n        uint256 tEcoSys,\n        uint256 tSurcharge1,\n        uint256 tSurcharge2,\n        uint256 tSurcharge3\n    ) private {\n        uint256 currentRate = _getRate();\n        \n        if (tEcoSys > 0) {\n            uint256 rEcosys = tEcoSys * currentRate;\n            _rOwned[_ecoSysWallet] = _rOwned[_ecoSysWallet] + rEcosys;\n            if (_isExcludedFromReward[_ecoSysWallet]) {\n                _tOwned[_ecoSysWallet] = _tOwned[_ecoSysWallet] + tEcoSys;\n            }\n            emit Transfer(address(this), _ecoSysWallet, tEcoSys);\n        }\n        \n        if (tSurcharge1 > 0 && _surcharge_1_Wallet != address(0)) {\n            uint256 rSurcharge1 = tSurcharge1 * currentRate;\n            _rOwned[_surcharge_1_Wallet] = _rOwned[_surcharge_1_Wallet] + rSurcharge1;\n            if (_isExcludedFromReward[_surcharge_1_Wallet]) {\n                _tOwned[_surcharge_1_Wallet] = _tOwned[_surcharge_1_Wallet] + tSurcharge1;\n            }\n            emit Transfer(address(this), _surcharge_1_Wallet, tSurcharge1);\n        }\n        \n        if (tSurcharge2 > 0 && _surcharge_2_Wallet != address(0)) {\n            uint256 rSurcharge2 = tSurcharge2 * currentRate;\n            _rOwned[_surcharge_2_Wallet] = _rOwned[_surcharge_2_Wallet] + rSurcharge2;\n            if (_isExcludedFromReward[_surcharge_2_Wallet]) {\n                _tOwned[_surcharge_2_Wallet] = _tOwned[_surcharge_2_Wallet] + tSurcharge2;\n            }\n            emit Transfer(address(this), _surcharge_2_Wallet, tSurcharge2);\n        }\n        \n        if (tSurcharge3 > 0 && _surcharge_3_Wallet != address(0)) {\n            uint256 rSurcharge3 = tSurcharge3 * currentRate;\n            _rOwned[_surcharge_3_Wallet] = _rOwned[_surcharge_3_Wallet] + rSurcharge3;\n            if (_isExcludedFromReward[_surcharge_3_Wallet]) {\n                _tOwned[_surcharge_3_Wallet] = _tOwned[_surcharge_3_Wallet] + tSurcharge3;\n            }\n            emit Transfer(address(this), _surcharge_3_Wallet, tSurcharge3);\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_tokenTransfer",
+            "fix_info": "Fixed the else clause that had no effect by removing it and ensuring proper logic flow",
+            "corrected_code": "    function _tokenTransfer(\n        address sender,\n        address recipient,\n        uint256 amount,\n        bool takeCommunityCharge,\n        bool takeEcosysFee,\n        bool takeSurcharge1,\n        bool takeSurcharge2,\n        bool takeSurcharge3\n    ) private {\n        if (!takeCommunityCharge) {\n            _previousCommunityCharge = _community_charge;\n            _community_charge = 0;\n        }\n\n        if (!takeEcosysFee) {\n            _previousEcoSysFee = _ecoSysFee;\n            _ecoSysFee = 0;\n        }\n\n        if (!takeSurcharge1) {\n            _previousSurcharge1 = _surcharge1;\n            _surcharge1 = 0;\n        }\n\n        if (!takeSurcharge2) {\n            _previousSurcharge2 = _surcharge2;\n            _surcharge2 = 0;\n        }\n\n        if (!takeSurcharge3) {\n            _previousSurcharge3 = _surcharge3;\n            _surcharge3 = 0;\n        }\n\n        if (_isExcludedFromReward[sender] && !_isExcludedFromReward[recipient]) {\n            _transferFromExcluded(sender, recipient, amount);\n        } else if (!_isExcludedFromReward[sender] && _isExcludedFromReward[recipient]) {\n            _transferToExcluded(sender, recipient, amount);\n        } else if (!_isExcludedFromReward[sender] && !_isExcludedFromReward[recipient]) {\n            _transferStandard(sender, recipient, amount);\n        } else if (_isExcludedFromReward[sender] && _isExcludedFromReward[recipient]) {\n            _transferBothExcluded(sender, recipient, amount);\n        }\n\n        if (!takeCommunityCharge) _community_charge = _previousCommunityCharge;\n        if (!takeEcosysFee) _ecoSysFee = _previousEcoSysFee;\n        if (!takeSurcharge1) _surcharge1 = _previousSurcharge1;\n        if (!takeSurcharge2) _surcharge2 = _previousSurcharge2;\n        if (!takeSurcharge3) _surcharge3 = _previousSurcharge3;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "unlock",
+            "fix_info": "Fixed integer overflow and underflow vulnerability in timestamp calculation",
+            "corrected_code": "    function unlock(address target_) external {\n        require(target_ != address(0), \"Invalid target\");\n        require(_msgSender() == target_, \"Invalid target\");\n        uint256 startTime = locks[target_].startTime;\n        uint256 lockedToken = locks[target_].lockedToken;\n        uint256 remainedToken = locks[target_].remainedToken;\n        uint256 monthCount = locks[target_].monthCount;\n        uint256 initialLock = locks[target_].initialLock;\n        require(remainedToken != 0, \"All tokens are unlocked\");\n\n        uint256 unlockStartTime = startTime + (initialLock * 1 days);\n        require(block.timestamp > unlockStartTime, \"UnLocking period is not opened\");\n        \n        // Safe subtraction with Solidity 0.8.11\n        uint256 timePassed = block.timestamp - unlockStartTime;\n\n        uint256 monthNumber = timePassed / 30 days;\n        \n        // Ensure monthNumber is at least 1 month\n        if (timePassed % 30 days != 0) {\n            monthNumber += 1;\n        }\n\n        uint256 remainedMonth = 0;\n        if (monthNumber > monthCount) {\n            remainedMonth = monthNumber - monthCount;\n        }\n        \n        if (remainedMonth > 5) remainedMonth = 5;\n        require(remainedMonth > 0, \"Releasable token till now is released\");\n\n        uint256 receivableToken = (lockedToken * (remainedMonth * 20)) / 100;\n\n        locks[target_].monthCount = locks[target_].monthCount + remainedMonth;\n        locks[target_].remainedToken = locks[target_].remainedToken - receivableToken;\n\n        if (locks[target_].remainedToken == 0) {\n            delete locks[target_];\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferWithLock",
+            "fix_info": "Fixed code with no effects by adding proper require statement and validation",
+            "corrected_code": "    function transferWithLock(\n        address recipient,\n        uint256 tAmount,\n        uint256 initialLock\n    ) external onlyOwner {\n        require(recipient != address(0), \"Invalid target\");\n        require(\n            locks[recipient].lockedToken == 0,\n            \"This address is already in vesting period\"\n        );\n        require(tAmount > 0, \"Transfer amount must be greater than zero\");\n        require(initialLock <= 3650, \"Initial lock period too long (max 10 years)\");\n        \n        // Check sender has enough balance\n        require(balanceOf(_msgSender()) >= tAmount, \"Insufficient balance\");\n        \n        _transfer(_msgSender(), recipient, tAmount);\n        \n        locks[recipient] = LockDetails(\n            block.timestamp,\n            initialLock,\n            tAmount,\n            tAmount,\n            0\n        );\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "increaseAllowance",
+            "fix_info": "Replaced SafeMath with native arithmetic operations (Solidity 0.8.11 has overflow protection)",
+            "corrected_code": "    function increaseAllowance(address spender, uint256 addedValue)\n        external\n        virtual\n        returns (bool)\n    {\n        uint256 currentAllowance = _allowances[_msgSender()][spender];\n        _approve(_msgSender(), spender, currentAllowance + addedValue);\n        return true;\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "decreaseAllowance",
+            "fix_info": "Replaced SafeMath with native arithmetic operations and added explicit underflow check",
+            "corrected_code": "    function decreaseAllowance(address spender, uint256 subtractedValue)\n        external\n        virtual\n        returns (bool)\n    {\n        uint256 currentAllowance = _allowances[_msgSender()][spender];\n        require(\n            currentAllowance >= subtractedValue,\n            \"BEP20: decreased allowance below zero\"\n        );\n        _approve(_msgSender(), spender, currentAllowance - subtractedValue);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

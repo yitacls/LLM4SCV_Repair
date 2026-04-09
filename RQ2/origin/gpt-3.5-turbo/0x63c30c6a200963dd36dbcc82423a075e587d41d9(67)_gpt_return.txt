@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "pay_user__ += msg.value;",
+    "description": "This line can potentially lead to an integer overflow vulnerability since there is no check for overflow before adding 'msg.value' to 'pay_user__'. In Solidity, if the result of an arithmetic operation exceeds the maximum value representable by the data type, it will wrap around and start from the minimum value. This can result in unexpected behavior or loss of funds if 'pay_user__' reaches its maximum limit."
+}
+```

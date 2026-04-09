@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "recipient.send(weiAmount);",
+    "description": "The low-level send() function is used without checking its return value. In Solidity ^0.4.15, send() returns false if the transfer fails (e.g., recipient is a contract that rejects payment or runs out of gas), but the code doesn't handle this failure case. This could lead to a situation where the function appears to succeed but no ether is actually transferred, potentially causing loss of funds or incorrect state updates. The return value of send() should be checked and handled appropriately."
+}
+```

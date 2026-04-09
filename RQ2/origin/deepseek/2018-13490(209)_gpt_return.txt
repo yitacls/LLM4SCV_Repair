@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "This code contains integer overflow vulnerabilities in Solidity ^0.4.18 due to unchecked arithmetic operations. When adding 'mintedAmount' to 'balanceOf[target]' and 'totalSupply', if the results exceed the maximum value of uint256 (2^256 - 1), they will wrap around to very small values instead of throwing an error. This allows attackers to manipulate token balances by causing overflows. The vulnerability is compounded by the lack of SafeMath library usage or overflow checks in this compiler version, potentially enabling unauthorized token minting or balance corruption."
+}
+```

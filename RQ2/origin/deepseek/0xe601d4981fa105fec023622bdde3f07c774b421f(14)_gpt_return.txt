@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _amount;",
+    "description": "Integer overflow/underflow vulnerability in Solidity versions <0.8.0. Since the contract uses ^0.4.25, there is no built-in overflow protection. If (balances[_to] + _amount) exceeds the maximum value that can be stored in a uint (2^256 - 1), it will wrap around to a very small number, allowing attackers to create tokens out of thin air or corrupt account balances."
+}
+```

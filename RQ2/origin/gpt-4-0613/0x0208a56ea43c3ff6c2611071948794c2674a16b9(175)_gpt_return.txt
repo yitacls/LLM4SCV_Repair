@@ -1,0 +1,13 @@
+```json
+{
+    "contract": "ERBIUMCOIN",
+    "version": "0.4.18",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "modifier onlyOwner()",
+            "description": "The conditional check within the onlyOwner modifier is incorrect. Instead of denying access when the sender is not the owner, it is denying access when the sender is the owner. This allows any address except the owner to execute functions that should only be accessible to the owner."
+        }
+    ]
+}
+```

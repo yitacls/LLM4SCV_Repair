@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "VoteFactory",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "payOut",
+            "fix_info": "Fixed unchecked low level call vulnerability by adding return value check and using recommended transfer() instead of send()",
+            "corrected_code": "function payOut() onlyOwner {\n        owner.transfer(this.balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

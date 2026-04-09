@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "TravelCoinToken",
+        "contract_version": "^0.4.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic vulnerability by updating the order of operations and using safe math functions.",
+                "corrected_code": "function sell(uint256 amount) { require(balanceOf[msg.sender] >= amount); balanceOf[this] = SafeMath.add(balanceOf[this], amount); balanceOf[msg.sender] = SafeMath.sub(balanceOf[msg.sender], amount); require(msg.sender.send(amount * sellPrice)); Transfer(msg.sender, this, amount); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

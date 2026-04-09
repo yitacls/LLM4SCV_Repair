@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "pyramidMKII",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace tx.origin check for better security andinheritance support",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Not owner\");\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setBlockSze",
+            "fix_info": "Replaced tx.origin with msg.sender for proper access control and maintained the minimum size requirement",
+            "corrected_code": "function setBlockSze(uint256 _sze) public onlyOwner {\n    require(_sze >= 1 ether, \"error blksze\");\n    blksze = _sze;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "hon1ninja.send(this.balance - 1 ether);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.25, send() returns false if the transfer fails, but this return value is not being checked. If the send() call fails (e.g., due to gas stipend limitations or recipient contract rejecting the transfer), the function will continue execution without reverting, potentially leaving the contract in an inconsistent state. The remaining balance may not be transferred as intended, and there's no error handling for the failed transfer."
+}
+```

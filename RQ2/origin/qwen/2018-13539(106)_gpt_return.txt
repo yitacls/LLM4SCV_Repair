@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint256 _amount = mintedAmount * 10 ** uint256(decimals);",
+    "description": "The multiplication operation 'mintedAmount * 10 ** uint256(decimals)' can cause an arithmetic overflow if the result exceeds the maximum value of uint256. In Solidity ^0.4.24, there is no automatic overflow protection, which means the value will wrap around to zero, potentially allowing an attacker to mint an unexpected amount of tokens or cause denial of service. The vulnerability occurs because the result of the exponentiation and multiplication is not checked for overflow conditions."
+}
+```

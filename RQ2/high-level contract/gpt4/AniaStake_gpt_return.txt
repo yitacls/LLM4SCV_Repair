@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "The contract uses an old compiler version, which may lack important security checks and bug fixes. It's recommended to use the latest released version of the Solidity compiler."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "The contract specifies a version pragma with a caret (^) character, which allows the contract to be compiled using a newer compiler that may introduce breaking changes. It's recommended to specify a specific compiler version to ensure code compatibility and security."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint256 i = 0; i < users.length; i++) { ... } in function redistributeRewards",
+        "description": "The contract has a loop that iterates through the users array, with each iteration performing state-changing operations. If the size of the array is very large, the function could require more gas than the block limit. This can make it impossible to call the function, blocking funds or halting contract functionality."
+    }
+]
+```

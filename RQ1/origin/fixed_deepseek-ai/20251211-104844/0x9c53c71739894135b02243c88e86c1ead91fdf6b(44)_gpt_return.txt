@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "HEDGECRYPTOFUND",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "collectExcess",
+                "fix_info": "Fixed unchecked low-level call vulnerability by replacing send() with transfer(), adding require() statement for gas limit checking, and creating a proper recipient variable to avoid potential reentrancy issues",
+                "corrected_code": "function collectExcess() onlyOwner {\n        uint256 amount = address(this).balance - 2100000;\n        require(amount > 0, \"No excess funds to collect\");\n        require(amount <= address(this).balance, \"Amount exceeds contract balance\");\n        \n        address payable recipient = owner;\n        require(recipient != address(0), \"Invalid recipient address\");\n        \n        recipient.transfer(amount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

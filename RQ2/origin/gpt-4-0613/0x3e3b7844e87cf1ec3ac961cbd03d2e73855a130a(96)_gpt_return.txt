@@ -1,0 +1,12 @@
+```json
+{
+    "contract_name": "TRT",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "This line of code is vulnerable because it checks if the transaction original sender (tx.origin) is the contract owner. An attacker can trick the owner into initiating a transaction, thus becoming the tx.origin, and evade the access control. Instead of using tx.origin, msg.sender should be used as it refers to the immediate sender of the nested function call."
+        }
+    ]
+}
+```

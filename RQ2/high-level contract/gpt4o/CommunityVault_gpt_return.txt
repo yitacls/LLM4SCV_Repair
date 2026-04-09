@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.6.0;",
+        "description": "The use of a floating pragma (e.g., ^0.6.0) can lead to compatibility issues or unexpected behavior if a newer, potentially incompatible compiler version is used. It is recommended to pin the Solidity version to a specific, tested version (e.g., pragma solidity 0.6.0;)."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "_bond.approve(spender, amount);",
+        "description": "Calling approve() in a context where external calls can be triggered enables reentrancy issues. If the spender is malicious, it could exploit this behavior to call the contract again before the state is updated. Consider implementing reentrancy protection using a reentrancy guard, such as OpenZeppelin's 'nonReentrant' modifier."
+    }
+]
+```

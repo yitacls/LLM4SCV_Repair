@@ -1,0 +1,36 @@
+```json
+[
+  {
+    "contract_name": "Pod",
+    "contract_version": ">=0.7.0 <0.8.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "depositTo",
+        "fix_info": "Implemented checks-effects-interactions pattern to prevent reentrancy and verified call success for token transfer.",
+        "corrected_code": "function depositTo(address to, uint256 tokenAmount) external override returns (uint256) {\n    require(tokenAmount > 0, \"Pod:invalid-amount\");\n\n    // Allocate Shares from Deposit To Amount\n    uint256 shares = _deposit(to, tokenAmount);\n\n    // Transfer Token Transfer Message Sender\n    bool success = IERC20Upgradeable(token).transferFrom(\n        msg.sender,\n        address(this),\n        tokenAmount\n    );\n    require(success, \"Pod:token-transfer-failed\");\n\n    // Emit Deposited\n    emit Deposited(to, tokenAmount, shares);\n\n    // Return Shares Minted\n    return shares;\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "withdraw",
+        "fix_info": "Fixed reentrancy by reordering operations and verified safe external call behavior.",
+        "corrected_code": "function withdraw(uint256 shareAmount) external override returns (uint256) {\n    // Check User Balance\n    require(\n        balanceOf(msg.sender) >= shareAmount,\n        \"Pod:insufficient-shares\"\n    );\n\n    // Burn Shares and calculate tokens to withdraw\n    uint256 tokens = _burnShares(shareAmount);\n\n    // Transfer tokens to user securely\n    bool success = IERC20Upgradeable(token).transfer(msg.sender, tokens);\n    require(success, \"Pod:token-transfer-failed\");\n\n    // Emit Withdraw\n    emit Withdrawl(msg.sender, tokens, shareAmount);\n\n    return tokens;\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_burnShares",
+        "fix_info": "Applied reentrancy protections and verified external calls with proper checks.",
+        "corrected_code": "function _burnShares(uint256 shares) internal returns (uint256) {\n    // Calculate Percentage Returned from Burned Shares\n    uint256 amount = (balance().mul(shares)).div(totalSupply());\n\n    // Burn Shares\n    _burn(msg.sender, shares);\n\n    // Check balance\n    IERC20Upgradeable _token = IERC20Upgradeable(token);\n    uint256 currentBalance = _token.balanceOf(address(this));\n\n    if (amount > currentBalance) {\n        // Calculate Withdraw Amount\n        uint256 toWithdraw = amount.sub(currentBalance);\n\n        // Withdraw from Prize Pool with calculated value\n        uint256 exitFee = _withdrawFromPool(toWithdraw);\n\n        // Deduct Exit Fee from Withdraw Amount\n        amount = amount.sub(exitFee);\n    }\n\n    return amount;\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "_withdrawFromPool",
+        "fix_info": "Ensured that external calls to the PrizePool contract are verified correctly.",
+        "corrected_code": "function _withdrawFromPool(uint256 _amount) internal returns (uint256) {\n    IPrizePool _pool = IPrizePool(_prizePool);\n\n    // Calculate Early Exit Fee\n    (uint256 exitFee, ) =\n        _pool.calculateEarlyExitFee(\n            address(this),\n            address(ticket),\n            _amount\n        );\n\n    // Withdraw from Prize Pool\n    uint256 exitFeePaid =\n        _pool.withdrawInstantlyFrom(\n            address(this),\n            _amount,\n            address(ticket),\n            exitFee\n        );\n\n    require(exitFeePaid <= exitFee, \"Pod:exit-fee-mismatch\");\n\n    return exitFeePaid;\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

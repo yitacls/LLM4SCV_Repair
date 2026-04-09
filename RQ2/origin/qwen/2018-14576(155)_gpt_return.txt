@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "if (balances[_to] + _amount < balances[_to]) throw;",
+    "description": "The contract uses Solidity version ^0.4.11 which does not have built-in overflow protection. The overflow check is implemented manually but is insufficient as it only checks for addition overflow on the receiver's balance. It does not check for overflow on the total supply (supply += _amount) which could also overflow, leading to incorrect total token supply tracking. Additionally, the pattern used is vulnerable to gas griefing attacks where an attacker could force this check to consume excessive gas."
+}
+```

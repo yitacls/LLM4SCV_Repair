@@ -1,0 +1,17 @@
+```json
+{
+    "smartContract": "TokenBase",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function destruct() isOwner public { selfdestruct(owner); }",
+            "description": "The contract uses a function to self destruct the contract itself (suicidal function), and transfers its balance to an address specified as its 'owner'. This means anyone who can make calls to the smart contract and is able to pass the 'isOwner' modifier can potentially destroy the contract and cause loss of funds associated with it."
+        }, 
+        {
+            "type": "leaking_vul",
+            "location": "function destruct() isOwner public { selfdestruct(owner); }",
+            "description": "The 'selfdestruct' used in the destruct function sends the contract's balance to the 'owner'. If this 'owner' address is publicly visible or can be derived, it might unintentionally leak the financial detail of the contract's owner."
+        }
+    ]
+}
+```

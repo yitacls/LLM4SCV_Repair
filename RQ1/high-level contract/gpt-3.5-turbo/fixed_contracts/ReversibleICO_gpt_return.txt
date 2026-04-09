@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "ReversibleICO",
+        "contract_version": "^0.5.0",
+        "functions": [
+            {
+                "function_name": "cancelPendingContributions",
+                "fix_info": "Added a check to handle the case where participant's pending ETH is 0 and return any sent ETH back to the participant.",
+                "corrected_code": "function cancelPendingContributions(address _participantAddress, uint256 _sentValue) internal\nisInitialized\nisNotFrozen\n{\n    Participant storage participantStats = participants[_participantAddress];\n    uint256 participantPendingEth = participantStats.pendingETH;\n\n    if(participantPendingEth == 0) {\n        if(_sentValue > 0) {\n            address(uint160(_participantAddress)).transfer(_sentValue);\n        }\n        return;\n    }\n\n    // Rest of the code remains the same\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

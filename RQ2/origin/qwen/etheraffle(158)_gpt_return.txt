@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "blockNumber = block.number;",
+    "description": "The contract uses block.number as a source of randomness for determining the raffle winner. This is insecure because miners can manipulate block.number within a small range (±256 blocks) and can choose when to publish blocks, allowing them to influence the outcome of the raffle. In Solidity ^0.4.16, this is particularly problematic as there are no built-in secure random number generation mechanisms. An attacker could potentially predict or manipulate the raffle results by controlling block mining timing."
+}
+```

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "Using tx.origin for authorization is a critical access control vulnerability. tx.origin returns the original EOA that initiated the transaction chain, which can be maliciously manipulated through a phishing attack. An attacker can create a contract that tricks the owner into calling a function, making tx.origin equal the owner's address while msg.sender is the attacker's contract. This would allow unauthorized minting. Additionally, assert(amount >= 0) is redundant since uint256 cannot be negative, and the function lacks visibility specifier (should be external or internal if not intended for public use)."
+        }
+    ]
+}
+```

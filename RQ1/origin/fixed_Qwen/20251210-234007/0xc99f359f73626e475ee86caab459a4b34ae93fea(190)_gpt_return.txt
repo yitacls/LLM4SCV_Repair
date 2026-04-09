@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "DungeonToken",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Added owner state variable for proper access control",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace hardcoded address check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "migrateDungeon",
+            "fix_info": "Replaced hardcoded timestamp and address checks with proper access control modifier and removed deprecated now keyword",
+            "corrected_code": "function migrateDungeon(uint _difficulty, uint _capacity, uint _floorNumber, uint _rewards, uint _seedGenes, uint _floorGenes, address _owner) external onlyOwner {\n    _createDungeon(_difficulty, _capacity, _floorNumber, _rewards, _seedGenes, _floorGenes, _owner);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

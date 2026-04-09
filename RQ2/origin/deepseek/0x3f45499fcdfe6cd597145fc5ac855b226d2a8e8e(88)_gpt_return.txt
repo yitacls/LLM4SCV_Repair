@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "deposits[currentPaymentIndex].depositor.send(deposits[currentPaymentIndex].payout);",
+    "description": "The `send()` function is used without checking its return value. In Solidity 0.5.8, `send()` returns a boolean indicating success (true) or failure (false). If the external call fails (e.g., due to out-of-gas, revert in fallback, or the recipient contract being malicious), the return value is ignored. This can cause the contract state (e.g., `currentPaymentIndex` increment and `paymentTime` update) to be updated even when the payment fails, permanently locking funds and disrupting payment tracking. The vulnerability is exacerbated as `send()` forwards only 2300 gas, which may be insufficient for recipient operations. Use `transfer()` (which reverts on failure) or check `send()`'s return value and handle failures explicitly."
+}
+```

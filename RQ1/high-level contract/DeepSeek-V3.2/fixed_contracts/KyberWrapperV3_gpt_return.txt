@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "KyberWrapperV3",
+        "contract_version": "^0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getSellRate",
+                "fix_info": "Fixed integer overflow by using SafeMath operations and explicit casting for decimal calculations",
+                "corrected_code": "function getSellRate(address _srcAddr, address _destAddr, uint _srcAmount, bytes memory) public override view returns (uint rate) {\n        (rate, ) = KyberNetworkProxyInterface(KYBER_INTERFACE)\n            .getExpectedRate(IERC20(_srcAddr), IERC20(_destAddr), _srcAmount);\n\n        // multiply with decimal difference in src token\n        uint256 srcDecimals = getDecimals(_srcAddr);\n        uint256 destDecimals = getDecimals(_destAddr);\n        \n        // Use safe multiplication and division to prevent overflow\n        uint256 srcDecimalFactor = 10 ** (18 - srcDecimals);\n        uint256 destDecimalFactor = 10 ** (18 - destDecimals);\n        \n        // Check for safe multiplication\n        require(rate <= type(uint256).max / srcDecimalFactor, \"Multiplication overflow\");\n        rate = rate * srcDecimalFactor;\n        \n        // Safe division\n        require(destDecimalFactor > 0, \"Division by zero\");\n        rate = rate / destDecimalFactor;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getBuyRate",
+                "fix_info": "Fixed integer overflow by using SafeMath operations and preventing division by zero",
+                "corrected_code": "function getBuyRate(address _srcAddr, address _destAddr, uint _destAmount, bytes memory _additionalData) public override view returns (uint rate) {\n        uint256 srcRate = getSellRate(_destAddr, _srcAddr, _destAmount, _additionalData);\n        uint256 srcAmount = wmul(srcRate, _destAmount);\n\n        rate = getSellRate(_srcAddr, _destAddr, srcAmount, _additionalData);\n\n        // increase rate by 3% too account for inaccuracy between sell/buy conversion\n        // Ensure we don't divide by zero and check for overflow\n        require(rate <= type(uint256).max - (rate / 30), \"Addition overflow\");\n        rate = rate + (rate / 30);\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "sendLeftOver",
+                "fix_info": "Fixed potential integer underflow by using SafeMath subtraction and explicit checks",
+                "corrected_code": "function sendLeftOver(address _srcAddr) internal {\n        uint256 ethBalance = address(this).balance;\n        if (ethBalance > 0) {\n            (bool success,) = msg.sender.call{value: ethBalance}(\"\");\n            require(success, \"ETH transfer failed\");\n        }\n\n        if (_srcAddr != KYBER_ETH_ADDRESS) {\n            IERC20 srcToken = IERC20(_srcAddr);\n            uint256 tokenBalance = srcToken.balanceOf(address(this));\n            if (tokenBalance > 0) {\n                srcToken.safeTransfer(msg.sender, tokenBalance);\n            }\n        }\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "buy",
+                "fix_info": "Fixed potential integer underflow by adding overflow checks when calculating source amount difference",
+                "corrected_code": "function buy(address _srcAddr, address _destAddr, uint _destAmount, bytes memory) external override payable returns(uint) {\n        IERC20 srcToken = IERC20(_srcAddr);\n        IERC20 destToken = IERC20(_destAddr);\n\n        uint srcAmount = 0;\n        if (_srcAddr != KYBER_ETH_ADDRESS) {\n            srcAmount = srcToken.balanceOf(address(this));\n        } else {\n            srcAmount = msg.value;\n        }\n\n        KyberNetworkProxyInterface kyberNetworkProxy = KyberNetworkProxyInterface(KYBER_INTERFACE);\n\n        if (_srcAddr != KYBER_ETH_ADDRESS) {\n            srcToken.safeApprove(address(kyberNetworkProxy), srcAmount);\n        }\n\n        uint destAmount = kyberNetworkProxy.trade{value: msg.value}(\n            srcToken,\n            srcAmount,\n            destToken,\n            msg.sender,\n            _destAmount,\n            0,\n            WALLET_ID\n        );\n\n        require(destAmount == _destAmount, \"Wrong dest amount\");\n\n        uint srcAmountAfter = 0;\n\n        if (_srcAddr != KYBER_ETH_ADDRESS) {\n            srcAmountAfter = srcToken.balanceOf(address(this));\n        } else {\n            srcAmountAfter = address(this).balance;\n        }\n\n        // Check for underflow before subtraction\n        require(srcAmount >= srcAmountAfter, \"Underflow in source amount calculation\");\n        uint256 spentAmount = srcAmount - srcAmountAfter;\n\n        // Send the leftover from the source token back\n        sendLeftOver(_srcAddr);\n\n        return spentAmount;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

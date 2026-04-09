@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StandardToken",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for addition and subtraction operations",
+            "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {\n    if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {\n      balances[_to] = balances[_to].add(_value);\n      balances[_from] = balances[_from].sub(_value);\n      allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);\n      Transfer(_from, _to, _value);\n      return true;\n    } else { return false; }\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

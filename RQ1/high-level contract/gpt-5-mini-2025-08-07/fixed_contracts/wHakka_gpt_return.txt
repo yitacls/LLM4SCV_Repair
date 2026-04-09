@@ -1,0 +1,34 @@
+[{
+    "contract_name": "wHakka",
+    "contract_version": "0.5.17",
+    "state_variables": [
+        {
+            "variable_name": "_reentrancyLock",
+            "fix_info": "Added a simple reentrancy guard flag to mitigate reentrancy on external token calls.",
+            "variable_code": "bool private _reentrancyLock = false;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Modifier that prevents reentrant calls by using the _reentrancyLock flag. Added to protect stake() and unstake() from reentrancy.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!_reentrancyLock, \"ReentrancyGuard: reentrant call\");\n    _reentrancyLock = true;\n    _;\n    _reentrancyLock = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "stake",
+            "fix_info": "Reordered external interaction to occur under the nonReentrant guard and before state changes; added nonReentrant modifier and used local index variable to avoid race conditions. Preserves original behavior while preventing reentrancy during token transfer.",
+            "corrected_code": "function stake(address to, uint256 amount, uint256 time) public nonReentrant returns (uint256 wAmount) {\n    uint256 index = vaultCount[to];\n\n    // compute wrapped amount\n    wAmount = getStakingRate(time).mul(amount).div(1e18);\n    require(wAmount > 0, \"invalid lockup\");\n\n    // external interaction first (protected by nonReentrant)\n    Hakka.safeTransferFrom(msg.sender, address(this), amount);\n\n    // effects: record vault and update accounting\n    vault storage v = vaults[to][index];\n    v.hakkaAmount = amount;\n    v.wAmount = wAmount;\n    v.unlockTime = block.timestamp.add(time);\n\n    stakedHakka[to] = stakedHakka[to].add(amount);\n    votingPower[to] = votingPower[to].add(wAmount);\n    vaultCount[to] = index.add(1);\n\n    // mint wHAKKA to recipient\n    _mint(to, wAmount);\n\n    emit Stake(to, msg.sender, amount, wAmount, time);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "unstake",
+            "fix_info": "Added nonReentrant modifier to protect against reentrancy on the final token transfer. Preserves checks-effects-interactions pattern and original functionality.",
+            "corrected_code": "function unstake(address to, uint256 index, uint256 wAmount) public nonReentrant returns (uint256 amount) {\n    vault storage v = vaults[msg.sender][index];\n\n    // ensure unlocked\n    require(block.timestamp >= v.unlockTime, \"locked\");\n    require(wAmount <= v.wAmount, \"exceed locked amount\");\n\n    // calculate underlying HAKKA amount\n    amount = wAmount.mul(v.hakkaAmount).div(v.wAmount);\n\n    // effects\n    v.hakkaAmount = v.hakkaAmount.sub(amount);\n    v.wAmount = v.wAmount.sub(wAmount);\n\n    stakedHakka[msg.sender] = stakedHakka[msg.sender].sub(amount);\n    votingPower[msg.sender] = votingPower[msg.sender].sub(wAmount);\n\n    _burn(msg.sender, wAmount);\n\n    // interaction: transfer underlying tokens\n    Hakka.safeTransfer(to, amount);\n\n    emit Unstake(msg.sender, to, amount, wAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

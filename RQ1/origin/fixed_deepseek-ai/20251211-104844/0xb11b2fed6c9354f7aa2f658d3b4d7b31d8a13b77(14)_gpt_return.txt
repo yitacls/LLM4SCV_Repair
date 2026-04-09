@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Proxy",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "proxy",
+                "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value and implementing proper error handling for failed calls",
+                "corrected_code": "function proxy(address target, bytes data) public payable returns (bool) {\n    // Use call with proper error handling\n    (bool success, ) = target.call.value(msg.value)(data);\n    \n    // Require the call to be successful, revert with message on failure\n    require(success, \"Proxy call failed\");\n    \n    return success;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

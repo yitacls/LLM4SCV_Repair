@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability (Integer Underflow/Overflow)",
+    "location": "uint previousBalances = balanceOf[_from] + balanceOf[_to];",
+    "description": "In Solidity 0.4.25, arithmetic operations are not protected against overflow/underflow by default. The line `uint previousBalances = balanceOf[_from] + balanceOf[_to];` can overflow if the sum of the two balances exceeds the maximum value of uint (2^256 - 1). Although this contract uses `require(balanceOf[_to] + _value >= balanceOf[_to])` to prevent overflow in the recipient's balance addition, the `previousBalances` calculation adds both balances together without checking for overflow. This could cause the assertion at the end to pass incorrectly if an overflow occurs, potentially allowing transfers that shouldn't be valid. The vulnerability should be fixed by using SafeMath library or upgrading to Solidity 0.8.0+ which has built-in overflow protection."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "if(this.balance < tempWithdraw) tempWithdraw = this.balance;",
+    "description": "The contract is vulnerable to an arithmetic underflow/overflow issue. In Solidity ^0.4.18, there are no built-in overflow/underflow protections. If this.balance is a very large number close to the maximum uint value, the comparison and assignment operation could lead to unexpected behavior. Additionally, the subsequent msg.sender.call(tempWithdraw) sends Ether based on this potentially unsafe arithmetic operation, which could result in loss of funds or incorrect withdrawal amounts."
+}
+```

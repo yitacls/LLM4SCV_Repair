@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "Line 54: function burn(uint256 sUSDAmount, uint256 snxAmount, address exchange, bytes calldata exchangeData) external override",
+        "description": "The contract uses the deprecated 'call' function with a boolean success check instead of the recommended low-level call pattern with proper error handling (using 'address.call{value:value}(data)'). In Solidity 0.7.6, the recommended approach is to use the pattern '(bool success, bytes memory returnData) = address(target).call{value: value}(data); require(success, \"error message\");' to properly handle failures and access revert reasons."
+    },
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "Line 122: function transferToken(address token) external onlyOwner",
+        "description": "The function uses the deprecated SafeERC20.safeTransfer function signature. In newer versions of OpenZeppelin contracts, the safeTransfer function should be called as 'IERC20(token).safeTransfer(msg.sender, IERC20(token).balanceOf(address(this)))' with proper error handling. While this works in 0.7.6, it's using deprecated patterns that are not future-proof."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Line 143: (bool success, ) = exchange.call(data);",
+        "description": "The contract performs an external call to an arbitrary exchange address with user-provided calldata before updating internal state. This creates a reentrancy vulnerability where the external contract could call back into the executeOperation function or other functions. The call is made after transferring SNX tokens to the contract but before verifying the swap results and calculating the amount owed to Aave, potentially allowing manipulation of token balances during the callback execution."
+    }
+]
+```

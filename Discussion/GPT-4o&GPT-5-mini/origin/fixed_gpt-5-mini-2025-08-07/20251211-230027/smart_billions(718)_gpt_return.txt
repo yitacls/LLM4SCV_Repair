@@ -1,0 +1,34 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "seed",
+            "fix_info": "Added a contract-held seed (settable by owner) to mix into blockhash-derived values so miners cannot fully control the resulting values. This converts miner-influence into dependence on an off-chain committed secret.",
+            "variable_code": "bytes32 public seed; // set by owner before using randomness",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "owner",
+            "fix_info": "Add owner to restrict who can set the seed.",
+            "variable_code": "address public owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Restrict sensitive operations (like setting the seed) to the contract owner.",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Mitigate BAD_RANDOMNESS by combining each block.blockhash() with a contract-held seed via keccak256. This preserves the original output shape (ten 24-bit parts packed together and delta-based top bits) while preventing miners from fully controlling the bits unless they also know the seed. The function requires that a seed has been set.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n    // Require an externally provided/committed seed to avoid relying solely on blockhash entropy\n    require(seed != bytes32(0));\n\n    uint result = 0;\n    // build ten 24-bit parts using keccak256(blockhash, seed, lastb, delta) per part\n    for (uint8 i = 0; i < 10; i++) {\n        // mix the on-chain blockhash with the off-chain seed to mitigate miner manipulation\n        bytes32 mixed = keccak256(block.blockhash(uint(_lastb) + i), seed, _lastb, _delta);\n        uint part = uint(mixed) & 0xFFFFFF; // 24 bits\n        result |= (part << (24 * i));\n    }\n\n    // preserve original delta-based top bits behavior\n    result |= ((uint(_delta) / hashesSize) << 240);\n    return result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

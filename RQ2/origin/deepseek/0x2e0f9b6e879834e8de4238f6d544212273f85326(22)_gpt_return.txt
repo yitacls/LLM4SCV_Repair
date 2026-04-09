@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balances[_to] += _value;",
+    "description": "In Solidity 0.4.16, arithmetic operations are not protected against overflow/underflow by default. The statement 'balances[_to] += _value' could overflow if the resulting balance exceeds uint256's maximum value (2^256 - 1). Similarly, 'balances[msg.sender] -= _value' could underflow if _value > balances[msg.sender], though the require statement prevents this specific underflow. This vulnerability can be exploited to manipulate token balances, potentially creating tokens or locking funds."
+}
+```

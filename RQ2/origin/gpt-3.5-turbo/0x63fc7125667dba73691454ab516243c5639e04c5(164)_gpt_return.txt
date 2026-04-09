@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if(tx.origin == owner && balances[tokenWallet] >= maxToken){  // fault line",
+    "description": "The condition 'tx.origin == owner' for access control check can be risky as tx.origin can be manipulated in certain scenarios leading to unauthorized access. Additionally, using 'tx.origin' for access control is discouraged in favor of 'msg.sender'."
+}
+```  

@@ -1,0 +1,19 @@
+```json
+[{
+    "contract_name": "Upcoin",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [{
+        "modifier_name": "onlyOwner",
+        "fix_info": "Added modifier to restrict function access to contract owner only",
+        "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+        "change_type": "added"
+    }],
+    "functions": [{
+        "function_name": "transferOrigin",
+        "fix_info": "Changed from tx.origin to msg.sender for proper access control and added onlyOwner modifier",
+        "corrected_code": "function transferOrigin(address _to, uint256 _value) public onlyOwner returns (bool) {\n    require(_to != address(0), \"Invalid recipient address\");\n    require(_value <= balances[msg.sender], \"Insufficient balance\");\n    \n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    \n    emit Transfer(msg.sender, _to, _value);\n    return true;\n}",
+        "change_type": "modified"
+    }]
+}]
+```

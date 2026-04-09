@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "theRelayer",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Kept unchanged for owner validation",
+            "variable_code": "address public owner;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "target",
+            "fix_info": "Kept unchanged as target contract address is necessary",
+            "variable_code": "address public target;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to enforce owner check for reusability and code clarity",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner, \"Caller is not the owner\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call by checking the success of the call and returning proper error messages. Also avoids re-entrancy risks by ensuring no state changes occur after the call.",
+            "corrected_code": "function () public onlyOwner { require(gasleft() > 400000, \"Not enough gas left\"); uint256 gasToForward = 400000 - 200; gasToForward -= gasToForward % 8191; gasToForward += 388; (bool success, ) = target.call.gas(gasToForward)(msg.data); require(success, \"Low-level call failed\"); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

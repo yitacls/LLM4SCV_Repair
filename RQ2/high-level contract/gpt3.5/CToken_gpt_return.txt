@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "function _setComptroller(ComptrollerInterface newComptroller) override public returns (uint) { ... }",
+    "description": "The contract is vulnerable to reentrancy in the _setComptroller function where the statement checks if the newComptroller is a comptroller by calling newComptroller.isComptroller(), but it does not prevent reentrancy in case the newComptroller itself is a malicious contract that could potentially trigger reentrant calls."
+}
+```

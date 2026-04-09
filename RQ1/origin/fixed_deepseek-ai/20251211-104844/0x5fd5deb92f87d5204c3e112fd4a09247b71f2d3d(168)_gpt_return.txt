@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "T",
+        "contract_version": "^0.4.24",
+        "state_variables": [
+            {
+                "variable_name": "ownerTemp",
+                "fix_info": "Changed visibility to private to prevent unauthorized access",
+                "variable_code": "address private ownerTemp;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwnerTemp",
+                "fix_info": "Added modifier to check msg.sender instead of tx.origin for security",
+                "modifier_code": "modifier onlyOwnerTemp() {\n        require(msg.sender == ownerTemp, \"Caller is not the temporary owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "acceptOwnership",
+                "fix_info": "Replaced tx.origin check with modifier using msg.sender for proper access control",
+                "corrected_code": "function acceptOwnership() public onlyOwnerTemp {\n        owner = ownerTemp;\n        ownerTemp = address(0);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

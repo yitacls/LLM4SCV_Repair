@@ -1,0 +1,21 @@
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "wallet",
+            "fix_info": "Ensure an address is available to receive forwarded ETH. In Solidity 0.4.23 address supports transfer.",
+            "variable_code": "address public wallet;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Replaced unchecked low-level send with transfer which reverts on failure, preventing silent loss of funds while preserving original forwarding behavior.",
+            "corrected_code": "function () external payable {\n    // Forward received ETH to the designated wallet. transfer() will revert on failure,\n    // avoiding the unchecked call vulnerability present with send().\n    wallet.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

@@ -1,0 +1,47 @@
+```json
+[{
+    "contract_name": "RainbowUnicoin",
+    "contract_version": "^0.4.19",
+    "state_variables": [
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Modified to use SafeMath library to prevent overflow on addition",
+            "variable_code": "using SafeMath for uint256;\n    uint256 public totalSupply;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalContribution",
+            "fix_info": "Modified to use SafeMath library to prevent overflow on addition",
+            "variable_code": "uint256 public totalContribution;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalBonusTokensIssued",
+            "fix_info": "Modified to use SafeMath library to prevent overflow on addition",
+            "variable_code": "uint256 public totalBonusTokensIssued;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "nextBonusPayout",
+            "fix_info": "Modified to use SafeMath library to prevent overflow/underflow on division",
+            "variable_code": "uint256 public nextBonusPayout;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback function (unnamed payable function)",
+            "fix_info": "Fixed arithmetic vulnerabilities using SafeMath operations to prevent overflows/underflows, added require statements for input validation, and converted old-style throw to revert",
+            "corrected_code": "function() external payable {\n        require(purchasingAllowed, \"Purchasing is not allowed\");\n        require(msg.value > 0, \"Zero value not allowed\");\n        \n        owner.transfer(msg.value);\n        \n        totalContribution = totalContribution.add(msg.value);\n        \n        uint256 tokensIssued = msg.value.mul(1000).add(nextBonusPayout);\n        totalBonusTokensIssued = totalBonusTokensIssued.add(nextBonusPayout);\n        \n        nextBonusPayout = tokensIssued.div(2);\n        \n        totalSupply = totalSupply.add(tokensIssued);\n        balances[msg.sender] = balances[msg.sender].add(tokensIssued);\n        \n        Transfer(address(this), msg.sender, tokensIssued);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "Add SafeMath library",
+            "fix_info": "Added SafeMath library to prevent arithmetic vulnerabilities",
+            "corrected_code": "library SafeMath {\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        if (a == 0) {\n            return 0;\n        }\n        uint256 c = a * b;\n        require(c / a == b, \"SafeMath: multiplication overflow\");\n        return c;\n    }\n    \n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b > 0, \"SafeMath: division by zero\");\n        uint256 c = a / b;\n        return c;\n    }\n    \n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a, \"SafeMath: addition overflow\");\n        return c;\n    }\n    \n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a, \"SafeMath: subtraction overflow\");\n        return a - b;\n    }\n}",
+            "change_type": "added"
+        }
+    ]
+}]
+```

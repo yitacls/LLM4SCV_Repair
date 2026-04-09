@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "transferTo(transferPointer); // fault line",
+    "description": "The 'makeTransfer' function contains a call to an external function 'transferTo' within a loop without adhering to the checks-effects-interactions pattern. Since the state variable 'transferPointer' is incremented only after this external call, a malicious contract receiving the transfer could reenter 'makeTransfer' through a fallback function before 'transferPointer' is updated. This could lead to repeated unauthorized transfers or state corruption, especially if 'transferTo' involves ether or token transfers. The use of Solidity ^0.4.16, which lacks built-in reentrancy guards, exacerbates this vulnerability."
+}
+```

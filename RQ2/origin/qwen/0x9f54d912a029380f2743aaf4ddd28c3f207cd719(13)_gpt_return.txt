@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses tx.origin for authentication, which is vulnerable to phishing attacks. In Solidity ^0.4.21, tx.origin refers to the original external account that started the transaction chain, not the immediate caller. This allows malicious contracts to trick the owner into calling the kill function by relaying the transaction, bypassing the intended access control. The owner check can be bypassed if the owner interacts with a malicious contract that forwards the call to this contract's kill function."
+}
+```

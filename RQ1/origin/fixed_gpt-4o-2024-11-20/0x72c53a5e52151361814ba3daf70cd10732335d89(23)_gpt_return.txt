@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EthereuMMM",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed reentrancy vulnerability by using the Checks-Effects-Interactions pattern. Replaced `call` with the safer `transfer`. Added a condition to ensure `allInvestments` cannot go below zero, preventing arithmetic vulnerabilities.",
+            "corrected_code": "function withdraw() public {\n    require(investorWallet[msg.sender] > 0, \"No funds to withdraw\");\n\n    uint tempWithdraw = investorWallet[msg.sender];\n\n    // Effects: Update state variables before making an external call\n    investorWallet[msg.sender] = 0;\n    if (investments[msg.sender].amount <= allInvestments) {\n        allInvestments -= investments[msg.sender].amount;\n    }\n    investments[msg.sender].amount = 0;\n\n    // Interaction: Send value using `transfer` (to avoid reentrancy)\n    if (address(this).balance < tempWithdraw) {\n        tempWithdraw = address(this).balance;\n    }\n    msg.sender.transfer(tempWithdraw);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "TokenSaleChallenge",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "PRICE_PER_TOKEN",
+            "fix_info": "Changed from uint256 to uint256 constant to prevent overflow/underflow issues",
+            "variable_code": "uint256 public constant PRICE_PER_TOKEN = 1 ether;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "valueCheck",
+            "fix_info": "Added modifier to safely validate payment amount using SafeMath operations",
+            "modifier_code": "modifier valueCheck(uint256 numTokens) {\n        require(msg.value == numTokens * PRICE_PER_TOKEN, \"Incorrect payment amount\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "buy",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by using SafeMath operations and adding input validation",
+            "corrected_code": "function buy(uint256 numTokens) public payable {\n        require(numTokens > 0, \"Must purchase at least one token\");\n        \n        uint256 totalCost = numTokens * PRICE_PER_TOKEN;\n        require(msg.value == totalCost, \"Incorrect payment amount\");\n        \n        balanceOf[msg.sender] += numTokens;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

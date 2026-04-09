@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;",
+            "description": "Using 'block.coinbase' (miner's address) as a source of randomness is insecure because miners can manipulate it to influence the outcome. In PoW chains, miners can choose which transactions to include and in what order, allowing them to potentially control this value."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "address seed2 = contestants[uint(msg.sender) % totalTickets].addr;",
+            "description": "Using 'msg.sender' (transaction sender) as a source of randomness is predictable and can be manipulated by attackers who can choose which account calls the function, allowing them to influence the outcome."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint seed3 = block.difficulty;",
+            "description": "Using 'block.difficulty' as a source of randomness is insecure. In PoW chains, miners can influence difficulty values through their mining activities. In PoS chains like post-Merge Ethereum, this value is predictable and can be calculated in advance."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "blockNumber = block.number;",
+            "description": "Storing 'block.number' for future use in randomness generation is vulnerable to manipulation. Future block numbers are predictable, and in PoS chains, validators may be able to influence when blocks are produced. This does not provide meaningful entropy for secure randomness."
+        }
+    ]
+}
+```

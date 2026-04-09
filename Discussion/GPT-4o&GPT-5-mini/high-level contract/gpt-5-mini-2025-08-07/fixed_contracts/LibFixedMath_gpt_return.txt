@@ -1,0 +1,20 @@
+[{
+    "contract_name": "LibFixedMath",
+    "contract_version": "^0.5.9",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_mul",
+            "fix_info": "Added explicit check for the INT256 min * -1 overflow case and preserved general overflow detection. This avoids a division-by-zero/overflow when checking c / a for the special case MIN_INT * -1, and reverts consistently on multiplication overflow.",
+            "corrected_code": "function _mul(int256 a, int256 b) private pure returns (int256 c) {\n    if (a == 0) {\n        return 0;\n    }\n\n    // Detect the specific overflow case: INT256_MIN * -1 cannot be represented\n    // Compute INT256_MIN in a safe way by shifting a uint and casting to signed.\n    int256 INT256_MIN = int256(uint256(1) << 255);\n    if ((a == -1 && b == INT256_MIN) || (b == -1 && a == INT256_MIN)) {\n        LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(\n            LibFixedMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,\n            a,\n            b\n        ));\n    }\n\n    c = a * b;\n    // General overflow check: if a != 0 and c / a != b, overflow occurred.\n    if (c / a != b) {\n        LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(\n            LibFixedMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,\n            a,\n            b\n        ));\n    }\n}\n",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_add",
+            "fix_info": "Replaced incorrect sign-based overflow checks with standard signed-addition overflow detection. Uses separate error codes for addition and subtraction overflow to preserve original semantics.",
+            "corrected_code": "function _add(int256 a, int256 b) private pure returns (int256 c) {\n    c = a + b;\n    // For signed integers, overflow occurs if signs of a and b are the same\n    // but the sign of the result differs. Equivalently:\n    // - If b >= 0 and c < a -> addition overflow.\n    // - If b < 0 and c > a  -> subtraction (underflow) overflow.\n    if (b >= 0) {\n        if (c < a) {\n            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(\n                LibFixedMathRichErrors.BinOpErrorCodes.ADDITION_OVERFLOW,\n                a,\n                b\n            ));\n        }\n    } else {\n        if (c > a) {\n            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(\n                LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW,\n                a,\n                b\n            ));\n        }\n    }\n}\n",
+            "change_type": "modified"
+        }
+    ]
+}]

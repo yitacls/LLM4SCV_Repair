@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "balances[_to] += _value; and balances[_from] -= _value;",
+    "description": "In Solidity ^0.4.8, integer arithmetic operations do not automatically check for overflow or underflow. The code performs addition (balances[_to] += _value) and subtraction (balances[_from] -= _value) without using SafeMath or similar protection mechanisms. This could allow an attacker to: 1) Cause an overflow in the recipient's balance (balances[_to]), making it wrap around to a very small number, or 2) Cause an underflow in the sender's balance (balances[_from]) if _value is greater than the current balance (though the require statement checks this, other scenarios might bypass it). Additionally, allowed[_from][msg.sender] -= _value is also vulnerable to underflow. These vulnerabilities can lead to loss of funds or unauthorized token transfers."
+}
+```

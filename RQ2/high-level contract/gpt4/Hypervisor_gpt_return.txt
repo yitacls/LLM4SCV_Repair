@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function deposit(...) {...} (Line: 81-142)",
+        "description": "The 'deposit' function allows users to deposit tokens into the contract. However, there is no proper access control or validation in place. This means that anyone can deposit tokens, potentially wasting computational resources if misused."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function withdraw(...) {...} (Line: 175-216)",
+        "description": "The 'withdraw' function includes potential reentrancy attacks, because 'token0' and 'token1' are transferred before the liquidity shares are burned. An attacker can potentially reenter the contract before the state is properly updated."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "function uniswapV3MintCallback(...) {...} (Line: 415)",
+        "description": "A condition check in 'uniswapV3MintCallback' where 'payer' is compared with 'address(this)' has no effect because no different actions are carried out in either case of the comparison, therefore it is unnecessary."
+    }
+]
+```

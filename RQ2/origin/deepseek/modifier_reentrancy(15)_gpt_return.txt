@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Reentrancy",
+        "location": "function airDrop() hasNoBalance supportsToken public",
+        "description": "The function uses the custom modifier 'supportsToken', which contains an external call (token.transferFrom) that occurs before the state update (tokenBalance[msg.sender] += 20). If the called token contract is malicious and makes a reentrant call back to airDrop(), the modifier 'hasNoBalance' will still evaluate as true (since tokenBalance hasn't been updated yet), allowing the attacker to repeatedly claim the airdrop and drain contract funds. This is a classic reentrancy vulnerability enabled by unsafe state change ordering in modifier execution."
+    }
+}
+```

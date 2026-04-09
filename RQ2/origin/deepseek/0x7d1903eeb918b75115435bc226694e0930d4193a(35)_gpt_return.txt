@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "access_control",
+        "location": "Line with `require(tx.origin == owner);` in the `toggleLockIn()` function",
+        "description": "This contract uses `tx.origin` for authorization, which is vulnerable to phishing attacks. `tx.origin` returns the original sender of the entire transaction chain, not the immediate caller. A malicious contract could trick the owner into calling a function that, in turn, calls `toggleLockIn()`. Since `tx.origin` would still be the owner, the authorization check would pass, allowing an unauthorized state change. The recommended fix is to use `msg.sender` for authentication instead."
+    }
+}
+```

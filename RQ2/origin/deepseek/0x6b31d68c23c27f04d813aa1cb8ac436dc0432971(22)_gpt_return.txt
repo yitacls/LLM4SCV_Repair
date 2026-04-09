@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authentication creates a vulnerability to phishing attacks. An attacker can trick the owner into calling a malicious contract that subsequently calls this function, causing tx.origin to remain the owner's address while msg.sender is the attacker's contract. This allows unauthorized execution. Additionally, the setup() function lacks proper ownership initialization and permanent ownership transfer, allowing any caller to become owner if called before this function."
+}
+```

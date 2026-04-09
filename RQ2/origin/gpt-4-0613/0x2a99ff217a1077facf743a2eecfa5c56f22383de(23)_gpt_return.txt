@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[msg.sender] += amount;",
+    "description": "This contract has an issue allowing for an integer overflow or underflow. Arithmetic operations with user-supplied values without checking for overflow or underflow can lead to unpredictable behavior and unexpected distribution of funds."
+}
+```

@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "RandomNumberGenerator",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "salt",
+            "fix_info": "Removed predictable block.timestamp usage for randomness generation",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "generateRandomNumber",
+            "fix_info": "Removed vulnerable randomness generation using block.timestamp and replaced with placeholder for secure external randomness source",
+            "corrected_code": "function generateRandomNumber() public returns (uint256) {\n    // NOTE: True randomness cannot be achieved on-chain\n    // Consider using a commitment-reveal scheme, external oracle, or off-chain randomness\n    // Example placeholder - integrate with a secure randomness provider like Chainlink VRF\n    revert('Randomness must be provided externally or through secure mechanism');\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

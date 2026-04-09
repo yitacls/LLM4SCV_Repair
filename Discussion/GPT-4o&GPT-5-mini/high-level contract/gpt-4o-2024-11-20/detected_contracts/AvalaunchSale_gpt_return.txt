@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "require(success); in function safeTransferAVAX",
+        "description": "The safeTransferAVAX function uses low-level call which can fail if the recipient address is a revertable contract or does not accept Ether. This can cause a Denial of Service (DoS) to critical functionality, preventing further actions dependent on this transfer."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "round.startTime = round.startTime.add(timeToShift); in function postponeSale",
+        "description": "While iterating through the rounds to postpone the sale timing, external calls are not involved, but a similar design flaw can lead to out-of-gas exceptions during loops in transactions with excessive data, causing Denial of Service (DoS) on the entire function."
+    },
+    {
+        "type": "SWC-113-DoS with Failed Call",
+        "location": "sale.token.safeTransfer(msg.sender, leftover); and sale.token.safeTransfer(address(1), leftover); in function withdrawEarningsAndLeftover",
+        "description": "Calling safeTransfer on tokens relies on the ERC20 implementation of the token contract. If the transfer fails due to insufficient token balance, invalid transfers, or reverts caused by the token contract, this could lead to Denial of Service (DoS) where funds and/or tokens cannot be fully withdrawn."
+    }
+]
+```

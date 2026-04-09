@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Modifier refundsAttachedEth()",
+    "description": "The refundsAttachedEth modifier is vulnerable to reentrancy. The transfer of remaining ETH to msg.sender should be the last statement in a function to prevent reentrancy exploits. Malicious contract could call the fallback function repeatedly before the transfer is executed, allowing an attacker to reenter the function and potentially manipulate the contract's state or perform unauthorized actions."
+}
+```

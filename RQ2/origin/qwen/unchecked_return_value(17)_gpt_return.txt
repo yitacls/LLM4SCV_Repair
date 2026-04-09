@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "callee.call();",
+    "description": "The low-level call function is used without checking its return value. In Solidity 0.4.25, call() returns a boolean indicating success or failure, but this return value is ignored, which can lead to unexpected behavior if the call fails. The function should check the return value to handle potential failures appropriately."
+}
+```

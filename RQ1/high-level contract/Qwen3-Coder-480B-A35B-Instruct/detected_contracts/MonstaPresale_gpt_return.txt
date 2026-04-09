@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-105-Unprotected Ether Withdrawal",
+    "location": "function reclaimBNB() external onlyOwner {\n    owner.transfer(address(this).balance);\n}",
+    "description": "The reclaimBNB function is protected by the onlyOwner modifier, which restricts its access to the contract owner. However, the use of owner.transfer() is problematic because the owner variable is not explicitly declared in the provided code snippet. If the owner is not properly initialized or is set to an incorrect address, it could lead to unauthorized withdrawal of funds. Furthermore, using transfer() is generally discouraged in newer Solidity versions due to its hardcoded gas stipend, which can lead to issues with recipient contracts that require more gas to process the received Ether. While the onlyOwner modifier provides some protection, the lack of explicit owner declaration and the use of transfer() make this a potential vulnerability."
+}
+```

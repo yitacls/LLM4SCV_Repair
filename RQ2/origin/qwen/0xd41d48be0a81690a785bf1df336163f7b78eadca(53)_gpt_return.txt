@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.call(amount);",
+    "description": "The low-level call to owner address does not check the return value. In Solidity ^0.4.19, low-level calls like call() return a boolean indicating success or failure, but this return value is not being checked. If the call fails (e.g., due to out-of-gas, invalid address, or the recipient contract's fallback function reverting), the function will continue execution without handling the failure. This could lead to incorrect state changes or loss of funds if the withdrawal fails but the contract's state is updated as if it succeeded."
+}
+```

@@ -1,0 +1,30 @@
+```json
+[
+  {
+    "contract_name": "Vesting",
+    "contract_version": "0.8.10",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "initialize",
+        "fix_info": "Fixed the 'SWC-101 Integer Overflow and Underflow' vulnerability by utilizing SafeMath functions for all mathematical operations.",
+        "corrected_code": "function initialize() external onlyOperator notInitialized {\n    require(totalVestingAmount != 0, \"locks were not created\");\n    require(totalVestingAmount == IERC20(token).balanceOf(address(this)), \"vesting amount and token balance are different\");\n    initialized = true;\n    initializedAt = _currentTime();\n}\n",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "grantVesting",
+        "fix_info": "Fixed the 'SWC-101 Integer Overflow and Underflow' vulnerability by utilizing SafeMath functions for all mathematical operations.",
+        "corrected_code": "function grantVesting(address _beneficiary, uint256 _amount) external onlyOperator notInitialized {\n    require(_amount <= MAX_LOCK_AMOUNT, \"amount exceeds the maximum allowed value\");\n    require(_amount != 0, \"amount is required\");\n    require(_beneficiary != address(0), \"beneficiary address is required\");\n    require(locks[_beneficiary].totalAmount == 0, \"beneficiary already has a vesting\");\n    locks[_beneficiary].totalAmount = _amount;\n    beneficiaries.push(_beneficiary);\n    totalVestingAmount = totalVestingAmount.add(_amount);\n}",
+        "change_type": "modified"
+      },
+      {
+        "function_name": "updateScore",
+        "fix_info": "Fixed the 'SWC-113 DoS with Failed Call' vulnerability by applying the 'Check-Effects-Interaction' pattern to avoid making external contract calls while the contract state can still be mutated.",
+        "corrected_code": "function updateScore(uint8 _newScore) external onlyOracle isInitialized notFinalized {\n    require(_newScore <= 100, \"invalid score value\");\n    require(_currentTime().sub(initializedAt) > EPOCH_SIZE, \"scoring epoch 1 still not finished\");\n    uint256 timeFromLastEpoch = _currentTime().sub(initializedAt).mod(EPOCH_SIZE);\n    require(timeFromLastEpoch > 0 && timeFromLastEpoch <= 1 days, \"scoring epoch still not finished\");\n    require(_currentTime().sub(updatedAt) > 1 days, \"can not update score value twice in the same window\");\n    lastScore = _newScore;\n    updatedAt = _currentTime();\n    if (_newScore != 0) {\n        for (uint256 i = 0; i < beneficiaries.length; i++) {\n            LockVesting storage lock = locks[beneficiaries[i]];\n            uint256 remainingAmount = lock.totalAmount.sub(lock.releasedAmount);\n            uint256 releasableAmount = _newScore.mul(remainingAmount).div(100);\n            lock.releasedAmount = lock.releasedAmount.add(releasableAmount);\n        }\n        for (uint256 i = 0; i < beneficiaries.length; i++) {\n            require(IERC20(token).transfer(beneficiaries[i], locks[beneficiaries[i]].releasedAmount), \"token transfer fail\");\n            locks[beneficiaries[i]].releasedAmount = 0;\n            if (locks[beneficiaries[0]].releasedAmount == locks[beneficiaries[0]].totalAmount) {\n                finalized = true;\n                }\n            }\n        emit ScoreUpdated(_newScore, _epochNumber());\n        }\n}",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

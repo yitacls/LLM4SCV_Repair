@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[_to] += _value;",
+    "description": "This contract lacks overflow protection for Solidity versions prior to 0.8.0. In Solidity ^0.4.13, integer operations do not automatically revert on overflow/underflow. The addition 'balanceOf[_to] += _value' could overflow if the sum exceeds the maximum value of uint256 (2^256 - 1), causing the balance to wrap around to a small number instead of reverting. This could allow attackers to artificially inflate token balances. The vulnerability also exists in the subtraction operation 'balanceOf[msg.sender] -= _value', which could underflow. Use SafeMath library or upgrade to Solidity 0.8.0+ for automatic overflow checks."
+}
+```

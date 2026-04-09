@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Integer Overflow",
+    "location": "count += input;",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations default to unchecked, meaning that if 'count + input' exceeds the maximum value of uint256 (2^256 - 1), the value will wrap around to 0 (or a small number) instead of reverting. This function does not use safe math libraries (like SafeMath) or the built-in checked arithmetic of Solidity >=0.8.0, allowing an attacker to manipulate the 'count' state variable by providing a large 'input' value that causes an overflow, potentially leading to incorrect state updates and financial losses."
+}
+```

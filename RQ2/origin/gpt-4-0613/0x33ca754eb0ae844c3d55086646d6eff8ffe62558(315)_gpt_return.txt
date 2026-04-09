@@ -1,0 +1,9 @@
+```json
+{
+    "type": "access_control",
+    "contract": "TokenSale",
+    "version": "^0.4.25",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract defines access control based on the original sender (tx.origin) instead of the immediate sender (msg.sender). This can potentially allow an attack where a malicious contract can trick a user into calling it and forwarding the call onto this contract. Since tx.origin will be the user and not the malicious contract, it will pass the access check and potentially perform unauthorized actions."
+}
+```

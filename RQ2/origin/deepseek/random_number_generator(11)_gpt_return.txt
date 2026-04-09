@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "uint256 private salt = block.timestamp;",
+    "description": "The contract uses block.timestamp as a source of randomness, which is predictable and can be manipulated by miners. In Solidity 0.4.25, block.timestamp can be influenced by miners within a small range (typically ±15 seconds), making it unsuitable for generating secure random numbers. Attackers can anticipate or manipulate this value to gain an unfair advantage in games, lotteries, or any application relying on this randomness."
+}
+```

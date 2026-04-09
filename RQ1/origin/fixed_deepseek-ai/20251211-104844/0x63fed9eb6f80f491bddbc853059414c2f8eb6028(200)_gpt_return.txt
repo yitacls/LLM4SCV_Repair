@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "EtherWorldCup",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "administrator",
+            "fix_info": "Changed from address type to address payable to safely send Ether",
+            "variable_code": "address payable public administrator;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "register",
+            "fix_info": "Removed tx.origin vulnerability, replaced with msg.sender; Fixed Ether transfer using transfer() instead of send(); Added proper input validation",
+            "corrected_code": "function register() public payable {\n    address _customerAddress = msg.sender;\n    \n    require(!playerRegistered[_customerAddress], \"Player already registered\");\n    require(_isCorrectBuyin(msg.value), \"Incorrect buy-in amount\");\n    \n    registeredPlayers = SafeMath.add(registeredPlayers, 1);\n    playerRegistered[_customerAddress] = true;\n    playerGamesScored[_customerAddress] = 0;\n    playerList.push(_customerAddress);\n    \n    uint256 fivePercent = 0.01009 ether;\n    uint256 tenPercent = 0.02018 ether;\n    uint256 prizeEth = msg.value - tenPercent;\n    \n    prizePool = prizePool + prizeEth;\n    givethPool = givethPool + fivePercent;\n    \n    administrator.transfer(fivePercent);\n    \n    emit Registration(_customerAddress);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

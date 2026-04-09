@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "bytes memory _callData = callData;",
+    "description": "In Solidity 0.4.25, this line creates a copy of the callData bytes array in memory. For very large callData inputs, this memory allocation can consume excessive gas and potentially cause a DoS vulnerability by exceeding the block gas limit. The contract may become unusable when processing large data inputs due to out-of-gas exceptions."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[
+    {
+        "contract_name": "AvalaunchSale",
+        "contract_version": "0.6.12",
+        "functions": [
+            {
+                "function_name": "postponeSale",
+                "fix_info": "Added a check to ensure that the timeToShift is greater than 0 to avoid unexpected behaviors.",
+                "corrected_code": "require(timeToShift > 0, 'Invalid timeToShift');\n",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

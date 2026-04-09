@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "lastDepositor.send(msg.value);",
+    "description": "The `.send()` method is used without checking its return value. In Solidity 0.4.11, `.send()` returns `false` if the transfer fails (e.g., if the recipient runs out of gas or is a contract with a fallback function that reverts). When this happens, the contract continues execution normally, updating storage variables (`lastDepositor`, `lastDepositorAmount`, `nextAmount`), but the intended refund to the previous depositor is not actually sent. This allows malicious actors or accidental failures to break the scheme's logic without reverting the transaction, leaving the previous depositor unpaid while the new depositor takes their place."
+}
+```

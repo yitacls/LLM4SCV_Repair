@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic",
+        "location": "uint256 fromBalance = balances[_from];\nbool sufficientFunds = fromBalance <= _value;\nif (sufficientFunds && ...) {\n    balances[_from] -= _value;\n    ...\n}",
+        "description": "The contract contains an arithmetic logic error in the balance check. The condition `sufficientFunds = fromBalance <= _value` incorrectly checks if the sender's balance is less than or equal to the transfer amount, when it should check if the balance is greater than or equal to the amount (fromBalance >= _value). This would cause legitimate transfers to fail when the sender has exactly the required amount (equals case), and would incorrectly approve transfers when the sender has insufficient balance (less than case). Additionally, the subtraction `balances[_from] -= _value` could underflow if called with insufficient funds, though this is prevented by the preceding conditional - however the conditional logic is flawed."
+    }
+}
+```

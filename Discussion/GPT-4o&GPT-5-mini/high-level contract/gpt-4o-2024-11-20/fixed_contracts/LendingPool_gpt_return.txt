@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "LendingPool",
+        "contract_version": "^0.6.8",
+        "state_variables": [
+            {
+                "variable_name": "_flashLiquidationLocked",
+                "fix_info": "Introduced a reentrancy guard as a state variable to mitigate reentrancy attacks.",
+                "variable_code": "bool private _flashLiquidationLocked;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "deposit",
+                "fix_info": "Added ReentrancyGuard modifier to prevent reentrancy attacks.",
+                "corrected_code": "function deposit( address asset, uint256 amount, address onBehalfOf, uint16 referralCode ) external override nonReentrant { _whenNotPaused(); ReserveLogic.ReserveData storage reserve = _reserves[asset]; ValidationLogic.validateDeposit(reserve, amount); address aToken = reserve.aTokenAddress; reserve.updateState(); reserve.updateInterestRates(asset, aToken, amount, 0); bool isFirstDeposit = IAToken(aToken).balanceOf(onBehalfOf) == 0; if (isFirstDeposit) { _usersConfig[onBehalfOf].setUsingAsCollateral(reserve.id, true); } IAToken(aToken).mint(onBehalfOf, amount, reserve.liquidityIndex); IERC20(asset).safeTransferFrom(msg.sender, aToken, amount); emit Deposit(asset, msg.sender, onBehalfOf, amount, referralCode); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "repayWithCollateral",
+                "fix_info": "Added a reentrancy guard using the '_flashLiquidationLocked' state variable to ensure this function cannot be executed recursively. Protected state updates with proper checks.",
+                "corrected_code": "function repayWithCollateral(address collateral, address principal, address user, uint256 principalAmount, address receiver, bytes calldata params) external override nonReentrant { _whenNotPaused(); require(!_flashLiquidationLocked, Errors.REENTRANCY_NOT_ALLOWED); _flashLiquidationLocked = true; address collateralManager = _addressesProvider.getLendingPoolCollateralManager(); (bool success, bytes memory result) = collateralManager.delegatecall(abi.encodeWithSignature('repayWithCollateral(address,address,address,uint256,address,bytes)', collateral, principal, user, principalAmount, receiver, params)); require(success, Errors.FAILED_REPAY_WITH_COLLATERAL); (uint256 returnCode, string memory returnMessage) = abi.decode(result, (uint256, string)); if (returnCode != 0) { revert(string(abi.encodePacked(returnMessage))); } _flashLiquidationLocked = false; }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "flashLoan",
+                "fix_info": "Handled unchecked return value vulnerability for 'IERC20.transferFrom' by requiring a check for successful transfer.",
+                "corrected_code": "function flashLoan(address receiverAddress, address asset, uint256 amount, uint256 mode, bytes calldata params, uint16 referralCode) external override nonReentrant { _whenNotPaused(); ReserveLogic.ReserveData storage reserve = _reserves[asset]; FlashLoanLocalVars memory vars; vars.aTokenAddress = reserve.aTokenAddress; vars.premium = amount.mul(FLASHLOAN_PREMIUM_TOTAL).div(10000); ValidationLogic.validateFlashloan(mode, vars.premium); ReserveLogic.InterestRateMode debtMode = ReserveLogic.InterestRateMode(mode); vars.receiver = IFlashLoanReceiver(receiverAddress); IAToken(vars.aTokenAddress).transferUnderlyingTo(receiverAddress, amount); vars.receiver.executeOperation(asset, amount, vars.premium, params); vars.amountPlusPremium = amount.add(vars.premium); if (debtMode == ReserveLogic.InterestRateMode.NONE) { require(IERC20(asset).transferFrom(receiverAddress, vars.aTokenAddress, vars.amountPlusPremium), Errors.FLASHLOAN_REPAYMENT_FAILED); reserve.updateState(); reserve.cumulateToLiquidityIndex(IERC20(vars.aTokenAddress).totalSupply(), vars.premium); reserve.updateInterestRates(asset, vars.aTokenAddress, vars.premium, 0); emit FlashLoan(receiverAddress, asset, amount, vars.premium, referralCode); } else { _executeBorrow( ExecuteBorrowParams(asset, msg.sender, msg.sender, vars.amountPlusPremium, mode, vars.aTokenAddress, referralCode, false) ); } }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+``` 

@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "EIP20",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "balances",
+                "fix_info": "Changed from uint to uint256 to ensure consistency with arithmetic operations",
+                "variable_code": "mapping(address => uint256) public balances;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "safeAddition",
+                "fix_info": "Added safe math modifier to prevent integer overflow in addition",
+                "modifier_code": "modifier safeAddition(uint256 a, uint256 b) {\n        require(a + b >= a, \"Addition overflow\");\n        _;\n    }",
+                "change_type": "added"
+            },
+            {
+                "modifier_name": "safeSubtraction",
+                "fix_info": "Added safe math modifier to prevent integer underflow in subtraction",
+                "modifier_code": "modifier safeSubtraction(uint256 a, uint256 b) {\n        require(b <= a, \"Subtraction underflow\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Fixed arithmetic vulnerability by adding safe math checks to prevent integer overflow and underflow",
+                "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        // Check sender has enough balance\n        require(balances[msg.sender] >= _value, \"Insufficient balance\");\n        \n        // Safe subtraction - prevent underflow\n        safeSubtraction(balances[msg.sender], _value);\n        balances[msg.sender] -= _value;\n        \n        // Safe addition - prevent overflow\n        safeAddition(balances[_to], _value);\n        balances[_to] += _value;\n        \n        // Emit transfer event\n        Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

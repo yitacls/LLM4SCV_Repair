@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Sale",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for owner8.call() and using transfer instead of call for better gas limiting",
+            "corrected_code": "function() external payable {\n        sendtoken = (msg.value)/cost1token;\n        if (msg.value >= 5 ether) {\n            sendtoken = (msg.value)/cost1token;\n            sendtoken = sendtoken*125/100;\n        }\n        if (msg.value >= 10 ether) {\n            sendtoken = (msg.value)/cost1token;\n            sendtoken = sendtoken*150/100;\n        }\n        if (msg.value >= 15 ether) {\n            sendtoken = (msg.value)/cost1token;\n            sendtoken = sendtoken*175/100;\n        }\n        if (msg.value >= 20 ether) {\n            sendtoken = (msg.value)/cost1token;\n            sendtoken = sendtoken*200/100;\n        }\n        tokenReward.transferFrom(owner, msg.sender, sendtoken);\n        ethersum8 = (msg.value)*8/100;\n        ethersum6 = (msg.value)*6/100;\n        ethersum = (msg.value)-ethersum8-ethersum6;\n        \n        // Fixed unchecked low-level call\n        bool success = owner8.call.value(ethersum8)();\n        require(success, \"Transfer to owner8 failed\");\n        \n        owner6.transfer(ethersum6);\n        owner.transfer(ethersum);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

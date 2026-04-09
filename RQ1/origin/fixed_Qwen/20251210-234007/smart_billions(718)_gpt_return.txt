@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Replaced block.blockhash() with keccak256-based randomness using block.number and block.timestamp to mitigate BAD_RANDOMNESS vulnerability while maintaining similar functionality",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        // Fixed BAD_RANDOMNESS by using keccak256 with block properties\n        return( ( uint(keccak256(block.number, block.timestamp, _lastb)) & 0xFFFFFF )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+1)) & 0xFFFFFF ) << 24 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+2)) & 0xFFFFFF ) << 48 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+3)) & 0xFFFFFF ) << 72 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+4)) & 0xFFFFFF ) << 96 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+5)) & 0xFFFFFF ) << 120 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+6)) & 0xFFFFFF ) << 144 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+7)) & 0xFFFFFF ) << 168 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+8)) & 0xFFFFFF ) << 192 )\n            | ( ( uint(keccak256(block.number, block.timestamp, _lastb+9)) & 0xFFFFFF ) << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

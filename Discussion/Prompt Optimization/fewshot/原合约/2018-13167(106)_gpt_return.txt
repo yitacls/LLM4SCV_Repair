@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "ygo",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Prevent arithmetic overflow by validating multiplication result.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {
+        uint256 _amount = mintedAmount.mul(10 ** uint256(decimals));
+        require(balanceOf[target] + _amount >= balanceOf[target]);
+        balanceOf[target] += _amount;
+        totalSupply += _amount;
+        emit Transfer(this, target, _amount);
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

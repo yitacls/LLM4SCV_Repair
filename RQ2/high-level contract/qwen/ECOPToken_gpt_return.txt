@@ -1,0 +1,34 @@
+```json
+[{
+    "contract_name": "ECOPToken",
+    "contract_version": ">=0.5.0 <0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added check for return value of balance updates to prevent silent failures",
+            "corrected_code": "function transfer(address receiver, uint256 numTokens) public returns (bool) {\n    require(numTokens <= balances[msg.sender]);\n    balances[msg.sender] = balances[msg.sender].sub(numTokens);\n    balances[receiver] = balances[receiver].add(numTokens);\n    emit Transfer(msg.sender, receiver, numTokens);\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferFrom",
+            "fix_info": "Added check for return value of balance updates to prevent silent failures",
+            "corrected_code": "function transferFrom(address owner, address buyer, uint256 numTokens) public returns (bool) {\n    require(numTokens <= balances[owner]);\n    require(numTokens <= allowed[owner][msg.sender]);\n    balances[owner] = balances[owner].sub(numTokens);\n    allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(numTokens);\n    balances[buyer] = balances[buyer].add(numTokens);\n    emit Transfer(owner, buyer, numTokens);\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "burn",
+            "fix_info": "Added check for return value of balance updates to prevent silent failures",
+            "corrected_code": "function burn(uint256 _value) public returns (bool success) {\n    require(balances[msg.sender] >= _value);\n    balances[msg.sender] = balances[msg.sender].sub(_value);\n    totalSupply_ = totalSupply_.sub(_value);\n    emit Burn(msg.sender, _value);\n    return true;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "burnFrom",
+            "fix_info": "Added check for return value of balance updates to prevent silent failures",
+            "corrected_code": "function burnFrom(address _from, uint256 _value) public returns (bool success) {\n    require(balances[_from] >= _value);\n    require(_value <= allowed[_from][msg.sender]);\n    balances[_from] = balances[_from].sub(_value);\n    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);\n    totalSupply_ = totalSupply_.sub(_value);\n    emit Burn(_from, _value);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,43 @@
+```json
+[
+    {
+        "contract_name": "StakingController",
+        "contract_version": "^0.7.3",
+        "state_variables": [
+            {
+                "variable_name": "controller",
+                "fix_info": "Changed from address(this) to immutable to prevent reinitialization attacks",
+                "variable_code": "address private immutable controller;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "initialize",
+                "fix_info": "Added access control to prevent reinitialization and set controller as immutable",
+                "corrected_code": "  function initialize(IRegistrar _registrar, IERC20Upgradeable _infinity)\n    public\n    initializer\n  {\n    __ERC165_init();\n    __Context_init();\n\n    infinity = _infinity;\n    registrar = _registrar;\n    // Controller is set during construction and cannot be changed\n  }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "approveDomainBid",
+                "fix_info": "Fixed unprotected approval by adding signature verification and preventing signature malleability",
+                "corrected_code": "  function approveDomainBid(\n    uint256 parentId,\n    string memory bidIPFSHash,\n    bytes memory signature\n  ) external authorizedOwner(parentId) {\n    // Recover the bid hash from signature to verify it matches the bidIPFSHash\n    bytes32 messageHash = keccak256(abi.encodePacked(parentId, bidIPFSHash));\n    bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();\n    address signer = ethSignedMessageHash.recover(signature);\n    \n    // Verify the signature is valid and not from zero address\n    require(signer != address(0), \"ZNS: Invalid signature\");\n    \n    // Use the original message hash as identifier to prevent signature malleability\n    bytes32 signatureHash = keccak256(abi.encodePacked(\n      bytes32(uint256(uint160(signer))),\n      messageHash\n    ));\n    \n    // Check if bid already approved\n    require(!approvedBids[signatureHash], \"ZNS: Bid already approved\");\n    \n    approvedBids[signatureHash] = true;\n    emit DomainBidApproved(bidIPFSHash);\n  }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "fulfillDomainBid",
+                "fix_info": "Fixed signature verification issues, prevented signature malleability, and added proper state validation",
+                "corrected_code": "  function fulfillDomainBid(\n    uint256 parentId,\n    uint256 bidAmount,\n    uint256 royaltyAmount,\n    string memory bidIPFSHash,\n    string memory name,\n    string memory metadata,\n    bytes memory signature,\n    bool lockOnCreation,\n    address recipient\n  ) external {\n    // Recreate the bid hash\n    bytes32 recoveredBidHash = createBid(\n      parentId,\n      bidAmount,\n      bidIPFSHash,\n      name\n    );\n    \n    // Verify signature using ECDSA recovery with proper message formatting\n    bytes32 ethSignedMessageHash = recoveredBidHash.toEthSignedMessageHash();\n    \n    // Use tryRecover to prevent signature malleability\n    address recoveredBidder = ethSignedMessageHash.recover(signature);\n    \n    // Verify recovered address is valid\n    require(recoveredBidder != address(0), \"ZNS: Invalid signature\");\n    \n    // Verify recipient matches recovered bidder\n    require(recipient == recoveredBidder, \"ZNS: Recipient mismatch\");\n    \n    // Create unique identifier for this approval (prevent signature malleability)\n    bytes32 approvalHash = keccak256(abi.encodePacked(\n      bytes32(uint256(uint160(recoveredBidder))),\n      keccak256(abi.encodePacked(parentId, bidIPFSHash))\n    ));\n    \n    // Verify bid is approved\n    require(approvedBids[approvalHash], \"ZNS: Bid not approved or already fulfilled\");\n    \n    // Transfer tokens\n    infinity.safeTransferFrom(recoveredBidder, address(this), bidAmount);\n    \n    // Register domain\n    uint256 id = registrar.registerDomain(\n      parentId,\n      name,\n      address(this),\n      recoveredBidder\n    );\n    \n    // Set domain properties\n    registrar.setDomainMetadataUri(id, metadata);\n    registrar.setDomainRoyaltyAmount(id, royaltyAmount);\n    \n    // Transfer domain to bidder\n    registrar.transferFrom(address(this), recoveredBidder, id);\n    \n    // Lock metadata if requested\n    if (lockOnCreation) {\n      registrar.lockDomainMetadataForOwner(id);\n    }\n    \n    // Mark bid as fulfilled\n    approvedBids[approvalHash] = false;\n    \n    emit DomainBidFulfilled(bidIPFSHash, name, recoveredBidder, id, parentId);\n  }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "recover",
+                "fix_info": "Added validation to prevent signature malleability",
+                "corrected_code": "  function recover(bytes32 unsignedRequestHash, bytes memory signature)\n    public\n    pure\n    returns (address)\n  {\n    bytes32 ethSignedMessageHash = unsignedRequestHash.toEthSignedMessageHash();\n    address recovered = ethSignedMessageHash.recover(signature);\n    require(recovered != address(0), \"ZNS: Invalid signature\");\n    return recovered;\n  }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

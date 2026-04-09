@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The 'send()' function is used without checking its return value. In Solidity 0.4.x, address.send() returns a boolean indicating success (true) or failure (false). If the call fails (e.g., if the owner is a contract that runs out of gas or reverts), execution will continue without any handling of the failure, potentially allowing attackers to receive tokens without paying, or leaving the contract in an inconsistent state. This could lead to loss of funds or incorrect token minting. The vulnerability is on line 2 of the fallback function."
+}
+```

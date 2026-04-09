@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PausableToken",
+    "contract_version": "1.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "batchTransfer",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for multiplication and reordering require statements to prevent potential gas griefing",
+            "corrected_code": "function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {\n    uint cnt = _receivers.length;\n    require(cnt > 0 && cnt <= 20);\n    require(_value > 0);\n    \n    // Use SafeMath to prevent overflow\n    uint256 amount = uint256(cnt).mul(_value);\n    require(balances[msg.sender] >= amount);\n\n    balances[msg.sender] = balances[msg.sender].sub(amount);\n    for (uint i = 0; i < cnt; i++) {\n        balances[_receivers[i]] = balances[_receivers[i]].add(_value);\n        emit Transfer(msg.sender, _receivers[i], _value);\n    }\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

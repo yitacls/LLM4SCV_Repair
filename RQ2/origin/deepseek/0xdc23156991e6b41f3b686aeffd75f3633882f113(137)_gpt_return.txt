@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "_self.feesAccount = _feesAccount;",
+    "description": "The initWallet function does not enforce any access control or initialization protection, allowing any caller to potentially reinitialize or overwrite critical contract configuration (operatorAccount and feesAccount). In Solidity 0.4.24, storage pointers can be misused to target arbitrary storage locations, potentially enabling an attacker to manipulate contract state. The function lacks modifiers like onlyOwner, initializer checks, or constructor-only restrictions, making it vulnerable to unauthorized reinitialization attacks."
+}
+```

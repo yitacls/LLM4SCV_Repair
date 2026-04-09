@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "BSB_StakingSmartStakers",
+        "contract_version": ">=0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "holders",
+                "fix_info": "Added pagination support variable to track processed holders index",
+                "variable_code": "uint public processedHoldersIndex = 0;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "end",
+                "fix_info": "Fixed DoS vulnerability by implementing batch processing to avoid gas limit issues when iterating over large holder sets",
+                "corrected_code": "function end() public onlyOwner returns (bool){\n        require(!ended, \"Staking already ended\");\n        address _aux;\n        uint batchSize = 50;\n        uint holdersLength = holders.length();\n        uint endIndex = processedHoldersIndex.add(batchSize) > holdersLength ? holdersLength : processedHoldersIndex.add(batchSize);\n        \n        for(uint i = processedHoldersIndex; i < endIndex; i = i.add(1)){\n            _aux = holders.at(i);\n            rewardEnded[_aux] = getPendingRewards(_aux);\n            unclaimed[_aux] = 0;\n            stakingTime[_aux] = block.timestamp;\n            progressiveTime[_aux] = block.timestamp;\n            alreadyProgUnstaked[_aux] = 0;\n            amountPerInterval[_aux] = depositedTokens[_aux].div(number_intervals);\n        }\n        \n        processedHoldersIndex = endIndex;\n        \n        if(processedHoldersIndex >= holdersLength) {\n            ended = true;\n            endTime = block.timestamp;\n        }\n        \n        return true;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getRewardsLeft",
+                "fix_info": "Fixed DoS vulnerability by implementing batch processing to avoid gas limit issues when calculating pending rewards for all holders",
+                "corrected_code": "function getRewardsLeft() public view returns (uint){\n       \n        uint _res;\n        if(ended){\n            _res = 0;\n        }else{\n            uint totalPending;\n            uint holdersLength = holders.length();\n            uint batchSize = 50;\n            uint startIndex = 0;\n            uint endIndex = batchSize > holdersLength ? holdersLength : batchSize;\n        \n            for(uint i = startIndex; i < endIndex; i = i.add(1)){\n                totalPending = totalPending.add(getPendingRewards(holders.at(i)));\n            }\n            \n            if(totalRewards > totalClaimedRewards.add(totalPending)){\n                _res = totalRewards.sub(totalClaimedRewards).sub(totalPending);\n            }else{\n                _res = 0;\n            }\n        }\n        \n        return _res;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

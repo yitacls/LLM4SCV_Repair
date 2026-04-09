@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "RefStorage",
+    "contract_version": "0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "newTicket",
+            "fix_info": "Replaced tx.origin with msg.sender to prevent access control vulnerabilities and ensure proper sender authentication",
+            "corrected_code": "function newTicket() external restricted {\n        players[msg.sender].tickets++;\n        if (players[msg.sender].referrer != address(0) && (players[msg.sender].tickets - players[msg.sender].checkpoint) % interval == 0) {\n            if (token.balanceOf(address(this)) >= prize * 2) {\n                token.transfer(msg.sender, prize);\n                emit BonusSent(msg.sender, prize);\n                token.transfer(players[msg.sender].referrer, prize);\n                emit BonusSent(players[msg.sender].referrer, prize);\n            }\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

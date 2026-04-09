@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "wallet",
+            "fix_info": "No changes needed to wallet variable - assumed to be declared elsewhere in the contract",
+            "variable_code": "address payable public wallet;",
+            "change_type": "null"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed vulnerability by adding require() statement to check low-level call success, using transfer() for safer ether transfer (reverts on failure), and changing to receive() function for Solidity ^0.4.23 compatibility with payable fallback",
+            "corrected_code": "function () external payable {\n    require(msg.value > 0, \"Must send ETH\");\n    wallet.transfer(msg.value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

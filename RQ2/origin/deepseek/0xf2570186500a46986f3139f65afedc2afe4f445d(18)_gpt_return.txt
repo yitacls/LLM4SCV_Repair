@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "fuck.call(bytes4(sha3(\"giveBlockReward()\")))",
+    "description": "The low-level call to the 'fuck' address does not check the return value or handle potential failures. In Solidity 0.4.16, if the external call fails (e.g., due to out-of-gas, revert, or non-existent contract), the contract will continue execution without reverting, potentially leading to unexpected state changes or loss of funds. Additionally, the use of 'sha3' (deprecated alias for 'keccak256') and direct bytes4 casting without error handling is unsafe. Best practice is to use proper function signatures with explicit error handling or use the 'transfer' or 'send' methods for ether transfers."
+}
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "AllocationStaking",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fund",
+                "fix_info": "Prevent integer overflow in calculating endTimestamp and totalRewards.",
+                "corrected_code": "function fund(uint256 _amount) public {
+        require(block.timestamp < endTimestamp, 'fund: too late, the farm is closed');
+        erc20.safeTransferFrom(address(msg.sender), address(this), _amount);
+        require(endTimestamp + _amount.div(rewardPerSecond) > endTimestamp, 'Fund amount causes overflow');
+        endTimestamp += _amount.div(rewardPerSecond);
+        require(totalRewards.add(_amount) > totalRewards, 'Total rewards causes overflow');
+        totalRewards = totalRewards.add(_amount);
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

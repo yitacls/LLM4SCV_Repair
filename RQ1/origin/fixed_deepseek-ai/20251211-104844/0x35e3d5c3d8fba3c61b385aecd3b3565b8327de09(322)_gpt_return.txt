@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "bancorSendEthValue",
+        "fix_info": "Replaced deprecated .value() syntax with modern payable address approach and added validation for low-level call success with require statement",
+        "corrected_code": "function bancorSendEthValue(IBancorNetwork bancor, address[] path, uint256 value) external {\n    require(address(bancor).call.value(value)(abi.encodeWithSignature(\"convert(address[],uint256,uint256)\", path, value, 1)), \"Bancor call failed\");\n}",
+        "change_type": "modified"
+    }]
+}]
+```

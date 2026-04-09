@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.call(_value);",
+    "description": "The low-level `.call()` function is used to transfer ether without checking its return value. In Solidity versions prior to 0.4.13, `.call()` only forwards a fixed gas stipend of 2300 gas, which is insufficient for complex fallback functions, but more critically, it returns a boolean success value that is ignored. If the recipient is a contract with a fallback function that reverts or runs out of gas, the ether transfer will fail silently. This allows the parent transaction to continue execution (`return true;`) even though the transfer did not succeed, creating a mismatch between the contract's recorded state and the actual ether balance. This vulnerability can be exploited to steal funds or break contract logic. The code also fails to follow the Checks-Effects-Interactions pattern by performing an external call before state changes (though no state is updated here), and should use `transfer()` or `send()` for simple ether transfers, or properly handle the return value of `.call()`."
+}
+```

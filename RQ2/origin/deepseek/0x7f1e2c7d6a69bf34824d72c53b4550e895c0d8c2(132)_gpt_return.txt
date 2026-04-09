@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance);",
+    "description": "The low-level 'send()' function is used without checking its return value. In Solidity 0.4.11, 'send()' returns a boolean indicating success (true) or failure (false). If the call fails (e.g., if the owner is a contract with a fallback function that reverts or runs out of gas), the contract will not handle the failure, potentially locking the contract's Ether balance permanently. The function should check the return value and handle failures appropriately, or consider using 'transfer()' (which automatically reverts on failure in later Solidity versions)."
+}
+```

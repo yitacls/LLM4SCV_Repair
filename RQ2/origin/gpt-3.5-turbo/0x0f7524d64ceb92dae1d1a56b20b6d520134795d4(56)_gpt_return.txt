@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "msg.sender.transfer(balance)",
+    "description": "This code snippet contains an access control vulnerability because it allows anyone to call the withdraw function and transfer funds to themselves without any proper access control mechanism. This can result in unauthorized withdrawals and loss of funds for the contract."
+}
+```

@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "DMPToken",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Potential arithmetic overflow vulnerability when adding mintedAmount - need to use SafeMath library",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Potential arithmetic overflow vulnerability when adding mintedAmount - need to use SafeMath library",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and updated event emission syntax",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    emit Transfer(address(0), address(this), mintedAmount);\n    emit Transfer(address(this), target, mintedAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

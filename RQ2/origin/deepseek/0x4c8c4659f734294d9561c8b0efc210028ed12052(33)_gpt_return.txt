@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "access_control",
+        "location": "require(tx.origin == owner);",
+        "description": "Using tx.origin for authorization is dangerous because it checks the original caller of the entire transaction chain, not the immediate caller (msg.sender). This allows phishing attacks where an attacker can trick the owner into calling a malicious contract, which then calls this function, passing the authorization check since tx.origin would be the owner. The contract should use msg.sender instead for proper access control."
+    }
+]
+```

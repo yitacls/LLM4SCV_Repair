@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Compoundex",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyWhenBalanceSufficient",
+                "fix_info": "Added modifier to check contract balance before sending funds",
+                "modifier_code": "modifier onlyWhenBalanceSufficient(uint256 amount) {\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "",
+                "fix_info": "Fixed fallback function to handle low-level call vulnerabilities: 1) Check contract balance before sending, 2) Use explicit error handling for send() call, 3) Prevent integer overflow in calculations, 4) Ensure proper state updates only after successful operations",
+                "corrected_code": "function () external payable {\n        if (invested[msg.sender] != 0) {\n            // Calculate amount with safe math operations\n            uint256 blocksPassed = block.number - atBlock[msg.sender];\n            require(blocksPassed <= block.number, \"Integer overflow detected\");\n            \n            uint256 amount = invested[msg.sender] * 4 / 100 * blocksPassed / 5900;\n            \n            // Check if contract has sufficient balance\n            require(address(this).balance >= amount, \"Insufficient contract balance\");\n            \n            // Store sender in memory for potential reset if send fails\n            address sender = msg.sender;\n            uint256 originalInvestment = invested[sender];\n            \n            // Update state before external call (Checks-Effects-Interactions pattern)\n            atBlock[sender] = block.number;\n            \n            // Reset investment temporarily, will be restored if send fails\n            invested[sender] = 0;\n            \n            // Use call.value instead of send for better control, check result\n            (bool success, ) = sender.call.value(amount)();\n            \n            if (success) {\n                // Only update invested amount with new msg.value if send succeeded\n                invested[sender] = originalInvestment + msg.value;\n            } else {\n                // Restore original investment if send failed\n                invested[sender] = originalInvestment;\n                // Revert atBlock update since transaction failed\n                atBlock[sender] = block.number - blocksPassed;\n                revert(\"Failed to send payment\");\n            }\n        } else {\n            // For first-time investors\n            atBlock[msg.sender] = block.number;\n            invested[msg.sender] += msg.value;\n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

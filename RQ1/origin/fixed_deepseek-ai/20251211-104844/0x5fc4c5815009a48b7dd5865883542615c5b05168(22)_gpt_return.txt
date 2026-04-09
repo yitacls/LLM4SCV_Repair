@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "MyIMMN",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Made explicitly private with explicit getter for clarity and security",
+            "variable_code": "address private owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added owner-only access modifier using msg.sender instead of tx.origin",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Replaced tx.origin with msg.sender check using onlyOwner modifier, added input validation and event emission",
+            "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n        require(newOwner != address(0), \"New owner cannot be zero address\");\n        require(newOwner != owner, \"New owner cannot be current owner\");\n        \n        address previousOwner = owner;\n        owner = newOwner;\n        \n        emit OwnershipTransferred(previousOwner, newOwner);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added explicit constructor to set initial owner and ownership event",
+            "corrected_code": "constructor() public {\n        owner = msg.sender;\n        emit OwnershipTransferred(address(0), msg.sender);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

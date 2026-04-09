@@ -1,0 +1,14 @@
+[{
+    "contract_name": "DestiNeedToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Added safe arithmetic checks to prevent multiplication and addition overflows/underflows; preserved checks-effects-interactions and replaced send/throw pattern with transfer to ensure safe Ether transfer.",
+            "corrected_code": "function sell(uint256 amount) public {\n    // ensure seller has enough tokens\n    if (balanceOf[msg.sender] < amount) throw;\n\n    // calculate revenue and check for multiplication overflow\n    uint256 revenue = amount * sellPrice;\n    if (amount != 0 && revenue / amount != sellPrice) throw;\n\n    // check addition overflow for contract balance\n    if (balanceOf[this] + amount < balanceOf[this]) throw;\n\n    // effects: update balances before external call\n    balanceOf[msg.sender] -= amount;\n    balanceOf[this] += amount;\n\n    // interactions: transfer Ether (reverts on failure)\n    msg.sender.transfer(revenue);\n\n    // emit transfer event\n    Transfer(msg.sender, this, amount);\n}\n",
+            "change_type": "modified"
+        }
+    ]
+}]

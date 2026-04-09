@@ -1,0 +1,12 @@
+```json
+{
+    "contractName": "Distributor",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract checks for the origin of the transaction to be the owner to change ownership. This means that any contract that can manipulate its origin can create a transaction that passes this check. An attacker can potentially exploit this access control flaw to change the owner without the actual owner’s consent."
+        }
+    ]
+}
+```

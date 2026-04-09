@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "TokenDrop",
+    "contract_version": ">=0.7.0 <0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "nonReentrant",
+            "fix_info": "Added reentrancy guard to prevent multiple calls in a single transaction.",
+            "variable_code": "bool private nonReentrant;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "reentrancyGuard",
+            "fix_info": "Introduced a reentrancy guard to prevent exploitative multiple calls.",
+            "modifier_code": "modifier reentrancyGuard() { require(!nonReentrant, \"ReentrancyGuard: reentrant call\"); nonReentrant = true; _; nonReentrant = false; }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "onlyFactory",
+            "fix_info": "Added restriction to ensure critical functions can only be called by the factory address.",
+            "modifier_code": "modifier onlyFactory() { require(msg.sender == factory, \"Caller is not the factory\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Restricted initialization to the deployer using onlyFactory modifier.",
+            "corrected_code": "function initialize(address _measure, address _asset) external onlyFactory { require(factory == address(0), \"Already initialized\"); measure = IERC20Upgradeable(_measure); asset = IERC20Upgradeable(_asset); factory = msg.sender; }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "claim",
+            "fix_info": "Applied reentrancy guard to prevent reentrant attacks.",
+            "corrected_code": "function claim(address user) external reentrancyGuard returns (uint256) { drop(); _captureNewTokensForUser(user); uint256 balance = userStates[user].balance; require(balance > 0, \"No tokens to claim\"); userStates[user].balance = 0; totalUnclaimed = uint256(totalUnclaimed).sub(balance).toUint112(); asset.transfer(user, balance); emit Claimed(user, balance); return balance; }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "addAssetToken",
+            "fix_info": "Added validation to check asset transfer success and ensured reentrancy protection.",
+            "corrected_code": "function addAssetToken(uint256 amount) external reentrancyGuard returns (bool) { require(amount > 0, \"Amount must be greater than zero\"); bool success = asset.transferFrom(msg.sender, address(this), amount); require(success, \"Asset transfer failed\"); drop(); return true; }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

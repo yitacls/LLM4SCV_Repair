@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "StandardToken",
+        "contract_version": "^0.4.17",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Added an `owner` state variable to store the owner's address for access control.",
+                "variable_code": "address public owner;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added `onlyOwner` modifier to restrict access to owner-only functions like `destroycontract`.",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Caller is not the owner\"); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "destroycontract",
+                "fix_info": "Restricted contract destruction to the owner using the `onlyOwner` modifier. This ensures access control to sensitive operations.",
+                "corrected_code": "function destroycontract(address _to) public onlyOwner { selfdestruct(_to); }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "constructor",
+                "fix_info": "Initialized `owner` variable in the constructor to the contract deployer.",
+                "corrected_code": "constructor() public { owner = msg.sender; }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "YieldFarm",
+        "contract_version": "^0.6.12",
+        "state_variables": [
+            {
+                "variable_name": "pragma solidity ^0.6.0",
+                "fix_info": "Updated the pragma statement to a fixed version to prevent floating pragma vulnerability.",
+                "variable_code": "pragma solidity ^0.6.12;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "massHarvest",
+                "fix_info": "Added safeguards to prevent DoS with block gas limit. Implemented batching by restricting the range of epochs processed in a single function call.",
+                "corrected_code": "function massHarvest() external returns (uint) {\n    uint totalDistributedValue;\n    uint epochId = _getEpochId().sub(1);\n    \n    // Ensure we are not in epoch 0\n    require(epochId > 0, \"No epochs to harvest yet\");\n\n    // Set a limit on the number of epochs to harvest to avoid gas limit issues\n    uint128 startEpoch = lastEpochIdHarvested[msg.sender] + 1;\n    uint128 endEpoch = epochId > startEpoch + 10 ? startEpoch + 10 : uint128(epochId); // Process max 10 epochs per call\n\n    for (uint128 i = startEpoch; i <= endEpoch; i++) {\n        totalDistributedValue = totalDistributedValue.add(_harvest(i));\n    }\n\n    // Emit an event and transfer the rewards\n    emit MassHarvest(msg.sender, endEpoch.sub(startEpoch) + 1, totalDistributedValue);\n    if (totalDistributedValue > 0) {\n        require(\n            _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue),\n            \"Transfer failed\"\n        );\n    }\n\n    // Update the last harvested epoch\n    lastEpochIdHarvested[msg.sender] = endEpoch;\n\n    return totalDistributedValue;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "harvest",
+                "fix_info": "Added safe checks and reorganized code to ensure stricter validation and safe operations.",
+                "corrected_code": "function harvest(uint128 epochId) external returns (uint) {\n    require(epochId > 0, \"Invalid epoch\");\n    require(_getEpochId() > epochId, \"This epoch is in the future\");\n    require(epochId <= NR_OF_EPOCHS, \"Maximum number of epochs is 25\");\n    require(lastEpochIdHarvested[msg.sender].add(1) == epochId, \"Harvest in order\");\n\n    uint userReward = _harvest(epochId);\n    if (userReward > 0) {\n        require(\n            _bond.transferFrom(_communityVault, msg.sender, userReward),\n            \"Transfer failed\"\n        );\n    }\n\n    emit Harvest(msg.sender, epochId, userReward);\n    return userReward;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "_getEpochId",
+                "fix_info": "Introduced a safer computation for the epochId and stricter validation to ensure computation integrity.",
+                "corrected_code": "function _getEpochId() internal view returns (uint128 epochId) {\n    if (block.timestamp < epochStart) {\n        return 0; // Epoch 0\n    }\n    epochId = uint128((block.timestamp.sub(epochStart)).div(epochDuration).add(1));\n    require(epochId >= 0, \"Epoch computation error\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

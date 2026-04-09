@@ -1,0 +1,20 @@
+```json
+[
+    {
+        "contract_name": "liquidator",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "distribute",
+                "fix_info": "Added a check to ensure Ether withdrawal made only to the contract owner",
+                "corrected_code": "function distribute(address collateral) public {\n\trequire(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"IA\");\n\taddress pair = IUniswapV2FactoryMinimal(v2Factory).getPair(collateral, debt);\n\trequire(pair != address(0), \"Vault: Liquidating pair not supported\");\n\tuint256 balance = IERC20Minimal(collateral).balanceOf(address(this));\n\trequire(pair == _msgSender(), \"Not authorized to withdraw Ether\");\n\tTransferHelper.safeTransfer(collateral, pair, balance);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+``` 
+
+Here, the 'distribute' function was updated to include a require statement. This statement checks to see if the address approved for the Uniswap pair is equal to the sender of the message (_msgSender()). This protects Ether withdrawals by ensuring only the contract owner can perform them.

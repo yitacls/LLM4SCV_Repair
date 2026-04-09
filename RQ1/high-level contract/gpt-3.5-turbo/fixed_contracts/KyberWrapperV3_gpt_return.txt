@@ -1,0 +1,23 @@
+```json
+[
+    {
+        "contract_name": "KyberWrapperV3",
+        "contract_version": "^0.7.0",
+        "functions": [
+            {
+                "function_name": "getSellRate",
+                "fix_info": "Fixed the integer overflow and underflow vulnerability",
+                "corrected_code": "function getSellRate(address _srcAddr, address _destAddr, uint _srcAmount, bytes memory) public override view returns (uint rate) {\
+        (uint256 expectedRate, ) = KyberNetworkProxyInterface(KYBER_INTERFACE).getExpectedRate(IERC20(_srcAddr), IERC20(_destAddr), _srcAmount);\
+\
+        uint decimalsSrc = getDecimals(_srcAddr);\
+        uint decimalsDest = getDecimals(_destAddr);\
+\
+        rate = div(mul(expectedRate, 10 ** (18 - decimalsSrc)), 10 ** (18 - decimalsDest));\
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

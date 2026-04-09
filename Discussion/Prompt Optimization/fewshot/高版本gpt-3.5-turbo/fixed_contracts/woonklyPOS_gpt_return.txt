@@ -1,0 +1,71 @@
+```json
+[
+    {
+        "contract_name": "WOOPStake",
+        "contract_version": "^0.6.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_withdrawAllrewardsCOIN",
+                "fix_info": "Prevent reentrancy by updating state before external calls.",
+                "corrected_code": "function _withdrawAllrewardsCOIN() internal SolvencyCOIN() returns (uint256) {
+        uint256 total = 0;
+        uint256 rew = 0;
+        Stake memory p;
+
+        uint256 last = _stakes.getLastIndexStakes();
+
+        for (uint256 i = 0; i < (last + 1); i++) {
+            (p.account, p.bal, p.autoCompound, p.flag) = _stakes.getStakeByIndex(i);
+
+            if (p.flag == 1) {
+                rew = rewardedCOIN(p.account);
+
+                if (rew > 0) {
+                    _decreaseRewardsCOIN(p.account, rew); // Update state before transfer
+                    total = total.add(rew);
+                }
+            }
+        }
+
+        uint256 eth_reserve = address(this).balance;
+
+        if (eth_reserve > 0) {
+            address payable ow = address(uint160(_remainder));
+            ow.transfer(eth_reserve);
+        }
+
+        return total;
+    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "processReward",
+                "fix_info": "Prevent reentrancy by updating state before external calls.",
+                "corrected_code": "function processReward(address sc, uint256 amount) public nonReentrant Active hasApprovedTokens(sc, _msgSender(), amount) ProviderHasToken(sc, amount) returns (bool) {
+        if (!ERC20Exist(sc)) {
+            newERC20(sc);
+        }
+
+        processRewardInfo memory slot;
+
+        IERC20 _token = IERC20(sc);
+        _processReward_1(_token, _msgSender(), amount);
+
+        slot.dealed = _processReward_2(sc, amount);
+
+        uint256 leftover = amount.sub(slot.dealed);
+        if (leftover > 0) {
+            require(_token.transfer(_remainder, leftover), \"WO:trf\");
+            emit NewLeftover(sc, _remainder, leftover);
+        }
+
+        return true;
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

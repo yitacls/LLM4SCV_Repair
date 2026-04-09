@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 newVal = freeEther+msg.value;",
+    "description": "This statement is vulnerable to an overflow attack. If a high enough value is sent with the transaction, the sum of 'freeEther' and 'msg.value' could exceed the maximum value for a uint256, causing the sum to wrap around to zero. If this happens, 'newVal' should be less than 'freeEther' in the subsequent condition, and the total amount of Ether tracked by the contract will be severely incorrect."
+}
+```

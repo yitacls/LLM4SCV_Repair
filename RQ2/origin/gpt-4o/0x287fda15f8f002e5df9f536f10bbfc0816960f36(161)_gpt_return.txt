@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.send(msg.value);",
+    "description": "The function lacks proper access control, allowing anyone to invoke it and transfer funds to the `owner`. Since the fallback function is payable and publicly accessible, this creates an opportunity for attackers to manipulate the contract’s logic or misuse its state. Using `send` to transfer funds directly can also introduce issues if the recipient's fallback function consumes excessive gas, potentially disrupting the execution flow."
+}
+```

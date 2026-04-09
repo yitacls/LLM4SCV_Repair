@@ -1,0 +1,18 @@
+```json
+[
+  {
+    "contract_name": "BorrowerOperations",
+    "contract_version": "0.6.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+      {
+        "function_name": "closeTrove",
+        "fix_info": "Added a require statement to prevent unauthorized ETH withdrawals.",
+        "corrected_code": "function closeTrove() external override {\n    require(msg.sender == troveManager.getBorrower(msg.sender), \"BorrowerOps: Caller must be the trove owner to close trove\");\n    ITroveManager troveManagerCached = troveManager;\n    IActivePool activePoolCached = activePool;\n    ILUSDToken lusdTokenCached = lusdToken; ...",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```  

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Lines 196-201: _massUpdatePools() function",
+    "description": "The _massUpdatePools() function iterates through all pools without any limit on the number of iterations. As more pools are added to the contract through the add() function, the gas cost of calling any function that invokes _massUpdatePools() (such as add(), set(), updateEmissionRate()) will increase linearly. This can eventually exceed the block gas limit, making these functions uncallable when too many pools exist. The functions deposit(), withdraw(), depositNFT(), and withdrawNFT() call _updatePool() for a specific pool, which is safe, but owner functions that need to update all pools will become increasingly expensive and may become impossible to execute."
+}
+```

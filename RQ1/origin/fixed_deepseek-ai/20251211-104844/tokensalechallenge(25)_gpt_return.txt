@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "TokenSaleChallenge",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "PRICE_PER_TOKEN",
+            "fix_info": "Changed visibility from implicit internal to explicit internal for clarity",
+            "variable_code": "uint256 internal constant PRICE_PER_TOKEN = 1 ether;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "buy",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations and checked arithmetic",
+            "corrected_code": "function buy(uint256 numTokens) public payable {\n    require(msg.value == SafeMath.mul(numTokens, PRICE_PER_TOKEN), \"Incorrect payment amount\");\n    balanceOf[msg.sender] = SafeMath.add(balanceOf[msg.sender], numTokens);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

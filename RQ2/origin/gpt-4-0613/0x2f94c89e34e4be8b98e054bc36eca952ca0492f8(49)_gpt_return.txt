@@ -1,0 +1,13 @@
+```json
+{
+    "contract_name": "ERC20Standard",
+    "solidity_version": "^0.4.11",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract has a insecure access control condition. It is considered a bad practice to use tx.origin for authentication purposes because it can be spoofed by a contract that is called by the attacker. To secure this code, it's recommended to use msg.sender instead of tx.origin."
+        }
+    ]
+}
+```

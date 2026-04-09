@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 152-158",
+        "description": "The function `getAllDelegationRequests` contains a revert statement for unimplemented functionality. As currently written, this function does not have an effect, and its presence may confuse users or developers about its purpose."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 160-162",
+        "description": "The function `getDelegationRequestsForValidator` is not implemented and contains a revert statement. This function does not perform any meaningful operations, which may lead to unexpected behavior when called."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 198-200",
+        "description": "The function `unregisterValidator` is not implemented and only contains a revert statement. The lack of functionality in this function can cause confusion among developers or users who expect it to unregister a validator."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 202-204",
+        "description": "The function `getBondAmount` only contains a revert statement and is not implemented. This renders the function ineffective, potentially misleading users or developers."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 206-208",
+        "description": "The function `setValidatorName` lacks an implementation and only reverts execution. The presence of this function serves no effective purpose."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 210-212",
+        "description": "The function `setValidatorDescription` contains a revert statement and has no implementation. This provides no functionality for changing a validator's description as the name implies."
+    },
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "Lines 292-294",
+        "description": "The function `deleteNode` is not implemented, and its revert statement renders it ineffective. Calling this function does not remove any nodes, contrary to its intended purpose."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "Lines 310-316",
+        "description": "The `for` loop inside the `distributeBounty` function iterates over the `shares` array without bounds checking, potentially causing the transaction to exceed the gas limit if the array size is too large. This creates a denial of service (DoS) vulnerability by allowing a malicious actor to exploit the loop's unbounded nature."
+    }
+]
+```

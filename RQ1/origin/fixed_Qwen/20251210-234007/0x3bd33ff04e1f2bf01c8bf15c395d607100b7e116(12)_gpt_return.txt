@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "X3ProfitMainFundTransferV3",
+    "contract_version": "^0.5.1",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and revert on failure",
+            "corrected_code": "function () external payable {\n        if(msg.value == 0 || msg.data.length > 0){\n            if(ADDRESS_EIFP2_CONTRACT.balance > maxBalance)\n            {\n                msg.sender.transfer(address(this).balance);\n                return;\n            }\n            (bool success, ) = ADDRESS_EIFP2_CONTRACT.call.value(address(this).balance)(\"\");\n            require(success, \"Call to EIFP2 contract failed\");\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

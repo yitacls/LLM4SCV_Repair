@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "recipient.send(weiAmount);",
+    "description": "The low-level send() function is used without checking its return value. In Solidity 0.4.17, send() returns false if the transfer fails (e.g., recipient is a contract that rejects payment or runs out of gas), but the code doesn't handle this failure case. This could lead to a situation where the payout function executes without actually transferring funds, while still proceeding to call PayInterest, potentially causing inconsistent state."
+}
+```

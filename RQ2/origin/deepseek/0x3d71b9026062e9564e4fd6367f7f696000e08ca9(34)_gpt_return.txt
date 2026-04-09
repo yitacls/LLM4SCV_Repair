@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_tokenId));",
+    "description": "The contract uses tx.origin for authorization instead of msg.sender, making it vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract, which then calls this approve function - tx.origin will be the original owner (victim) while msg.sender will be the attacker's contract, allowing unauthorized approval. Additionally, the function lacks a check for zero address and properly resetting previous approvals, and it doesn't follow the standard ERC721 approve function signature which should be approve(address to, uint256 tokenId)."
+}
+```

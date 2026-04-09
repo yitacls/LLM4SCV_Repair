@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-114-Transaction Order Dependence",
+        "location": "L266-305",
+        "description": "The `sponsorProposal` function assumes a specific order of transactions and relies on the order in which proposals are sponsored. Since proposals are queued based on their processing, this introduces a dependency on the order of transactions, potentially leading to unfairness or front-running where users can submit or manipulate their proposals to guarantee a specific order."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "L408-413",
+        "description": "In the `processProposal` function, if the proposal fails to pass, the tribute tokens are unconditionally returned to the `proposer`. This is not protected against unauthorized or unintended withdrawals, as the validation logic does not robustly verify the legitimacy of the transfer or ensure other security measures are in place."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "L638-640",
+        "description": "The `max` function does not utilize Solidity's SafeMath library to prevent overflow and underflow errors. Though simple, arithmetic without SafeMath can lead to unexpected results if improperly constrained, allowing potential vulnerabilities during arithmetic operations."
+    }
+]
+```

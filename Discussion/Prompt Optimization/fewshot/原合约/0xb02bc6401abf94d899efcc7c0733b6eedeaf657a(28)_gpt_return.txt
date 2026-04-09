@@ -1,0 +1,28 @@
+```json
+[
+    {
+        "contract_name": "The",
+        "contract_version": ">=0.4.22 <0.6.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_transfer",
+                "fix_info": "Prevent arithmetic overflow by validating balances before transfer.",
+                "corrected_code": "function _transfer(address _from, address _to, uint _value) internal {
+        require(_to != address(0x0));
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+        require(balanceOf[_from] - _value <= balanceOf[_from]); // Check for underflow
+        uint previousBalances = balanceOf[_from] + balanceOf[_to];  
+        balanceOf[_from] -= _value;
+        balanceOf[_to] += _value;
+        emit Transfer(_from, _to, _value);
+        assert(balanceOf[_from] + balanceOf[_to] == previousBalances);  
+    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "The contract uses the low-level 'send' function in Solidity 0.4.25 without checking its return value. In Solidity versions prior to 0.5.0, 'send' returns a boolean indicating success or failure but does not revert on failure. If the send operation fails (e.g., if the recipient contract runs out of gas via a fallback function or reverts), the return value is ignored, potentially causing funds to be lost or the contract state to become inconsistent, as the contract logic assumes the transfer succeeded when it may have failed."
+}
+```

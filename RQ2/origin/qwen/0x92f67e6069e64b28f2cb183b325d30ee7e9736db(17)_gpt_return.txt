@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "devAcct.send(fee);",
+    "description": "The send() function is used to transfer Ether to devAcct, but its return value is not checked. In Solidity ^0.4.20, send() returns false if the transfer fails (e.g., recipient contract throws an exception or runs out of gas), but the code doesn't handle this case. This could lead to silent failures where the fee transfer fails but the function continues execution, potentially causing loss of funds or unexpected behavior. The transfer() function is used for potAcct which properly throws on failure, creating inconsistent error handling."
+}
+```

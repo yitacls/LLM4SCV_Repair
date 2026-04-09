@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.call.value(balances[msg.sender])();",
+    "description": "The low-level call method is used without checking its return value. In Solidity ^0.4.23, call.value() returns a boolean indicating success or failure, but this return value is ignored. If the call fails (e.g., due to gas exhaustion or revert in the receiver's fallback function), the function will continue execution and set balances[msg.sender] to 0, potentially allowing the same user to withdraw funds again. This creates a reentrancy-like vulnerability where users could potentially withdraw more funds than they should be able to."
+}
+```

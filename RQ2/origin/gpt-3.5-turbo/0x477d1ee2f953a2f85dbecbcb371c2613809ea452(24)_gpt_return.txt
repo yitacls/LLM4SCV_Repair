@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "adr.send(this.balance);",
+            "description": "The contract directly uses low-level call with send function to transfer funds to adr without checking for the success or failure of the transfer. This can lead to potential vulnerabilities such as reentrancy attacks."
+        }
+    ]
+}
+```

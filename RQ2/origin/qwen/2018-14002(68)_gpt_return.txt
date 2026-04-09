@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "uint totalAmount;\nfor (uint a = 0; a < _amounts.length; a++) {\n    totalAmount += _amounts[a];\n}",
+    "description": "The contract is vulnerable to integer overflow when calculating totalAmount. In Solidity version ^0.4.8, there is no automatic overflow protection. If the sum of _amounts exceeds the maximum value of uint256, it will wrap around to zero, resulting in totalAmount being much smaller than the actual sum. This could allow an attacker to distribute more tokens than they actually own."
+}
+```

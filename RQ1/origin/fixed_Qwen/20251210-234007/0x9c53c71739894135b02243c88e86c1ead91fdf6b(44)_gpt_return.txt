@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "HEDGECRYPTOFUND",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "collectExcess",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding success check for send() and using require() to ensure the call succeeds",
+            "corrected_code": "function collectExcess() onlyOwner {\n        require(owner.send(this.balance - 2100000), \"Failed to send Ether\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

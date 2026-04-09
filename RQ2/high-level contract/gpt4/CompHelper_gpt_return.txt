@@ -1,0 +1,12 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);",
+    "description": "The return value of 'enterMarkets' function call is unchecked. In case the function call fails and returns an error code, the error will not be caught and handled. This may allow an error to propagate through the contract, and potentially enable other execution paths with unintended side effects."
+},
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);",
+    "description": "The return value of 'exitMarket' function call is unchecked. If the function call fails and returns an error code, the error will not be caught and handled. This may cause the contract to continue execution when a failure has occurred, possibly leading to unexpected behaviour."
+}
+```

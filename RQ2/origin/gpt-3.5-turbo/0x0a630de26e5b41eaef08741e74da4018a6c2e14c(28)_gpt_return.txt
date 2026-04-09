@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "players[currentGamenumber][winner].send(this.balance)",
+    "description": "The contract uses a send call with no checks for failure when sending the contract's balance to the winning player. If the winning player is a contract, the transfer will fail and the contract balance will not be sent, resulting in the loss of funds."
+}
+```

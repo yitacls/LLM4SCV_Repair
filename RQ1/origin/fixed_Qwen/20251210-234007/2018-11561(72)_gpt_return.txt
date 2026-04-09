@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StandardToken",
+    "contract_version": "^0.4.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "distributeToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath operations for all arithmetic calculations",
+            "corrected_code": "function distributeToken(address[] addresses, uint256 _value) {\n    uint256 totalValue = addresses.length * _value;\n    require(balances[msg.sender] >= totalValue); // Check if sender has enough tokens\n    for (uint i = 0; i < addresses.length; i++) {\n        balances[msg.sender] = balances[msg.sender].sub(_value);\n        balances[addresses[i]] = balances[addresses[i]].add(_value);\n        Transfer(msg.sender, addresses[i], _value);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

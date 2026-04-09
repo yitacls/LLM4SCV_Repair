@@ -1,0 +1,21 @@
+[{
+    "contract_name": "TimeLock",
+    "contract_version": "^0.4.0",
+    "state_variables": [
+        {
+            "variable_name": "lockTime",
+            "fix_info": "Explicitly use uint256 for clarity and safety; unchanged semantic (mapping of address to timestamp/seconds).",
+            "variable_code": "mapping(address => uint256) public lockTime;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "increaseLockTime",
+            "fix_info": "Prevent arithmetic overflow by checking result after addition before assignment.",
+            "corrected_code": "function increaseLockTime(uint _secondsToIncrease) public {\n    uint256 previous = lockTime[msg.sender];\n    uint256 newTime = previous + uint256(_secondsToIncrease);\n    // Ensure no overflow occurred\n    require(newTime >= previous);\n    lockTime[msg.sender] = newTime;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

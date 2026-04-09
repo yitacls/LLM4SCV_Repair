@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "xTRIBE",
+    "contract_version": "^0.8.0",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyAuthorized",
+            "fix_info": "Added a modifier to restrict access to functions that could previously be called by anyone without validation.",
+            "modifier_code": "modifier onlyAuthorized() { require(isAuthorized(msg.sender, msg.sender), \"Unauthorized\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "emitVotingBalances",
+            "fix_info": "Added access control to ensure only authorized users can call this function, mitigating the SWC-105 vulnerability.",
+            "corrected_code": "function emitVotingBalances(address[] calldata accounts) external onlyAuthorized { \n    uint256 size = accounts.length;\n\n    for (uint256 i = 0; i < size; ) {\n        emit DelegateVotesChanged(accounts[i], 0, getVotes(accounts[i]));\n\n        unchecked {\n            i++;\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

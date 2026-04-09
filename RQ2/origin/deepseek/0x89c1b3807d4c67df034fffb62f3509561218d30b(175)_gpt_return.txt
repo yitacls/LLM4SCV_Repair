@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "UNCHECKED_LL_CALLS",
+        "location": "SGX_ADDRESS.send(CANCELLATION_FEE);",
+        "description": "The return value of the low-level send() call is not checked. If the send fails (e.g., due to out-of-gas in the recipient's fallback function or the recipient being a contract that throws an exception), the contract will not be aware of the failure and will continue execution, potentially leaving the SGX_ADDRESS unpaid despite the contract state being updated."
+    },
+    {
+        "type": "UNCHECKED_LL_CALLS",
+        "location": "SGX_ADDRESS.send(fee);",
+        "description": "The return value of the low-level send() call is not checked. If the send fails, the SGX_ADDRESS may not receive the fee for delivering the response, but the contract state will have already marked the request as delivered (DELIVERED_FEE_FLAG), resulting in a loss of funds for the SGX_ADDRESS."
+    },
+    {
+        "type": "UNCHECKED_LL_CALLS",
+        "location": "requests[requestId].requester.call.gas(2300).value(fee)();",
+        "description": "The return value of the low-level call() is not checked. If the call fails (e.g., the requester is a contract that throws or runs out of gas with only 2300 gas provided), the fee will not be refunded to the requester, but the contract state will have already marked the request as delivered, resulting in a loss of funds for the requester."
+    },
+    {
+        "type": "UNCHECKED_LL_CALLS",
+        "location": "requests[requestId].callbackAddr.call.gas(callbackGas)(requests[requestId].callbackFID, requestId, error, respData);",
+        "description": "The return value of the low-level call() is not checked. If the callback fails, the application contract will not be notified of the response, but the TownCrier contract will have already updated its state and logged the event, leading to inconsistent state between contracts."
+    }
+]
+```

@@ -1,0 +1,5 @@
+{
+  "type": "BAD_RANDOMNESS",
+  "location": "if(block.number<player.blockNum+256){\n    // <yes> <report> BAD_RANDOMNESS\n    hash = uint24(block.blockhash(player.blockNum));\n    prize = betPrize(player,uint24(hash));\n}",
+  "description": "The contract derives game randomness directly from block.blockhash(player.blockNum) (truncated to 24 bits) for bets resolved within 256 blocks. Block hashes are not a secure source of randomness because miners who produce the block containing the bet can influence or choose a block header that yields a favorable hash, and can also withhold or reorder transactions to gain advantage. Truncating to uint24 further reduces entropy, making outcomes easier to bias or brute-force. As a result, miners (or colluding parties) can manipulate the outcome to win or deny others' winnings, potentially draining contract funds. The fallback logic for blocks older than 256 also introduces complexity (use of getHash/hashFirst) but does not mitigate the fundamental issue: relying on past blockhashes and short truncated values is insecure for randomness and enables miner-controlled exploitation."
+}

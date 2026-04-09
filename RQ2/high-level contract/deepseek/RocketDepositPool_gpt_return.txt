@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "Lines 116-129 in the assignDeposits() function, specifically the for loop: for (uint256 i = 0; i < rocketDAOProtocolSettingsDeposit.getMaximumDepositAssignments(); ++i) { ... }",
+    "description": "The assignDeposits() function contains a loop that iterates up to a maximum number of deposit assignments determined by external contract call getMaximumDepositAssignments(). This loop performs multiple external calls (dequeueMinipool(), withdrawEther(), userDeposit()) and state updates within each iteration. If the maximum assignments value is set too high by governance, the gas consumption could exceed the block gas limit, preventing the function from executing successfully. This denial-of-service vulnerability could be exploited by setting a high maximum assignments value, effectively blocking deposit assignments and disrupting the protocol's ability to allocate user deposits to minipools, potentially freezing the deposit system."
+}
+```

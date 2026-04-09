@@ -1,0 +1,6 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[_to] += _value;",
+    "description": "The arithmetic operation is vulnerable to an integer overflow. If '_value' is such that 'balances[_to] + _value' exceeds the maximum value representable by uint256, it rolls over and starts from zero. This can lead to theft of ether as a malicious user can trigger an overflow to reset a balance to zero."
+}

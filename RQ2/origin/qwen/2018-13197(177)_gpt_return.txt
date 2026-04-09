@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Underflow",
+    "location": "balanceOf[msg.sender] -= amount;",
+    "description": "The contract is vulnerable to arithmetic underflow in the subtraction operation. When balanceOf[msg.sender] is less than amount, the subtraction will cause an underflow, resulting in a very large positive number due to unsigned integer wraparound. This could allow a malicious user to artificially inflate their balance. Although there's a check for insufficient balance, if that check fails or is bypassed, the underflow can occur. In Solidity ^0.4.2, arithmetic operations don't have built-in overflow/underflow protection."
+}
+```

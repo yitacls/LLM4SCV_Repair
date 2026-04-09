@@ -1,0 +1,13 @@
+```json
+{
+    "contract_name": "GetSomeEther",
+    "solidity_version": "^0.4.19",
+    "vulnerabilities": [
+        {
+            "type": "Arithmetic",
+            "location": "uint256 newVal = freeEther+msg.value;",
+            "description": "The operation freeEther+msg.value can lead to potential overflow vulnerabilities in case the sum exceeds the maximum value representable by uint256 data type."
+        }
+    ]
+}
+```

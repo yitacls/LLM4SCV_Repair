@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "StorageBase",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawBalance",
+            "fix_info": "Fixed unchecked low-level call vulnerability by adding explicit check for send() return value and using require() to handle failure cases",
+            "corrected_code": "function withdrawBalance() external onlyOwner returns (bool) {\n        bool res = msg.sender.send(address(this).balance);\n        require(res, \"Transfer failed\");\n        return res;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

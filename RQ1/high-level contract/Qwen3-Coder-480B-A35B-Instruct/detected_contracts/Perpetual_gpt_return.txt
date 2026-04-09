@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-135-Code With No Effects",
+        "location": "pragma experimental ABIEncoderV2; // to enable structure-type parameter",
+        "description": "The use of 'pragma experimental ABIEncoderV2' indicates that the code relies on an experimental feature which may have undefined or no effects in certain Solidity versions, potentially leading to unexpected behavior. This can result in structures not being handled correctly during function calls."
+    },
+    {
+        "type": "SWC-119-Shadowing State Variables",
+        "location": "constructor(address globalConfig, address devAddress, address collateral, uint256 collateralDecimals)",
+        "description": "In the constructor, variables such as `globalConfig` and `devAddress` might shadow state variables defined elsewhere in the contract hierarchy. Although not explicitly shown here, if base contracts define these names, it could lead to unintended overwrites or confusion when referencing them."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function liquidateFrom(address from, address guy, uint256 maxAmount) public returns (uint256, uint256)",
+        "description": "The function allows a user (`from`) to perform a liquidation without proper checks on whether they are authorized to act on behalf of the contract for withdrawing ether or funds. Specifically, there's no validation ensuring the caller has appropriate permissions to initiate fund transfers or perform account liquidations involving ether or token withdrawals."
+    }
+]
+```

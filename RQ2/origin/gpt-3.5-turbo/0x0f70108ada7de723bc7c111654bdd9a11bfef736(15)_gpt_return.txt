@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.gas(gasToForward)(msg.data);",
+    "description": "The use of 'call' in this format allows arbitrary code execution by the called contract and may result in unexpected behavior or exploits. It does not validate the return value of the call, making it prone to reentrancy attacks and other security risks."
+}
+```

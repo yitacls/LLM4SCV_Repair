@@ -1,0 +1,29 @@
+Looking at the contract and the vulnerability type SWC-107-Reentrancy, I can see one critical vulnerability in the `_setComptroller` function (lines 930-947). This function has no reentrancy protection while it's changing a critical component (comptroller) that could potentially be malicious and call back into the contract. Additionally, I notice that while most external state-changing functions use the `nonReentrant` modifier, `_setComptroller` doesn't.
+
+Here's the fixed code:
+
+```json
+[
+    {
+        "contract_name": "CToken",
+        "contract_version": "^0.8.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_setComptroller",
+                "fix_info": "Added reentrancy guard to prevent potential reentrancy attacks when setting a new comptroller",
+                "corrected_code": "function _setComptroller(ComptrollerInterface newComptroller) override public nonReentrant returns (uint) {\n        // Check caller is admin\n        if (msg.sender != admin) {\n            revert SetComptrollerOwnerCheck();\n        }\n\n        ComptrollerInterface oldComptroller = comptroller;\n        // Ensure invoke comptroller.isComptroller() returns true\n        require(newComptroller.isComptroller(), \"marker method returned false\");\n\n        // Set market's comptroller to newComptroller\n        comptroller = newComptroller;\n\n        // Emit NewComptroller(oldComptroller, newComptroller)\n        emit NewComptroller(oldComptroller, newComptroller);\n\n        return NO_ERROR;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+The fix adds the `nonReentrant` modifier to the `_setComptroller` function to prevent reentrancy attacks. This is important because:
+1. The function changes the `comptroller` state variable
+2. The new comptroller could be a malicious contract that calls back into this contract
+3. Without the reentrancy guard, the malicious comptroller could manipulate state during the execution of this function
+
+The contract already has a `nonReentrant` modifier that's used in other critical functions (like `transfer`, `accrueInterest`, etc.), so this fix maintains consistency with the existing security pattern.

@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "Deck",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "nonce",
+                "fix_info": "Added a nonce counter to prevent replay attacks and improve randomness",
+                "variable_code": "uint256 private nonce;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyNonZeroCard",
+                "fix_info": "Added modifier to validate cardNumber input",
+                "modifier_code": "modifier onlyNonZeroCard(uint8 cardNumber) {\n    require(cardNumber > 0, \"Card number must be greater than 0\");\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "deal",
+                "fix_info": "Replaced vulnerable block-based randomness with safer pseudo-randomness using hash chain",
+                "corrected_code": "function deal(address player, uint8 cardNumber) internal onlyNonZeroCard(cardNumber) returns (uint8) {\n    nonce++;\n    bytes32 seed = keccak256(abi.encodePacked(\n        blockhash(block.number - 1),\n        player,\n        cardNumber,\n        nonce,\n        block.difficulty,\n        block.coinbase,\n        block.timestamp\n    ));\n    \n    // Combine multiple seeds for better randomness\n    bytes32 enhancedSeed = keccak256(abi.encodePacked(\n        seed,\n        uint256(seed) ^ uint256(uint160(player)),\n        nonce * cardNumber\n    ));\n    \n    // Ensure result is between 0 and 51 (inclusive) for 52-card deck\n    return uint8(uint256(enhancedSeed) % 52);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "resetNonce",
+                "fix_info": "Added function to reset nonce in case needed",
+                "corrected_code": "function resetNonce() internal {\n    nonce = 0;\n}",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

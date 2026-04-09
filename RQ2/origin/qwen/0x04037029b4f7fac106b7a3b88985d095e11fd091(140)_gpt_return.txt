@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(owner == tx.origin, \"!owner\");",
+    "description": "The modifier uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract that forwards the transaction, making tx.origin point to the legitimate owner while msg.sender points to the malicious contract. This allows unauthorized access to owner-only functions. The commented code shows the correct approach using msg.sender."
+}
+```

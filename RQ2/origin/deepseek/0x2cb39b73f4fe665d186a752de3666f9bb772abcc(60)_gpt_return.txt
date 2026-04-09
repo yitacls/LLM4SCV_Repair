@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The low-level 'send' call does not check its return value. If the 'owner' is a smart contract that runs out of gas or rejects the transfer, the transaction will not revert, leaving the contract in an inconsistent state where tokens were minted but the Ether transfer failed. In Solidity 0.4.25, 'send' forwards only 2300 gas, which is insufficient for most contract interactions, increasing the likelihood of failure. The function should either use 'transfer' (which automatically reverts on failure) or check the return value of 'send' and revert if false."
+}
+```

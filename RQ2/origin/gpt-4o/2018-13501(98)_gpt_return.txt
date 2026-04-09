@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; // <IO_VUL>",
+    "description": "The code does not account for potential integer overflow when adding `mintedAmount` to `balanceOf[target]`. In Solidity versions prior to 0.8.0, integers do not have built-in overflow checks, which could result in a wraparound value for `balanceOf[target]`. An attacker could exploit this by minting a large value to cause a balance overflow and disrupt the contract's functionality."
+}
+```

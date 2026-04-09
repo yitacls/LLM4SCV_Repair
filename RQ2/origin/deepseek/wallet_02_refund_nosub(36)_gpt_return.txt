@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function refund() public { msg.sender.transfer(balances[msg.sender]); }",
+    "description": "The refund function lacks access control modifiers or require statements to validate the caller's identity, allowing any address to call it and claim arbitrary amounts. Specifically, it does not check if the caller's balance is greater than zero before transferring, nor does it record that the refund has been processed, potentially enabling reentrancy attacks and unauthorized fund drainage."
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "GRX",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "buy",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath for multiplication and added proper validation for buyPrice",
+            "corrected_code": "function buy() payable returns (uint256 amount){\n        if(!usersCanTrade && !canTrade[msg.sender]) revert();\n        require(buyPrice > 0); // Prevent division by zero and invalid calculations\n        amount = safeMul(msg.value, buyPrice); // Use safe multiplication\n        require(balanceOf[this] >= amount); // checks if it has enough to sell\n        balanceOf[msg.sender] += amount; // adds the amount to buyer's balance\n        balanceOf[this] -= amount; // subtracts amount from seller's balance\n        Transfer(this, msg.sender, amount); // execute an event reflecting the change\n        return amount; // ends function and returns\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

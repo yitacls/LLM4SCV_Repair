@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "isSuccess = investorsAddress[i].send(paymentAmount);",
+    "description": "The send() function is used without proper error handling. In Solidity ^0.4.24, send() returns false on failure but does not revert the transaction. This can lead to silent failures where payments to investors fail but the contract continues execution, potentially leading to loss of funds or inconsistent state. The function should check the return value and handle failures appropriately, or use transfer() which automatically reverts on failure."
+}
+```

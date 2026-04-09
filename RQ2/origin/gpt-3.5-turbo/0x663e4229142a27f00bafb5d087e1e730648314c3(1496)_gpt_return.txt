@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "bool res = nftAddress.send(this.balance);",
+    "description": "The call to 'send' method on address 'nftAddress' is not checked for success or failure. If the target address is a contract with a fallback function that consumes a lot of gas, the send operation may fail, leading to loss of funds or denial of service."
+}
+```

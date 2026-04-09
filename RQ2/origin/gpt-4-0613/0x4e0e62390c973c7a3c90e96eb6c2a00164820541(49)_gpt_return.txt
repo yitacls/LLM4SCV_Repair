@@ -1,0 +1,13 @@
+```json
+{
+  "contractName": "ERC20Standard",
+  "vulnerabilities": [
+    {
+    	"type": "access_control",
+    	"location": "require(tx.origin == owner);",
+    	"description": "Because the contract checks for tx.origin instead of msg.sender, an attacker might create a malicious contract that makes an external call to your contract. In this case, the tx.origin is always the address where the original transaction was created (the attacker) and not the contract that is currently executing and that might forward the call."
+    }
+   ],
+  "version": "^0.4.11"
+}
+```

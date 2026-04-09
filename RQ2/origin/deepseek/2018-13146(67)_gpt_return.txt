@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. The unchecked addition operations in these two lines could result in integer overflow if the resulting balanceOf[target] or totalSupply exceeds the maximum value of uint256 (2^256 - 1). An attacker could potentially exploit this by providing mintedAmount values that cause overflow, leading to incorrect token balances and potentially disrupting the token economy. For example, if balanceOf[target] is close to the maximum uint256 value, adding mintedAmount could wrap around to a very small number instead of causing a transaction revert. The contract should use SafeMath library or upgrade to Solidity 0.8.0+ to enable built-in overflow checks."
+}
+```

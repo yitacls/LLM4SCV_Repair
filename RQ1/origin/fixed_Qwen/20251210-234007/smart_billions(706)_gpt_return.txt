@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Removed usage of block.blockhash() which is vulnerable to manipulation and predictability. Replaced with a more secure approach using keccak256 hashing of block difficulty, timestamp, and number combined with sender address and nonce for better randomness.",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta) constant private returns (uint) {\n        return( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb)) & 0xFFFFFF )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+1)) & 0xFFFFFF ) << 24 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+2)) & 0xFFFFFF ) << 48 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+3)) & 0xFFFFFF ) << 72 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+4)) & 0xFFFFFF ) << 96 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+5)) & 0xFFFFFF ) << 120 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+6)) & 0xFFFFFF ) << 144 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+7)) & 0xFFFFFF ) << 168 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+8)) & 0xFFFFFF ) << 192 )\n            | ( ( uint(keccak256(block.difficulty, block.timestamp, block.number, msg.sender, _lastb+9)) & 0xFFFFFF ) << 216 )\n            | ( ( uint(_delta) / hashesSize) << 240));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

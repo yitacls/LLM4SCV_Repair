@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "firstTarget.call.value(msg.value)()",
+    "description": "The low-level call() function is used without checking the return value. In Solidity 0.4.23, when .call() is used without verification, failures in the external call (such as out of gas, non-existent contract, or revert in the target) will not propagate the error. This means the contract will continue execution as if the call succeeded, potentially leaving the contract in an inconsistent state. Since the function transfers Ether (msg.value), failure to verify the call's success could result in lost funds or incorrect accounting. It is recommended to check the return value and handle failures appropriately."
+}
+```

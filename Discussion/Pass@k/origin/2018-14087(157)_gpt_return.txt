@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "EncryptedToken",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Fixed arithmetic vulnerability by using SafeMath library for calculations and removed direct send to owner.",
+                "corrected_code": "function () payable public {\n\t\tuint amount = SafeMath.mul(msg.value, buyPrice);               // calculates the amount\n\t\t_transfer(owner, msg.sender, amount);\n\t}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

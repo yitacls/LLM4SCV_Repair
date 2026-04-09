@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == ownerOf(_tokenId));  // fault line",
+    "description": "The use of tx.origin for access control in the approve function is a critical vulnerability. tx.origin represents the sender of the transaction, which is not always the user directly interacting with the contract. This can be manipulated by an attacker to bypass access control mechanisms and perform unauthorized actions."
+}
+```

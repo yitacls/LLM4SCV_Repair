@@ -1,0 +1,39 @@
+```json
+[
+    {
+        "contract_name": "LiquidStakingV2",
+        "contract_version": ">=0.7.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdrawUnstakedTokens",
+                "fix_info": "Prevent potential DoS by gas limit. Restructured loop logic to avoid gas limit issues.",
+                "corrected_code": "function withdrawUnstakedTokens(address staker) public virtual override whenNotPaused {
+    require(staker == _msgSender(), 'LQ20');
+    uint256 _withdrawBalance;
+    uint256 _unstakingExpirationLength = _unstakingExpiration[staker].length;
+    
+    for(uint256 i = _withdrawCounters[staker]; i < _unstakingExpirationLength; i++) {
+        (uint256 _getUnstakeTime,,) = getUnstakeTime(_unstakingExpiration[staker][i]);
+        if (block.timestamp >= _getUnstakeTime) {
+            _withdrawBalance += _unstakingAmount[staker][i];
+            _unstakingExpiration[staker][i] = 0;
+            _unstakingAmount[staker][i] = 0;
+            _withdrawCounters[staker]++;
+        }
+        if(gasleft() < 10000) {
+            break; // Prevents gas exhaustion
+        }
+    }
+
+    require(_withdrawBalance > 0, 'LQ21');
+    emit WithdrawUnstakeTokens(staker, _withdrawBalance, block.timestamp);
+    _uTokens.mint(staker, _withdrawBalance);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

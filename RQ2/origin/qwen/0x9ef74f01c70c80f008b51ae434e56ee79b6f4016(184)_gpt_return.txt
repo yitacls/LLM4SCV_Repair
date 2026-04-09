@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "etherToken.deposit.value(amount)();",
+    "description": "The depositEtherTokenAmount function lacks proper access control modifiers, allowing any external caller to deposit ether tokens on behalf of the contract. In Solidity ^0.4.24, the function should include access modifiers like 'onlyOwner' or similar authorization checks to prevent unauthorized users from manipulating the contract's ether token balance. Without such controls, malicious actors can force the contract to deposit funds, potentially leading to loss of funds or unexpected behavior."
+}
+```

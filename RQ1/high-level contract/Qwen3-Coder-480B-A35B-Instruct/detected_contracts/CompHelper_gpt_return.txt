@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);",
+        "description": "The return value of the enterMarkets function call is not checked. According to the Compound protocol, enterMarkets returns an array of error codes, and not checking these codes may lead to unexpected behavior if the market entry fails. This could cause the contract to proceed as if the market was entered successfully, when in fact it was not."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);",
+        "description": "The return value of the exitMarket function call is not checked. The exitMarket function returns an error code, and not checking this code may lead to unexpected behavior if the market exit fails. This could cause the contract to proceed as if the market was exited successfully, when in fact it was not."
+    }
+]
+```

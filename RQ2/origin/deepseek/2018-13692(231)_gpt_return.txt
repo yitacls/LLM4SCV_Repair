@@ -1,0 +1,7 @@
+```json
+{
+    "vulnerability_type": "Integer Overflow",
+    "location": "balanceOf[target] += mintedAmount; and totalSupply += mintedAmount;",
+    "description": "In Solidity versions prior to 0.8.0, integer arithmetic operations do not automatically check for overflow/underflow. When adding to balanceOf[target] or totalSupply, if the result exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to zero, allowing an attacker to manipulate token balances. Additionally, there is an issue with the Transfer events: the first Transfer event uses 'this' (contract address) as both the 'from' and 'to' parameter, which is incorrect. The function also lacks a require statement to validate that mintedAmount > 0 and that the addition does not overflow. Use SafeMath or upgrade to Solidity 0.8.0+ with built-in overflow checks to mitigate this vulnerability."
+}
+```

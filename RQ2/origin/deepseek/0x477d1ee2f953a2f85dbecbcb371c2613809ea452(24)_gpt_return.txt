@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.send(this.balance);",
+    "description": "The 'send' function returns a boolean indicating success or failure, but this return value is not checked. If the transfer fails (e.g., due to out-of-gas, call depth limit, or recipient contract reverting), execution continues without handling the failure. This can leave funds locked in the contract. Additionally, using 'delegatecall' before the transfer introduces reentrancy risks, as the malicious contract could re-enter the function before 'adr.send' is executed. In Solidity 0.4.16, 'send' forwards only 2300 gas, which is insufficient for most operations, increasing the risk of failure."
+}
+```

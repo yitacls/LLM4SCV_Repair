@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value)",
+    "description": "The low-level call 'wallet.send(msg.value)' does not check the return value. In Solidity ^0.4.23, send() returns false on failure but the contract does not handle this case. If the send() call fails (e.g., due to gas stipend limits, recipient being a contract without payable fallback, or wallet being invalid), the function will continue execution without reverting, potentially leading to loss of funds or unexpected behavior. The return value should be checked and handled appropriately."
+}
+```

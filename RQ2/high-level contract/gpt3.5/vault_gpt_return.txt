@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "L409 (submitBurnProof function)",
+            "description": "The line 'data.amount = data.amount * (10 ** (uint(decimals) - 9));' could potentially cause an integer overflow if 'data.amount' becomes too large after multiplication."
+        },
+        {
+            "type": "SWC-114-Transaction Order Dependence",
+            "location": "L513 - L548 (execute function)",
+            "description": "The execution order of transactions in the execute function may be influenced by external factors, leading to potential vulnerabilities due to order dependence."
+        },
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "L513 - L548 (execute function)",
+            "description": "The function execute contains a section where it transfers Ether without proper protections, leaving it vulnerable to malicious exploits."
+        }
+    ]
+}
+```

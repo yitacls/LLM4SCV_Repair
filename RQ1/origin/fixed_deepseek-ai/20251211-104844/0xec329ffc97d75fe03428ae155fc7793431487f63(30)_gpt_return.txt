@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Owned",
+    "contract_version": ">=0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "execute",
+            "fix_info": "Added return value check for low-level call, implemented proper error handling with revert messages, and used require() to ensure contract interaction success",
+            "corrected_code": "function execute(address _dst, uint _value, bytes memory _data) public onlyOwner {\n    (bool success, ) = _dst.call{value: _value}(_data);\n    require(success, \"Low-level call failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

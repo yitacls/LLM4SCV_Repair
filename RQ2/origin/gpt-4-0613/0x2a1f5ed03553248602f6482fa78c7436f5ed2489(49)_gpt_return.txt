@@ -1,0 +1,13 @@
+```json
+{
+    "contractName": "ERC20Standard",
+    "version": "^0.4.11",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract uses tx.origin for access control which is potentially vulnerable. An attacker can manipulate the tx.origin value. It's safer to use msg.sender instead which represents the address of the current function caller."
+        }
+    ]
+}
+```

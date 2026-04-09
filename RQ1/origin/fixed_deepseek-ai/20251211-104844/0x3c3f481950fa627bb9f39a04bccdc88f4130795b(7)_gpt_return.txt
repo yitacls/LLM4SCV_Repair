@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "EtherBet",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "Added explicit visibility specifier (public/private/internal) to follow best practices",
+            "variable_code": "bool private locked;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyUnlocked",
+            "fix_info": "Added modifier to check lock state for better code organization",
+            "modifier_code": "modifier onlyUnlocked { require(!locked, \"Contract is locked\"); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "bet",
+            "fix_info": "Fixed reentrancy vulnerability by implementing checks-effects-interactions pattern, using SafeMath for calculations, and properly handling ether transfers",
+            "corrected_code": "function bet() external payable onlyUnlocked {\n    require(msg.value == 1 ether, \"Must send exactly 1 ether\");\n    \n    uint256 payout = 0;\n    bool win = (random() % 2 == 1);\n    \n    if (win) {\n        payout = 2 ether;\n    }\n    \n    locked = true;\n    \n    if (payout > 0) {\n        address payable recipient = msg.sender;\n        recipient.transfer(payout);\n    }\n    \n    locked = false;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

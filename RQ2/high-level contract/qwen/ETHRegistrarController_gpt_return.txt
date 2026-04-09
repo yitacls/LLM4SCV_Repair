@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "ETHRegistrarController",
+        "contract_version": "^0.5.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "commit",
+                "fix_info": "Fixed transaction order dependence by ensuring commitment is not already recent and adding proper time checks.",
+                "corrected_code": "function commit(bytes32 commitment) public {\n    require(commitments[commitment] == 0 || commitments[commitment] + MAX_COMMITMENT_AGE < now, \"Commitment is not expired\");\n    commitments[commitment] = now;\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "register",
+                "fix_info": "Fixed unchecked call return value by using safe transfer pattern and restructured logic for clarity and security.",
+                "corrected_code": "function register(string calldata name, address owner, uint duration, bytes32 secret) external payable {\n    // Require a valid commitment\n    bytes32 commitment = makeCommitment(name, secret);\n    require(commitments[commitment] != 0 && commitments[commitment] + MIN_COMMITMENT_AGE <= now, \"Invalid commitment\");\n\n    // If the commitment is too old, or the name is registered, stop\n    if(commitments[commitment] + MAX_COMMITMENT_AGE < now || !available(name)) {\n        msg.sender.transfer(msg.value);\n        return;\n    }\n    delete(commitments[commitment]);\n\n    uint cost = rentPrice(name, duration);\n    require(duration >= MIN_REGISTRATION_DURATION);\n    require(msg.value >= cost);\n\n    bytes32 label = keccak256(bytes(name));\n    uint expires = base.register(uint256(label), owner, duration);\n    emit NameRegistered(name, owner, cost, expires);\n\n    if(msg.value > cost) {\n        (bool success, ) = msg.sender.call.value(msg.value - cost)(\"\");\n        require(success, \"Transfer failed\");\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "renew",
+                "fix_info": "Fixed unchecked call return value by using safe transfer pattern.",
+                "corrected_code": "function renew(string calldata name, uint duration) external payable {\n    uint cost = rentPrice(name, duration);\n    require(msg.value >= cost);\n\n    bytes32 label = keccak256(bytes(name));\n    uint expires = base.renew(uint256(label), duration);\n\n    if(msg.value > cost) {\n        (bool success, ) = msg.sender.call.value(msg.value - cost)(\"\");\n        require(success, \"Transfer failed\");\n    }\n\n    emit NameRenewed(name, cost, expires);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

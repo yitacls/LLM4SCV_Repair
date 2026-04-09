@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "Using tx.origin for authentication in the checkOwner() function introduces a phishing vulnerability. tx.origin returns the original sender of the transaction chain, not the immediate caller. This allows malicious contracts to trick users into calling functions that rely on tx.origin authentication, potentially bypassing ownership checks if the owner is tricked into interacting with a malicious contract. Instead, msg.sender should be used to verify the immediate caller's address."
+}
+```

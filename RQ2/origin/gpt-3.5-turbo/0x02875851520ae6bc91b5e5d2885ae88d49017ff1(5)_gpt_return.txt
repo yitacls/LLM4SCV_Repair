@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "wallet.call(msg.value);",
+            "description": "The use of 'wallet.call(msg.value)' allows for unchecked low-level calls, which can potentially introduce security vulnerabilities in the contract."
+        }
+    ]
+}
+```

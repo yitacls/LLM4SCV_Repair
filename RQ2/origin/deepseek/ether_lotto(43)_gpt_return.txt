@@ -1,0 +1,7 @@
+```json
+{
+    "type": "TIME_MANIPULATION",
+    "location": "var random = uint(sha3(block.timestamp)) % 2;",
+    "description": "The contract uses block.timestamp to generate random numbers, which can be manipulated by miners. In Solidity 0.4.15, miners have significant control over the block timestamp and can influence it within a limited range (±900 seconds from the previous block). An attacker participating as a miner could set a favorable timestamp to ensure they always win when calling the play() function. Additionally, all participants in the same block will get the same 'random' result, breaking fairness."
+}
+```

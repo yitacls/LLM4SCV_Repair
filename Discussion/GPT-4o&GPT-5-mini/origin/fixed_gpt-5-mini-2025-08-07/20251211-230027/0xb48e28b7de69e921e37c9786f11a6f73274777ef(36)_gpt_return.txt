@@ -1,0 +1,14 @@
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Prevent reentrancy by using checks-effects-interactions: capture the amount to forward in a local variable, clear the contract state (amountRaised) before external calls, attempt the send and restore state on failure. Preserve original behavior of non-reverting send.",
+            "corrected_code": "function () payable {\n    require(!crowdsaleClosed);\n\n    uint amount = msg.value;\n\n    // Effects: update internal accounting first\n    balanceOf[msg.sender] += amount;\n    amountRaised += amount;\n\n    // Save the amount to forward and clear state before external calls (prevent reentrancy)\n    uint toSend = amountRaised;\n    amountRaised = 0;\n\n    // Interactions: external calls last\n    tokenReward.transfer(msg.sender, amount / price);\n\n    // Attempt to forward funds to beneficiary. If send fails, restore amountRaised to preserve original non-reverting behavior.\n    if (!beneficiary.send(toSend)) {\n        amountRaised = toSend;\n    }\n\n    FundTransfer(msg.sender, amount, true);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

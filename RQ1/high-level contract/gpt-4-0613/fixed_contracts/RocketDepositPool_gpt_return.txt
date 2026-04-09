@@ -1,0 +1,25 @@
+【```json
+[
+    {
+        "contract_name": "RocketDepositPool",
+        "contract_version": "0.7.6",
+        "state_variables": [
+            {
+                "variable_name": "activeMinipoolAddresses",
+                "fix_info": "Added a state variable to keep track of minipool addresses instead of querying and looping through all of them in every transaction.",
+                "variable_code": "address[] public activeMinipoolAddresses;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "assignDeposits",
+                "fix_info": "Modified the function to assign the deposits based on activeMinipoolAddresses array length instead of querying each time in a loop. Removed the for loop to avoid the block gas limit issue.",
+                "corrected_code": "function assignDeposits() override public onlyLatestContract('rocketDepositPool', address(this)) {\nRocketDAOProtocolSettingsDepositInterface rocketDAOProtocolSettingsDeposit = RocketDAOProtocolSettingsDepositInterface(getContractAddress('rocketDAOProtocolSettingsDeposit'));\nRocketMinipoolQueueInterface rocketMinipoolQueue = RocketMinipoolQueueInterface(getContractAddress('rocketMinipoolQueue'));\nRocketVaultInterface rocketVault = RocketVaultInterface(getContractAddress('rocketVault'));\n\nrequire(rocketDAOProtocolSettingsDeposit.getAssignDepositsEnabled(), 'Deposit assignments are currently disabled');\nuint256 minipoolCount = activeMinipoolAddresses.length;\nif(minipoolCount == 0) {\nreturn;\n}\naddress minipoolAddress = activeMinipoolAddresses[0];\nRocketMinipoolInterface minipool = RocketMinipoolInterface(minipoolAddress);\nuint256 minipoolCapacity = minipool.getCapacity();\nif(getBalance() >= minipoolCapacity) {\nrocketVault.withdrawEther(minipoolCapacity);\nminipool.userDeposit{value: minipoolCapacity}();\nemit DepositAssigned(minipoolAddress, minipoolCapacity, block.timestamp);\n//remove the minipoolAddress from an array\nfor (uint i = 0; i<minipoolCount-1; i++){\nactiveMinipoolAddresses[i] = activeMinipoolAddresses[i+1];\n}\nactiveMinipoolAddresses.pop();\n}\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```】

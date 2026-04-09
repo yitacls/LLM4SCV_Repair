@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "ADDRESS_EIFP2_CONTRACT.call.value(address(this).balance)(\"\");",
+    "description": "This low-level call transfers the contract's entire balance to ADDRESS_EIFP2_CONTRACT without checking the return value or handling potential failures. In Solidity 0.5.1, the .call() function returns a boolean success value that should be checked. If the external call fails (e.g., gas exhaustion, revert in called contract), the transaction will continue execution without the funds being transferred, potentially leaving funds stranded or causing inconsistent state. This should be replaced with proper error handling using require() or checking the return value."
+}
+```

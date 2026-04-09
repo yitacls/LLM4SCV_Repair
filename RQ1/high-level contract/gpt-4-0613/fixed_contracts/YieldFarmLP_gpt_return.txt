@@ -1,0 +1,43 @@
+```json
+[{
+    "contract_name": "YieldFarmLP",
+    "contract_version": "0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Floating pragma version is vulnerable to future Solidity changes. It's fixed by specifying the particular version of Solidity being used.",
+            "corrected_code": "pragma solidity 0.6.12;",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "massHarvest",
+            "fix_info": "Potential DoS with Block Gas Limit in the loop of massHarvest function. It's fixed using the pagination logic.",
+            "corrected_code": 
+            "function massHarvest() external returns (uint){
+                uint totalDistributedValue;
+                uint epochId = _getEpochId() > NR_OF_EPOCHS ? NR_OF_EPOCHS : _getEpochId().sub(1); // fails in epoch 0
+                uint startIndex = lastEpochIdHarvested[msg.sender] + 1;
+                uint endIndex = startIndex + 100 > epochId ? epochId : startIndex + 100;
+                
+                for (uint128 i = uint128(startIndex); i <= uint128(endIndex); i++) {
+                    totalDistributedValue += _harvest(i);
+                }
+
+                emit MassHarvest(msg.sender, epochId - lastEpochIdHarvested[msg.sender], totalDistributedValue);
+
+                if (totalDistributedValue > 0) {
+                    _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);
+                }
+
+                return totalDistributedValue;
+            }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+The constructor function's floating pragma was set to a specific version, to avoid future Solidity non-backward compatible changes which may affect the contract functionality. 
+
+In addition, the function massHarvest was fixed to eliminate the DoS with Block Gas Limit. In Ethereum, gas is used to limit the amount of work that can be performed in a block and avoid DoS attacks. However, if a large array is iterated over, the total gas required can exceed the block gas limit, causing the transaction to fail. In this case, a large array of unharvested epochs might cause this. To solve this problem, the logic was changed to a pagination approach where you can limit the iterations to a maximum of 100 epochs to avoid exceeding the block gas limit.

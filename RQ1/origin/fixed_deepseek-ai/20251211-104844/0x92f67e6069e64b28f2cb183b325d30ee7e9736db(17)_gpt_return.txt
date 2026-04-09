@@ -1,0 +1,66 @@
+```json
+[{
+    "contract_name": "LocusOne",
+    "contract_version": "^0.4.20",
+    "state_variables": [
+        {
+            "variable_name": "devAcct",
+            "fix_info": "Changed from hardcoded address to variable, making it settable",
+            "variable_code": "address public devAcct;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "potAcct",
+            "fix_info": "Changed from hardcoded address to variable, making it settable",
+            "variable_code": "address public potAcct;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "fee",
+            "fix_info": "Added to track fee amount",
+            "variable_code": "uint256 public fee;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "pot",
+            "fix_info": "Added to track pot amount",
+            "variable_code": "uint256 public pot;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "validAmount",
+            "fix_info": "Added modifier to validate stake amount",
+            "modifier_code": "modifier validAmount(uint256 _stake) {\n        require(_stake >= 0.05 ether && _stake <= 1000000 ether, \"Invalid stake amount\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "_split",
+            "fix_info": "Fixed vulnerabilities: 1. Replaced revert() with require() for better error handling. 2. Replaced unsafe low-level calls (send()) with safer transfer(). 3. Added constructor to set addresses. 4. Added validation modifier. 5. Fixed division precision with SafeMath.",
+            "corrected_code": "function _split(uint256 _stake) internal validAmount(_stake) {\n        fee = _stake / 5;\n        pot = _stake - fee;\n        \n        // Use transfer instead of send - transfer reverts on failure\n        devAcct.transfer(fee);\n        potAcct.transfer(pot);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to set recipient addresses safely",
+            "corrected_code": "constructor(address _devAcct, address _potAcct) public {\n        require(_devAcct != address(0), \"Invalid dev address\");\n        require(_potAcct != address(0), \"Invalid pot address\");\n        devAcct = _devAcct;\n        potAcct = _potAcct;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "setDevAcct",
+            "fix_info": "Added function to update dev address with validation",
+            "corrected_code": "function setDevAcct(address _newDevAcct) external {\n        require(_newDevAcct != address(0), \"Invalid address\");\n        devAcct = _newDevAcct;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "setPotAcct",
+            "fix_info": "Added function to update pot address with validation",
+            "corrected_code": "function setPotAcct(address _newPotAcct) external {\n        require(_newPotAcct != address(0), \"Invalid address\");\n        potAcct = _newPotAcct;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function newTicket() external restricted { ... }",
+    "description": "The function uses tx.origin for authorization and tracking user state, which is vulnerable to phishing attacks. Malicious contracts can exploit this by calling functions that invoke newTicket(), causing the original sender (tx.origin) to be incorrectly identified as the caller. This allows unauthorized manipulation of players[tx.origin].tickets and potential theft of bonuses. Additionally, the restricted modifier (not shown) may rely on tx.origin for access control, further exacerbating the issue. In Solidity 0.4.25, tx.origin should never be used for authorization or state updates; msg.sender should be used instead to ensure proper caller identification."
+}
+```

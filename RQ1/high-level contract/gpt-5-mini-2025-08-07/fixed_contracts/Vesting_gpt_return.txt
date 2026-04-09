@@ -1,0 +1,21 @@
+[{
+    "contract_name": "Vesting",
+    "contract_version": "0.8.10",
+    "state_variables": [
+        {
+            "variable_name": "MAX_LOCK_AMOUNT",
+            "fix_info": "Replaced unsafe literal expression that could overflow with a safe, explicit computation using type(uint256).max to avoid overflow at compile time.",
+            "variable_code": "uint256 private MAX_LOCK_AMOUNT = type(uint256).max / 99;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "updateScore",
+            "fix_info": "Prevent DoS caused by a single failing token transfer by attempting low-level transfer and continuing on failure; only update releasedAmount after a successful transfer. Also replace single-beneficiary finalization check with an all-beneficiaries check to correctly detect completion. Use storage reference for locks to update state directly and avoid marking tokens as released when transfer fails.",
+            "corrected_code": "function updateScore(uint8 _newScore)\n    external\n    onlyOracle\n    isInitialized\n    notFinalized\n{\n    require(_newScore <= 100, \"invalid score value\");\n    require(\n        _currentTime().sub(initializedAt) > EPOCH_SIZE,\n        \"scoring epoch 1 still not finished\"\n    );\n\n    uint256 timeFromLastEpoch = _currentTime().sub(initializedAt).mod(\n        EPOCH_SIZE\n    );\n\n    require(\n        timeFromLastEpoch > 0 && timeFromLastEpoch <= 1 days,\n        \"scoring epoch still not finished\"\n    );\n\n    require(\n        _currentTime().sub(updatedAt) > 1 days,\n        \"can not update score value twise in the same window\"\n    );\n\n    lastScore = _newScore;\n    updatedAt = _currentTime();\n\n    if (_newScore != 0) {\n        for (uint256 i = 0; i < beneficiaries.length; i++) {\n            address beneficiary = beneficiaries[i];\n            LockVesting storage lock = locks[beneficiary];\n\n            // calculate already vested percentage\n            uint256 remainingAmount = lock.totalAmount.sub(\n                lock.releasedAmount\n            );\n\n            if (remainingAmount == 0) {\n                continue;\n            }\n\n            // calculate amount to be vested\n            uint256 releasableAmount = _newScore.mul(remainingAmount).div(\n                100\n            );\n\n            if (releasableAmount == 0) {\n                continue;\n            }\n\n            // attempt transfer via low-level call to avoid a single bad token causing a full revert (DoS)\n            (bool success, bytes memory data) = token.call(\n                abi.encodeWithSelector(IERC20.transfer.selector, beneficiary, releasableAmount)\n            );\n\n            bool transferSucceeded = success && (data.length == 0 || abi.decode(data, (bool)));\n\n            if (!transferSucceeded) {\n                // Skip this beneficiary if transfer failed and continue with others.\n                // Do not update releasedAmount so tokens are not considered released when transfer fails.\n                continue;\n            }\n\n            // update released amount after successful transfer\n            lock.releasedAmount = lock.releasedAmount.add(releasableAmount);\n        }\n\n        // finalize only when all beneficiaries have received their full allocation\n        bool allReleased = true;\n        for (uint256 i = 0; i < beneficiaries.length; i++) {\n            if (locks[beneficiaries[i]].releasedAmount != locks[beneficiaries[i]].totalAmount) {\n                allReleased = false;\n                break;\n            }\n        }\n\n        if (allReleased) {\n            finalized = true;\n        }\n    }\n\n    emit ScoreUpdated(_newScore, _epochNumber());\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

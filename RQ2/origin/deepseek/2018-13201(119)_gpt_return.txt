@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[this] += amount; and balanceOf[msg.sender] -= amount;",
+    "description": "The contract uses Solidity ^0.4.13 which does not have built-in overflow/underflow protection. The operations `balanceOf[this] += amount` and `balanceOf[msg.sender] -= amount` can overflow/underflow if `amount` is extremely large or if `balanceOf[msg.sender]` is less than `amount`. This could allow attackers to manipulate token balances arbitrarily. Additionally, `amount * sellPrice` in the send call could overflow if either value is large enough, potentially causing incorrect ether transfers."
+}
+```

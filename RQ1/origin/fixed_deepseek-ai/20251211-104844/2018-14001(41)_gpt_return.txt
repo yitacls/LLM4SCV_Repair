@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ExtendedToken",
+        "contract_version": "^0.4.11",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "batchTransfer",
+                "fix_info": "Fixed arithmetic overflow vulnerability in multiplication and addition operations by using SafeMath library. Added require statements for better validation.",
+                "corrected_code": "function batchTransfer(address[] _receivers, uint256 _value) public returns (bool) {\n    uint256 cnt = _receivers.length;\n    require(cnt > 0, \"No receivers specified\");\n    \n    // Safe multiplication to prevent overflow\n    uint256 amount = SafeMath.mul(cnt, _value);\n    require(amount > 0, \"Transfer amount must be positive\");\n    \n    // Check sender balance using SafeMath\n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    \n    // Safe subtraction\n    balanceOf[msg.sender] = SafeMath.sub(balanceOf[msg.sender], amount);\n    \n    for (uint i = 0; i < cnt; i++) {\n        require(_receivers[i] != address(0), \"Invalid receiver address\");\n        // Safe addition\n        balanceOf[_receivers[i]] = SafeMath.add(balanceOf[_receivers[i]], _value);\n        Transfer(msg.sender, _receivers[i], _value);\n    }\n    return true;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

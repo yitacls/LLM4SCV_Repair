@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-105-Unprotected Ether Withdrawal",
+            "location": "L81-142",
+            "description": "The `deposit` function allows deposits of token0 and token1 without checking for Ether transfers. An attacker could send Ether to the contract, potentially resulting in funds getting locked in the contract."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "L175-216",
+            "description": "The `withdraw` function is susceptible to reentrancy attacks as it first performs the liquidity withdrawal and then transfers token amounts, providing an opportunity for an attacker to manipulate the token transfers recursively."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "L415",
+            "description": "The `uniswapV3MintCallback` function contains an unused condition that does not have any effective outcome in the logic flow."
+        }
+    ]
+}
+```

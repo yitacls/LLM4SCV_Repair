@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "uint256 tokensIssued = (msg.value * 1000) + nextBonusPayout;",
+    "description": "In Solidity 0.4.19, arithmetic operations do not have built-in overflow/underflow protection. The calculation '(msg.value * 1000) + nextBonusPayout' could overflow the uint256 maximum value (2^256 - 1) if 'msg.value' is large enough (approximately >= 1.15e71 wei when nextBonusPayout is significant). This would cause tokensIssued to wrap around to a very small number, resulting in incorrect token issuance. Additionally, subsequent operations like 'totalSupply += tokensIssued' and 'balances[msg.sender] += tokensIssued' would also be affected, potentially breaking token economics and allowing attackers to manipulate balances."
+}
+```

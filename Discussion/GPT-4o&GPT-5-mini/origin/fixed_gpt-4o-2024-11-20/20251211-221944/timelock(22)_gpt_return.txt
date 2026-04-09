@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "TimeLock",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "increaseLockTime",
+            "fix_info": "Added overflow check using SafeMath to prevent arithmetic overflow vulnerabilities.",
+            "corrected_code": "function increaseLockTime(uint _secondsToIncrease) public {\n    require(_secondsToIncrease > 0, \"Time to increase must be greater than zero\");\n    uint newLockTime = lockTime[msg.sender] + _secondsToIncrease;\n    require(newLockTime >= lockTime[msg.sender], \"Overflow detected\"); // Check for overflow\n    lockTime[msg.sender] = newLockTime;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

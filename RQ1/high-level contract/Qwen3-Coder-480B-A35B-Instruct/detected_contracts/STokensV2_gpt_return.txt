@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function setRewardRate(uint256 rewardRate)",
+        "description": "The setRewardRate function pushes new reward rates and timestamps into arrays (_rewardRate and _lastMovingRewardTimestamp). Over time, these arrays can grow indefinitely. Since the _calculatePendingRewards function iterates over these arrays in reverse order using a for loop, if the arrays become too large, the transaction may run out of gas, causing a denial of service. This violates the 'Checks-Effects-Interactions' pattern and poses a scalability issue due to unbounded iteration."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function _calculatePendingRewards(uint256 principal, uint256 lastRewardTimestamp)",
+        "description": "The _calculatePendingRewards function contains a for loop that iterates through the _lastMovingRewardTimestamp array in reverse order. As more reward rates are added via setRewardRate, this array grows indefinitely. If the length becomes too large, the loop will consume excessive gas, potentially exceeding the block gas limit and making reward calculations impossible. This leads to a denial of service for users trying to claim rewards or perform actions that trigger reward calculations."
+    }
+]
+```

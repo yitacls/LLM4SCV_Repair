@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Lotto",
+    "contract_version": "^0.4.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "cash",
+            "fix_info": "Fixed vulnerability in low-level call by properly handling the return value of send() and using transfer() instead for better security. Added require checks for all conditions and implemented withdrawal pattern for better gas handling. Updated var declarations to explicit types.",
+            "corrected_code": "function cash(uint roundIndex, uint subpotIndex) {\n    uint subpotsCount = getSubpotsCount(roundIndex);\n    \n    require(subpotIndex < subpotsCount, \"Invalid subpot index\");\n    \n    uint decisionBlockNumber = getDecisionBlockNumber(roundIndex, subpotIndex);\n    \n    require(decisionBlockNumber <= block.number, \"Decision block not yet reached\");\n    \n    require(!rounds[roundIndex].isCashed[subpotIndex], \"Subpot already cashed\");\n    \n    address winner = calculateWinner(roundIndex, subpotIndex);\n    uint subpot = getSubpot(roundIndex);\n    \n    // Mark as cashed before transfer to prevent reentrancy\n    rounds[roundIndex].isCashed[subpotIndex] = true;\n    \n    // Use transfer() instead of send() - automatically reverts on failure\n    winner.transfer(subpot);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

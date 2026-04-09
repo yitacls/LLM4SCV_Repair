@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "STeX_WL",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "foundersAddresses",
+            "fix_info": "Changed type from address[] to address payable[] to enable native token transfers",
+            "variable_code": "address payable[] public foundersAddresses;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Kept as is since modifier definition not provided, but assuming standard ownership pattern",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner, \"Not owner\"); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawToFounders",
+            "fix_info": "1. Updated Solidity version to ^0.8.0 with SafeMath built-in\n2. Replaced multiplication with safe multiplication using SafeMath\n3. Used address payable for native token transfers\n4. Converted ETH amount correctly using 1e15 instead of hardcoded value\n5. Added error messages for better debugging\n6. Used transfer() instead of send() for better gas handling\n7. Added reentrancy guard\n8. Used uint256 instead of uint8 for loop counters to prevent overflow with large founder arrays",
+            "corrected_code": "function withdrawToFounders(uint256 amount) public onlyOwner nonReentrant {\n    require(amount > 0, \"Amount must be greater than 0\");\n    \n    // 0.001 ETH = 1e15 wei\n    uint256 amount_to_withdraw = amount * 1e15;\n    require(address(this).balance >= amount_to_withdraw, \"Insufficient contract balance\");\n    \n    uint256 founderCount = foundersAddresses.length;\n    require(founderCount > 0, \"No founders addresses configured\");\n    \n    uint256 perFounderAmount = amount_to_withdraw / founderCount;\n    require(perFounderAmount > 0, \"Amount per founder too small\");\n    \n    uint256 errors = 0;\n    \n    for (uint256 i = 0; i < founderCount; i++) {\n        try foundersAddresses[i].transfer(perFounderAmount) {\n            // Transfer successful\n        } catch {\n            errors++;\n        }\n    }\n    \n    if (errors > 0) {\n        emit TransferErrors(errors);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

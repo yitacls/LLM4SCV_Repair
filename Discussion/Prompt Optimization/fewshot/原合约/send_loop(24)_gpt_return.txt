@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Refunder",
+        "contract_version": "0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "refundAll",
+                "fix_info": "Prevent DoS by handling potential failures in send function",
+                "corrected_code": "function refundAll() public {
+    for(uint x; x < refundAddresses.length; x++) {
+        if(refunds[refundAddresses[x]] > 0) {
+            address payable recipient = address(uint160(refundAddresses[x]));
+            recipient.transfer(refunds[refundAddresses[x]]);
+        }
+    }
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

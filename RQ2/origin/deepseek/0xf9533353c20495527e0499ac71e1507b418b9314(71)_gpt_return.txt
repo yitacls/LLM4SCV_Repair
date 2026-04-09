@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The send() function is used without checking the return value. In Solidity 0.4.25, send() returns a boolean indicating success/failure but does not revert on failure. If the refund to the purchaser fails (e.g., due to out-of-gas, call depth limit, or the purchaser being a contract that rejects payments), the contract will continue execution without handling the failure, potentially leaving funds locked or causing inconsistent state changes. The recommended fix is to either use transfer() (which reverts on failure) or explicitly check the return value of send() and handle failures appropriately."
+}
+```

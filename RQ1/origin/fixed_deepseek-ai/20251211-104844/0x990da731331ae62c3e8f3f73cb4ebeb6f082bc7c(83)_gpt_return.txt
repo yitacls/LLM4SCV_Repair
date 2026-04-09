@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "PlatoToken",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Added SafeMath library to prevent arithmetic overflows. balanceOf mapping type should be uint256.",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Made totalSupply use SafeMath for overflow protection. Type should be uint256.",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added require statement to ensure ownership protection",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner, \"Not owner\");\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath, added require for non-zero target, and updated Transfer event syntax for Solidity 0.4.13 compatibility",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    // Using SafeMath operations to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    // Emitting Transfer events (Solidity 0.4.x syntax)\n    Transfer(address(0), address(this), mintedAmount);\n    Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

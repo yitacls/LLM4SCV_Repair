@@ -1,0 +1,13 @@
+```json
+{
+    "contract": "TokenSale",
+    "version": "^0.4.19",
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "This contract contains an access control vulnerability. The require statement is checking that the original sender of the transaction (tx.origin) is the owner of the contract. However, this is a flawed method of authorization because if a contract that is called by the owner of the original contract makes a call to this contract, specifically to the addMeByRC() function, then tx.origin will still be the owner. This implies that a potentially untrustworthy contract can manipulate this contract on behalf of the owner."
+        }
+    ]
+}
+```

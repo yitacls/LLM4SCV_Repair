@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "JPMD100B",
+        "contract_version": "^0.4.17",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic vulnerability by using SafeMath library for calculations.",
+                "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner { uint256 totalTokenToMint = SafeMath.mul(tokensToMint, 10 ** 18); balanceOf[owner] = SafeMath.add(balanceOf[owner], totalTokenToMint); totalSupply = SafeMath.add(totalSupply, totalTokenToMint); Transfer(0, owner, totalTokenToMint); }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```  

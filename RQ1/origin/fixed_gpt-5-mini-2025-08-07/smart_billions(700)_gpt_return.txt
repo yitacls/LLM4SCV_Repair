@@ -1,0 +1,14 @@
+[{
+    "contract_name": "SmartBillions",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "calcHashes",
+            "fix_info": "Removed direct calls to block.blockhash (BAD_RANDOMNESS). The function now accepts an array of 10 pre-fetched block hashes from the caller. This preserves the original packing of 10 * 24-bit pieces while avoiding using block-dependent randomness inside the contract (caller responsibility to supply correct hashes).",
+            "corrected_code": "function calcHashes(uint32 _lastb, uint32 _delta, bytes32[10] _blockHashes) constant private returns (uint) {\n    // Avoid using block.blockhash directly in-contract to mitigate miner manipulation.\n    // Caller must supply the 10 block hashes corresponding to _lastb.._lastb+9.\n    uint result = 0;\n    for (uint i = 0; i < 10; i++) {\n        uint piece = uint(_blockHashes[i]) & 0xFFFFFF;\n        result |= (piece << (24 * i));\n    }\n    // preserve original final field using hashesSize defined in contract context\n    result |= (uint(_delta) / hashesSize) << 240;\n    return result;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

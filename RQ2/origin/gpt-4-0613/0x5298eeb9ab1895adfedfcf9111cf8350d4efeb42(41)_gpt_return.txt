@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner8.call(ethersum8);",
+    "description": "This line of code provides an unchecked low-level call vulnerability in the Sale contract. Low-level calls do not automatically throw an error when the call fails. This can lead to unexpected behavior if the error condition is not properly checked or handled in the contract. The failure condition should be inspected by utilizing the returned boolean value, otherwise, any failure will be silently ignored and the contract execution continues. Failing to handle this could have serious security implications."
+}
+```

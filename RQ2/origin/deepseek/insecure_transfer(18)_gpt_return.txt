@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[_to] += _value;",
+    "description": "This addition operation in Solidity <0.8.0 is vulnerable to integer overflow. Since there are no overflow checks, if balanceOf[_to] + _value exceeds the maximum value of uint256 (2^256 - 1), it will wrap around to a small number, potentially allowing attackers to receive tokens while reducing their actual balance. This violates the contract's intended behavior where balances should only increase during transfers. The vulnerability exists because Solidity versions prior to 0.8.0 do not have built-in overflow/underflow protection."
+}
+```

@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "PlatoToken",
+    "contract_version": "^0.4.13",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Requires safe arithmetic to prevent overflow when minting tokens",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Requires safe arithmetic to prevent overflow when increasing total supply",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "none"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by adding overflow protection using SafeMath library or inline checks",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    require(balanceOf[target] + mintedAmount > balanceOf[target], \"Balance overflow detected\");\n    require(totalSupply + mintedAmount > totalSupply, \"Total supply overflow detected\");\n    \n    balanceOf[target] = balanceOf[target] + mintedAmount;\n    totalSupply = totalSupply + mintedAmount;\n    \n    Transfer(0, this, mintedAmount);\n    Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

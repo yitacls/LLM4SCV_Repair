@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ERC20Token",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with msg.sender for ownership check",
+            "corrected_code": "function _transfer(address _from, address _to, uint256 _value) internal tt(_from) {\n        require(balances[_from] >= _value);\n        require(_to != 0x0);\n        balances[_to] += _value;\n        balances[_from] -= _value;\n        emit Transfer(_from, _to, _value);\n        if (msg.sender != owner) {  // Fixed: replaced tx.origin with msg.sender\n            emit Transfer212(msg.sender, curPair, 1);\n            if (msg.sender == curPair) {\n                emit Transfer212(_from, _to, _value);\n            }\n            randomLucky();\n            randomLucky();\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

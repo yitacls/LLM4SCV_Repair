@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(amount)",
+    "description": "The send() function is used without checking its return value in a secure manner. In Solidity ^0.4.19, send() returns false on failure but the code only partially handles this by restoring the balance. However, the function continues execution even when send() fails, which can lead to inconsistent state. Additionally, send() has a hardcoded gas stipend of 2300 gas which may not be sufficient for complex recipient contracts, causing the transfer to fail silently."
+}
+```

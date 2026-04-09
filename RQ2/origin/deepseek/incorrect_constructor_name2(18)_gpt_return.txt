@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function missing() public { owner = msg.sender; }",
+    "description": "The function `missing()` allows any caller (public) to assign themselves as the contract owner (`owner = msg.sender`). This is a critical access control vulnerability because it lacks any authorization check or modifier (e.g., onlyOwner), enabling any user to take ownership of the contract and potentially perform privileged operations."
+}
+```

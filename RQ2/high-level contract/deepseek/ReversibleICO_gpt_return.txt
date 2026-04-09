@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-113-DoS with Failed Call",
+            "location": "Line 230-299 in the init() function",
+            "description": "The init() function performs complex calculations and storage operations that could potentially exceed the gas limit, causing the initialization to fail. Specifically, the function sets up multiple stages in a loop (lines 263-271) which could run out of gas if _stageCount is set too high, preventing contract initialization and leaving it in an unusable state."
+        },
+        {
+            "type": "SWC-119-Shadowing State Variables",
+            "location": "Line 948 in the acceptContributions() function",
+            "description": "The local variable 'stages' in the for loop (line 948) shadows the state variable 'stages' declared at line 68. This creates confusion and potential bugs, as within the loop scope, 'stages' refers to the ParticipantStageDetails local variable instead of the global stages mapping, which could lead to unintended behavior when accessing stage data."
+        }
+    ]
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Pie",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "Command",
+            "fix_info": "Replaced low-level `call` with `call` result checking. Ensured proper error handling to prevent silent failures.",
+            "corrected_code": "function Command(address adr, bytes data) \n    payable \n    public \n    {\n        require(msg.sender == Owner, \"Only the owner can execute this command.\");\n        (bool success, ) = adr.call.value(msg.value)(data);\n        require(success, \"Low-level call failed.\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

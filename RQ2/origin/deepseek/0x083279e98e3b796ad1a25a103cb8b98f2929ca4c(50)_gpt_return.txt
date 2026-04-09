@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner && _sze >= 1 ether, \"error blksze\");",
+    "description": "The setBlockSze function uses tx.origin for authorization, which is vulnerable to phishing attacks. If the owner interacts with a malicious contract, that contract can call setBlockSze using the owner's permissions since tx.origin returns the original external account. Additionally, the require statement contains two conditions in a single check, which could be bypassed if either condition is manipulated. The contract should use msg.sender for authorization instead of tx.origin."
+}
+```

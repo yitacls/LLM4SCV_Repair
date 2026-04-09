@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Denial of Service (DoS)",
+    "location": "for(uint i=0;i<350;i++) { listAddresses.push(msg.sender); }",
+    "description": "The function `ifillArray()` can be exploited to cause a Denial of Service by having an attacker repeatedly call it when `listAddresses.length` is less than 1500. The loop pushes 350 addresses to the array in a single transaction, which could exceed the block gas limit if the array grows large enough. While 350 pushes alone might not exceed the gas limit, this pattern of repeatedly growing the array can eventually make any operation on `listAddresses` (including the reset to an empty array) costly enough to reach the gas limit, preventing further transactions and potentially bricking contract functionality. This is a potential DoS vector if other functions iterate over or manipulate the unbounded array."
+}
+```

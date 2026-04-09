@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The 'tx.origin' variable should not be used for access control as it can be manipulated by external contracts. It is recommended to use 'msg.sender' for authentication and authorization checks instead to prevent potential vulnerabilities."
+}
+```

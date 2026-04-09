@@ -1,0 +1,21 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.5.12;",
+            "description": "Not specifying an exact version in the pragma statement can result in unexpected behavior if newer compiler versions introduce breaking changes."
+        },
+        {
+            "type": "SWC-108-State Variable Default Visibility",
+            "location": "uint256 beginDepositTime;\nuint256 endDepositTime;",
+            "description": "State variables should have explicit visibility (public, private, internal) to avoid ambiguity and reduce the potential for errors."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "function triggerWithdrawAll() public { ... }",
+            "description": "The function triggerWithdrawAll could potentially lead to a denial-of-service (DoS) attack if a large number of lockBoxStructs exist, causing the loop to consume excessive gas."
+        }
+    ]
+}
+```

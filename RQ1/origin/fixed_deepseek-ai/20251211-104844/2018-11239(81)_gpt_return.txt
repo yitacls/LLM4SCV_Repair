@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Hexagon",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Fixed arithmetic vulnerabilities: 1) Added SafeMath library for safe arithmetic operations, 2) Replaced 0x0 address check with address(0), 3) Fixed potential overflow in overflow check, 4) Fixed subtraction underflow vulnerability, 5) Added burnPerTransaction validation",
+            "corrected_code": "function _transfer(address _from, address _to, uint _value) internal {\n    /* Prevent transfer to 0x0 address. Use burn() instead */\n    require(_to != address(0));\n    \n    /* Validate burnPerTransaction */\n    require(burnPerTransaction > 0);\n    \n    /* Calculate total amount to deduct including burn fee */\n    uint totalDeduction = SafeMath.add(_value, burnPerTransaction);\n    \n    /* Check if the sender has enough balance for transfer + burn */\n    require(balanceOf[_from] >= totalDeduction);\n    \n    /* Check for recipient balance overflow safely */\n    require(SafeMath.add(balanceOf[_to], _value) >= balanceOf[_to]);\n    \n    /* Subtract from sender using SafeMath */\n    balanceOf[_from] = SafeMath.sub(balanceOf[_from], totalDeduction);\n    \n    /* Add to recipient using SafeMath */\n    balanceOf[_to] = SafeMath.add(balanceOf[_to], _value);\n    \n    /* Apply transaction fee to burn address */\n    balanceOf[address(0)] = SafeMath.add(balanceOf[address(0)], burnPerTransaction);\n    \n    /* Update current supply using SafeMath */\n    currentSupply = SafeMath.sub(currentSupply, burnPerTransaction);\n    \n    /* Notify network */\n    Burn(_from, burnPerTransaction);\n    Transfer(_from, _to, _value);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

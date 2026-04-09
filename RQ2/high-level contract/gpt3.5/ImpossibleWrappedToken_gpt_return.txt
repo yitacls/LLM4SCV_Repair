@@ -1,0 +1,18 @@
+```json
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Function deposit(address dst, uint256 wad) public returns (uint256 transferAmt) {",
+    "description": "The deposit function is vulnerable to reentrancy due to transferring tokens before updating contract state. An attacker could potentially reenter the deposit function before the contract state is updated, leading to unexpected behavior."
+},
+{
+    "type": "SWC-107-Reentrancy",
+    "location": "Function deposit(address dst) public override returns (uint256 transferAmt) {",
+    "description": "The deposit function is vulnerable to reentrancy due to transferring tokens before updating contract state. An attacker could potentially reenter the deposit function before the contract state is updated, leading to unexpected behavior."
+},
+{
+    "type": "SWC-114-Transaction Order Dependence",
+    "location": "Function deposit(address dst) public override returns (uint256 transferAmt) {",
+    "description": "The deposit function lacks a proper ordering of operations when calculating the transfer amount, which can lead to inconsistent outcomes depending on the sequence of calls. This could introduce unexpected behavior or vulnerabilities in the contract."
+}
+}
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Mattew",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low level calls by checking return values of send() calls and reverting on failure",
+            "corrected_code": "function () payable{\n        if (block.number - PERIOD > blockheight){\n            bool isSuccess = whale.send(stake);\n            if (!isSuccess) throw;  // fix: check return value\n            MattewWon(\"Mattew won (mattew, stake, blockheight)\", whale, stake, block.number);\n            setFacts();\n            return;\n        }else{\n            if (msg.value < stake + DELTA) throw;\n            bool isOtherSuccess = msg.sender.send(stake);\n            if (!isOtherSuccess) throw;  // fix: check return value\n            setFacts();\n            StakeIncreased(\"stake increased (whale, stake, blockheight)\", whale, stake, blockheight);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

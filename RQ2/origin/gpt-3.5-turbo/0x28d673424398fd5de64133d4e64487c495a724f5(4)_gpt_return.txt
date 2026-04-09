@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "msg.sender.send(address(this).balance-msg.value);",
+            "description": "The use of send() can lead to unchecked errors if the call fails, potentially leaving the contract in an inconsistent state. It is recommended to use transfer() or revert with failure handling in case of errors."
+        }
+    ]
+}
+```

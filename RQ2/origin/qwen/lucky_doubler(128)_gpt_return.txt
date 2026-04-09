@@ -1,0 +1,7 @@
+```json
+{
+    "type": "BAD_RANDOMNESS",
+    "location": "function rand(uint max) constant private returns (uint256 result){\n        uint256 factor = FACTOR * 100 / max;\n        uint256 lastBlockNumber = block.number - 1;\n        uint256 hashVal = uint256(block.blockhash(lastBlockNumber));\n\n        return uint256((uint256(hashVal) / factor)) % max;\n    }",
+    "description": "The contract uses block.blockhash() and block.number as a source of randomness, which is predictable and can be manipulated by miners. Since the hash of the previous block (block.blockhash(lastBlockNumber)) is used, malicious actors can potentially predict or influence the random value by controlling block mining timing, making the randomness insecure for gambling or lottery-like functions in the LuckyDoubler contract."
+}
+```

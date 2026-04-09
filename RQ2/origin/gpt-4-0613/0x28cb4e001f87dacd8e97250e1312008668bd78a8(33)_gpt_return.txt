@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This application uses `tx.origin` for authorization, which makes it vulnerable to attacks where the contract is called by another contract (which was called by the owner). These attacks impersonate the owner and if successful, they can lead to the control of the contract or the funds contained within being taken over. For authorizing an action like this it is safer to use `msg.sender` as it refers to the address directly interacting with the contract and not necessarily the creator of the transaction."
+}
+```

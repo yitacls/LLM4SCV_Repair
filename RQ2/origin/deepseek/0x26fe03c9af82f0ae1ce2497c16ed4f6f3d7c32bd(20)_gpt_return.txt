@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability (Integer Overflow/Underflow)",
+    "location": "balances[_recipient] += _value;",
+    "description": "In Solidity versions prior to 0.8.0, integer operations do not automatically check for overflow/underflow. The addition 'balances[_recipient] += _value' could overflow if the recipient's new balance exceeds the maximum uint value (2^256-1). Similarly, the subtraction 'balances[msg.sender] -= _value' could underflow. While SafeMath patterns were commonly used in this era, this contract lacks such protections. The vulnerability could be exploited to create arbitrarily large token balances or cause denial of service through transaction reversion."
+}
+```

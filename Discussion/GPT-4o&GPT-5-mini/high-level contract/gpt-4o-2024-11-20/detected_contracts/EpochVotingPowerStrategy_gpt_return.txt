@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-126-Insufficient Gas Griefing",
+        "location": "function handleProposalCancellation (lines 66-79)",
+        "description": "The use of a loop to remove the proposal ID from `epochProposals` can lead to excessive gas consumption if the proposals array grows large, allowing attackers to potentially force the contract to use too much gas during cleanup tasks."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "function handleWithdrawal (lines 100-112)",
+        "description": "The access of `epochProposals` for the current epoch and looped operations associated with it expose this function to the risk of triggering a gas limit if the array of proposals becomes too large, making this function unusable for governance purposes."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses tx.origin for authorization instead of msg.sender, which creates a vulnerability to phishing-style attacks. An attacker could trick the owner into calling a malicious contract that then calls addMeByRC(). Since tx.origin would be the owner's address (not the attacker's contract address), the authorization would pass, allowing the attacker's contract to successfully execute the function and set rc[msg.sender] = true for the attacker's contract address. This violates the intended access control as the function should only be callable directly by the owner."
+}
+```

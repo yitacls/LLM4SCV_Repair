@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "target.call.value(msg.value)(data);",
+            "description": "The low-level call to the target address does not check the return value. If the call fails (e.g., due to insufficient gas, contract revert, or non-existent contract), the transaction will not revert, potentially leading to unexpected behavior or silent failures. This could allow malicious targets to fail intentionally without the caller being aware. It is recommended to always check the success return value of low-level calls and handle failures appropriately, for example by reverting the transaction if the call fails."
+        }
+    ]
+}
+```

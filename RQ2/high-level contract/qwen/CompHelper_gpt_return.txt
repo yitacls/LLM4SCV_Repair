@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "CompHelper",
+    "contract_version": "^0.7.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "enterMarket",
+            "fix_info": "Added return value check for the enterMarkets call to prevent unchecked return values as per SWC-104",
+            "corrected_code": "/// @notice Enters the Compound market so it can be deposited/borrowed\n/// @dev Markets can be entered multiple times, without the code reverting\n/// @param _cTokenAddr CToken address of the token\nfunction enterMarket(address _cTokenAddr) public {\n    address[] memory markets = new address[](1);\n    markets[0] = _cTokenAddr;\n\n    uint256[] memory errors = IComptroller(COMPTROLLER_ADDR).enterMarkets(markets);\n    require(errors[0] == 0, \"Entering market failed\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "exitMarket",
+            "fix_info": "Added return value check for the exitMarket call to prevent unchecked return values as per SWC-104",
+            "corrected_code": "/// @notice Exits the Compound market\n/// @param _cTokenAddr CToken address of the token\nfunction exitMarket(address _cTokenAddr) public {\n    uint256 error = IComptroller(COMPTROLLER_ADDR).exitMarket(_cTokenAddr);\n    require(error == 0, \"Exiting market failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

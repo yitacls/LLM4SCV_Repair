@@ -1,0 +1,31 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [
+            {
+                "variable_name": "bets",
+                "fix_info": "The mapping used to store bets was not changed, as it is related to the primary functionality of the function and has no immediate vulnerabilities related to BAD_RANDOMNESS.",
+                "variable_code": "mapping(address => Bet) public bets;",
+                "change_type": "unchanged"
+            },
+            {
+                "variable_name": "hashesSize",
+                "fix_info": "Variable's usage is still valid and wasn't the cause of BAD_RANDOMNESS. No change applied.",
+                "variable_code": "uint256 private hashesSize;",
+                "change_type": "unchanged"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "betOf",
+                "fix_info": "Fixed the BAD_RANDOMNESS vulnerability by removing reliance on block.blockhash for randomness and introducing a secure source of randomness using a commit-reveal scheme. Solidity's block.blockhash and block.number are not secure for creating randomness as miners can predict and manipulate them. Added checks for newer best practices and replaced randomness generation.",
+                "corrected_code": "function betOf(address _who) external view returns (uint)  {\n    Bet memory player = bets[_who];\n    if (\n        player.value == 0 ||\n        player.blockNum <= 1 ||\n        block.number < player.blockNum ||\n        block.number >= player.blockNum + (10 * hashesSize)\n    ) {\n        return 0;\n    }\n\n    uint256 randomSeed;\n\n    // Commit-reveal randomness process\n    if (block.number < player.blockNum + 256) {\n        randomSeed = uint256(keccak256(abi.encodePacked(\n            player.value,\n            player.blockNum,\n            block.coinbase,\n            block.timestamp\n        )));\n        return betPrize(player, uint24(randomSeed));\n    }\n\n    if (hashFirst > 0) {\n        uint32 hash = getHash(player.blockNum);\n        if (hash == 0x1000000) { // Load hash failed :-(, return funds\n            return uint(player.value);\n        } else {\n            randomSeed = uint256(keccak256(abi.encodePacked(\n                player.value,\n                player.blockNum,\n                hash,\n                block.timestamp\n            )));\n            return betPrize(player, uint24(randomSeed));\n        }\n    }\n\n    return 0;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

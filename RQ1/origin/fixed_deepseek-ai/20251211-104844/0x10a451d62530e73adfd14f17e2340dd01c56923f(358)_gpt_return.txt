@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "Wallet",
+    "contract_version": "0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "onlyReserveFundContract",
+            "fix_info": "No fix needed on state variable itself - access control implemented via onlyReserveFundContract modifier",
+            "variable_code": "",
+            "change_type": "none"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyReserveFundContract",
+            "fix_info": "Ensures only the designated ReserveFund contract can call this function, preventing unauthorized access",
+            "modifier_code": "modifier onlyReserveFundContract() {\n    require(msg.sender == reserveFundContract, \"Only ReserveFund contract can call this\");\n    _;\n}",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Fixed access control vulnerability by: 1) Using onlyReserveFundContract modifier, 2) Removing tx.origin dependency, 3) Adding proper input validation, 4) Preventing underflow with safe math",
+            "corrected_code": "function deposit(address _to, uint _deposited, uint8 _source, uint _sourceAmount) onlyReserveFundContract public {\n    require(_to != address(0x0), \"User address can not be empty\");\n    require(_deposited > 0, \"Package value must be > 0\");\n    require(_source <= 2, \"Invalid source type\");\n    \n    Balance storage balance = userWallets[_to];\n    bool firstDeposit = balance.totalDeposited <= 6000000;\n    \n    balance.deposited.push(_deposited);\n    uint profitableIncreaseAmount = _deposited * (firstDeposit ? 2 : 1);\n    uint profitSourceIncreaseAmount = _deposited * 8;\n    \n    balance.totalDeposited = balance.totalDeposited.add(_deposited);\n    balance.profitableBalance = balance.profitableBalance.add(profitableIncreaseAmount);\n    balance.profitSourceBalance = balance.profitSourceBalance.add(profitSourceIncreaseAmount);\n    \n    if (_source == 2) {\n        require(_deposited <= balance.profitBalance, \"Insufficient profit balance\");\n        \n        address profitDeductedFrom = _to;\n        if (profitDeductedFrom != msg.sender) {\n            balance.profitBalance = balance.profitBalance.sub(_deposited);\n        } else {\n            Balance storage senderBalance = userWallets[msg.sender];\n            senderBalance.profitBalance = senderBalance.profitBalance.sub(_deposited);\n            profitDeductedFrom = msg.sender;\n        }\n        emit ProfitBalanceChanged(profitDeductedFrom, _to, int(_deposited) * -1, 1);\n    }\n    \n    citizen.addF1DepositedToInviter(_to, _deposited);\n    addRewardToInviters(_to, _deposited, _source, _sourceAmount);\n    \n    if (firstDeposit) {\n        citizen.increaseInviterF1HaveJoinedPackage(_to);\n    }\n    \n    if (profitableIncreaseAmount > 0) {\n        emit ProfitableBalanceChanged(_to, int(profitableIncreaseAmount), _to, _source);\n        emit ProfitSourceBalanceChanged(_to, int(profitSourceIncreaseAmount), _to, _source);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sendEthValue",
+            "fix_info": "Added access control modifier to prevent unauthorized access to the function",
+            "corrected_code": "function sendEthValue(address target, uint256 value) external onlyOwner {\n        require(target.call.value(value)());\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

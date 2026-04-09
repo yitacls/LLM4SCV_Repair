@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "address(fomo3d).call.value( fomo3d.getBuyPrice() *2 )();",
+    "description": "The contract uses low level .call() function without checking its return value. This could lead to failures when executing said function. This unchecked .call() can fail silently or even throw an exception when the recipient contract throws an exception or consumes all gas without leaving enough for the calling contract."
+}
+```

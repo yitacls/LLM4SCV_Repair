@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "sUSD.transfer(user, amounts[0]);",
+        "description": "The transfer function is called without checking the return value. In older Solidity versions, this can lead to silent failures. It's recommended to use SafeERC20's safeTransfer which reverts on failure."
+    },
+    {
+        "type": "SWC-111-Use of Deprecated Solidity Functions",
+        "location": "snx.safeApprove(exchange, amount);",
+        "description": "While safeApprove is used, the underlying approve function may behave unexpectedly when called multiple times without setting allowance to zero first. This could be problematic if not handled carefully in external calls."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "(bool success, ) = exchange.call(data);",
+        "description": "The low-level call to exchange is made after transferring tokens but before ensuring all state changes are completed. An attacker-controlled exchange could re-enter this contract during the call, potentially leading to unauthorized fund transfers or unexpected behavior."
+    }
+]
+```

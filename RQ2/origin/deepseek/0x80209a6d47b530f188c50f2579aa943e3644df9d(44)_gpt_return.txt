@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance - 2100000);",
+    "description": "The low-level call `send()` is used without checking its return value. In Solidity 0.4.25, `send()` returns a boolean indicating success (true) or failure (false). If the call fails (e.g., if the owner is a contract that runs out of gas or reverts), the contract will not handle the failure and the ether transfer will be lost. Additionally, the subtraction `this.balance - 2100000` could underflow if the contract balance is less than 2100000 wei, which may cause unexpected behavior. It is recommended to use `transfer()` for simple ether transfers, or check the return value of `send()` and handle failures appropriately."
+}
+```

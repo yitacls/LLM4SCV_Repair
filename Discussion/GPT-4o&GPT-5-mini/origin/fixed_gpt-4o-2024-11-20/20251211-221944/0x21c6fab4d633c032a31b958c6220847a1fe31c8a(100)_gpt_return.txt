@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "CT",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Ensure the 'owner' variable is defined and initialized to the contract deployer's address.",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Create a modifier for reusable owner-based access control to prevent the reliance on 'tx.origin'.",
+            "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdrawEther",
+            "fix_info": "Replace 'tx.origin' check with 'msg.sender' using the 'onlyOwner' modifier for proper access control.",
+            "corrected_code": "function withdrawEther(uint256 amount) public onlyOwner { require(amount > 0); owner.transfer(amount); }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

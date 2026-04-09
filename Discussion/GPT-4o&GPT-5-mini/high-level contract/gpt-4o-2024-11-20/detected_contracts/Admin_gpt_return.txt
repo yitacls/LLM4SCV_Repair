@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "function removeAdmin(address _adminAddress)",
+    "description": "The `removeAdmin` function contains a `while` loop that iterates through the `admins` array to locate the index of the `_adminAddress` to be removed. This loop is vulnerable to a denial-of-service attack if the `admins` array is sufficiently large. Additionally, if the specified `_adminAddress` does not exist in the `admins` array, the loop could iterate indefinitely until it reverts, causing unnecessary gas consumption and potentially locking up the contract's functionality. To mitigate this, consider redesigning the function to eliminate the dependence on iterating through the entire array, such as using a mapping to track admin indices or performing validation before iterating."
+}
+```

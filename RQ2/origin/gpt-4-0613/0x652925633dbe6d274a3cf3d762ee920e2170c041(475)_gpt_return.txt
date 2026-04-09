@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner)",
+    "description": "The smart contract contains a vulnerability in the validation of the transaction origin. Use msg.sender instead of tx.origin for checking the owner. Tx.origin refers to the original external account that initiated the transaction. If a function that uses tx.origin is invoked through another contract, the function will still change the state of the contract who originated the call, while msg.sender will refer to the immediate caller of the contract. This may result in unauthorized access."
+}
+```

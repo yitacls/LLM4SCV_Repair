@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract": "Ownable",
+    "location": "require(_owner == tx.origin, \"Ownable: caller is not the owner\");",
+    "description": "This line has an access control vulnerability because it checks that _owner is the same as tx.origin instead of the expected msg.sender. The tx.origin signifies the account that originated the current external function call, meaning that if a contract is called by another contract, tx.origin will always be the contract that initiated the transaction and not the contract currently executing. This allows contracts that are owned by the origin account to be manipulated by any contracts that the origin account interacts with, leading to possible unauthorized actions. It would be more secure to use msg.sender, which always represents the direct sender of the message, making it a more secure way to implement access control."
+}
+```

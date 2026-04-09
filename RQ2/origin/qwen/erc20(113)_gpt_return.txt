@@ -1,0 +1,7 @@
+```json
+{
+    "type": "FRONT_RUNNING",
+    "location": "_allowed[msg.sender][spender] = value;",
+    "description": "The approve function is vulnerable to front-running attacks. When a user calls approve to update the allowance, a malicious spender can watch the mempool for this transaction and quickly spend the current allowance before the new allowance is set. This allows the spender to spend both the old and new allowances, potentially draining more tokens than intended. The vulnerability occurs because the allowance is updated without first setting it to zero, allowing concurrent spending operations to occur."
+}
+```

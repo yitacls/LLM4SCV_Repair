@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "HumansOnlyNetworkETHpreICO",
+        "contract_version": "^0.4.25",
+        "state_variables": [
+            {
+                "variable_name": "hon1ninja",
+                "fix_info": "No changes needed to the state variable itself",
+                "variable_code": "address public hon1ninja;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "Partial8Send",
+                "fix_info": "Fixed vulnerability by: 1) Replacing 'throw' with 'require' for gas efficiency and clarity, 2) Using call.value() instead of send() to handle potential failures, 3) Adding explicit gas stipend, 4) Checking for arithmetic underflow, 5) Verifying the contract has sufficient balance",
+                "corrected_code": "function Partial8Send() external {\n    require(msg.sender == hon1ninja, \"Caller is not authorized\");\n    require(address(this).balance >= 1 ether, \"Insufficient contract balance\");\n    uint256 amountToSend = address(this).balance - 1 ether;\n    require(amountToSend > 0, \"No funds available to send\");\n    \n    (bool success, ) = hon1ninja.call.value(amountToSend)(\"\");\n    require(success, \"Transfer failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

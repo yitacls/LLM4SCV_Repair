@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; totalSupply += mintedAmount;",
+    "description": "The contract is vulnerable to integer overflow. If `mintedAmount` is large enough, adding it to `balanceOf[target]` or `totalSupply` could cause an overflow, leading to incorrect token balances or a total supply miscalculation."
+}
+```

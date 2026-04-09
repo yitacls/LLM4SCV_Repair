@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-131-Presence of unused variables",
+        "location": "Line 17",
+        "description": "The `uint256 private constant ONE_WAD_U = 10**18;` variable is defined but never used throughout the contract. Unused variables increase the contract's bytecode size and can confuse developers."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Lines 500-502",
+        "description": "The `mint` function of the `ShareToken` contract is called without checking the return value in the `mintShareTokenTo` function. If the call fails or returns false, it could lead to unexpected behavior or vulnerabilities. The statement in question is `shareToken.mint(guy, amount);`."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "whale.call.value(amount)(bytes4(keccak256(\"donate()\")));",
+    "description": "This statement is vulnerable to unchecked low-level calls as it directly interacts with the 'whale' contract using 'call.value' without any checks or safeguards. This can lead to potential reentrancy attacks or loss of funds if the 'whale' contract's implementation is malicious or untrusted."
+}
+```

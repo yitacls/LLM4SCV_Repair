@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Disperse",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "disperseEther",
+            "fix_info": "Added access control protection to prevent unauthorized calls and improved security",
+            "corrected_code": "function disperseEther(address[] recipients, uint256[] values) external payable onlyOwner {\n        for (uint256 i = 0; i < recipients.length; i++)\n            recipients[i].transfer(values[i]);\n        uint256 balance = address(this).balance;\n        if (balance > 0)\n            msg.sender.transfer(balance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

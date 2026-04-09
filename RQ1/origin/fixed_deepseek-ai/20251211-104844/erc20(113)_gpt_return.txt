@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ERC20",
+    "contract_version": "2.0.0",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "approve",
+            "fix_info": "Added front-running protection by implementing increaseAllowance/decreaseAllowance pattern and using safeApprove approach (set to 0 first, then to desired value)",
+            "corrected_code": "function approve(address spender, uint256 value) public returns (bool) {\n    require(spender != address(0), \"ERC20: approve to the zero address\");\n    \n    // Prevent front-running by requiring approval to be set to 0 first when changing from non-zero\n    uint256 currentAllowance = _allowed[msg.sender][spender];\n    if (currentAllowance != 0 && value != 0) {\n        require(value == 0, \"ERC20: use increaseAllowance or decreaseAllowance instead\");\n    }\n    \n    _allowed[msg.sender][spender] = value;\n    emit Approval(msg.sender, spender, value);\n    return true;\n}\n\nfunction increaseAllowance(address spender, uint256 addedValue) public returns (bool) {\n    require(spender != address(0), \"ERC20: approve to the zero address\");\n    uint256 currentAllowance = _allowed[msg.sender][spender];\n    uint256 newAllowance = currentAllowance + addedValue;\n    require(newAllowance >= currentAllowance, \"ERC20: allowance overflow\");\n    \n    _allowed[msg.sender][spender] = newAllowance;\n    emit Approval(msg.sender, spender, newAllowance);\n    return true;\n}\n\nfunction decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {\n    require(spender != address(0), \"ERC20: approve to the zero address\");\n    uint256 currentAllowance = _allowed[msg.sender][spender];\n    require(currentAllowance >= subtractedValue, \"ERC20: decreased allowance below zero\");\n    uint256 newAllowance = currentAllowance - subtractedValue;\n    \n    _allowed[msg.sender][spender] = newAllowance;\n    emit Approval(msg.sender, spender, newAllowance);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

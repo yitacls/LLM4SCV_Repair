@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ObjectToken",
+    "contract_version": "^0.4.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sell",
+            "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library for safe multiplication, added require statements for input validation, and reordered operations to follow checks-effects-interactions pattern",
+            "corrected_code": "function sell(uint256 amount) public {\n        require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n        require(amount > 0, \"Amount must be greater than 0\");\n        \n        uint256 totalValue = amount.mul(sellPrice);\n        require(totalValue / amount == sellPrice, \"Multiplication overflow\");\n        \n        // Update balances first (checks-effects-interactions pattern)\n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n        balanceOf[this] = balanceOf[this].add(amount);\n        \n        // Execute event before external call\n        Transfer(msg.sender, this, amount);\n        \n        // External call last\n        require(msg.sender.send(totalValue), \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

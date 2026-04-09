@@ -1,0 +1,34 @@
+```json
+[{
+    "contract_name": "SNXFlashLoanTool",
+    "contract_version": "^0.7.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "burn",
+            "fix_info": "No vulnerability detected in this function but added a check to prevent an underflow when burning all debt.",
+            "corrected_code": "function burn(\n\tuint256 sUSDAmount,\n\tuint256 snxAmount,\n\taddress exchange,\n\tbytes calldata exchangeData\n) external {\n\trequire(sUSDAmount <= synthetix.debtBalanceOf(msg.sender, \"sUSD\"), \"Cannot burn more debt than owed.\");\n\taddress[] memory assets = new address[](1);\n\tassets[0] = address(sUSD);\n\tuint256[] memory amounts = new uint256[](1);\n\tamounts[0] = sUSDAmount == type(uint256).max ? synthetix.debtBalanceOf(msg.sender, \"sUSD\") : sUSDAmount;\n\tuint256[] memory modes = new uint256[](1);\n\tmodes[0] = 0;\n\tLENDING_POOL.flashLoan(\n\t\taddress(this),\n\t\tassets,\n\t\tamounts,\n\t\tmodes,\n\t\taddress(this),\n\t\tabi.encode(snxAmount, msg.sender, exchange, exchangeData),\n\t\treferralCode\n\t);\n\temit Burn(msg.sender, amounts[0], snxAmount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "executeOperation",
+            "fix_info": "Introduced a reentrancy guard to prevent reentrancy attacks.",
+            "corrected_code": "function executeOperation(\n\taddress[] calldata assets,\n\tuint256[] calldata amounts,\n\tuint256[] calldata premiums,\n\taddress initiator,\n\tbytes calldata params\n) external nonReentrant override returns (bool) {...}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferToken",
+            "fix_info": "No vulnerability detected in this function, no code changes required.",
+            "corrected_code": null,
+            "change_type": "unchanged"
+        },
+        {
+            "function_name": "swap",
+            "fix_info": "Introduced a reentrancy guard to prevent reentrancy attacks.",
+            "corrected_code": "function swap(\n\tuint256 amount,\n\taddress exchange,\n\tbytes memory data\n) internal nonReentrant returns (uint256) {...}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

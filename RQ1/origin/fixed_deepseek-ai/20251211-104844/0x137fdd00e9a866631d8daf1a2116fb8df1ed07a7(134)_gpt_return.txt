@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "PriceFeed",
+        "contract_version": "^0.4.25",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "post",
+                "fix_info": "Fixed unchecked low-level call vulnerability by checking the return value and handling failure cases. Added require statement to ensure successful external call. Updated call syntax to compliant Solidity 0.4.25 format.",
+                "corrected_code": "function post(uint128 val_, uint32 zzz_, address med_) public note auth {\n    val = val_;\n    zzz = zzz_;\n    (bool success, ) = med_.call(bytes4(keccak256(\"poke()\")));\n    require(success, \"External call failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

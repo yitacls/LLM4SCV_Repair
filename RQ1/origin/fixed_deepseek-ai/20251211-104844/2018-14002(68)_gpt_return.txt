@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "MP3Coin",
+    "contract_version": "^0.4.8",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "Uses SafeMath library to prevent integer overflow/underflow",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "distribute",
+            "fix_info": "Fixed integer overflow vulnerabilities in totalAmount calculation and balance operations. Added SafeMath operations to prevent arithmetic issues. Updated array length comparison and parameter syntax for Solidity 0.4.8.",
+            "corrected_code": "function distribute(address[] _addresses, uint[] _amounts) public returns (bool success) {\n    // Check input data\n    require(_addresses.length == _amounts.length);\n    require(_addresses.length > 0 && _addresses.length < 256);\n    \n    // Calculate total amount with SafeMath to prevent overflow\n    uint256 totalAmount = 0;\n    for (uint256 a = 0; a < _amounts.length; a++) {\n        totalAmount = totalAmount.add(_amounts[a]);\n    }\n    \n    // Check account balance\n    require(totalAmount > 0);\n    require(balances[msg.sender] >= totalAmount);\n    \n    // Deduct amount from sender with SafeMath\n    balances[msg.sender] = balances[msg.sender].sub(totalAmount);\n    \n    // Transfer amounts to receivers\n    for (uint256 b = 0; b < _addresses.length; b++) {\n        if (_amounts[b] > 0) {\n            balances[_addresses[b]] = balances[_addresses[b]].add(_amounts[b]);\n            Transfer(msg.sender, _addresses[b], _amounts[b]);\n        }\n    }\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```
+
+Note: This fix assumes the contract includes the SafeMath library with appropriate `add()` and `sub()` functions. For Solidity 0.4.8, you would need to add this import and library at the top of the contract:
+
+```solidity
+import \"github.com/OpenZeppelin/zeppelin-solidity/contracts/math/SafeMath.sol\";
+
+contract MP3Coin {
+    using SafeMath for uint256;
+    // ... rest of contract
+}
+```
+
+Critical fixes made:
+1. Replaced arithmetic operations with SafeMath functions to prevent overflow/underflow
+2. Fixed the order of validations for array length
+3. Used uint256 consistently for better compatibility
+4. Separated the require statements for better readability and gas optimization
+5. Ensured totalAmount calculation uses SafeMath to prevent overflow
+6. Maintained all original functionality while securing arithmetic operations

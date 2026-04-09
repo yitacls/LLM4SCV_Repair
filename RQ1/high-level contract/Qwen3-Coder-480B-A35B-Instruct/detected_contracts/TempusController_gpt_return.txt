@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function exitTempusAMMAndRedeem(ITempusAMM tempusAMM, uint256 sharesAmount, bool toBackingToken) external",
+        "description": "The function performs external calls (tempusAMM.transferFrom, doExitTempusAMMGivenAmountsOut) before updating state or transferring tokens back to the user. This can allow a malicious contract to re-enter the function and manipulate the execution flow, potentially leading to loss of funds."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function completeExitAndRedeem(ITempusAMM tempusAMM, bool toBackingToken) external",
+        "description": "This function makes external calls (tempusAMM.transferFrom, doExitTempusAMMGivenLP) and performs token transfers after external calls, which could enable a reentrancy attack if the recipient is a malicious contract that implements a fallback function to re-enter the contract before state changes are completed."
+    }
+]
+```

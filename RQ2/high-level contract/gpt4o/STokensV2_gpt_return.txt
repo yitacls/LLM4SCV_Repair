@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-128-DoS With Block Gas Limit",
+    "location": "function _calculatePendingRewards (lines 283-332)",
+    "description": "The function `_calculatePendingRewards` iterates through the `_lastMovingRewardTimestamp` array in reverse to calculate rewards. If the array is too large, the function may exceed the block gas limit, leading to potential denial of service (DoS). This affects the ability to calculate pending rewards, ultimately impacting functionalities relying on this calculation, such as user reward claim processes."
+}
+```

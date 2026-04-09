@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "Line 3: pragma solidity 0.5.0;",
+        "description": "The contract uses a floating pragma version '0.5.0' without a caret (^) or tilde (~), which locks it to a specific version. However, it's still considered bad practice as it doesn't specify a range and may be compiled with different patch versions. It's recommended to use a fixed version like '0.5.17' or a range with caret/tilde for security and compatibility."
+    },
+    {
+        "type": "SWC-108-State Variable Default Visibility",
+        "location": "Lines 48-49: address owner; address metaTxRelayer;",
+        "description": "State variables 'owner' and 'metaTxRelayer' are declared without explicit visibility (public, private, internal). In Solidity 0.5.0, default visibility is 'internal', but this is not explicit and can lead to confusion. It's recommended to explicitly declare visibility (e.g., 'address public owner;') for clarity and security."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Line 249: bounties[_bountyId].balance += _amount;",
+        "description": "There is no safeguard against integer overflow/underflow in this arithmetic operation. Although Solidity 0.5.0 has built-in overflow checks for uint256, it's still recommended to use SafeMath library or explicitly validate inputs to prevent potential vulnerabilities, especially if the contract might be compiled with different compiler settings or versions."
+    }
+]
+```

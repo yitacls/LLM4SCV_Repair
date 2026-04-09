@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "EtherWorldCup",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyEOA",
+            "fix_info": "Added modifier to restrict calls to externally owned accounts only, replacing the vulnerable tx.origin check",
+            "modifier_code": "modifier onlyEOA() {\n        require(msg.sender == tx.origin, \"Contract calls not allowed\");\n        _;\n    }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "validRegistration",
+            "fix_info": "Added modifier to consolidate registration validation logic for better security and readability",
+            "modifier_code": "modifier validRegistration() {\n        address _customerAddress = msg.sender;\n        require(!playerRegistered[_customerAddress], \"Already registered\");\n        require(_isCorrectBuyin(msg.value), \"Incorrect buy-in amount\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "register",
+            "fix_info": "Fixed vulnerability by: 1. Replacing tx.origin check with onlyEOA modifier, 2. Using require() consistently for all conditions, 3. Using address.transfer() instead of send() for safer ETH transfers, 4. Consolidating validation into modifiers",
+            "corrected_code": "    function register()\n        public\n        payable\n        onlyEOA\n        validRegistration\n    {\n        address _customerAddress = msg.sender;\n\n        // Register player\n        registeredPlayers = SafeMath.addint256(registeredPlayers, 1);\n        playerRegistered[_customerAddress] = true;\n        playerGamesScored[_customerAddress] = 0;\n        playerList.push(_customerAddress);\n\n        // Process payments\n        uint fivePercent = 0.01009 ether;\n        uint tenPercent  = 0.02018 ether;\n        uint prizeEth    = (msg.value).sub(tenPercent);\n\n        prizePool  = prizePool.add(prizeEth);\n        givethPool = givethPool.add(fivePercent);\n        \n        // Use transfer instead of send for safer ETH transfer (reverts on failure)\n        require(address(administrator).transfer(fivePercent), \"Transfer to administrator failed\");\n        \n        emit Registration(_customerAddress);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

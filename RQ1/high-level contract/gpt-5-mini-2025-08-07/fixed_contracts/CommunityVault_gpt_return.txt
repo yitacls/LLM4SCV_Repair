@@ -1,0 +1,40 @@
+[{
+    "contract_name": "CommunityVault",
+    "contract_version": "0.6.12",
+    "state_variables": [
+        {
+            "variable_name": "_bond",
+            "fix_info": "Keep IERC20 token reference; use SafeERC20 helper for safe interactions when integrated into the full contract.",
+            "variable_code": "IERC20 private _bond;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "safe_erc20_usage",
+            "fix_info": "Add SafeERC20 usage to safely call token methods (requires importing OpenZeppelin SafeERC20 in the full contract).",
+            "variable_code": "using SafeERC20 for IERC20;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "_status & constants",
+            "fix_info": "Added simple reentrancy guard status variables to prevent reentrant calls without relying on external inheritance.",
+            "variable_code": "uint256 private constant _NOT_ENTERED = 1;\nuint256 private constant _ENTERED = 2;\nuint256 private _status = _NOT_ENTERED;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added nonReentrant modifier to prevent reentrancy during external token interactions.",
+            "modifier_code": "modifier nonReentrant() {\n    require(_status != _ENTERED, \"CommunityVault: reentrant call\");\n    _status = _ENTERED;\n    _;\n    _status = _NOT_ENTERED;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "setAllowance",
+            "fix_info": "Added nonReentrant protection, validated spender address, mitigated ERC20 approve race by resetting to 0 before setting a non-zero allowance, and used safe token calls (SafeERC20.safeApprove) for robust token interaction.",
+            "corrected_code": "function setAllowance(address spender, uint256 amount) public onlyOwner nonReentrant {\n    require(spender != address(0), \"CommunityVault: approve to the zero address\");\n\n    // Mitigate ERC20 approve race condition: if setting a non-zero allowance require previous allowance to be zero first.\n    uint256 current = _bond.allowance(address(this), spender);\n    if (amount != 0 && current != 0) {\n        _bond.safeApprove(spender, 0);\n    }\n\n    _bond.safeApprove(spender, amount);\n\n    emit SetAllowance(msg.sender, spender, amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

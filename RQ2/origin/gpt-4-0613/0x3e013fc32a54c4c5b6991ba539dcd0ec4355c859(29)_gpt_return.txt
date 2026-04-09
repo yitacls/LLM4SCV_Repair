@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The contract uses a low-level call to transfer Ether which does not throw an exception when the call fails. If the call fails, it returns false and the contract cannot handle the failure gracefully. This can lead to undesirable behavior or failure of the entire contract execution. Furthermore, if the callee contract is malicious, it can cause the current contract to consume all its gas, which makes the current contract fail. To avoid this vulnerability, consider using 'transfer' or 'send' functions to handle Ether transfers, as they throw an exception when the call fails, allowing the contract to handle failures more predictably."
+}
+```

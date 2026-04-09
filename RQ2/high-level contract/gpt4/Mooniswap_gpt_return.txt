@@ -1,0 +1,7 @@
+```json
+{
+  "type": "SWC-105-Unprotected Ether Withdrawal",
+  "location": "rescueFunds(IERC20 token, uint256 amount)",
+  "description": "The rescueFunds function, which is used to transfer tokens in case of any unforeseen issues, is only protected by the 'nonReentrant' and 'onlyOwner' modifiers. While the 'onlyOwner' modifier restricts usage to the contract owner, and 'nonReentrant' prevents recursive calls, there are no additional restrictions on the type or amount of tokens that can be withdrawn. If the owner's address were compromised, this could lead to a complete drainage of tokens from the contract."
+}
+```

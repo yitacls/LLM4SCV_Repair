@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(bricks[_brickId].owner == 0x0 || bricks[_brickId].owner == tx.origin);",
+    "description": "The contract lacks proper access control mechanism, which can allow unauthorized address to modify the bricks. This occurs because the contract only checks if the brick owner is either nonexistent (0x0) or is the sender of the transaction (tx.origin). This could enable potential attacks where an attacker can add or override bricks in the contract, provided the ownership condition is met." 
+}
+```

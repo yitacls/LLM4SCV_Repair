@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(this.balance);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.11, send() returns false on failure but does not throw an exception. This means that if the ETH transfer fails (e.g., if the owner's contract does not have a payable fallback function or runs out of gas), the function will continue execution silently, potentially leaving the contract in an inconsistent state. The funds will not be transferred, but the contract state will still be changed (funding set to false, refundstate toggled). This could lead to loss of funds or unexpected behavior."
+}
+```

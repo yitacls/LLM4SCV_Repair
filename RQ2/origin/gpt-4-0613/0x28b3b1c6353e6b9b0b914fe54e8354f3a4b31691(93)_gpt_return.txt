@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The vulnerability exists because the contract is making use of tx.origin for authorization which is a security risk. tx.origin is generally considered risky to use since it can be potentially manipulated by an attacker, especially in a contract calling other contract scenarios. The best practice for authorization checks is to use msg.sender instead of tx.origin."
+}
+```

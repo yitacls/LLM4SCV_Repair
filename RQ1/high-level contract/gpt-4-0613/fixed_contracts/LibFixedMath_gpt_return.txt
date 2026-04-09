@@ -1,0 +1,18 @@
+Here is the corrected functions in JSON format:
+
+【```json
+[{
+    "contract_name": "LibFixedMath",
+    "contract_version": "^0.5.9",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_add",
+            "fix_info": "The vulnerability lies in the '_add' function where there is a possibility of Integer Overflow and Underflow",
+            "corrected_code": "function _add(int256 a, int256 b) private pure returns (int256 c) {\n    c = a + b;\n    require((c >= a) == (b >= 0), \"Integer Overflow and Underflow\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```】

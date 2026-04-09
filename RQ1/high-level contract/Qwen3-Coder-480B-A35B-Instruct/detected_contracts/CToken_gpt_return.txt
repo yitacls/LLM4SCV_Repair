@@ -1,0 +1,39 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _setComptroller(ComptrollerInterface newComptroller) override public returns (uint)",
+        "description": "The _setComptroller function is marked as nonReentrant in some calls but not internally. Since it's called internally by the initialize function without reentrancy guard, it can potentially lead to reentrancy attacks if the new comptroller contract has malicious logic that tries to reenter the system during the state change."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function mintFresh(address minter, uint mintAmount) internal",
+        "description": "In the mintFresh function, external calls such as doTransferIn are made before updating all the state variables. An attacker could potentially reenter this function if the token being transferred has a callback mechanism, leading to multiple mints with a single transfer."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function redeemFresh(address payable redeemer, uint redeemTokensIn, uint redeemAmountIn) internal",
+        "description": "The redeemFresh function performs external calls via doTransferOut before finishing all state updates. This could allow a reentrancy attack where the attacker reenters the function and redeems more tokens than they should be able to."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function borrowFresh(address payable borrower, uint borrowAmount) internal",
+        "description": "The borrowFresh function makes an external call (doTransferOut) before completing all state changes. This creates a window for reentrancy where an attacker might be able to borrow more funds than allowed by manipulating the state during the external call."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function repayBorrowFresh(address payer, address borrower, uint repayAmount) internal returns (uint)",
+        "description": "In repayBorrowFresh, doTransferIn is called before fully updating the borrow balances. This can allow an attacker to reenter and manipulate the accounting of borrow amounts leading to potential fund loss or incorrect debt repayment records."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function liquidateBorrowFresh(address liquidator, address borrower, uint repayAmount, CTokenInterface cTokenCollateral) internal",
+        "description": "The liquidateBorrowFresh function interacts with external contracts (via doTransferIn and cTokenCollateral.seize) before completing state updates. This introduces a reentrancy risk where an attacker might manipulate the liquidation process and seize more collateral than intended."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function _addReservesFresh(uint addAmount) internal returns (uint, uint)",
+        "description": "The _addReservesFresh function calls doTransferIn before updating the totalReserves. This opens up a possibility for reentrancy, where an attacker might be able to call this function multiple times before the reserves are actually updated, leading to incorrect reserve accounting."
+    }
+]
+```

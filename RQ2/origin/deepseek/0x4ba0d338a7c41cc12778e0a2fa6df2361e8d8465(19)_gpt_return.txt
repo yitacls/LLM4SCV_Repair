@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "deposits[msg.sender] += msg.value;",
+    "description": "In Solidity ^0.4.11, integer arithmetic for state variables of mapping type can overflow without causing a revert. If 'deposits[msg.sender] + msg.value' exceeds the maximum value of uint256 (2^256 - 1), the addition will wrap around, resulting in a much smaller balance than expected. This vulnerability is due to the lack of built-in overflow checks in Solidity versions prior to 0.8.0."
+}
+```

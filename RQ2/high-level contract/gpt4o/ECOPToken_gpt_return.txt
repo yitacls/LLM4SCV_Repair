@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-104-Unchecked Call Return Value",
+    "location": "function pwr(uint256 x, uint256 y) internal pure returns(uint256) { ... }",
+    "description": "The `pwr` function's implementation involves a loop with repeated multiplication. However, the return value of the `mul` function is not checked for overflow. If the values of `x` and `y` are too large, an overflow could occur, but the proper error handling mechanism is missing here. As a result, this could lead to unexpected behavior or vulnerabilities."
+}
+```

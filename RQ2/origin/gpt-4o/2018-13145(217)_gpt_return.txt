@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount; and totalSupply += mintedAmount;",
+    "description": "In Solidity version ^0.4.16, arithmetic operations (addition, subtraction, multiplication) do not check for overflow or underflow. If 'mintedAmount' is large enough, adding it to 'balanceOf[target]' or 'totalSupply' can cause an overflow, leading to incorrect balances or supply values. This could be exploited to create an excessive number of tokens or manipulate balances in the contract."
+}
+```

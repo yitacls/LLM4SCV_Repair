@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "PornTokenV2Crowdsale",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "currentBalance",
+            "fix_info": "No changes needed to the variable itself",
+            "variable_code": "",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "",
+            "fix_info": "No modifiers were added or modified",
+            "modifier_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing .send() with .transfer() for beneficiary payments, and added function visibility and payable keyword",
+            "corrected_code": "function() external payable {\n    require(!crowdsaleClosed);\n    uint amount = msg.value;\n    \n    if (beneficiary == msg.sender && currentBalance > 0) {\n        uint amountToSend = currentBalance;\n        currentBalance = 0;\n        beneficiary.transfer(amountToSend);  // Fixed: Replaced .send() with .transfer()\n    } else if (amount > 0) {\n        balanceOf[msg.sender] += amount;\n        amountRaised += amount;\n        currentBalance += amount;\n        tokenReward.transfer(msg.sender, (amount / price) * 1 ether);\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

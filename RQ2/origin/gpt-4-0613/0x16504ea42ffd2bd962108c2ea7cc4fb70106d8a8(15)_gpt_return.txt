@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "target.call.value(msg.value)(bytes4(keccak256(\"play(uint256)\")), a);",
+    "description": "The smart contract contains a low level call without checking its return value. This unchecked call can potentially interact with another contract in a way that's not intended or result in an exception being thrown. Failing to check the return value of a call can lead to bugs and vulnerabilities, as any result including a denial of service can be returned. This operation might always fail or never return, resulting in a vulnerable, frozen contract as all further calls to this contract are reverted."
+}
+```

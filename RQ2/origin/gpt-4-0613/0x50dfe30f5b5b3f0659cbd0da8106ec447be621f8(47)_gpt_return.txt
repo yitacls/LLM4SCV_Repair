@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for authorization, which can be a security vulnerability. 'tx.origin' is the sender of the transaction (full call chain), not necessarily the contract we’re interacting with now, which can potentially be manipulated by a malicious contract between the sender and this contract. It's better to use 'msg.sender' which is always the immediately interacting address."
+}
+```

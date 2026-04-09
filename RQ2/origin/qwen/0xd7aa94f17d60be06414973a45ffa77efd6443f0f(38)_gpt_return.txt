@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "accounts[_to] += _amount;",
+    "description": "The addition operation on line with 'accounts[_to] += _amount;' is vulnerable to arithmetic overflow. In Solidity version ^0.4.16, there are no automatic overflow/underflow checks. If _amount is large enough, it could cause an integer overflow when added to accounts[_to], resulting in unexpected behavior or theft of tokens. The same vulnerability exists with the subtraction operation 'accounts[msg.sender] -= _amount;' which could underflow if not properly checked."
+}
+```

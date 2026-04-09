@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "totalBurned += msg.value;",
+    "description": "The contract is using Solidity version ^0.4.11 which does not have built-in overflow protection. The addition operation on totalBurned can overflow, causing the value to wrap around to zero or a smaller number. This could allow attackers to manipulate the totalBurned counter by providing values that cause arithmetic overflow, potentially leading to incorrect tracking of burned funds."
+}
+```

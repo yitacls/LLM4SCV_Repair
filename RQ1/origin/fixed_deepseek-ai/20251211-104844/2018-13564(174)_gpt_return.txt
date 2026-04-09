@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "GATcoin",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "Using SafeMath for uint256 arithmetic operations to prevent overflows in balance calculations",
+            "variable_code": "using SafeMath for uint256;\nmapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "Using SafeMath for uint256 arithmetic operations to prevent overflows in total supply calculations",
+            "variable_code": "using SafeMath for uint256;\nuint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed to modifier",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "unchanged"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Replaced arithmetic operations with SafeMath functions to prevent integer overflow vulnerabilities, added zero-address check for target parameter",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0));\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    Transfer(address(0), address(this), mintedAmount);\n    Transfer(address(this), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

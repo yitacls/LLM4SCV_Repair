@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "daoPOLSKAtokens",
+    "contract_version": "^0.4.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "PartialFundsTransfer",
+            "fix_info": "Fixed unchecked low level call by adding return value check and using safer transfer instead of send",
+            "corrected_code": "function PartialFundsTransfer(uint SubX) external {\n    if (msg.sender != owner) throw;\n    // Fixed unchecked low level call vulnerability\n    require(owner.send(this.balance - SubX));\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "return (winnerAddress, bets[winnerAddress].totalBet);",
+    "description": "The getLeader function can be vulnerable to a DoS attack due to the possibility of an attacker placing significantly higher bets to exhaust gas in finding the winner, potentially leading to high gas costs for legitimate users."
+}
+```

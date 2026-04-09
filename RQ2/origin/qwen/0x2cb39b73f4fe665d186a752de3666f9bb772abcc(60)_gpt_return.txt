@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "owner.send(msg.value);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.25, send() can fail silently and return false instead of throwing an exception. This means that if the owner's fallback function fails or the owner runs out of gas, the transaction will not revert, but the ether transfer will not occur either, potentially causing loss of funds for the contract users. The return value of send() should be checked and handled appropriately."
+}
+```

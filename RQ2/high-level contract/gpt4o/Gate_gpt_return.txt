@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-113-DoS with Failed Call",
+    "location": "multiFill() function, lines 175-190",
+    "description": "The multiFill() function iterates over an array of order IDs and processes them in a loop without verifying that all external calls or transfers will succeed. If one of the external calls (e.g., owner.transfer or IToken(settings.tmvAddress()).transfer) fails, the entire transaction will revert, leading to a potential denial-of-service attack. An attacker can intentionally create a faulty external address or manipulate conditions to prevent successful execution, blocking the function and potentially halting the functionality for legitimate users."
+}
+```

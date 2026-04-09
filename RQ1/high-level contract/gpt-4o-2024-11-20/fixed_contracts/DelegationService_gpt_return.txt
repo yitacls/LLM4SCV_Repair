@@ -1,0 +1,37 @@
+```json
+[
+    {
+        "contract_name": "DelegationService",
+        "contract_version": "^0.5.3",
+        "state_variables": [
+            {
+                "variable_name": "_launchTimestamp",
+                "fix_info": "Replaced `now` with `block.timestamp` to align with best practices in Solidity for time handling.",
+                "variable_code": "uint private _launchTimestamp;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "getAllDelegationRequests",
+                "fix_info": "Removed the revert statement and added logic to fetch all delegation requests. This ensures the function has an actual effect and fulfills its purpose.",
+                "corrected_code": "function getAllDelegationRequests() external view returns (uint[] memory) {\n    DelegationRequestManager delegationRequestManager = DelegationRequestManager(\n        contractManager.getContract(\"DelegationRequestManager\")\n    );\n    return delegationRequestManager.getAllRequests();\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "getDelegationRequestsForValidator",
+                "fix_info": "Removed the revert statement and implemented logic to fetch delegation requests for a specific validator.",
+                "corrected_code": "function getDelegationRequestsForValidator(uint validatorId) external view returns (uint[] memory) {\n    DelegationRequestManager delegationRequestManager = DelegationRequestManager(\n        contractManager.getContract(\"DelegationRequestManager\")\n    );\n    return delegationRequestManager.getRequestsForValidator(validatorId);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "distributeBounty",
+                "fix_info": "Added gas consumption checks to prevent a potential DoS due to a large number of iterations in the loop and replaced the storage array with local variables to reduce gas usage.",
+                "corrected_code": "function distributeBounty(uint amount, uint validatorId) internal {\n    ValidatorService validatorService = ValidatorService(contractManager.getContract(\"ValidatorService\"));\n    SkaleToken skaleToken = SkaleToken(contractManager.getContract(\"SkaleToken\"));\n    Distributor distributor = Distributor(contractManager.getContract(\"Distributor\"));\n    SkaleBalances skaleBalances = SkaleBalances(contractManager.getContract(\"SkaleBalances\"));\n    TimeHelpers timeHelpers = TimeHelpers(contractManager.getContract(\"TimeHelpers\"));\n    DelegationController delegationController = DelegationController(contractManager.getContract(\"DelegationController\"));\n\n    Distributor.Share[] memory shares;\n    uint fee;\n    (shares, fee) = distributor.distributeBounty(validatorId, amount);\n\n    address validatorAddress = validatorService.getValidator(validatorId).validatorAddress;\n    skaleToken.send(address(skaleBalances), fee, abi.encode(validatorAddress));\n    skaleBalances.lockBounty(validatorAddress, timeHelpers.addMonths(_launchTimestamp, 3));\n\n    uint shareSize = shares.length;\n    require(shareSize <= 100, \"Too many shares to process within gas limits\");\n\n    for (uint i = 0; i < shareSize; ++i) {\n        skaleToken.send(address(skaleBalances), shares[i].amount, abi.encode(shares[i].holder));\n\n        uint created = delegationController.getDelegation(shares[i].delegationId).created;\n        uint delegationStarted = timeHelpers.getNextMonthStartFromDate(created);\n        skaleBalances.lockBounty(shares[i].holder, timeHelpers.addMonths(delegationStarted, 3));\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

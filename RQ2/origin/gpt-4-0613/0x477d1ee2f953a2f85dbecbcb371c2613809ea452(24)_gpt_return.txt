@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.send(this.balance);",
+    "description": "The contract uses a low-level .send method to transfer Ether. The .send method doesn't throw an exception when the call fails, so the contract can't react to the call's failure. The failure might occur when there are not enough gas, or the receiver contract throws an exception. Since the calling contract can't handle these situations properly, funds may be permanently locked in the contract."
+}
+```

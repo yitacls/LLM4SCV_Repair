@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Crowdsale",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "amountRaised",
+                "fix_info": "Changed storage access behavior to ensure no overflows and mitigate reentrancy risk by avoiding dependency on updated state during external call.",
+                "variable_code": "uint public amountRaised;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "fallback",
+                "fix_info": "Mitigated reentrancy vulnerability by reordering state updates before external calls and replacing send() with transfer().",
+                "corrected_code": "function () public payable {\n    require(!crowdsaleClosed);\n    uint amount = msg.value;\n    balanceOf[msg.sender] += amount;\n    uint previousAmountRaised = amountRaised;\n    amountRaised += amount;\n    tokenReward.transfer(msg.sender, amount / price);\n\n    uint beneficiaryPayment = previousAmountRaised + amount;\n    amountRaised = 0; // Update state before making the external call for reentrancy safety\n    beneficiary.transfer(beneficiaryPayment); // Use transfer instead of send\n\n    emit FundTransfer(msg.sender, amount, true);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

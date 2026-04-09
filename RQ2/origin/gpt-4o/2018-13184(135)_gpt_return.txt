@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balanceOf[target] += mintedAmount",
+    "description": "The code snippet lacks validation to prevent overflow when adding the mintedAmount to balanceOf[target]. In Solidity version ^0.4.2, arithmetic operations do not automatically check for overflow or underflow, which could lead to incorrect balances when minting large values."
+}
+```

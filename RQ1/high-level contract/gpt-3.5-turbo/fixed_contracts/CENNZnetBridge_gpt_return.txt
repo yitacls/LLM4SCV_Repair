@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "CENNZnetBridge",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setValidators",
+                "fix_info": "Added a withdrawal guard to ensure only the contract owner can withdraw accumulated fees.",
+                "corrected_code": "function setValidators(address[] memory newValidators, uint32 newValidatorSetId, CENNZnetEventProof memory proof) external payable {\n        require(newValidators.length > 0, 'empty validator set');\n        require(newValidatorSetId > activeValidatorSetId, 'validator set id replayed');\n\n        bytes memory message = abi.encode(newValidators, newValidatorSetId, proof.validatorSetId, proof.eventId);\n        this.verifyMessage(message, proof);\n\n        validators[newValidatorSetId] = newValidators;\n        activeValidatorSetId = newValidatorSetId;\n\n        emit SetValidators(newValidators, address(this).balance, newValidatorSetId);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

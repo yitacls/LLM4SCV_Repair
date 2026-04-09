@@ -1,0 +1,28 @@
+The SWC-102 vulnerability can be fixed by simply using the latest stable version of Solidity. And for SWC-113, it can be fixed by using "call" function instead of "transfer" or "send", checking the returned result, and handling it properly. Here is the fix in the required JSON format:
+
+```json
+[
+    {
+        "contract_name": "Ark",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "withdrawForLoss",
+                "fix_info": "Added the function call to check the return value for successfully handling the failure cases",
+                "corrected_code": "function withdrawForLoss(Decimal.decimal memory _amount, IERC20 _quoteToken) public override {\n    require(insuranceFund == _msgSender(), \"only insuranceFund\");\n\n    if (_getTokenDecimals(address(_quoteToken)) < 18) {\n        _amount = _amount.addD(_toDecimal(_quoteToken, 1));\n    }\n\n    require(_balanceOf(_quoteToken, address(this)).toUint() >= _amount.toUint(), \"insufficient funds\");\n\n    Decimal.decimal memory cumulativeAmount;\n    uint256 len = withdrawnTokenHistory[_quoteToken].length;\n    if (len == 0) {\n        cumulativeAmount = _amount;\n    } else {\n        cumulativeAmount = withdrawnTokenHistory[_quoteToken][len - 1].cumulativeAmount.addD(_amount);\n    }\n\n    withdrawnTokenHistory[_quoteToken].push(\n        WithdrawnToken({ timestamp: _blockTimestamp(), cumulativeAmount: cumulativeAmount })\n    );\n\n    (bool success, ) = _msgSender().call{value: _amount.toUint()}(\"\");\n    require(success, \"Transfer failed.\");\n\n    emit WithdrawnForLoss(_msgSender(), _amount.toUint(), address(_quoteToken));\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "claimTokens",
+                "fix_info": "Added the function call to check the return value for successfully handling the failure cases",
+                "corrected_code": "function claimTokens(address payable _to, IERC20 _token) external onlyOwner {\n    require(_to != address(0), \"to address is required\");\n    if (_token == IERC20(0)) {\n        (bool success, ) = _to.call{value: address(this).balance}(\"\");\n        require(success, \"Transfer failed.\");\n    } else {\n        _transfer(_token, _to, _balanceOf(_token, address(this)));\n    }\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```
+
+P.S. For the 'withdrawForLoss' function's call to '_transfer' function, make sure the '_transfer' function in the super class is well implemented and is handling the failure cases properly. If it's not, then you would need to additionally fix the '_transfer' function the same way as we did for the 'withdrawForLoss' and 'claimTokens' functions.

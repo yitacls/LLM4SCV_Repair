@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "Line with '_users[i].transfer(_prices[i]);' in the sendAll function",
+    "description": "The 'transfer' method can fail silently if the recipient is a contract without a payable fallback function or if gas stipend (2300 gas) is insufficient. When such a transfer fails, the function continues execution due to lack of proper error handling, logging a 'transferLogs' entry despite the actual transfer not occurring. This creates a discrepancy between logged records and actual token/ether movements, potentially allowing the owner to incorrectly claim funds were distributed. The vulnerability is compounded by the version (^0.4.16) where failed transfers do not revert but return false."
+}
+```

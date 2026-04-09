@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "unchecked_low_level_calls",
+            "location": "owner.send(this.balance);",
+            "description": "The use of send() for transferring funds does not check for potential failure and may result in the loss of funds as the recipient may be a contract with a fallback function that fails. It is recommended to use transfer() or implement checks to handle failures."
+        }
+    ]
+}
+```

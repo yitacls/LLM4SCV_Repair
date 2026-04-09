@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "contract_name": "Base",
+    "location": "token.call(bytes4(sha3('transfer(address,uint256)')),creator,amount);",
+    "description": "In Ethereum Solidity smart contracts, it's considered a security vulnerability to make low-level calls without proper error checking. In this scenario (line 6), the contract makes a low-level call using the 'call' function in order to perform a token transfer. However, there is no subsequent error handling mechanism in place to deal with potential failures of this call. If the call fails for any reason, the failure won't be detected and the contract will keep on executing, potentially leading to unexpected behavior or loss of funds."
+}
+```

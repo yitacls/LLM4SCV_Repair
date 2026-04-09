@@ -1,0 +1,38 @@
+[{
+    "contract_name": "Fidometa",
+    "contract_version": "0.8.11",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_approve",
+            "fix_info": "Fixed shadowing of Ownable.owner() by renaming parameter 'owner' to 'ownerAccount' and ensured zero-address checks remain clear.",
+            "corrected_code": "function _approve(\n        address ownerAccount,\n        address spender,\n        uint256 amount\n    ) private {\n        require(ownerAccount != address(0), \"BEP20: approve from the zero address\");\n        require(spender != address(0), \"BEP20: approve to the zero address\");\n        _allowances[ownerAccount][spender] = amount;\n        emit Approval(ownerAccount, spender, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "takeCharges",
+            "fix_info": "Fixed incorrect mapping check for surcharge2 wallet (was checking Surcharge1 mapping). Kept original behaviour while ensuring correct mapping is used when updating _tOwned for excluded service wallets.",
+            "corrected_code": "function takeCharges(\n        uint256 tEcoSys,\n        uint256 tSurcharge1,\n        uint256 tSurcharge2,\n        uint256 tSurcharge3\n    ) private {\n        uint256 currentRate = _getRate();\n        if (tEcoSys > 0) {\n            uint256 rEcosys = tEcoSys.mul(currentRate);\n            _rOwned[_ecoSysWallet] = _rOwned[_ecoSysWallet].add(rEcosys);\n            if (_isExcludedFromEcoSysFee[_ecoSysWallet])\n                _tOwned[_ecoSysWallet] = _tOwned[_ecoSysWallet].add(tEcoSys);\n        }\n        if (tSurcharge1 > 0) {\n            uint256 rSurcharge1 = tSurcharge1.mul(currentRate);\n            _rOwned[_surcharge_1_Wallet] = _rOwned[_surcharge_1_Wallet].add(\n                rSurcharge1\n            );\n            if (_isExcludedFromSurcharge1[_surcharge_1_Wallet])\n                _tOwned[_surcharge_1_Wallet] = _tOwned[_surcharge_1_Wallet].add(\n                    tSurcharge1\n                );\n        }\n        if (tSurcharge2 > 0) {\n            uint256 rSurcharge2 = tSurcharge2.mul(currentRate);\n            _rOwned[_surcharge_2_Wallet] = _rOwned[_surcharge_2_Wallet].add(\n                rSurcharge2\n            );\n            // Correct mapping check for surcharge2 wallet\n            if (_isExcludedFromSurcharge2[_surcharge_2_Wallet])\n                _tOwned[_surcharge_2_Wallet] = _tOwned[_surcharge_2_Wallet].add(\n                    tSurcharge2\n                );\n        }\n        if (tSurcharge3 > 0) {\n            uint256 rSurcharge3 = tSurcharge3.mul(currentRate);\n            _rOwned[_surcharge_3_Wallet] = _rOwned[_surcharge_3_Wallet].add(\n                rSurcharge3\n            );\n            if (_isExcludedFromSurcharge3[_surcharge_3_Wallet])\n                _tOwned[_surcharge_3_Wallet] = _tOwned[_surcharge_3_Wallet].add(\n                    tSurcharge3\n                );\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getCurrentSupply",
+            "fix_info": "Optimized loop to iterate over a memory copy of the excluded array (reduces storage reads) and used explicit uint256 types to avoid implicit smaller types. Preserves original logic and mitigates some gas overhead from repeated storage access.",
+            "corrected_code": "function _getCurrentSupply() private view returns (uint256, uint256) {\n        uint256 rSupply = _rTotal;\n        uint256 tSupply = _tTotal;\n        address[] memory excluded = _excluded;\n        uint256 cacheLength = excluded.length;\n\n        for (uint256 i = 0; i < cacheLength; i++) {\n            address account = excluded[i];\n            if (_rOwned[account] > rSupply || _tOwned[account] > tSupply) {\n                return (_rTotal, _tTotal);\n            }\n            rSupply = rSupply.sub(_rOwned[account]);\n            tSupply = tSupply.sub(_tOwned[account]);\n        }\n        if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);\n        return (rSupply, tSupply);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "unlock",
+            "fix_info": "Added SafeMath multiplication for initialLock*1 days to prevent overflow and make the arithmetic intention explicit. Preserved original unlocking logic and safety checks.",
+            "corrected_code": "function unlock(address target_) external {\n        require(target_ != address(0), \"Invalid target\");\n        require(_msgSender() == target_, \"Invalid target\");\n\n        uint256 startTime = locks[target_].startTime;\n        uint256 lockedToken = locks[target_].lockedToken;\n        uint256 remainedToken = locks[target_].remainedToken;\n        uint256 monthCount = locks[target_].monthCount;\n        uint256 initialLock = locks[target_].initialLock;\n        require(remainedToken != 0, \"All tokens are unlocked\");\n\n        uint256 unlockStart = startTime.add(initialLock.mul(1 days));\n        require(block.timestamp > unlockStart, \"UnLocking period is not opened\");\n\n        uint256 timePassed = block.timestamp - unlockStart;\n\n        uint256 monthNumber = (timePassed + (uint256(30 days) - 1)) / uint256(30 days);\n\n        uint256 remainedMonth = monthNumber - monthCount;\n\n        if (remainedMonth > 5) remainedMonth = 5;\n        require(remainedMonth > 0, \"Releasable token till now is released\");\n\n        uint256 receivableToken = (lockedToken * (remainedMonth * 20)) / 100;\n\n        locks[target_].monthCount += remainedMonth;\n        locks[target_].remainedToken -= receivableToken;\n\n        if (locks[target_].remainedToken == 0) {\n            delete locks[target_];\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferWithLock",
+            "fix_info": "Removed a redundant always-true require(initialLock >= 0) and added a check to ensure tAmount is greater than zero. Preserved original vesting behavior.",
+            "corrected_code": "function transferWithLock(\n        address recipient,\n        uint256 tAmount,\n        uint256 initialLock\n    ) external onlyOwner {\n        require(recipient != address(0), \"Invalid target\");\n        require(locks[recipient].lockedToken == 0, \"This address is already in vesting period\");\n        require(tAmount > 0, \"tAmount must be greater than zero\");\n\n        _transfer(_msgSender(), recipient, tAmount);\n        locks[recipient] = LockDetails(\n            block.timestamp,\n            initialLock,\n            tAmount,\n            tAmount,\n            0\n        );\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

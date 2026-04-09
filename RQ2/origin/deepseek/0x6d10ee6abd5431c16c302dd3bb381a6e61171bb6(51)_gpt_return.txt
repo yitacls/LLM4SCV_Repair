@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "This function uses tx.origin for authorization, which is vulnerable to phishing attacks. In Solidity, tx.origin returns the original external account that initiated the transaction chain, not the immediate caller (msg.sender). A malicious contract could trick the legitimate owner into calling a function that subsequently calls renounceOwnership(), causing the owner to unwittingly renounce ownership when tx.origin matches their address, even though they didn't intend to call this function directly."
+}
+```

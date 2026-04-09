@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow/Underflow",
+    "location": "uint rate = normalRate * juicyBonus--;",
+    "description": "The statement 'normalRate * juicyBonus--' is vulnerable to arithmetic overflow. In Solidity ^0.4.16, arithmetic operations are not checked for overflow/underflow by default. If the multiplication of normalRate and juicyBonus results in a value larger than what can be stored in a uint, it will wrap around to a smaller value, leading to incorrect rate calculation. Additionally, the post-decrement operator on juicyBonus could lead to underflow if juicyBonus is already 0, though this is mitigated later by the line 'juicyBonus = (juicyBonus < 1) ? 1 : juicyBonus;'"
+}
+```

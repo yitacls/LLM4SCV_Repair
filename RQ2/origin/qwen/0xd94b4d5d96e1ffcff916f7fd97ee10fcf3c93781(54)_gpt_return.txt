@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_to.send(_value);",
+    "description": "The send() function is used without checking its return value. In Solidity 0.4.13, send() returns false if the transfer fails (e.g., recipient contract's fallback function fails or runs out of gas), but the code doesn't handle this case. This could lead to a situation where the transfer fails silently, potentially causing loss of funds or incorrect contract state. The return value of send() should be checked and handled appropriately."
+}
+```

@@ -1,0 +1,8 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "wallet.send(msg.value);",
+    "description": "The low-level address.send() function returns a boolean value indicating the success or failure of the Ether transfer, but this return value is not checked. If the send() call fails (returns false), the contract's execution will continue as if nothing happened, potentially leading to loss of funds. This is particularly risky in the fallback function where funds are forwarded. In Solidity 0.4.23, failed sends do not revert the transaction by default, so explicit error handling is required. A safer pattern is to use require(wallet.send(msg.value)) or transfer() to automatically revert on failure.",
+    "recommendation": "Replace the vulnerable line with either require(wallet.send(msg.value), \"Transfer failed\"); or, if the risk of out-of-gas is acceptable, use wallet.transfer(msg.value); which automatically reverts on failure."
+}
+```

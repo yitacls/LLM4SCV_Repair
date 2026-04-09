@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "purchaser.send(totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE);",
+    "description": "The return value of the low-level call 'send()' is not checked, which can lead to silent failures when refunding excess ether to the purchaser. Since 'send()' only forwards 2300 gas and can fail due to out-of-gas errors or if the recipient contract's fallback function reverts, the contract will proceed with execution even when the refund fails, potentially causing permanent loss of ether for the user."
+}
+```

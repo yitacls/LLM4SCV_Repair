@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DoS",
+    "location": "for (uint i; i < zz.length; i++)",
+    "description": "The loop iterates over an unbounded array 'zz' which can lead to excessive gas consumption and potentially cause a Denial of Service. In Solidity ^0.4.24, there are no gas limits on array sizes, so a malicious user could pass an extremely large array to consume all available gas, making the function unusable. This is particularly problematic because the function calls 'addRecord' for each element, which likely involves state changes and additional gas costs, amplifying the DoS potential."
+}
+```

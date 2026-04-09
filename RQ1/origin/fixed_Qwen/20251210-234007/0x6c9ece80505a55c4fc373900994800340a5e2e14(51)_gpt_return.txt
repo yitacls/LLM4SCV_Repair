@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CGENToken",
+    "contract_version": "^0.4.21",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to replace vulnerable tx.origin check with secure msg.sender check",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "vestToAddressEx",
+            "fix_info": "Replaced vulnerable tx.origin check with secure msg.sender check using onlyOwner modifier",
+            "corrected_code": "function vestToAddressEx(address _who, uint128 _amount, uint8 _divisor, uint32 _intervalSeconds) public onlyOwner returns(bool) {\n\t\tvesting memory newVesting;\n\t\trequire(_amount > 0);\n\t\trequire(_divisor <= 100 && _divisor > 0);\n\t\trequire(_intervalSeconds > 0);\n\t\trequire(100 % _divisor == 0);\n\t\trequire(_amount <= availableSupply);\n\t\tnewVesting.createdAt = now;\n\t\tnewVesting.amount = _amount;\n\t\tnewVesting.releaseRate = 100 / _divisor;\n\t\tnewVesting.releaseIntervalSeconds = _intervalSeconds;\n\t\tnewVesting.nextReleasePeriod = 0;\n\t\tnewVesting.completed = false;\n\t\ttokenAccountIndex[_who].vestingIndex.push(newVesting);\n\t\tavailableSupply -= _amount;\n\t\ttokenAccountIndex[_who].vestedBalance += _amount;\n\t\temit Transfer(owner, _who, _amount);\n\t\treturn true;\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

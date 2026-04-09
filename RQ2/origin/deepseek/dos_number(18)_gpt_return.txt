@@ -1,0 +1,7 @@
+```json
+{
+    "type": "DENIAL_OF_SERVICE",
+    "location": "Line containing: for(uint i=0;i<numbers;i++) { ... array.length += 1; ... }",
+    "description": "The contract contains a function 'insertNnumbers' that iteratively expands a dynamic array within a loop based on user-controlled input ('numbers'). When 'numbers' exceeds approximately 382 (depending on block gas limit), the transaction will consume all gas and revert, causing a Denial of Service (DoS) condition. This vulnerability arises because each loop iteration potentially writes to storage and modifies 'array.length', both of which are expensive gas operations. In Solidity ^0.4.25, 'array.length += 1' is particularly costly as it triggers storage expansion. An attacker can specify a sufficiently large 'numbers' parameter to make the transaction fail due to out-of-gas, preventing legitimate operations."
+}
+```

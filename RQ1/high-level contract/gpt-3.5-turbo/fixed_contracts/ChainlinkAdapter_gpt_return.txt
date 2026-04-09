@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "ChainlinkAdapter",
+        "contract_version": "^0.5.2",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "price",
+                "fix_info": "Fixed the Integer Overflow and Underflow vulnerability by checking for potential overflow before conversion",
+                "corrected_code": "function price() public view returns (uint256 newPrice, uint256 timestamp) {\n        int256 rawPrice = feeder.latestAnswer();\n        require(rawPrice >= 0, 'Chainlink price cannot be negative');\n        newPrice = uint256(rawPrice).mul(chainlinkDecimalsAdapter);\n        timestamp = feeder.latestTimestamp();\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

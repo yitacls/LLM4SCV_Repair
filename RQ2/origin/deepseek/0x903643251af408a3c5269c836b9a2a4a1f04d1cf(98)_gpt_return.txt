@@ -1,0 +1,7 @@
+【```json
+{
+    "type": "Reentrancy",
+    "location": "bool buyerReceivedMoney = escrows[_tradeHash].buyer.call.value(buyerValue)();",
+    "description": "The contract uses the low-level `call.value()` method to transfer ether to the buyer before updating its state via `delete escrows[_tradeHash];`. If the buyer is a malicious contract, it can re-enter the `cancelEscrow` function (or another vulnerable function) by implementing a fallback function that calls `cancelEscrow` again while the state is still unchanged. Since `require(escrows[_tradeHash].exists);` and `require(escrows[_tradeHash].buyerCanCancelAfter<now);` still pass, the attacker could drain funds repeatedly until the transaction gas limit is reached or the contract balance is exhausted. The state deletion occurs only after the external call, which violates the checks-effects-interactions pattern and enables reentrancy attacks. In Solidity ^0.4.18, there is no built-in reentrancy guard, and `throw` (used later) only reverts after the vulnerability may have already been exploited."
+}
+```】

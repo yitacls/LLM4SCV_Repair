@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "beneficiary.send(amountToSend);",
+    "description": "The low-level 'send()' call does not check the return value for failure. If the send operation fails (e.g., due to gas limitations or a revert in the fallback function of the recipient), the contract will not be aware of the failure, and the Ether transfer will be silently lost. In Solidity 0.4.x, 'send()' returns 'false' on failure, but this return value is ignored here. This could lock Ether in the contract permanently, as 'currentBalance' is set to 0 regardless of whether the transfer succeeds. Use 'transfer()' (which automatically reverts on failure in versions >=0.4.18) or explicitly check the return value of 'send()' and handle failures appropriately."
+}
+```

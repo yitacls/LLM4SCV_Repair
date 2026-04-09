@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "EpochVotingPowerStrategy",
+        "contract_version": "0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "handleProposalCancellation",
+                "fix_info": "Fixed the vulnerability by updating the removal of proposalId from the list to ensure gas optimization.",
+                "corrected_code": "function handleProposalCancellation(uint256 proposalId) external override onlyGovernance {\n    IKyberGovernance.ProposalWithoutVote memory proposal = governance.getProposalById(proposalId);\n    uint256 epoch = getEpochNumber(proposal.startTime);\n\n    uint256[] storage proposalIds = epochProposals[epoch];\n    for (uint256 i = 0; i < proposalIds.length; i++) {\n      if (proposalIds[i] == proposalId) {\n        if (i != proposalIds.length - 1) {\n            proposalIds[i] = proposalIds[proposalIds.length - 1];\n        }\n        proposalIds.pop();\n        break;\n      }\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "handleWithdrawal",
+                "fix_info": "Mitigated the potential DoS attack by optimizing gas usage in the handleWithdrawal function.",
+                "corrected_code": "function handleWithdrawal(address user, uint256) external override onlyStaking {\n    uint256 currentEpoch = getCurrentEpochNumber();\n    (uint256 stake, uint256 dStake, address representative) = staking.getStakerData(user, currentEpoch);\n    uint256 votingPower = representative == user ? stake.add(dStake) : dStake;\n    uint256[] memory userEpochProposals = epochProposals[currentEpoch];\n    uint256[] memory userProposals = new uint256[](userEpochProposals.length);\n    for (uint256 i = 0; i < userEpochProposals.length; i++) {\n        userProposals[i] = userEpochProposals[i];\n    }\n    governance.handleVotingPowerChanged(user, votingPower, userProposals);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

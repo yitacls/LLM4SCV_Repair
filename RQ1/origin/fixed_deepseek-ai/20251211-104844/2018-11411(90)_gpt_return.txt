@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "DimonCoin",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transferFrom",
+                "fix_info": "Fixed arithmetic vulnerabilities: 1) Changed 'fromBalance <= _value' to 'fromBalance >= _value' to check if balance is sufficient. 2) Changed 'allowance <= _value' to 'allowance >= _value' to check if allowance is sufficient. 3) Changed overflow check from 'balances[_to] + _value > balances[_to]' to 'balances[_to] + _value >= balances[_to]' and added explicit overflow protection. 4) Added SafeMath library or equivalent checks to prevent integer overflows/underflows.",
+                "corrected_code": "function transferFrom(address _from, address _to, uint256 _value) onlyPayloadSize(2 * 32) returns (bool success) {\n        if (_value == 0) { \n            return false; \n        }\n        \n        // Check for overflow in addition\n        require(balances[_to] + _value >= balances[_to]);\n        \n        uint256 fromBalance = balances[_from];\n        uint256 allowance = allowed[_from][msg.sender];\n\n        bool sufficientFunds = fromBalance >= _value;\n        bool sufficientAllowance = allowance >= _value;\n\n        if (sufficientFunds && sufficientAllowance) {\n            balances[_to] += _value;\n            balances[_from] -= _value;\n            \n            allowed[_from][msg.sender] -= _value;\n            \n            Transfer(_from, _to, _value);\n            return true;\n        } else { \n            return false; \n        }\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

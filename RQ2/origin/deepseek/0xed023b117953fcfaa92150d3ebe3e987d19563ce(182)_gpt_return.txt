@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(now < 1520694000 && tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);",
+    "description": "The function uses 'tx.origin' for access control, which is not a reliable authorization mechanism as it checks the original transaction sender rather than the immediate caller (msg.sender). This makes the contract vulnerable to phishing attacks where malicious contracts could call this function while forwarding transactions from the authorized address. Additionally, the time constraint (now < 1520694000) creates a permanent deadlock after the timestamp passes, making the function permanently inaccessible. The fixed address check creates a central point of failure and prevents proper contract ownership management."
+}
+```

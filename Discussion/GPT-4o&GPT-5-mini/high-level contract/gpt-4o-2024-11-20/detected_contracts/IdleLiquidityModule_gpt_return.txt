@@ -1,0 +1,7 @@
+```json
+{
+    "type": "SWC-101-Integer Overflow and Underflow",
+    "location": "return (((tick - tickDelta) / tickSpacing) * tickSpacing, ((tick + tickDelta) / tickSpacing) * tickSpacing);",
+    "description": "The calculation of `tick - tickDelta` and `tick + tickDelta` on line 131 might result in an integer overflow or underflow if `tick` is a small or large value in relation to `tickDelta`. Solidity 0.7.6 does not include built-in checks for safe arithmetic operations. This could potentially lead to unexpected behavior or vulnerabilities in the contract. To mitigate this, the operations should use the SafeMath library or be redesigned to ensure arithmetic safety."
+}
+```

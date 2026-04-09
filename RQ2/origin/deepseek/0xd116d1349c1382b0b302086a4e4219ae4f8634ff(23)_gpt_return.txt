@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "The function uses the deprecated and unsafe `call.value()()` method to send Ether before updating the sender's balance. An attacker can create a malicious contract that calls `CashOut` recursively in its fallback/receive function. Since `balances[msg.sender] -= _am;` only executes after the external call completes, the attacker can drain funds multiple times before their balance is reduced, exploiting the contract's state inconsistency. This is a classic reentrancy vulnerability, reminiscent of the DAO hack. Additionally, the use of ^0.4.19 means the contract lacks modern protections like ReentrancyGuard or checks-effects-interactions patterns."
+}
+```

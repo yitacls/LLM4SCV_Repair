@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Ethraffle_v4b",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "sealedSeed",
+            "fix_info": "Added to store a random seed that can be revealed after block number increases",
+            "variable_code": "bytes32 private sealedSeed;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "chooseWinner",
+            "fix_info": "Replaced predictable randomness sources (block.coinbase, msg.sender, block.difficulty) with commit-reveal scheme using a sealed seed that requires external randomness input",
+            "corrected_code": "function chooseWinner(bytes32 _seed) private {\n        // Require a new random seed to be provided\n        require(_seed != 0, \"Seed cannot be zero\");\n        \n        // Use the provided seed for randomness\n        bytes32 randHash = keccak256(abi.encodePacked(_seed, sealedSeed));\n        \n        uint winningNumber = uint(randHash) % totalTickets;\n        address winningAddress = contestants[winningNumber].addr;\n        \n        // Emit event with the winning result\n        RaffleResult(raffleId, winningNumber, winningAddress, _seed, sealedSeed, block.number, randHash);\n        \n        // Start next raffle\n        raffleId++;\n        nextTicket = 0;\n        \n        // Generate new sealed seed for next raffle using current block information\n        sealedSeed = keccak256(abi.encodePacked(\n            blockhash(block.number - 1),\n            block.coinbase,\n            block.difficulty\n        ));\n        \n        // Distribute prize and fee\n        winningAddress.transfer(prize);\n        feeAddress.transfer(fee);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "commitSeed",
+            "fix_info": "Added function to allow secure random seed submission from external sources",
+            "corrected_code": "function commitSeed(bytes32 _commitment) external {\n        // Store the commitment for later reveal\n        sealedSeed = _commitment;\n        \n        emit SeedCommitted(msg.sender, _commitment);\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

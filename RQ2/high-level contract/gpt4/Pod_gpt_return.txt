@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Lines 275-282 in _deposit() function",
+        "description": "The contract calls an external function in the middle of an execution, potentially leading to unexpected behaviours and reentrancy attacks if the invoked contract includes malicious code."
+    },
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "Lines 425-436 in _burnShares() function",
+        "description": "The contract calls an external function while processing a state change, which can enable a reentrancy attack if the invoked contract includes malicious code."
+    },
+    {
+        "type": "SWC-104-Unchecked Call Return Value",
+        "location": "Line 279 in depositTo() function",
+        "description": "The return value of an external contract call is not checked for success, leading to potential execution continuation even when the call fails. This can result in unexpected behavior if the external call fails due to reasons such as insufficient gas or out-of-gas errors."
+    }
+]
+```

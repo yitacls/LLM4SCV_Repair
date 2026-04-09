@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "multi_fund",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Address of contract owner, already present but used in fixed function",
+            "variable_code": "address public owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to owner only",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "clear",
+            "fix_info": "Replaced tx.origin vulnerability with msg.sender check through onlyOwner modifier and removed deprecated selfdestruct",
+            "corrected_code": "function clear() public onlyOwner {\n        owner = address(0);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

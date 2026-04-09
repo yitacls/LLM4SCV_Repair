@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint256 getout = invested[msg.sender]*25/100*(block.number-atBlock[msg.sender])/5900;",
+    "description": "The multiplication operation may result in an overflow as the product may exceed the maximum value that uint256 can hold, leading to inaccurate calculations or unexpected behavior."
+}
+```

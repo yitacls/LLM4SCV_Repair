@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "require(msg.sender.call.value(_user.r_payout)());",
+    "description": "The contract sends Ether to the user via msg.sender.call.value() before updating the contract's state or balance. This allows a malicious contract to re-enter the function before the state is updated, potentially draining the contract's funds. The call should be made after updating all state variables or using a mutex/lock mechanism."
+}
+```

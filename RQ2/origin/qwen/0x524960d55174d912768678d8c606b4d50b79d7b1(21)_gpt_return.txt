@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "contract_address.call(\"register\", \"CentraToken\");",
+    "description": "The low-level call to register function is not checked for success or failure. In Solidity 0.4.13, call() returns a boolean indicating success/failure, but this return value is ignored, potentially leading to silent failures and unexpected contract behavior."
+}
+```

@@ -1,0 +1,40 @@
+[{
+    "contract_name": "liquidator",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "v2Factory",
+            "fix_info": "No change to declaration; initialization is validated in initialize()/distribute() to prevent zero-address configuration.",
+            "variable_code": "address v2Factory;",
+            "change_type": "unchanged"
+        },
+        {
+            "variable_name": "debt",
+            "fix_info": "No change to declaration; initialization is validated in initialize()/distribute() to prevent zero-address configuration.",
+            "variable_code": "address debt;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": []
+    ,
+    "functions": [
+        {
+            "function_name": "initialize",
+            "fix_info": "Added validation to prevent setting zero addresses and preserved admin access requirement.",
+            "corrected_code": "function initialize(address v2Factory_, address debt_) public {\n    require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"IA\"); // Invalid Access\n    require(v2Factory_ != address(0) && debt_ != address(0), \"IZ\"); // Invalid Zero address\n    v2Factory = v2Factory_;\n    debt = debt_;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "distribute",
+            "fix_info": "Added initialization checks, validated collateral is a contract and non-zero, ensured positive token balance before transferring to prevent unintended ETH/native transfers or empty operations. Preserved admin access and original transfer behavior for ERC20 tokens.",
+            "corrected_code": "function distribute(address collateral) public {\n    require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), \"IA\"); // Invalid Access\n    require(v2Factory != address(0) && debt != address(0), \"NI\"); // Not initialized\n    require(collateral != address(0), \"Invalid collateral\");\n    require(_isContract(collateral), \"Collateral not a contract\");\n\n    // check the pair if it exists\n    address pair = IUniswapV2FactoryMinimal(v2Factory).getPair(collateral, debt);\n    require(pair != address(0), \"Vault: Liquidating pair not supported\");\n\n    // Distribute collaterals (ensure positive balance)\n    uint256 bal = IERC20Minimal(collateral).balanceOf(address(this));\n    require(bal > 0, \"No collateral balance\");\n\n    // Use existing helper to safely transfer ERC20 tokens to the pair\n    TransferHelper.safeTransfer(collateral, pair, bal);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_isContract",
+            "fix_info": "Added internal helper to detect whether an address contains contract code; used to prevent accidental ETH/native transfers and ensure collateral is an ERC20 contract.",
+            "corrected_code": "function _isContract(address account) internal view returns (bool) {\n    uint256 size;\n    assembly { size := extcodesize(account) }\n    return size > 0;\n}",
+            "change_type": "added"
+        }
+    ]
+}]

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "callee.call()",
+    "description": "In Solidity versions before 0.8.x, the low-level call() function returns a boolean indicating success/failure but this return value is ignored. This can lead to silent failures where contract interactions appear successful even when the called contract reverts. Attackers could exploit this by forcing calls to fail while the calling contract continues execution, potentially leaving it in an inconsistent state. It is recommended to always check the return value of low-level calls: (bool success, ) = callee.call(); require(success, 'Call failed');"
+}
+```

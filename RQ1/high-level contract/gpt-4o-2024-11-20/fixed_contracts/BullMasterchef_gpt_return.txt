@@ -1,0 +1,30 @@
+```json
+[
+    {
+        "contract_name": "MasterChef",
+        "contract_version": "0.8.4",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_massUpdatePools",
+                "fix_info": "Refactored to handle the potential gas limit issue by restricting the number of pools updated in one transaction. Introduced a batching mechanism with a start and end index.",
+                "corrected_code": "/// @dev Update reward variables for multiple pools in batches to avoid gas limit issues.\nfunction massUpdatePools(uint256 _start, uint256 _end) external {\n    require(_end > _start, \"massUpdatePools: End index must be greater than start index\");\n    uint256 length = poolInfo.length;\n    require(_start < length && _end <= length, \"massUpdatePools: Invalid range\");\n    for (uint256 pid = _start; pid < _end; ++pid) {\n        _updatePool(pid);\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "add",
+                "fix_info": "Updated to avoid calling _massUpdatePools unnecessarily. Now, mass updates are handled externally using the new massUpdatePools function.",
+                "corrected_code": "/// @dev Add a new lp to the pool. Can only be called by the owner.\nfunction add(uint32 _allocPoint, IBEP20 _lpToken, uint16 _depositFeeBP, uint32 _harvestInterval, bool _withRewards) public onlyOwner nonDuplicated(_lpToken) {\n    require(_depositFeeBP <= 1500, \"add: deposit fee can't be more than 15%\");\n    require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"add: invalid harvest interval\");\n\n    uint256 lastRewardBlock = block.number > startBlock ? block.number : startBlock;\n    totalAllocPoint = totalAllocPoint.add(_allocPoint);\n    poolExistence[_lpToken] = true;\n    poolInfo.push(PoolInfo({\n        lpToken: _lpToken,\n        allocPoint: _allocPoint,\n        lastRewardBlock: lastRewardBlock,\n        accBullPerShare: 0,\n        depositFeeBP: _depositFeeBP,\n        harvestInterval: _harvestInterval,\n        totalStrength: 0\n    }));\n\n    if (_withRewards) {\n        uint16 pid = uint16(poolInfo.length - 1);\n        rewardDistribution.add(_lpToken, pid);\n    }\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "set",
+                "fix_info": "Updated to avoid calling _massUpdatePools unnecessarily. Now, updates are handled externally using the new massUpdatePools function.",
+                "corrected_code": "/// @dev Update the given pool's BULL allocation point and deposit fee. Can only be called by the owner.\nfunction set(uint256 _pid, uint32 _allocPoint, uint16 _depositFeeBP, uint32 _harvestInterval) public onlyOwner {\n    require(_depositFeeBP <= 1500, \"set: deposit fee can't be more than 15%\");\n    require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, \"set: invalid harvest interval\");\n\n    totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);\n    poolInfo[_pid].allocPoint = _allocPoint;\n    poolInfo[_pid].depositFeeBP = _depositFeeBP;\n    poolInfo[_pid].harvestInterval = _harvestInterval;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

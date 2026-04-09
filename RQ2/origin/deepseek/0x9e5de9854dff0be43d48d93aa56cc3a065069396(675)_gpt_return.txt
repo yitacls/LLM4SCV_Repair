@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "cfoAddress.send(balance);",
+    "description": "The `send()` function has a gas limit of 2300 and returns a boolean indicating success or failure. In Solidity <0.8.x, this return value is not checked, meaning if the transfer fails (e.g., due to a fallback function requiring more gas, the recipient being a contract with an execution failure, or the recipient address being non-existent), the contract will continue execution without reverting. This could lead to a loss of funds as the contract's balance is deducted but the CFO address never receives the ETH. The vulnerability is compounded by using `this.balance` which considers the entire contract balance, potentially making it a high-value transaction. A malicious or misconfigured recipient contract could intentionally cause the transfer to fail while the contract state updates as if it succeeded."
+}
+```

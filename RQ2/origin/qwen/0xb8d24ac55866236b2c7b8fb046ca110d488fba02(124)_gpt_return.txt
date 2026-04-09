@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "ico += msg.value;",
+    "description": "The addition operation on the 'ico' variable is vulnerable to arithmetic overflow. In Solidity ^0.4.13, there are no automatic overflow checks, so if the sum of 'ico' and 'msg.value' exceeds the maximum value that can be stored in the variable's data type, it will wrap around to a much smaller number, potentially causing incorrect accounting of ICO funds. This could allow an attacker to manipulate the ICO balance or cause unexpected behavior in the contract."
+}
+```

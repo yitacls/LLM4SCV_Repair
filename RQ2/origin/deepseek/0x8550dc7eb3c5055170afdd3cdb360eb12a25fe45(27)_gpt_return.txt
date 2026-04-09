@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Dangerous use of tx.origin",
+    "location": "require(owner() == tx.origin, \"Ownable: caller is not the owner\");",
+    "description": "The modifier uses tx.origin for ownership verification instead of msg.sender. This creates a phishing vulnerability where a malicious contract could trick the owner into calling a function, making tx.origin the original owner (EOA) while msg.sender is the attacking contract. An attacker could then bypass the onlyOwner restriction by having the owner interact with their malicious contract."
+}
+```

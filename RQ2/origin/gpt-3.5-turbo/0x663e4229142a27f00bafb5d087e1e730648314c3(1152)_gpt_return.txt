@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "msg.sender.send(autoBirthFee);",
+    "description": "The function uses send() to transfer funds to msg.sender without checking the return value. If the transfer fails, the contract will continue execution and the user will not be compensated, potentially leading to loss of funds."
+}
+```

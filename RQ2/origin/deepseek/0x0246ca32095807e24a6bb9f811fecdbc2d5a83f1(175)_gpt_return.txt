@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic vulnerability / Integer overflow",
+    "location": "oneEther.mul(10**18).div( tokenSaleContract.tokenValueInEther(oneTokenInFiatWei) )",
+    "description": "The multiplication `oneEther.mul(10**18)` will overflow since both values equal 10^18, resulting in 10^36 which far exceeds the maximum uint256 value (~1.16e77). This calculation should use SafeMath for arithmetic operations to prevent overflows, especially in Solidity 0.4.x which doesn't have built-in overflow protection. The overflow will cause incorrect price calculations and could be exploited to manipulate pricing logic."
+}
+```

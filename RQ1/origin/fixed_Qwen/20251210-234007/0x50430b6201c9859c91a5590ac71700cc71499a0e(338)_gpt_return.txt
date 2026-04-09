@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "GetPaid",
+    "contract_version": "^0.4.22",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by ensuring onlyOwner modifier is properly applied and updated deprecated transfer method",
+            "corrected_code": "function withdraw() onlyOwner public {\n        address myAddress = this;\n        uint256 etherBalance = myAddress.balance;\n        require(owner.send(etherBalance));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

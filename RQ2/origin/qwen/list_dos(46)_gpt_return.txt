@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "DENIAL_OF_SERVICE",
+        "location": "creditorAddresses = new address[](0);",
+        "description": "Resetting the creditorAddresses array with a dynamic array deletion can lead to excessive gas consumption, potentially causing a Denial of Service (DoS) when the array size is large. In Solidity ^0.4.0, deleting or reinitializing large arrays can exhaust gas limits, preventing further contract execution."
+    },
+    {
+        "type": "DENIAL_OF_SERVICE",
+        "location": "creditorAmounts = new uint[](0);",
+        "description": "Similar to the creditorAddresses array, resetting creditorAmounts by reinitializing it as an empty array can cause high gas consumption. If the array grows significantly, this operation may become prohibitively expensive in terms of gas, leading to a DoS condition in the lendGovernmentMoney function."
+    }
+]
+```

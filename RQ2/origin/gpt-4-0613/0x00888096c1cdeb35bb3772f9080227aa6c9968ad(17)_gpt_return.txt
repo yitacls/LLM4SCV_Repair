@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function withdraw()",
+    "description": "In function 'withdraw()', a transfer of both Ether and token balance of the contract is being performed to the developer's account without validating whether the caller of the function is authorized. This is a security vulnerability as it allows any caller to drain the contract of its funds, which is dangerous and potentially results in loss of cryptocurrency."
+}
+```

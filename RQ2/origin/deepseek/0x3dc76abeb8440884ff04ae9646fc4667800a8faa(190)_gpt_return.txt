@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (_source == 2) {\n            if (_to == tx.origin) {    // fault line\n                walletStore.setProfitBalance(_to, profitBalance.sub(_deposited));\n            } else {\n                uint senderProfitBalance = getProfitBalance(tx.origin);\n                walletStore.setProfitBalance(tx.origin, senderProfitBalance.sub(_deposited));\n            }",
+    "description": "The contract lacks proper access control when _source == 2, allowing any caller (not just tx.origin) to deduct deposited amount from profitBalance. The condition 'if (_to == tx.origin)' only checks if recipient equals transaction originator, but the subtraction of _deposited from profitBalance occurs regardless of whether tx.origin has proper authorization to perform this deduction. This could allow malicious actors to drain profitBalance from any address by calling with _source == 2, as there's no verification that tx.origin owns or controls the profitBalance being deducted."
+}
+```

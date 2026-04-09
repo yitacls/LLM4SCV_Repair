@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [
+        {
+            "variable_name": "wallet",
+            "fix_info": "Preserves the integrity of the state variable and functionality.",
+            "variable_code": "address public wallet;",
+            "change_type": "unchanged"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "The vulnerability is fixed by changing `send` to `call` with a check for success, making it safer. Additionally, the use of require ensures that funds are only sent if the call is successful.",
+            "corrected_code": "function () external payable {\n    require(wallet.call.value(msg.value)(), \"Transfer to wallet failed\");\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

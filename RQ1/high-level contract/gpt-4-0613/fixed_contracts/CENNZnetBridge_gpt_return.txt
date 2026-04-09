@@ -1,0 +1,23 @@
+The vulnerability is basically an unprotected Ether withdrawal, which exists in the "setValidators" function where the contract is trying to transfer accumulated balance to the sender. This can risk causing a denial of service attack if the fallback function of the recipient contract consumes more than 2300 gas. In addition, low-level functions such as "call" should be replaced with "transfer" and "send" for safer usage.
+
+Here is the vulnerability fix:
+
+```json
+[
+    {
+        "contract_name": "CENNZnetBridge",
+        "contract_version": "^0.8.0",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "setValidators",
+                "fix_info": "Replace use of 'call' function to transfer Ether with 'transfer' for safety. I have also added a check to ensure that there is sufficient balance before attempting to perform the withdrawal.",
+                "corrected_code": 
+                "function setValidators(\n    address[] memory newValidators,\n    uint32 newValidatorSetId,\n    CENNZnetEventProof memory proof\n) external payable {\n    require(newValidators.length > 0, \"empty validator set\");\n    require(newValidatorSetId > activeValidatorSetId , \"validator set id replayed\");\n\n    bytes memory message = abi.encode(newValidators, newValidatorSetId, proof.validatorSetId, proof.eventId);\n    this.verifyMessage(message, proof);\n\n    // update\n    validators[newValidatorSetId] = newValidators;\n    activeValidatorSetId = newValidatorSetId;\n\n    // return any accumulated fees to the sender as a reward\n    uint reward = address(this).balance;\n    require(address(this).balance >= reward, \"Insufficient balance for reward\");\n    msg.sender.transfer(reward);\n\n    emit SetValidators(newValidators, reward, newValidatorSetId);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

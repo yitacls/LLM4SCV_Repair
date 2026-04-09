@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "require(tx.origin == owner);",
+            "description": "The contract uses tx.origin for access control which is considered a security vulnerability. Using tx.origin for authorization can cause issues like privilege escalation and should be replaced with msg.sender."
+        }
+    ]
+}
+```

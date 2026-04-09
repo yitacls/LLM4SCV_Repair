@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "players[winner].send(this.balance);",
+    "description": "The send() function only forwards 2300 gas and returns a boolean success value that is not checked. If the recipient is a contract with a fallback function that requires more than 2300 gas, or if the send fails for any other reason, the transaction will continue execution without handling the failure. This can lead to the contract state being updated (players deleted) even when the prize transfer failed, resulting in permanent loss of funds. In Solidity 0.4.25, address.send() returns false on failure instead of reverting."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.send(balanceOf[msg.sender])",
+    "description": "The withdraw function uses the deprecated send() function which only provides 2300 gas stipend for the fallback function of the receiving address. While this might seem to prevent reentrancy due to limited gas, it is still vulnerable because: 1) In Solidity 0.4.25, send() returns false rather than reverting on failure, allowing execution to continue without handling the transfer failure; 2) An attacker could write a malicious contract with a minimal fallback function that fits within 2300 gas to re-enter the contract before balanceOf[msg.sender] is zeroed out. The function fails to follow the Checks-Effects-Interactions pattern as it interacts with an external address before updating the state (balanceOf[msg.sender] is not cleared to zero), allowing potential reentrancy attacks if the attacker's fallback function can operate within the gas constraints."
+}
+```

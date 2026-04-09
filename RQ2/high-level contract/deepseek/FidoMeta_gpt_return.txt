@@ -1,0 +1,51 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity 0.8.11;",
+            "description": "Using a floating pragma (^0.8.11) allows the contract to be compiled with different compiler versions, which can lead to unexpected behavior and vulnerabilities when deployed across different environments. It's recommended to use a fixed compiler version."
+        },
+        {
+            "type": "SWC-119-Shadowing State Variables",
+            "location": "function _approve(address owner, address spender, uint256 amount) private",
+            "description": "The function parameters 'owner' and 'spender' shadow the inherited IERC20 interface functions 'allowance(address owner, address spender)' and the state variables. This can cause confusion and potential bugs when referencing these names within the function."
+        },
+        {
+            "type": "SWC-128-DoS With Block Gas Limit",
+            "location": "for (uint256 i = 0; i < cacheLength; i++) in _getCurrentSupply() function",
+            "description": "The loop iterates over the '_excluded' array which can grow unbounded. As the array size increases, the gas cost for executing this function could exceed the block gas limit, making the contract unusable when too many addresses are excluded from rewards."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "uint256 timePassed = block.timestamp - (startTime + (initialLock * 1 days)); in unlock() function",
+            "description": "The subtraction operation could potentially underflow if the current timestamp is less than the calculated unlock time. While Solidity 0.8.x has built-in overflow/underflow checks, this could still cause the transaction to revert unexpectedly."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "function setCharges(...) external onlyOwner",
+            "description": "The function contains parameter validation but doesn't actually update any state variables as intended. The function parameters are assigned to local variables (function parameters) instead of the contract's state variables, making the function ineffective."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "function takeCharges(...) private",
+            "description": "The function only updates local variables and doesn't actually transfer or modify any state. The calculated fee amounts are computed but never applied to the contract's token balances or transferred to fee wallets."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "else { _transferStandard(sender, recipient, amount); } in _tokenTransfer()",
+            "description": "The else clause is unreachable because all possible combinations of '_isExcludedFromReward' states are already covered by the previous if-else conditions, making this dead code that will never execute."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "function transferWithLock(...) external onlyOwner",
+            "description": "The require statement checking if locks[recipient].lockedToken == 0 is redundant because the function immediately calls _transfer() which would fail anyway if the recipient already has locked tokens due to the unlock logic in _transfer()."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "function _transferFromExcluded(...) private",
+            "description": "The function name suggests it handles transfers from excluded addresses, but the actual transfer logic is minimal and the bulk of the work is done in _doTransfer() which is called at the end. The function could be simplified or merged with other transfer functions."
+        }
+    ]
+}
+```

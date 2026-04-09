@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()){",
+    "description": "The contract uses the low-level call.value() method to transfer ether before updating the Accounts state. This makes the contract vulnerable to a reentrancy attack where an attacker can recursively call the Collect() function before the Accounts[msg.sender] is reduced, potentially draining funds. The contract lacks reentrancy guards and does not follow the Checks-Effects-Interactions pattern. Additionally, using the deprecated call.value() in Solidity 0.4.19 without gas limits creates further risk."
+}
+```

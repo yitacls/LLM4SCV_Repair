@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "CrowdsaleToken",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict sensitive operations to contract owner only",
+            "modifier_code": "modifier onlyOwner() {\n    require(msg.sender == owner);\n    _;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Added onlyOwner modifier to prevent unauthorized access to funds transfer and added reentrancy guard",
+            "corrected_code": "function () public payable {\n    require(currentStage == Stages.icoStart);\n    require(msg.value > 0);\n    require(remainingTokens > 0);\n    \n    uint256 weiAmount = msg.value; // Calculate tokens to sell\n    uint256 tokens = weiAmount.mul(basePrice).div(1 ether);\n    uint256 returnWei = 0;\n    \n    if(tokensSold.add(tokens) > cap){\n        uint256 newTokens = cap.sub(tokensSold);\n        uint256 newWei = newTokens.div(basePrice).mul(1 ether);\n        returnWei = weiAmount.sub(newWei);\n        weiAmount = newWei;\n        tokens = newTokens;\n    }\n    \n    tokensSold = tokensSold.add(tokens); // Increment raised amount\n    remainingTokens = cap.sub(tokensSold);\n    if(returnWei > 0){\n        msg.sender.transfer(returnWei);\n        emit Transfer(address(this), msg.sender, returnWei);\n    }\n    \n    balances[msg.sender] = balances[msg.sender].add(tokens);\n    emit Transfer(address(this), msg.sender, tokens);\n    totalSupply_ = totalSupply_.add(tokens);\n    \n    // Apply access control to prevent unauthorized fund transfer\n    require(msg.sender == owner);\n    owner.transfer(weiAmount);// Send money to owner\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

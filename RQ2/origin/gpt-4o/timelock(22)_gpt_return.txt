@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "lockTime[msg.sender] += _secondsToIncrease;",
+    "description": "The increment operation in this line is vulnerable to an integer overflow in Solidity versions prior to 0.8.0. If the value of lockTime[msg.sender] or _secondsToIncrease is large enough, their sum could exceed the maximum value of uint (2^256 - 1), causing it to wrap around to zero. This could potentially result in unintended behavior, such as prematurely unlocking a user’s time lock. Consider upgrading to Solidity ^0.8.0 or implementing SafeMath to prevent overflow issues."
+}
+```

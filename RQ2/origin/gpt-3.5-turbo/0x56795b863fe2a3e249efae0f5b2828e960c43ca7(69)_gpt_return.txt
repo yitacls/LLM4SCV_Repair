@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "fundsWallet.send(msg.value);",
+    "description": "The 'send' function is used to transfer Ether to the 'fundsWallet' address in a low-level call. This poses a potential risk as the receiver has no way to handle failure, allowing reentrancy attacks. It is recommended to avoid using low-level calls for transferring Ether and instead use safer patterns such as the withdrawal pattern."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "transferTo(transferPointer);",
+    "description": "Reentrancy vulnerability occurs when external contract calls are allowed to make new calls to the calling contract before the initial call is finished. In this case, 'transferTo(transferPointer);' could be invoked by a malicious contract while 'makeTransfer()' is running without preventing more requests from the same contract. If a callback function is invoked by 'transferTo()' and that function calls 'makeTransfer()' again, it could lead to unexpected behavior or drain the contract's funds."
+}
+```

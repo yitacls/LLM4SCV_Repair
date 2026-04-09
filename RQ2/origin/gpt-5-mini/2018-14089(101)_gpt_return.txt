@@ -1,0 +1,17 @@
+[
+  {
+    "type": "Arithmetic",
+    "location": "bool sufficientFunds = fromBalance <= _value;\nbool sufficientAllowance = allowance <= _value;\nbool overflowed = balances[_to] + _value > balances[_to];\n\nif (sufficientFunds && sufficientAllowance && !overflowed) {",
+    "description": "Logical/comparison errors cause arithmetic checks to be inverted. The code uses `<=` where it should use `>=` to verify there are sufficient funds and allowance. As written, `sufficientFunds` and `sufficientAllowance` become true when the sender's balance or allowance is less than or equal to the requested `_value` (i.e. insufficient), allowing transfers even when the sender lacks funds. The `overflowed` check is also inverted: `overflowed` is true when the addition increases the receiver's balance (normal behavior); the function requires `!overflowed` to proceed, effectively allowing the transfer only when the addition did not increase the balance (which happens when a 256-bit unsigned integer overflow/wraparound occurs). Combined, these inverted checks permit transfers that should be rejected and enable exploitation via integer wraparound/overflow."
+  },
+  {
+    "type": "Arithmetic",
+    "location": "balances[_to] + _value > balances[_to];\n...\nif (sufficientFunds && sufficientAllowance && !overflowed) {",
+    "description": "Integer overflow condition is checked incorrectly. The expression `balances[_to] + _value > balances[_to]` is true for normal (non-overflowing) additions when `_value > 0`. The code then requires `!overflowed` to allow the transfer, meaning a transfer is allowed only when `balances[_to] + _value <= balances[_to]` — i.e. when an overflow/wraparound has occurred (or `_value == 0`). Because `_value == 0` is explicitly rejected earlier, only overflow cases pass. An attacker can exploit this by choosing a `_value` that causes the receiver's balance to wrap around in order to make the check pass and create/transfer tokens incorrectly."
+  },
+  {
+    "type": "Arithmetic",
+    "location": "balances[_from] -= _value; // <IO_VUL>\n\nallowed[_from][msg.sender] -= _value; // <IO_VUL>",
+    "description": "Unchecked subtraction leads to underflow. After the inverted checks, the contract performs `balances[_from] -= _value` and `allowed[_from][msg.sender] -= _value` without verifying that `_value` is <= the corresponding stored amounts. If `_value` exceeds `balances[_from]` or `allowed[_from][msg.sender]`, these subtractions will underflow (wrap around) under Solidity ^0.4.19, giving the affected account a very large uint256 value. This can be exploited to steal tokens or inflate balances."
+  }
+]

@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SMT",
+    "contract_version": "^0.4.15",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transferProxy",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by using SafeMath operations for all balance calculations and addition operations",
+            "corrected_code": "function transferProxy(address _from, address _to, uint256 _value, uint256 _feeSmt,\n        uint8 _v,bytes32 _r, bytes32 _s) public transferAllowed(_from) returns (bool){\n\n        if(balances[_from] < _feeSmt + _value) revert();\n\n        uint256 nonce = nonces[_from];\n        bytes32 h = keccak256(_from,_to,_value,_feeSmt,nonce);\n        if(_from != ecrecover(h,_v,_r,_s)) revert();\n\n        if(balances[_to] + _value < balances[_to]\n            || balances[msg.sender] + _feeSmt < balances[msg.sender]) revert();\n        balances[_to] = balances[_to].add(_value);\n        Transfer(_from, _to, _value);\n\n        balances[msg.sender] = balances[msg.sender].add(_feeSmt);\n        Transfer(_from, msg.sender, _feeSmt);\n\n        balances[_from] = balances[_from].sub(_value.add(_feeSmt));\n        nonces[_from] = nonce + 1;\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

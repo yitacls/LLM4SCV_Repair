@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "amountRaised += amount;",
+    "description": "The contract is vulnerable to arithmetic overflow in Solidity version 0.4.25 as there are no built-in overflow checks. When msg.value is added to amountRaised, if the sum exceeds the maximum value that can be stored in a uint256, it will overflow and wrap around to zero, causing incorrect tracking of raised funds. This can lead to loss of funds tracking and potential exploitation."
+}
+```

@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "NomToken",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "owner",
+                "fix_info": "Changed visibility from public/private to internal/private to prevent direct access and maintain proper encapsulation",
+                "variable_code": "address private owner;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added modifier to properly check caller is the owner without using tx.origin",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mint",
+                "fix_info": "Replaced tx.origin check with msg.sender and added onlyOwner modifier. Updated deprecated 'now' to 'block.timestamp' for Solidity 0.4.18 best practices",
+                "corrected_code": "function mint() public onlyOwner returns (bool) {\n        uint256 tokensToMint = 0;\n        \n        if (block.timestamp > initialIssueMintingDate && !initialIssueMinted) {\n            tokensToMint = tokensToMint.add(initialIssueMinting);\n            initialIssueMinted = true;\n        }\n        \n        if (block.timestamp > firstStageMintingDate && !firstStageMinted) {\n            tokensToMint = tokensToMint.add(firstStageMinting);\n            firstStageMinted = true;\n        }\n        \n        if (block.timestamp > secondStageMintingDate && !secondStageMinted) {\n            tokensToMint = tokensToMint.add(secondStageMinting);\n            secondStageMinted = true;\n        }\n        \n        if (block.timestamp > thirdStageMintingDate && !thirdStageMinted) {\n            tokensToMint = tokensToMint.add(thirdStageMinting);\n            thirdStageMinted = true;\n        }\n        \n        require(tokensToMint > 0);\n        \n        uint256 newTotalSupply = totalSupply.add(tokensToMint);\n        require(newTotalSupply <= totalTokens);\n        \n        totalSupply = totalSupply.add(tokensToMint);\n        balances[owner] = balances[owner].add(tokensToMint);\n        \n        Mint(owner, tokensToMint);\n        Transfer(address(0), owner, tokensToMint);\n        \n        return true;\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

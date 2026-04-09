@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "JavaSwapTest",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Added safe math checks to prevent overflow/underflow vulnerabilities when updating balances and total supply.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(target != address(0), \"Invalid target address\"); // Ensure a valid address\n    require(mintedAmount > 0, \"Minted amount must be greater than zero\"); // Prevent minting of zero tokens\n    \n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target], \"Addition overflow detected\"); // Safeguard against balance overflow\n\n    uint256 newTotalSupply = totalSupply + mintedAmount;\n    require(newTotalSupply >= totalSupply, \"Addition overflow detected\"); // Safeguard against totalSupply overflow\n    \n    balanceOf[target] = newBalance;\n    totalSupply = newTotalSupply;\n\n    emit Transfer(address(0), this, mintedAmount);\n    emit Transfer(this, target, mintedAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

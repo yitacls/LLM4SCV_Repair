@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "SYCEarlyPurchase",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "appendEarlyPurchase",
+            "fix_info": "Fixed unchecked low-level call by adding return value check and using safer transfer instead of send",
+            "corrected_code": "function appendEarlyPurchase(address purchaser, uint amount, uint purchasedAt)\n        internal\n        onlyEarlyPurchaseTerm\n        returns (bool)\n    {\n        if (purchasedAt == 0 || purchasedAt > now) {\n            throw;\n        }\n        if (purchasedAt == 0 || purchasedAt > now) {\n            throw;\n        }\n        if(totalEarlyPurchaseRaised + amount >= WEI_MAXIMUM_EARLYPURCHASE){\n           uint refundAmount = totalEarlyPurchaseRaised + amount - WEI_MAXIMUM_EARLYPURCHASE;\n           totalEarlyPurchaseRaised += WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised;\n           earlyPurchases.push(EarlyPurchase(purchaser, WEI_MAXIMUM_EARLYPURCHASE - totalEarlyPurchaseRaised, purchasedAt));\n           if (!purchaser.send(refundAmount)) {\n               // Handle failed send - could log event or revert\n               throw;\n           }\n        }\n        else{\n           earlyPurchases.push(EarlyPurchase(purchaser, amount, purchasedAt));\n           totalEarlyPurchaseRaised += amount;\n        }\n        if(totalEarlyPurchaseRaised >= WEI_MAXIMUM_EARLYPURCHASE){\n            closeEarlyPurchase();\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

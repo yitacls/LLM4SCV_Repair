@@ -1,0 +1,5 @@
+{
+  "type": "access_control",
+  "location": "require(tx.origin == owner);  // fault line",
+  "description": "The contract uses tx.origin for access control when checking ownership. Relying on tx.origin is insecure because it can be spoofed via a malicious intermediary contract: an attacker can deploy a contract that the real owner interacts with (e.g., via a phishing UI). If the owner calls that malicious contract, it can in turn call batchSend and tx.origin will still be the owner's address, allowing the attacker-controlled contract to bypass access checks and trigger privileged actions (here, minting tokens). Consequences include unauthorized minting and loss of token supply control. Recommended fix: use msg.sender for authorization checks (e.g., require(msg.sender == owner) or better, apply a well-audited onlyOwner modifier from OpenZeppelin's Ownable), avoid tx.origin entirely for auth, and consider additional safeguards (multisig for high-value operations, explicit allowlists, and logging)."
+}

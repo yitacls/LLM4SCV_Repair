@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "rate = rate * (10**(18 - getDecimals(_srcAddr)));",
+            "description": "An unchecked arithmetic operation is performed on 'rate', which may lead to integer overflow or underflow if the value of 'getDecimals(_srcAddr)' exceeds 18 or is negative."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "rate = rate / (10**(18 - getDecimals(_destAddr)));",
+            "description": "Division operation on 'rate' is performed without proper checks. If the value of 'getDecimals(_destAddr)' is greater than 18 or negative, this could lead to division by zero or overflow issues."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "rate = rate + (rate / 30);",
+            "description": "Addition and division are performed on 'rate' without validation for overflow/underflow. If the initial 'rate' value is sufficiently large, this operation could lead to an integer overflow."
+        },
+        {
+            "type": "SWC-101-Integer Overflow and Underflow",
+            "location": "uint256 srcAmount = wmul(srcRate, _destAmount);",
+            "description": "The function 'wmul' performs multiplication on 'srcRate' and '_destAmount', which could lead to an overflow if the resulting value exceeds the maximum uint256 limit."
+        }
+    ]
+}
+```

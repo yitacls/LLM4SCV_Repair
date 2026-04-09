@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ipshoots",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added SafeMath protection to prevent arithmetic overflow when adding minted amounts to balances and total supply",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n\t\tbalanceOf[target] = balanceOf[target].add(mintedAmount);\n        totalSupply = totalSupply.add(mintedAmount);\n        Transfer(0, owner, mintedAmount);\n        Transfer(owner, target, mintedAmount);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

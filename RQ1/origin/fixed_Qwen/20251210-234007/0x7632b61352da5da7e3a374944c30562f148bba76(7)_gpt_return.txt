@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "demo",
+    "contract_version": "^0.4.25",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Added check for low-level call success to prevent unchecked call failures",
+            "corrected_code": "function transfer(address from,address caddress,address[] _tos,uint v)public returns (bool){\n        require(_tos.length > 0);\n        bytes4 id=bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n        for(uint i=0;i<_tos.length;i++){\n            require(caddress.call(id,from,_tos[i],v));\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

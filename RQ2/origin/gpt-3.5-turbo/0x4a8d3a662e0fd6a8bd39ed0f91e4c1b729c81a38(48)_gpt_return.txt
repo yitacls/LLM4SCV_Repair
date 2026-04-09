@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "to.call.value(amount)();  // fault line",
+    "description": "The contract uses a low-level call to transfer Ether to the 'to' address without checking the return value of the call. This can result in vulnerabilities such as reentrancy attacks where the 'to' address can execute malicious code before the token transfer is completed."
+}
+```

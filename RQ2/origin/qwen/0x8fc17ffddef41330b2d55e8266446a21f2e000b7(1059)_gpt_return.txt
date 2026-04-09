@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(xrt.mint(tx.origin, wnFromGas(gasConsumedOf[_liability])));",
+    "description": "The function uses tx.origin for authorization instead of msg.sender, which is vulnerable to phishing attacks. In Solidity ^0.4.25, tx.origin refers to the original external caller and can be exploited by malicious contracts to bypass access controls. The mint operation should verify that the caller has proper permissions through msg.sender instead of relying on tx.origin."
+}
+```

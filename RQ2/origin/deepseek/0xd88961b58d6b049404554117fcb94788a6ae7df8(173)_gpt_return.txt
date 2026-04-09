@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "tokens[_token].marketsCount = tokens[_token].marketsCount + 1;",
+    "description": "This line contains an integer overflow vulnerability. Since there is no upper bound check on marketsCount, it can eventually overflow when incremented (especially in older Solidity versions <0.8.0 without automatic overflow checks). When marketsCount reaches type(uint).max (2^256 - 1), adding 1 will cause it to wrap around to 0, breaking market indexing logic and potentially allowing unauthorized actions or data corruption. The overflow could also occur in subsequent uses of marketsCount for array indexing or state management."
+}
+```

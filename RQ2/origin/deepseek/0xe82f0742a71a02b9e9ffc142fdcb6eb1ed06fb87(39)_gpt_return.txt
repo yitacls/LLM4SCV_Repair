@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "adr.call.value(msg.value)(data);",
+    "description": "The low-level call to 'adr' does not check the return value. In Solidity 0.4.19, the .call() function returns a boolean indicating success (true) or failure (false), but this return value is ignored. If the external call fails (e.g., due to running out of gas, revert in the called contract, or non-existent contract), the transaction will not revert, potentially leaving the contract in an inconsistent state. Additionally, since the call forwards all available gas by default and transfers Ether (via .value()), a failed call could result in loss of funds without notification. Best practice is to check the return value: require(adr.call.value(msg.value)(data))."
+}
+```

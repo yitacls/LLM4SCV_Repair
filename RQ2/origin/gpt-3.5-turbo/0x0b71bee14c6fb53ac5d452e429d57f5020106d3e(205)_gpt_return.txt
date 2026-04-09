@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(    !playerRegistered[_customerAddress] && tx.origin == _customerAddress);",
+    "description": "The vulnerability is in the statement where it checks if the player is registered using playerRegistered mapping and verifies that the transaction origin is the same as the player address using tx.origin. While tx.origin is commonly used for authentication, it is generally not recommended due to potential security risks. Using msg.sender for access control is considered more secure than using tx.origin."
+}
+```          

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(bool success, ) = msg.sender.call{ value: userShare }(\"\");",
+    "description": "The contract makes an external call to msg.sender before updating the state variable provided[msg.sender] = 0. In Solidity ^0.6.0, this creates a reentrancy vulnerability because the external call can re-enter the claim() function before the state is updated, potentially allowing an attacker to claim funds multiple times. The state update should occur before the external call."
+}
+```

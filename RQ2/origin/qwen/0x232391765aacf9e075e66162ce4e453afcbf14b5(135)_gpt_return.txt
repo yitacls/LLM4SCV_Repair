@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "(success, ) = address(user).call{value: amount}(\"\");",
+    "description": "The contract is vulnerable to reentrancy attack because it makes an external call to a user-controlled address before updating the contract's state. The user can implement a fallback function that calls back into the contract before the state is updated, potentially allowing them to withdraw funds multiple times. The ETH transfer happens before any state changes, and since Solidity 0.8.2 does not have automatic reentrancy guards, this pattern is unsafe."
+}
+```

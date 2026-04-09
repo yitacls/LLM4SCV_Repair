@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "EtherBet",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "bet",
+            "fix_info": "Fixed unchecked low-level call vulnerability by using transfer() instead of call.value() and restructured error handling",
+            "corrected_code": "function bet() payable {\n\t\tif ((random()%2==1) && (msg.value == 1 ether) && (!locked)) {\n\t\t\tmsg.sender.transfer(2 ether);\n\t\t}\n\t}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

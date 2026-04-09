@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "NewIntelTechMedia",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by ensuring onlyOwner modifier is properly applied and added explicit owner address check for additional security",
+            "corrected_code": "function withdraw() onlyOwner public {\n        require(msg.sender == owner, \"Access denied\");\n        uint256 etherBalance = address(this).balance;\n        owner.transfer(etherBalance);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

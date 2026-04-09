@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "Ethernity",
+    "contract_version": "^0.4.24",
+    "state_variables": [
+        {
+            "variable_name": "balanceToWithdraw",
+            "fix_info": "Not provided in original code - assuming it's an existing function",
+            "variable_code": "",
+            "change_type": "deleted"
+        },
+        {
+            "variable_name": "lastDate",
+            "fix_info": "Not provided in original code - assuming it's an existing mapping",
+            "variable_code": "",
+            "change_type": "deleted"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawFrom",
+            "fix_info": "Fixed unchecked low-level call vulnerability by replacing deprecated .send() with safer pattern, adding require() for revert on failure, and using transfer() for better gas handling",
+            "corrected_code": "function withdrawFrom(address _addr) internal returns(bool) {\n    uint256 amount = balanceToWithdraw();\n    require(amount > 0, \"No balance to withdraw\");\n    lastDate[_addr] = now;\n    _addr.transfer(amount);\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

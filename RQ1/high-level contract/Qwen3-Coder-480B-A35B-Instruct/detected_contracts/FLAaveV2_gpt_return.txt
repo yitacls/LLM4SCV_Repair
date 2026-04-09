@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "SWC-107-Reentrancy",
+        "location": "function executeOperation(address[] memory _assets, uint256[] memory _amounts, uint256[] memory _fees, address _initiator, bytes memory _params)",
+        "description": "The executeOperation function is vulnerable to reentrancy because it performs external calls (DSProxy.execute and token transfers) before updating state or performing necessary checks. An attacker could potentially re-enter this function and manipulate the execution flow or drain funds."
+    }
+]
+```

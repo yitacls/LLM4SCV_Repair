@@ -1,0 +1,39 @@
+```json
+[
+    {
+        "contract_name": "BNum",
+        "contract_version": "0.5.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "bmul",
+                "fix_info": "Prevent arithmetic overflow by validating multiplication result.",
+                "corrected_code": "function bmul(uint a, uint b) internal pure returns (uint) {
+    require(a == 0 || b == 0 || a*b / a == b, 'ERR_MUL_OVERFLOW');
+    uint c0 = a * b;
+    uint c1 = c0 + (BONE / 2);
+    require(c1 >= c0, 'ERR_MUL_OVERFLOW');
+    uint c2 = c1 / BONE;
+    return c2;
+}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "bdiv",
+                "fix_info": "Prevent arithmetic overflow by validating division result.",
+                "corrected_code": "function bdiv(uint a, uint b) internal pure returns (uint) {
+    require(b != 0, 'ERR_DIV_ZERO');
+    uint c0 = a * BONE;
+    require(a == 0 || c0 / a == BONE, 'ERR_DIV_INTERNAL');
+    uint c1 = c0 + (b / 2);
+    require(c1 >= c0, 'ERR_DIV_INTERNAL');
+    uint c2 = c1 / b;
+    return c2;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

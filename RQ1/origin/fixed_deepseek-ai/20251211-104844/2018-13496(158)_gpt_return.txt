@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "RajTest",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No change needed for this variable declaration. Typically would be: mapping(address => uint256) public balanceOf;",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No change needed for this variable declaration. Typically would be: uint256 public totalSupply;",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyCrowdsaleAgent",
+            "fix_info": "This modifier restricts function access to the designated crowdsale agent. No changes needed.",
+            "modifier_code": "modifier onlyCrowdsaleAgent() { require(msg.sender == crowdsaleAgent); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic vulnerability by using SafeMath for overflow/underflow protection and added zero address validation",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyCrowdsaleAgent public {\n    require(target != address(0), \"Invalid target address\");\n    require(mintedAmount > 0, \"Mint amount must be positive\");\n    \n    // Using SafeMath to prevent overflow\n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    emit Transfer(address(0), target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

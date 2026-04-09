@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "owner.send(address(this).balance); // <LEAKING_VUL>",
+    "description": "The `withdrawEther` function does not have proper access control. Any caller of the function can execute it and withdraw the entire contract balance to the `owner` address. This allows unauthorized users to drain the contract's Ether balance if the `owner` address is compromised or if the function is called repeatedly by external entities. Additionally, using `send` without proper checks can lead to unexpected reentrancy issues or failed Ether transfers."
+}
+```

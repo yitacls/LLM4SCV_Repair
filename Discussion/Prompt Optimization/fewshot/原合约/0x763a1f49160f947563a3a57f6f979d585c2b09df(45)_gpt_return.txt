@@ -1,0 +1,22 @@
+```json
+[
+    {
+        "contract_name": "PwnFoMo3D",
+        "contract_version": "^0.4.24",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "gotake",
+                "fix_info": "Add require statement to check the result of the low-level call",
+                "corrected_code": "function gotake() public {
+    require(fomo3d.getTimeLeft() <= 50, 'Time left is more than 50');
+    require(address(fomo3d).call.value(fomo3d.getBuyPrice() * 2)(), 'Low-level call failed');
+    fomo3d.withdraw();
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

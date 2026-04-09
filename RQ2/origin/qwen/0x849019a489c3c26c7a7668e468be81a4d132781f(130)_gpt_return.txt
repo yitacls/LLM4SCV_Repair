@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "_addr.send(_wei);",
+    "description": "The send() function returns a boolean value indicating success or failure, but this return value is not checked. In Solidity ^0.4.16, if the send() call fails (e.g., due to gas exhaustion or the recipient contract's fallback function reverting), the function will continue execution without handling the failure. This can lead to inconsistent state where the Available balance is decremented and Withdrew event is emitted even though the actual transfer didn't occur. The return value should be checked and handled appropriately to ensure state consistency."
+}
+```

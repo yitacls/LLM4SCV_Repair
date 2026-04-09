@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if (!owner.send(this.balance)) { throw; }",
+    "description": "The contract uses send() which forwards limited gas (2300 gas), but this pattern is still vulnerable to reentrancy attacks in Solidity 0.4.25. The external call to owner.send() is made before the contract's state is updated, allowing a malicious owner to re-enter the withdraw function and potentially drain the contract's balance multiple times. The throw statement will revert the transaction, but the reentrancy attack can still occur during the external call execution."
+}
+```

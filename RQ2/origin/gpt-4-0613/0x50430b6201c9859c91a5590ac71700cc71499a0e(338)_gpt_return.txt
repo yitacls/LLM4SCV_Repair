@@ -1,0 +1,12 @@
+```json
+{
+  "contractName": "GetPaid",
+  "vulnerabilities": [
+    {
+      "type": "access_control",
+      "location": "owner.transfer(etherBalance);",
+      "description": "This vulnerability exists because the function 'withdraw' has an access control modifier 'onlyOwner'. The function is not checking if the caller is actually the owner, which can potentially allow any account to call this function and drain all the Ether stored in this contract."
+    }
+  ]
+}
+```

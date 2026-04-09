@@ -1,0 +1,5 @@
+{
+  "type": "unchecked_low_level_calls",
+  "location": "adr.call.value(msg.value)(data);",
+  "description": "The contract performs a low-level call using adr.call.value(msg.value)(data) and ignores the returned boolean success value. If the external call fails it will return false but execution continues, causing silent failures and potentially leaving the contract in an inconsistent state or causing loss of funds. Additionally, using an unchecked low-level call can enable reentrancy attacks if state changes are made before or around the external call. Because the function is payable and forwards msg.value, funds may be sent to a malicious contract without any error handling. Recommended fixes: capture and check the return value (for Solidity 0.4.x: \"bool success = adr.call.value(msg.value)(data); require(success);\") or use higher-level ABI calls, follow the checks-effects-interactions pattern, and/or add a reentrancy guard." 
+}

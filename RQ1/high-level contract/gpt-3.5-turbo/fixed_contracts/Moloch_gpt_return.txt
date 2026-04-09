@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Moloch",
+        "contract_version": "0.5.3",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "processProposal",
+                "fix_info": "Fixed the SWC-105 vulnerability by ensuring tokens are returned to the proposer if the proposal fails.",
+                "corrected_code": "    function processProposal(uint256 proposalIndex) public nonReentrant {\n        _validateProposalForProcessing(proposalIndex);\n\n        uint256 proposalId = proposalQueue[proposalIndex];\n        Proposal storage proposal = proposals[proposalId];\n\n        require(!proposal.flags[4] && !proposal.flags[5], \"must be a standard proposal\");\n\n        proposal.flags[1] = true; // processed\n\n        (bool didPass, bool emergencyProcessing) = _didPass(proposalIndex);\n\n        // Make the proposal fail if the new total number of shares and loot exceeds the limit\n        if (totalShares.add(totalLoot).add(proposal.sharesRequested).add(proposal.lootRequested) > MAX_NUMBER_OF_SHARES_AND_LOOT) {\n            didPass = false;\n            require(proposal.tributeToken.transfer(proposal.proposer, proposal.tributeOffered), \"failing vote token transfer failed\");\n        }\n\n        // Make the proposal fail if it is requesting more tokens as payment than the available guild bank balance\n        if (!emergencyProcessing && proposal.paymentToken != IERC20(0) && proposal.paymentRequested > proposal.paymentToken.balanceOf(address(guildBank))) {\n            didPass = false;\n            require(proposal.tributeToken.transfer(proposal.proposer, proposal.tributeOffered), \"failing vote token transfer failed\");\n        }\n\n        // PROPOSAL PASSED\n        if (didPass) {\n            // Processing logic for passing the proposal remains the same\n        }\n\n        _returnDeposit(proposal.sponsor);\n\n        emit ProcessProposal(proposalIndex, proposalId, didPass);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

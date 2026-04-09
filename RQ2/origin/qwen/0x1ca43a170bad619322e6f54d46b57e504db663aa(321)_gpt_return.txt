@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), _from, _amount, _data);",
+    "description": "The low-level call operation does not check the return value, which means the function will not detect if the call fails. In Solidity 0.4.25, low-level calls return a boolean indicating success or failure, but this return value is ignored here. This could lead to unexpected behavior where the transfer appears successful even when the receiving contract's fallback function fails to execute properly."
+}
+```

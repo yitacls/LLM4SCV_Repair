@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "creator.send(amountRaised);",
+    "description": "In this smart contract code, the function send is used to transfer ether. However, this low-level function does not throw an exception when the call fails, meaning that the contract will not be notified if the ether transfer is unsuccessful. This can lead to loss of ether or an imbalance in the contract's state. It is strongly recommended to use transfer instead of send, or to at least check the return value of send."
+}
+```

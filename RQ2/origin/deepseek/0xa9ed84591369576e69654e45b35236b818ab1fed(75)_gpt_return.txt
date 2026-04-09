@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "token_reward.call(beneficiary, token_amount);",
+    "description": "The low-level 'call' function to 'token_reward' is not checked for success. In Solidity 0.4.25, 'call' returns a boolean indicating success (true) or failure (false). If this call fails (e.g., due to out-of-gas, revert in the called contract, or non-existent contract), the transaction will continue without reverting, causing the state changes (isReleased = true) to persist despite the failed transfer. This could lead to loss of tokens for the beneficiary while marking the release as completed. The call should either use 'require(token_reward.call(beneficiary, token_amount))' or check the return value and handle the failure appropriately."
+}
+```

@@ -1,0 +1,19 @@
+```json
+[
+    {
+        "type": "SWC-102-Outdated Compiler Version",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "Using an outdated compiler version increases the risk of missing important bug fixes and security updates. Consider upgrading to the latest stable version of Solidity."
+    },
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.8.2;",
+        "description": "Floating pragmas allow a contract to be compiled with different versions of the compiler, which can lead to inconsistencies or vulnerabilities. Consider specifying a fixed compiler version (e.g., pragma solidity 0.8.19;)."
+    },
+    {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "function withdraw() public payable onlyOwner {\n        payable (msg.sender).transfer(address(this).balance);\n    }",
+        "description": "The withdraw function allows transfer of the entire contract balance without specific checks to ensure proper usage of the feature. This could be abused if an attacker gains access to the owner's private key. Consider adding further checks or restrictions before withdrawing Ether."
+    }
+]
+```

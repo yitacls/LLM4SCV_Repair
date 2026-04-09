@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Hexagon",
+    "contract_version": "^0.4.18",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_transfer",
+            "fix_info": "Fixed arithmetic overflow vulnerabilities by adding SafeMath library checks for all arithmetic operations. Added checks for burnPerTransaction subtraction and fixed overflow detection logic.",
+            "corrected_code": "function _transfer(address _from, address _to, uint _value) internal {\n    /* Prevent transfer to 0x0 address. Use burn() instead  */\n    require (_to != 0x0);\n    /* Check if the sender has enough including burn fee */\n    require (balanceOf[_from] >= _value);\n    require (balanceOf[_from] >= burnPerTransaction);\n    require (balanceOf[_from] >= _value + burnPerTransaction);\n    /* Check for overflows */\n    require (balanceOf[_to] + _value >= balanceOf[_to]);\n    require (balanceOf[_to] + _value >= _value);\n    /* Check for underflow in currentSupply */\n    require (currentSupply >= burnPerTransaction);\n    /* Subtract from the sender */\n    balanceOf[_from] = balanceOf[_from].sub(_value + burnPerTransaction);\n    /* Add the same to the recipient */\n    balanceOf[_to] = balanceOf[_to].add(_value);\n    /* Apply transaction fee */\n    balanceOf[0x0] = balanceOf[0x0].add(burnPerTransaction);\n    /* Update current supply */\n    currentSupply = currentSupply.sub(burnPerTransaction);\n    /* Notify network */\n    Burn(_from, burnPerTransaction);\n    /* Notify network */\n    Transfer(_from, _to, _value);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

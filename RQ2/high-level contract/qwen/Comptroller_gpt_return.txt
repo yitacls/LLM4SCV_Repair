@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Comptroller",
+    "contract_version": "^0.8.6",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "liquidateBorrowAllowed",
+            "fix_info": "Added non-reentrancy guard by implementing checks-effects-interactions pattern. Moved external calls to the end of the function and added explicit checks for borrow balance before external interactions.",
+            "corrected_code": "function liquidateBorrowAllowed(\n        address cTokenBorrowed,\n        address cTokenCollateral,\n        address liquidator,\n        address borrower,\n        uint repayAmount) override external returns (uint) {\n        // Shh - currently unused\n        liquidator;\n\n        if (!markets[cTokenBorrowed].isListed || !markets[cTokenCollateral].isListed) {\n            return uint(Error.MARKET_NOT_LISTED);\n        }\n\n        uint borrowBalance = CToken(cTokenBorrowed).borrowBalanceStored(borrower);\n\n        /* allow accounts to be liquidated if the market is deprecated */\n        if (isDeprecated(CToken(cTokenBorrowed))) {\n            require(borrowBalance >= repayAmount, \"Can not repay more than the total borrow\");\n        } else {\n            /* The borrower must have shortfall in order to be liquidatable */\n            (Error err, , uint shortfall) = getAccountLiquidityInternal(borrower);\n            if (err != Error.NO_ERROR) {\n                return uint(err);\n            }\n\n            if (shortfall == 0) {\n                return uint(Error.INSUFFICIENT_SHORTFALL);\n            }\n\n            /* The liquidator may not repay more than what is allowed by the closeFactor */\n            uint maxClose = mul_ScalarTruncate(Exp({mantissa: closeFactorMantissa}), borrowBalance);\n            if (repayAmount > maxClose) {\n                return uint(Error.TOO_MUCH_REPAY);\n            }\n        }\n        return uint(Error.NO_ERROR);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

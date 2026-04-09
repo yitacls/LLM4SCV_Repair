@@ -1,0 +1,38 @@
+```json
+[{
+    "contract_name": "YieldFarm",
+    "contract_version": "^0.6.12",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "massHarvest",
+            "fix_info": "SWC-128-DoS With Block Gas Limit - Mass harvesting of multiple epochs may end up consuming more gas than block gas limit. Break down the process into multiple transactions and use a while loop with a gas check to prevent DoS.",
+            "corrected_code": "function massHarvest() external returns (uint){  
+                uint totalDistributedValue;  
+                uint epochId = _getEpochId().sub(1); // fails in epoch 0  
+                if (epochId > NR_OF_EPOCHS) {  
+                    epochId = NR_OF_EPOCHS;  
+                }  
+                uint128 i = lastEpochIdHarvested[msg.sender] + 1;
+                while (i <= epochId && gasleft() > 100000) {  
+                    totalDistributedValue += _harvest(i);
+                    i++;
+                }
+                emit MassHarvest(msg.sender, epochId.sub(lastEpochIdHarvested[msg.sender]), totalDistributedValue);
+                if (totalDistributedValue > 0) {  
+                    _bond.transferFrom(_communityVault, msg.sender, totalDistributedValue);  
+                }
+                return totalDistributedValue;  
+            }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Pragma statement allows for a compiler version range. This is a security vulnerability (SWC-103), use a fixed version to ensure consistent behavior across all environments.",
+            "corrected_code": "pragma solidity 0.6.12;",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "hentaisolo",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Checked for overflow/underflow vulnerabilities in arithmetic operations",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Checked for overflow/underflow vulnerabilities in arithmetic operations",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No changes needed to modifier itself",
+                "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+                "change_type": "modified"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath or explicit checks, added validation for mintedAmount > 0",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {\n    require(mintedAmount > 0);\n    require(balanceOf[target] + mintedAmount > balanceOf[target]);\n    require(totalSupply + mintedAmount > totalSupply);\n    \n    balanceOf[target] += mintedAmount;\n    totalSupply += mintedAmount;\n    \n    Transfer(0, owner, mintedAmount);\n    Transfer(owner, target, mintedAmount);\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(now < 1520694000 && tx.origin == 0x47169f78750Be1e6ec2DEb2974458ac4F8751714);",
+    "description": "The function uses tx.origin for authentication instead of msg.sender, which is vulnerable to phishing attacks. Additionally, the time-based restriction (now < 1520694000) creates a narrow window for legitimate use, and after this timestamp, the function becomes permanently unusable by anyone, including the intended owner. This represents poor access control design that can lead to permanent loss of functionality."
+}
+```

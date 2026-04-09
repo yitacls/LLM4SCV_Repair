@@ -1,0 +1,16 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-103-Floating Pragma",
+            "location": "pragma solidity ^0.6.0;",
+            "description": "Not specifying an exact compiler version may lead to unexpected behavior due to potential changes in compiler versions."
+        },
+        {
+            "type": "SWC-107-Reentrancy",
+            "location": "_bond.approve(spender, amount);",
+            "description": "Potential reentrancy issue as external calls are made before state changes, allowing for reentrant attacks."
+        }
+    ]
+}
+```

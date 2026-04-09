@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "Ex",
+    "contract_version": "^0.4.16",
+    "state_variables": [
+        {
+            "variable_name": "balances",
+            "fix_info": "No change needed to existing variable, but adding comment about using SafeMath",
+            "variable_code": "mapping(address => uint256) public balances;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "safeAdd",
+            "fix_info": "Added modifier to safely add values and prevent overflow",
+            "modifier_code": "modifier safeAdd(uint256 a, uint256 b) {\n        require(a + b >= a, \"Addition overflow\");\n        _;\n    }",
+            "change_type": "added"
+        },
+        {
+            "modifier_name": "safeSub",
+            "fix_info": "Added modifier to safely subtract values and prevent underflow",
+            "modifier_code": "modifier safeSub(uint256 a, uint256 b) {\n        require(b <= a, \"Subtraction underflow\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Applied safe subtraction and addition modifiers to prevent arithmetic overflow/underflow vulnerabilities",
+            "corrected_code": "function transfer(address _to, uint256 _value) public returns (bool success) {\n        require(balances[msg.sender] >= _value, \"Insufficient balance\");\n        \n        // Safely subtract from sender's balance\n        safeSub(balances[msg.sender], _value);\n        balances[msg.sender] -= _value;\n        \n        // Safely add to recipient's balance\n        safeAdd(balances[_to], _value);\n        balances[_to] += _value;\n        \n        Transfer(msg.sender, _to, _value);\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

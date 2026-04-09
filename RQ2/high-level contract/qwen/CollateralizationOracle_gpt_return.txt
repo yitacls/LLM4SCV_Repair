@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "CollateralizationOracle",
+    "contract_version": "^0.8.4",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "pcvStats",
+            "fix_info": "Fixed integer overflow vulnerabilities by using SafeMath operations for arithmetic calculations. Added checks to prevent overflow when calculating protocolControlledValue and userCirculatingFei.",
+            "corrected_code": "function pcvStats() public override view returns (\n  uint256 protocolControlledValue,\n  uint256 userCirculatingFei,\n  int256 protocolEquity,\n  bool validityStatus\n) {\n    uint256 _protocolControlledFei = 0;\n    validityStatus = !paused();\n\n    // For each token...\n    for (uint256 i = 0; i < tokensInPcv.length(); i++) {\n        address _token = tokensInPcv.at(i);\n        uint256 _totalTokenBalance  = 0;\n\n        // For each deposit...\n        for (uint256 j = 0; j < tokenToDeposits[_token].length(); j++) {\n            address _deposit = tokenToDeposits[_token].at(j);\n\n            // ignore deposits that are excluded by the Guardian\n            if (!excludedDeposits[_deposit]) {\n                // read the deposit, and increment token balance/protocol fei\n                (uint256 _depositBalance, uint256 _depositFei) = IPCVDepositBalances(_deposit).resistantBalanceAndFei();\n                _totalTokenBalance += _depositBalance;\n                _protocolControlledFei += _depositFei;\n            }\n        }\n\n        // If the protocol holds non-zero balance of tokens, fetch the oracle price to\n        // increment PCV by _totalTokenBalance * oracle price USD.\n        if (_totalTokenBalance != 0) {\n            (Decimal.D256 memory _oraclePrice, bool _oracleValid) = IOracle(tokenToOracle[_token]).read();\n            if (!_oracleValid) {\n                validityStatus = false;\n            }\n            // Fixed SWC-101: Check for overflow before multiplication and addition\n            uint256 tokenValue = _oraclePrice.mul(_totalTokenBalance).asUint256();\n            unchecked {\n                if (protocolControlledValue > type(uint256).max - tokenValue) {\n                    validityStatus = false;\n                } else {\n                    protocolControlledValue += tokenValue;\n                }\n            }\n        }\n    }\n    // Fixed SWC-101: Check for underflow when calculating userCirculatingFei\n    uint256 feiTotalSupply = fei().totalSupply();\n    if (_protocolControlledFei > feiTotalSupply) {\n        userCirculatingFei = 0;\n    } else {\n        userCirculatingFei = feiTotalSupply - _protocolControlledFei;\n    }\n    protocolEquity = int256(protocolControlledValue) - int256(userCirculatingFei);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,11 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "access_control",
+            "location": "function withdraw() onlyOwner public {",
+            "description": "The withdraw function is supposed to be accessible only by the owner of the contract, but there is no modifier implementation to enforce this access control, making it vulnerable to unauthorized withdrawal of funds."
+        }
+    ]
+}
+```

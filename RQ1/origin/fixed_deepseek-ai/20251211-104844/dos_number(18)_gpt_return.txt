@@ -1,0 +1,29 @@
+```json
+[{
+    "contract_name": "DosNumber",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "array",
+            "fix_info": "Added default state variable",
+            "variable_code": "uint[] public array;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "numElements",
+            "fix_info": "Added default state variable",
+            "variable_code": "uint public numElements;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "insertNnumbers",
+            "fix_info": "Fixed gas DoS vulnerability by adding maximum batch size limit and optimizing memory allocation",
+            "corrected_code": "function insertNnumbers(uint value, uint numbers) public {\n    // Prevent DoS by limiting maximum batch size\n    require(numbers <= 100, \"Cannot insert more than 100 numbers at once\");\n    \n    // Pre-allocate array memory if needed to avoid repeated allocations\n    uint newTotal = numElements + numbers;\n    if (newTotal > array.length) {\n        // Allocate with buffer to reduce future allocations\n        array.length = newTotal;\n    }\n    \n    // Batch assignment without repeated length checks\n    for (uint i = 0; i < numbers; i++) {\n        array[numElements++] = value;\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

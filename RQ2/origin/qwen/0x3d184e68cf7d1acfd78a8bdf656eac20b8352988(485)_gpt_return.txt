@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.transfer(amount);",
+    "description": "The contract is vulnerable to reentrancy attack because the state variable 'pendingWithdrawals[msg.sender]' is set to 0 after the external call 'msg.sender.transfer(amount)'. A malicious contract could call back into the withdraw function before the state update, allowing multiple withdrawals of the same funds. The state change should occur before the external call to prevent this vulnerability."
+}
+```

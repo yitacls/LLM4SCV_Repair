@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "PwnFoMo3D",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "gotake",
+        "fix_info": "Fixed unchecked low-level call vulnerability by adding explicit ether transfer with transfer() and implementing proper error handling for failed calls",
+        "corrected_code": "function gotake() public {\n    if (fomo3d.getTimeLeft() > 50) {\n        revert();\n    }\n    \n    uint256 buyPrice = fomo3d.getBuyPrice();\n    uint256 amountToSend = buyPrice * 2;\n    \n    require(address(this).balance >= amountToSend, \"Insufficient contract balance\");\n    \n    // Use transfer() instead of call.value() for safer ether transfer\n    address(fomo3d).transfer(amountToSend);\n    \n    fomo3d.withdraw();\n}",
+        "change_type": "modified"
+    }]
+}]
+```

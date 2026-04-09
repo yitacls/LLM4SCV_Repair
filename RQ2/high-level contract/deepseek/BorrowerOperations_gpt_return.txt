@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "SWC-105-Unprotected Ether Withdrawal",
+        "location": "Lines 321-351 in closeTrove() function",
+        "description": "The closeTrove() function allows any active trove owner to unconditionally withdraw their entire collateral balance by calling activePoolCached.sendETH(msg.sender, coll) at line 350. While the function checks that the system is not in recovery mode, it does not verify that the debt has been fully repaid before allowing collateral withdrawal. Additionally, the function burns only the debt minus gas compensation from the user, potentially leaving residual debt obligations unaccounted for during collateral withdrawal. This could allow users to withdraw collateral without fully repaying their debt, especially if combined with other protocol interactions or timing attacks."
+    }
+}
+```

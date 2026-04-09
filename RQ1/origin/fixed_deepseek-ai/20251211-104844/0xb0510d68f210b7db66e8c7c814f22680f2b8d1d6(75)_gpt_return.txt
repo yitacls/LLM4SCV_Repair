@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Splitter",
+        "contract_version": "^0.4.23",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added onlyOwner modifier for access control best practices",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "fundPuppets",
+                "fix_info": "Fixed unchecked low-level calls by checking return values and using transfer() for Ether transfers, added ReentrancyGuard pattern",
+                "corrected_code": "function fundPuppets() public payable onlyOwner {\n        require(msg.value % 4 == 0, \"Value must be divisible by 4\");\n        \n        _share = SafeMath.div(msg.value, 4);\n        \n        bool success;\n        \n        // Send to extra[0]\n        (success, ) = extra[0].call.gas(800000).value(_share)(\"\");\n        require(success, \"Transfer to extra[0] failed\");\n        \n        // Send to extra[1]\n        (success, ) = extra[1].call.gas(800000).value(_share)(\"\");\n        require(success, \"Transfer to extra[1] failed\");\n        \n        // Send to extra[2]\n        (success, ) = extra[2].call.gas(800000).value(_share)(\"\");\n        require(success, \"Transfer to extra[2] failed\");\n        \n        // Send to extra[3]\n        (success, ) = extra[3].call.gas(800000).value(_share)(\"\");\n        require(success, \"Transfer to extra[3] failed\");\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

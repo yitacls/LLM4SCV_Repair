@@ -1,0 +1,30 @@
+Below is the information about the vulnerabilities found in the smart contract code:
+
+1. Transaction Order Dependence (SWC-114)
+```json
+{
+    "type": "SWC-114",
+    "location": "Lines 266-305 in the sponsorProposal function",
+    "description": "The sponsorProposal function updates state variables based on the order of transactions, making it vulnerable to the frontrunning attack where attackers can manipulate the outcome of the transaction."
+}
+```
+
+2. Unprotected Ether Withdrawal (SWC-105)
+```json
+{
+    "type": "SWC-105",
+    "location": "Lines 408-413 in the processProposal function",
+    "description": "The function allows external callers to withdraw Ether from the contract without adequate restrictions or protective measures."
+}
+```
+
+3. Integer Overflow and Underflow (SWC-101)
+```json
+{
+    "type": "SWC-101",
+    "location": "Lines 638-640 in the max function",
+    "description": "The function does not properly check conditions. This can result in integer overflow or underflow, leading to unexpected results and potential exploitation scenarios."
+}
+```
+
+Please note, these are potentials vulnerabilities. Additional testing and audit are required to confirm their exploitability.

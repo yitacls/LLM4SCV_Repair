@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "ZiberToken",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "add_to_ico",
+            "fix_info": "Added SafeMath protection to prevent integer overflow when adding msg.value to ico",
+            "corrected_code": "function add_to_ico() payable {\n    if (msg.sender != developer_address) throw;\n    if (kill_switch) throw;\n    if (bought_tokens) throw;\n    ico = ico.add(msg.value);  // fixed line - using SafeMath add\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "EXGROUP",
+        "contract_version": "^0.4.16",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Changed to mapping(address => uint256) to enable SafeMath operations",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Total supply will now be protected with SafeMath operations",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Kept as original modifier ensuring only contract owner can mint tokens",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "preserved"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability by implementing SafeMath pattern with require statements and event emission",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n        require(target != address(0), \"Invalid target address\");\n        require(mintedAmount > 0, \"Mint amount must be positive\");\n        \n        uint256 newBalance = balanceOf[target] + mintedAmount;\n        require(newBalance > balanceOf[target], \"Balance overflow detected\");\n        \n        uint256 newTotalSupply = totalSupply + mintedAmount;\n        require(newTotalSupply > totalSupply, \"Total supply overflow detected\");\n        \n        balanceOf[target] = newBalance;\n        totalSupply = newTotalSupply;\n        \n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

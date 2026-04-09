@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Integer Overflow/Underflow",
+    "location": "balanceOf[to] += value;",
+    "description": "In Solidity versions prior to 0.8.0, arithmetic operations do not automatically check for overflow/underflow. The statement 'balanceOf[to] += value;' can overflow if the sum exceeds the maximum value of uint256 (2^256 - 1). Since this contract uses ^0.4.21, an attacker could deliberately cause an overflow to set an account's balance to an unexpectedly small value, potentially leading to loss of funds or unauthorized balance inflation. This vulnerability affects the entire arithmetic operation, but the addition is particularly dangerous as it could artificially inflate balances. Use SafeMath library or upgrade to Solidity 0.8.0+ to enable built-in overflow checks."
+}
+```

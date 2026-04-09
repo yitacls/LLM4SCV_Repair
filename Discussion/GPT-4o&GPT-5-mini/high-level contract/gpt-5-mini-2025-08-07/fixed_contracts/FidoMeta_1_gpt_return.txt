@@ -1,0 +1,39 @@
+[{
+    "contract_name": "Fidometa",
+    "contract_version": "0.8.11",
+    "state_variables": [
+        {
+            "variable_name": "MAX_EXCLUDED",
+            "fix_info": "Added an upper bound for the _excluded array iteration to mitigate potential DoS from an unbounded loop in _getCurrentSupply.",
+            "variable_code": "uint256 private constant MAX_EXCLUDED = 200;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "_approve",
+            "fix_info": "Renamed parameter 'owner' to 'ownerAccount' to avoid shadowing the Ownable.owner() identifier and preserve clear intent.",
+            "corrected_code": "function _approve(\n        address ownerAccount,\n        address spender,\n        uint256 amount\n    ) private {\n        require(ownerAccount != address(0), \"BEP20: approve from the zero address\");\n        require(spender != address(0), \"BEP20: approve to the zero address\");\n        _allowances[ownerAccount][spender] = amount;\n        emit Approval(ownerAccount, spender, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "takeCharges",
+            "fix_info": "Fixed incorrect mapping check for surcharge2 wallet exclusion (_isExcludedFromSurcharge2) and avoided writing to the zero address if service wallets are not set. Preserved original distribution logic.",
+            "corrected_code": "function takeCharges(\n        uint256 tEcoSys,\n        uint256 tSurcharge1,\n        uint256 tSurcharge2,\n        uint256 tSurcharge3\n    ) private {\n        uint256 currentRate = _getRate();\n        if (tEcoSys > 0 && _ecoSysWallet != address(0)) {\n            uint256 rEcosys = tEcoSys.mul(currentRate);\n            _rOwned[_ecoSysWallet] = _rOwned[_ecoSysWallet].add(rEcosys);\n            if (_isExcludedFromEcoSysFee[_ecoSysWallet])\n                _tOwned[_ecoSysWallet] = _tOwned[_ecoSysWallet].add(tEcoSys);\n        }\n        if (tSurcharge1 > 0 && _surcharge_1_Wallet != address(0)) {\n            uint256 rSurcharge1 = tSurcharge1.mul(currentRate);\n            _rOwned[_surcharge_1_Wallet] = _rOwned[_surcharge_1_Wallet].add(\n                rSurcharge1\n            );\n            if (_isExcludedFromSurcharge1[_surcharge_1_Wallet])\n                _tOwned[_surcharge_1_Wallet] = _tOwned[_surcharge_1_Wallet].add(\n                    tSurcharge1\n                );\n        }\n        if (tSurcharge2 > 0 && _surcharge_2_Wallet != address(0)) {\n            uint256 rSurcharge2 = tSurcharge2.mul(currentRate);\n            _rOwned[_surcharge_2_Wallet] = _rOwned[_surcharge_2_Wallet].add(\n                rSurcharge2\n            );\n            // Fixed: check surcharge2 exclusion mapping (was surcharge1 mistakenly)\n            if (_isExcludedFromSurcharge2[_surcharge_2_Wallet])\n                _tOwned[_surcharge_2_Wallet] = _tOwned[_surcharge_2_Wallet].add(\n                    tSurcharge2\n                );\n        }\n        if (tSurcharge3 > 0 && _surcharge_3_Wallet != address(0)) {\n            uint256 rSurcharge3 = tSurcharge3.mul(currentRate);\n            _rOwned[_surcharge_3_Wallet] = _rOwned[_surcharge_3_Wallet].add(\n                rSurcharge3\n            );\n            if (_isExcludedFromSurcharge3[_surcharge_3_Wallet])\n                _tOwned[_surcharge_3_Wallet] = _tOwned[_surcharge_3_Wallet].add(\n                    tSurcharge3\n                );\n        }\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_getCurrentSupply",
+            "fix_info": "Added an upper bound check on the _excluded array length to mitigate potential DoS from an unbounded storage-iteration loop. Also used explicit uint256 for consistency.",
+            "corrected_code": "function _getCurrentSupply() private view returns (uint256, uint256) {\n        uint256 rSupply = _rTotal;\n        uint256 tSupply = _tTotal;\n        uint256 cacheLength = _excluded.length;\n        // Prevent unbounded loop that could lead to DoS/gas exhaustion\n        require(cacheLength <= MAX_EXCLUDED, \"Too many excluded addresses\");\n        for (uint256 i = 0; i < cacheLength; i++) {\n            address ex = _excluded[i];\n            if (_rOwned[ex] > rSupply || _tOwned[ex] > tSupply) return (_rTotal, _tTotal);\n            rSupply = rSupply.sub(_rOwned[ex]);\n            tSupply = tSupply.sub(_tOwned[ex]);\n        }\n        if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);\n        return (rSupply, tSupply);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "transferWithLock",
+            "fix_info": "Removed a no-op require(initialLock >= 0) which had no effect. Kept behavior otherwise unchanged and preserved the lock setup flow.",
+            "corrected_code": "function transferWithLock(\n        address recipient,\n        uint256 tAmount,\n        uint256 initialLock\n    ) external onlyOwner {\n        require(recipient != address(0), \"Invalid target\");\n        require(\n            locks[recipient].lockedToken == 0,\n            \"This address is already in vesting period\"\n        );\n        _transfer(_msgSender(), recipient, tAmount);\n        locks[recipient] = LockDetails(\n            block.timestamp,\n            initialLock,\n            tAmount,\n            tAmount,\n            0\n        );\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]

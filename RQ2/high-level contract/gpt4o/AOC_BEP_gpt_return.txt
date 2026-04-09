@@ -1,0 +1,13 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "SWC-118-Incorrect Constructor Name",
+            "location": "function initialize() public initializer { ... } (Line 115 - Line 126)",
+            "description": "The initialize function acts as a constructor for the upgradeable contract, but it has an improper comment that refers to this as 'SWC-118-Incorrect Constructor Name' in the code comments. This does not affect functionality directly but causes potential confusion and may indicate oversight in proper commenting."
+        },
+        {
+            "type": "SWC-135-Code With No Effects",
+            "location": "function pauseContract() external virtual onlyOwner { _pause(); } (Line 362)",
+            "description": "The function name 'pauseContract' and its intended effect of pausing are functional, so the presence of the commented SWC block above implementation assumptions means Arbitrary Level UNTINT is yet UnSWhats+- LookupComenting	 brev__":
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "uint128(msg.value * multiplier/100)",
+    "description": "This contract contains an arithmetic vulnerability with the multiplication operation within the 'push' method. It multiplies the msg.value with a dynamic variable 'multiplier' and then divides by 100. This is susceptible to an integer overflow or underflow if the 'msg.value' or 'multiplier' value is too large or too small respectively. In the case of an overflow, the resulting value can be larger than the maximum value a uint128 can store, causing it to wrap and start from zero again. Underflow can occur if the 'msg.value' or 'multiplier' value is close to zero, causing the resulting value to be less than the minimum value a uint128 can store, this then causes it to wrap and become a very large number again."
+}
+```

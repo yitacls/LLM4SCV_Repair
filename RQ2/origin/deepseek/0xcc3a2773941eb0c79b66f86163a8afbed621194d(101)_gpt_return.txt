@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "devWallet.send(msg.value);",
+    "description": "The send() function returns a boolean value indicating success or failure, but this return value is not checked. If the send() call fails (e.g., if the devWallet is a contract that runs out of gas or reverts), execution will continue without handling the failure. This could leave the contract in an inconsistent state where ether has been accounted for (ethInWei updated) but not actually transferred. In Solidity 0.4.24, send() forwards only 2300 gas, which is insufficient for most contract operations, making failures likely if devWallet is a contract. Always check the return value of send() or use transfer() (which automatically reverts on failure)."
+}
+```

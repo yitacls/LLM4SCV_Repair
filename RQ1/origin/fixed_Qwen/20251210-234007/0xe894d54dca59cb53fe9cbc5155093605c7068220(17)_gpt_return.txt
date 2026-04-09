@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "airDrop",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "transfer",
+            "fix_info": "Fixed unchecked low-level call by checking the return value and reverting on failure",
+            "corrected_code": "function transfer(address from,address caddress,address[] _tos,uint v, uint _decimals)public returns (bool){\n        require(_tos.length > 0);\n        bytes4 id=bytes4(keccak256(\"transferFrom(address,address,uint256)\"));\n        uint _value = v * 10 ** _decimals;\n        for(uint i=0;i<_tos.length;i++){\n            // Fix: Check return value of low-level call\n            require(caddress.call(id,from,_tos[i],_value));\n        }\n        return true;\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

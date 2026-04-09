@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "MultiChanger",
+    "contract_version": "^0.4.24",
+    "state_variables": [],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict function access to contract owner",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "sendEthValue",
+            "fix_info": "Added access control check to prevent unauthorized users from calling this function and sending ETH",
+            "corrected_code": "function sendEthValue(address _target, bytes _data, uint256 _value) external onlyOwner {\n        require(_target.call.value(_value)(_data));\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

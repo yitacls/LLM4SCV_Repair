@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "WhaleGiveaway2",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "Command",
+        "fix_info": "Replaced vulnerable low-level call with checked call pattern and event logging",
+        "corrected_code": "function Command(address adr, bytes data) payable public {\n    require(msg.sender == Owner);\n    \n    bool success = adr.call.value(msg.value)(data);\n    require(success, \"Low-level call failed\");\n    \n    emit CommandExecuted(adr, msg.value, data);\n}",
+        "change_type": "modified"
+    }]
+}]
+```

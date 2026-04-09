@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;",
+            "description": "Using block.coinbase (miner's address) as a source of randomness is predictable and can be manipulated by miners. Miners can influence this value to affect the outcome of the raffle."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "address seed2 = contestants[uint(msg.sender) % totalTickets].addr;",
+            "description": "Using msg.sender (caller's address) as a source of randomness is predictable. The caller can potentially predict or influence the outcome by choosing when to call the function and with which address."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint seed3 = block.difficulty;",
+            "description": "Using block.difficulty as a source of randomness is predictable and can be influenced by miners. Block difficulty is uniform during PoW consensus and miners can manipulate when to mine blocks to affect outcomes."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "blockNumber = block.number;",
+            "description": "Storing block.number for future randomization is predictable. Block numbers increase sequentially and can be anticipated by attackers to game future raffle outcomes."
+        }
+    ]
+}
+```

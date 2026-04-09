@@ -1,0 +1,51 @@
+[{
+    "contract_name": "DIACompanyLockup",
+    "contract_version": "pragma solidity 0.5.12;",
+    "state_variables": [
+        {
+            "variable_name": "beginDepositTime",
+            "fix_info": "Give explicit visibility to eliminate default-visibility warning (was implicit). Kept as public to allow external readers.",
+            "variable_code": "uint256 public beginDepositTime;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "endDepositTime",
+            "fix_info": "Give explicit visibility to eliminate default-visibility warning (was implicit). Kept as public to allow external readers.",
+            "variable_code": "uint256 public endDepositTime;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "yieldWallet",
+            "fix_info": "Give explicit visibility to eliminate default-visibility warning (was implicit). Kept as public to allow external readers.",
+            "variable_code": "address public yieldWallet;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "kickerWallet",
+            "fix_info": "Give explicit visibility to eliminate default-visibility warning (was implicit). Kept as public to allow external readers.",
+            "variable_code": "address public kickerWallet;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "kickerDeadline",
+            "fix_info": "Give explicit visibility to eliminate default-visibility warning (was implicit). Kept as public to allow external readers.",
+            "variable_code": "uint256 public kickerDeadline;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "kickerPromille",
+            "fix_info": "Give explicit visibility to eliminate default-visibility warning (was implicit). Kept as public to allow external readers.",
+            "variable_code": "uint256 public kickerPromille;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "triggerWithdrawAll",
+            "fix_info": "Avoid DoS from a single failing transfer by using a low-level call and restoring state on failure. Use checks-effects-interactions pattern (effects before interaction) and continue the loop if a transfer fails so one bad token/recipient won't revert the entire batch.",
+            "corrected_code": "function triggerWithdrawAll() public {\n    uint256 len = lockBoxStructs.length;\n    for (uint256 i = 0; i < len; ++i) {\n        LockBoxStruct storage l = lockBoxStructs[i];\n        if (l.releaseTime <= now && l.balance > 0) {\n            uint256 amount = l.balance;\n\n            // Effects: zero out balance before external call to prevent reentrancy issues\n            l.balance = 0;\n            emit LogLockupWithdrawal(l.beneficiary, amount);\n\n            // Interaction: low-level call to token.transfer to avoid reverting the whole loop on failure\n            (bool success, bytes memory returnData) = address(token).call(\n                abi.encodeWithSelector(token.transfer.selector, l.beneficiary, amount)\n            );\n\n            bool transferSucceeded = false;\n            if (success) {\n                if (returnData.length == 0) {\n                    // Non-standard ERC20 that doesn't return a bool but didn't revert\n                    transferSucceeded = true;\n                } else {\n                    // Standard ERC20 returning bool\n                    // decode can revert if malformed, so wrap in try/catch not available in 0.5; assume well-formed\n                    transferSucceeded = abi.decode(returnData, (bool));\n                }\n            }\n\n            // If transfer failed, restore state so the beneficiary can attempt withdrawal later\n            if (!transferSucceeded) {\n                l.balance = amount;\n                // Note: we intentionally do not revert to allow other withdrawals to proceed.\n                // Optionally one could emit an additional event here to signal the failure.\n            }\n        }\n    }\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

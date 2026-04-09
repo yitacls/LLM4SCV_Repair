@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Arithmetic Overflow/Underflow",
+        "location": "totalBurned += msg.value;",
+        "description": "In Solidity ^0.4.11, arithmetic operations on unsigned integers are not protected from overflow/underflow by default. The statement 'totalBurned += msg.value;' could overflow if the sum of totalBurned and msg.value exceeds the maximum value storable in totalBurned's data type (likely uint256). This could cause totalBurned to wrap around to a small value, corrupting the contract's accounting. The vulnerability is exacerbated because the function is payable and accepts arbitrary msg.value amounts. SafeMath library should be used for all arithmetic operations to prevent this issue."
+    }
+}
+```

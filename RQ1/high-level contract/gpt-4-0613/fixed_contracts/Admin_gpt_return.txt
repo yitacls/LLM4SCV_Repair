@@ -1,0 +1,18 @@
+```json
+[
+    {
+        "contract_name": "Admin",
+        "contract_version": "0.6.12",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "removeAdmin",
+                "fix_info": "The original code potentially used unchecked return values from low level calls which could lead to DOS attacks. The issue has been rectified by storing the length of the admin array in a variable and using that in the while loop to prevent potentially infinite loops.",
+                "corrected_code": "function removeAdmin(address _adminAddress) external onlyAdmin { require(isAdmin[_adminAddress], 'Admin does not exist'); uint length = admins.length; for (uint i = 0; i < length; i++) { if (admins[i] == _adminAddress) { admins[i] = admins[length - 1]; admins.pop(); isAdmin[_adminAddress] = false; break; } } }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

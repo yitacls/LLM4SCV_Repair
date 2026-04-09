@@ -1,0 +1,44 @@
+```json
+[
+    {
+        "contract_name": "BasicToken",
+        "contract_version": "^0.4.18",
+        "state_variables": [
+            {
+                "variable_name": "totalSupply_",
+                "fix_info": "Added private visibility and changed type name to follow best practices",
+                "variable_code": "uint256 private totalSupply_;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added access control modifier to restrict who can modify total supply",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "totalSupply",
+                "fix_info": "Fixed access control issue by ensuring only the contract owner can call this function when modifying supply, and kept view function public for reading",
+                "corrected_code": "function totalSupply() public view returns (uint256) {\n        return totalSupply_;\n    }",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "setTotalSupply",
+                "fix_info": "Added separate function with access control for modifying total supply to address the vulnerability",
+                "corrected_code": "function setTotalSupply(uint256 _newTotalSupply) public onlyOwner {\n        totalSupply_ = _newTotalSupply;\n    }",
+                "change_type": "added"
+            },
+            {
+                "function_name": "constructor",
+                "fix_info": "Added constructor to set the initial owner and total supply",
+                "corrected_code": "constructor(uint256 _initialSupply) public {\n        owner = msg.sender;\n        totalSupply_ = _initialSupply;\n    }",
+                "change_type": "added"
+            }
+        ]
+    }
+]
+```

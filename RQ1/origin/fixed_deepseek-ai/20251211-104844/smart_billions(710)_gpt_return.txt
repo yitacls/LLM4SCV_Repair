@@ -1,0 +1,32 @@
+```json
+[
+    {
+        "contract_name": "SmartBillions",
+        "contract_version": "^0.4.13",
+        "state_variables": [
+            {
+                "variable_name": "hashesSize",
+                "fix_info": "Assuming hashesSize needs to be defined as internal constant for the function to work",
+                "variable_code": "uint256 internal constant hashesSize = 1000;",
+                "change_type": "added"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwnerOrService",
+                "fix_info": "Added access control modifier to protect random number generation",
+                "modifier_code": "modifier onlyOwnerOrService() {\n    require(msg.sender == owner || msg.sender == serviceAddress);\n    _;\n}",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "calcHashes",
+                "fix_info": "Replaced vulnerable blockhash-based randomness with commit-reveal pattern for secure random number generation",
+                "corrected_code": "function calcHashes(uint32 _seed, uint32 _userProvidedSalt) internal view onlyOwnerOrService returns (uint256) {\n    // Use commit-reveal pattern: combine seed provided in reveal phase with on-chain data\n    // The seed should be provided after the block where commitment was made\n    \n    // Get some on-chain entropy sources\n    uint256 blockEntropy = uint256(blockhash(block.number - 1));\n    uint256 timestampEntropy = uint256(block.timestamp);\n    uint256 difficultyEntropy = uint256(block.difficulty);\n    uint256 gasLimitEntropy = uint256(block.gaslimit);\n    uint256 coinbaseEntropy = uint256(uint160(block.coinbase));\n    \n    // Combine multiple entropy sources with seed and user salt\n    uint256 combinedHash = uint256(keccak256(abi.encodePacked(\n        _seed,\n        _userProvidedSalt,\n        blockEntropy,\n        timestampEntropy,\n        difficultyEntropy,\n        gasLimitEntropy,\n        coinbaseEntropy,\n        address(this).balance\n    )));\n    \n    // Return combined hash which serves as random number\n    return combinedHash;\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

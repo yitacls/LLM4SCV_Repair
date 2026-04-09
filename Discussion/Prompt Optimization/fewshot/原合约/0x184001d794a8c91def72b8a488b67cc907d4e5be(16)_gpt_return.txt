@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "Ore",
+        "contract_version": "^0.4.21",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "transfer",
+                "fix_info": "Add overflow check before updating balances.",
+                "corrected_code": "function transfer(address to, uint256 value) public returns (bool success) {
+    require(balanceOf[msg.sender] >= value);
+    require(balanceOf[to] + value >= balanceOf[to]); // Overflow check
+    balanceOf[msg.sender] -= value;
+    balanceOf[to] += value;
+    emit Transfer(msg.sender, to, value);
+    return true;
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

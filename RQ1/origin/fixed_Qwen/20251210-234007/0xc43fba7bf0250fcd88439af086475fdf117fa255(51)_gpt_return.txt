@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "Crowdsale",
+    "contract_version": "^0.4.19",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "safeWithdrawal",
+            "fix_info": "Fixed unchecked low-level calls by using require() to ensure send() operations succeed, preventing silent failures and potential fund loss",
+            "corrected_code": "function safeWithdrawal() afterDeadline public {\n        if (!fundingGoalReached) {\n            uint amount = balanceOf[msg.sender];\n            balanceOf[msg.sender] = 0;\n            if (amount > 0) {\n                require(msg.sender.send(amount));\n                FundTransfer(msg.sender, amount, false);\n            }\n        }\n        if (fundingGoalReached && beneficiary == msg.sender) {\n            require(beneficiary.send(amountRaised));\n            FundTransfer(beneficiary, amountRaised, false);\n        }\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

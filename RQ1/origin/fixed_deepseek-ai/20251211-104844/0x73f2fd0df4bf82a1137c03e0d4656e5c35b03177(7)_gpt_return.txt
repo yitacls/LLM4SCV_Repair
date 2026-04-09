@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "EtherTime",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "Owner",
+            "fix_info": "Owner visibility should be private (or internal) with explicit public getter if needed - changed from likely default internal/private to explicit",
+            "variable_code": "address private Owner;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "_owner",
+            "fix_info": "Added new private state variable to track owner address during initialization",
+            "variable_code": "address private _owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added modifier to restrict access to owner only - replaces tx.origin check with msg.sender",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == _owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to safely initialize contract owner",
+            "corrected_code": "constructor() public {\n        _owner = msg.sender;\n        Owner = _owner;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "Xply",
+            "fix_info": "1. Replaced tx.origin with proper owner authentication using onlyOwner modifier\n2. Changed selfdestruct to transfer remaining balance then selfdestruct for safety\n3. Added input validation and proper access control",
+            "corrected_code": "function Xply() public payable onlyOwner {\n        require(msg.value >= address(this).balance, \"Insufficient Ether sent\");\n        \n        // Transfer contract balance to owner before selfdestruct for safety\n        uint256 balance = address(this).balance;\n        if (balance > 0) {\n            _owner.transfer(balance);\n        }\n        \n        selfdestruct(_owner);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "getOwner",
+            "fix_info": "Added getter function for owner address to maintain transparency",
+            "corrected_code": "function getOwner() public view returns (address) {\n        return _owner;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

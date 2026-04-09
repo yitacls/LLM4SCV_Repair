@@ -1,0 +1,20 @@
+[{
+    "contract_name": "Perpetual",
+    "contract_version": "^0.5.2",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "constructor",
+            "fix_info": "Avoid shadowing existing state variables by renaming constructor parameters to have a leading underscore and forward them to the parent Position constructor. No change in behavior, only naming to prevent shadowing.",
+            "corrected_code": "constructor(address _globalConfig, address _devAddress, address _collateral, uint256 _collateralDecimals)\n    public\n    Position(_collateral, _collateralDecimals)\n{\n    // Use distinct parameter names to avoid accidental shadowing of state variables\n    setGovernanceAddress(\"globalConfig\", _globalConfig);\n    setGovernanceAddress(\"dev\", _devAddress);\n    emit CreatePerpetual();\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "liquidateFrom",
+            "fix_info": "Fix missing return values and preserve original liquidation logic. Ensure the function returns the opened amount and the actual liquidationAmount. Keep existing checks for liquidator safety/margin.",
+            "corrected_code": "function liquidateFrom(address from, address guy, uint256 maxAmount) public returns (uint256, uint256) {\n    require(maxAmount.mod(governance.lotSize) == 0, \"invalid lot size\");\n    require(!isSafe(guy), \"safe account\");\n\n    uint256 liquidationPrice = markPrice();\n    uint256 liquidationAmount = calculateLiquidateAmount(guy, liquidationPrice);\n    uint256 totalPositionSize = positions[guy].size;\n    uint256 liquidatableAmount = totalPositionSize.sub(totalPositionSize.mod(governance.lotSize));\n    liquidationAmount = liquidationAmount.ceil(governance.lotSize).min(maxAmount).min(liquidatableAmount);\n    require(liquidationAmount > 0, \"nothing to liquidate\");\n\n    uint256 opened = liquidate(from, guy, liquidationPrice, liquidationAmount);\n    if (opened > 0) {\n        require(availableMarginWithPrice(from, liquidationPrice) >= 0, \"liquidator margin\");\n    } else {\n        require(isSafe(from), \"liquidator unsafe\");\n    }\n\n    emit Liquidate(from, guy, liquidationPrice, liquidationAmount);\n\n    // Return the amount opened and the actual liquidation amount executed\n    return (opened, liquidationAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

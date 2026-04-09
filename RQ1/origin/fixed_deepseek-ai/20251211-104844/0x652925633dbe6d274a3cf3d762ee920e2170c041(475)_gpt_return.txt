@@ -1,0 +1,30 @@
+```json
+[{
+    "contract_name": "TokenSale",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Owner variable is referenced in the function but was not defined in the provided code snippet. It needs to be explicitly defined with appropriate visibility to prevent access control issues.",
+            "variable_code": "address private owner;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added a modifier to restrict function access to the contract owner, replacing the dangerous tx.origin check with msg.sender comparison.",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "addMeByRC",
+            "fix_info": "Replaced tx.origin == owner check with onlyOwner modifier to prevent phishing attacks and ensure proper access control.",
+            "corrected_code": "function addMeByRC() public onlyOwner {\n        rc[msg.sender] = true;\n        emit NewRC(msg.sender);\n    }",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

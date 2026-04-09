@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Vulnerability",
+    "location": "balances[_to] += _value;",
+    "description": "This line contains an unchecked addition that could result in an integer overflow. In Solidity versions prior to 0.8.0, arithmetic operations wrap around without reverting (e.g., uint256 maximum + 1 = 0). If the current balance of _to plus _value exceeds type(uint256).max, it will overflow to a smaller value, allowing unauthorized token balance inflation. This vulnerability is particularly severe in token contracts like USDC since it could be exploited to create tokens out of thin air. The fix requires using SafeMath library or upgrading to Solidity 0.8.0+ which includes built-in overflow checks."
+}
+```

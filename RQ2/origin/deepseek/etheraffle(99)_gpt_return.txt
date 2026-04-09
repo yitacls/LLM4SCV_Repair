@@ -1,0 +1,26 @@
+```json
+{
+    "vulnerabilities": [
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "address seed1 = contestants[uint(block.coinbase) % totalTickets].addr;",
+            "description": "Using block.coinbase (miner's address) as a source of randomness is predictable because miners can influence this value. An attacker could become a miner or collude with miners to manipulate the outcome."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "address seed2 = contestants[uint(msg.sender) % totalTickets].addr;",
+            "description": "Using msg.sender as a randomness source is predictable because participants can influence this value by controlling which address submits the transaction, allowing them to affect the outcome."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "uint seed3 = block.difficulty;",
+            "description": "Using block.difficulty as a randomness source is problematic because it's predictable and can be influenced by miners. In PoW chains, miners have control over block parameters."
+        },
+        {
+            "type": "BAD_RANDOMNESS",
+            "location": "blockNumber = block.number;",
+            "description": "Storing block.number for future use in randomness generation is insecure because future block numbers are predictable, allowing attackers to anticipate and potentially influence outcomes."
+        }
+    ]
+}
+```

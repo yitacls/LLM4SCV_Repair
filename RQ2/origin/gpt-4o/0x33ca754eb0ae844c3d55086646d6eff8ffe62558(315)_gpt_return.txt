@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The use of tx.origin for access control is insecure because it is vulnerable to phishing attacks. An attacker can create a contract that calls this function on behalf of the victim, causing the victim to lose control of their ownership checks. Instead, msg.sender should be used for access control as it ensures only the direct caller is authenticated."
+}
+```

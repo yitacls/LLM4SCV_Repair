@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "msg.sender.call.value(amount)",
+    "description": "The vulnerable code allows for reentrancy attacks where an external malicious contract can call the withdraw function multiple times before the state changes are completed, potentially leading to unexpected results. This can result in the loss of funds or manipulation of contract state."
+}
+```

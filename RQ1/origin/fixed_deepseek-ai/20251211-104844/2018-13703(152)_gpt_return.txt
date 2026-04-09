@@ -1,0 +1,36 @@
+```json
+[{
+    "contract_name": "CERB_Coin",
+    "contract_version": "^0.4.21",
+    "state_variables": [
+        {
+            "variable_name": "balanceOf",
+            "fix_info": "No changes needed",
+            "variable_code": "mapping(address => uint256) public balanceOf;",
+            "change_type": "modified"
+        },
+        {
+            "variable_name": "totalSupply",
+            "fix_info": "No changes needed",
+            "variable_code": "uint256 public totalSupply;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "No changes needed",
+            "modifier_code": "modifier onlyOwner { require(msg.sender == owner); _; }",
+            "change_type": "modified"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Fixed arithmetic overflow vulnerability by replacing 'var' with explicit type, added safe multiplication using SafeMath library, and added validation to prevent overflow in multiplication",
+            "corrected_code": "function mintToken(uint256 tokensToMint) public onlyOwner {\n    require(tokensToMint > 0, \"Must mint positive number of tokens\");\n    \n    // Use safe multiplication to prevent overflow\n    uint256 multiplier = 10 ** 18;\n    uint256 totalTokenToMint = SafeMath.mul(tokensToMint, multiplier);\n    \n    // Check for overflow in balance update\n    uint256 newBalance = SafeMath.add(balanceOf[owner], totalTokenToMint);\n    uint256 newTotalSupply = SafeMath.add(totalSupply, totalTokenToMint);\n    \n    // Update state variables\n    balanceOf[owner] = newBalance;\n    totalSupply = newTotalSupply;\n    \n    // Emit event\n    emit Transfer(address(0), owner, totalTokenToMint);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

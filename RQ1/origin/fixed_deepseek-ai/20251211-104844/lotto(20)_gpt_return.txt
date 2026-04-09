@@ -1,0 +1,23 @@
+```json
+[{
+    "contract_name": "Lotto",
+    "contract_version": "^0.4.18",
+    "state_variables": [
+        {
+            "variable_name": "payedOut",
+            "fix_info": "Added explicit visibility specifier for security",
+            "variable_code": "bool public payedOut;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "sendToWinner",
+            "fix_info": "Replaced unsafe low-level call with transfer() to prevent reentrancy and added proper error handling",
+            "corrected_code": "function sendToWinner() public {\n    require(!payedOut, \"Payment already made\");\n    \n    // Using transfer() instead of send() for better security\n    // transfer() automatically reverts on failure and has gas limit of 2300\n    winner.transfer(winAmount);\n    \n    // State update after transfer to follow checks-effects-interactions pattern\n    payedOut = true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

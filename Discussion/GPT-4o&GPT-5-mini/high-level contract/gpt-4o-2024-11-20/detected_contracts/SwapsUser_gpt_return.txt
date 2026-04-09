@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Lines 156-178 (in the _swapsCall function)",
+        "description": "Potential for arithmetic overflow or underflow in the calculation of `sourceTokenAmountUsed` and `destTokenAmountReceived` when adjusting for trading fees. The contract does not use SafeMath in these calculations, which is critical in Solidity version 0.5.17 where arithmetic does not automatically revert on overflow/underflow."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Line 172 (in the _swapsCall function)",
+        "description": "The `destTokenAmountReceived - tradingFee` operation can result in an underflow if `tradingFee` is greater than `destTokenAmountReceived`. This could cause the contract to behave incorrectly or introduce vulnerabilities."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Line 176 (in the _swapsCall function)",
+        "description": "The `sourceTokenAmountUsed + tradingFee` operation can result in an overflow if the sum of `sourceTokenAmountUsed` and `tradingFee` goes beyond the maximum value for uint256. This is especially dangerous if `tradingFee` is manipulated."
+    },
+    {
+        "type": "SWC-101-Integer Overflow and Underflow",
+        "location": "Lines 298-305 (in the _swapsExpectedReturn function)",
+        "description": "Arithmetic operations (`sourceTokenAmount - tradingFee`, `mul`, and `div`) on `sourceTokenAmount` should use SafeMath to prevent potential overflows or underflows."
+    }
+]
+```

@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "BaseToken",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Updated from uint to uint256 to be more explicit and safer",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "_transfer",
+                "fix_info": "Fixed arithmetic overflow vulnerabilities and updated syntax for Solidity 0.8.x with SafeMath built-in overflow protection",
+                "corrected_code": "function _transfer(address _from, address _to, uint256 _value) internal {\n        require(_to != address(0), \"BaseToken: transfer to zero address\");\n        require(balanceOf[_from] >= _value, \"BaseToken: insufficient balance\");\n        \n        uint256 fromBalance = balanceOf[_from];\n        uint256 toBalance = balanceOf[_to];\n        \n        // SafeMath is built into Solidity 0.8.x, so overflow checks are automatic\n        balanceOf[_from] = fromBalance - _value;\n        balanceOf[_to] = toBalance + _value;\n        \n        // The previous assert was redundant and could be removed, but kept for consistency\n        assert(balanceOf[_from] + balanceOf[_to] == fromBalance + toBalance);\n        emit Transfer(_from, _to, _value);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

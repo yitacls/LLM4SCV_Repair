@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract": "CT",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for authorisation. 'tx.origin' returns the address of the user who originally initiated the transaction, meaning that a malicious contract could trick a user into initiating a transaction and then perform actions on their behalf. It is a common and dangerous mistake to use tx.origin when msg.sender is meant. 'msg.sender' is more secure because it returns the address of the last caller of the contract, which cannot be impersonated."
+}
+```

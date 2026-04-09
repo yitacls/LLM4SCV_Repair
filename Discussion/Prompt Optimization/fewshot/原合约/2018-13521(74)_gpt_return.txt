@@ -1,0 +1,24 @@
+```json
+[
+    {
+        "contract_name": "PinkyToken",
+        "contract_version": "^0.4.16",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Add overflow check before updating balanceOf and totalSupply.",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner {
+    require(balanceOf[target] + mintedAmount >= balanceOf[target]);
+    balanceOf[target] += mintedAmount;
+    totalSupply += mintedAmount;
+    Transfer(0, owner, mintedAmount);
+    Transfer(owner, target, mintedAmount);
+}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,14 @@
+```json
+[{
+    "contract_name": "CYBRPurchaseAddress",
+    "contract_version": "^0.4.23",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [{
+        "function_name": "fallback",
+        "fix_info": "Replaced unchecked low-level call with explicit return value check and added require statement to handle failure. Using call.value with gas limit instead of deprecated send for better error handling.",
+        "corrected_code": "function() external payable {\n    // Use call.value() instead of send() for proper error handling\n    (bool success, ) = wallet.call.value(msg.value)(\"\");\n    require(success, \"Transfer to wallet failed\");\n}",
+        "change_type": "modified"
+    }]
+}]
+```

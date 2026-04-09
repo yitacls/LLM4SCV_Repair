@@ -1,0 +1,9 @@
+```json
+[
+    {
+        "type": "Reentrancy",
+        "location": "function withdraw(uint wad) public { ... msg.sender.call{ value: wad }(\"\"); ... }",
+        "description": "The contract uses call.value() to send ETH before updating the balance state. This allows a malicious contract to re-enter the withdraw function through a fallback/receive function, potentially draining funds because the balanceOf[msg.sender] is only reduced after the external call. For Solidity 0.6.12, consider using the Checks-Effects-Interactions pattern by updating the state before the external call, or use a reentrancy guard."
+    }
+]
+```

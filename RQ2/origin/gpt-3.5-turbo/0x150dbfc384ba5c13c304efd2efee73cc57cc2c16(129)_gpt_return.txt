@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (players[tx.origin].referrer != address(0) && (players[tx.origin].tickets - players[tx.origin].checkpoint) % interval == 0) {  // fault line",
+    "description": "The 'restricted' modifier is missing from the function newTicket(), allowing any external account to call this function and potentially exploit the logic for gaining undesired benefits."
+}
+```

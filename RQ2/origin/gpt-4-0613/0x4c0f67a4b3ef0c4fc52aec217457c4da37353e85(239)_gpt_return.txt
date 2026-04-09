@@ -1,0 +1,8 @@
+```json
+{
+    "type": "access_control",
+    "contract_name": "TattooMoneyPublicSaleIV",
+    "location": "require(tx.origin == owner, \"Only for contract Owner\");",
+    "description": "The contract uses 'tx.origin' for authorization check instead of 'msg.sender'. If a malicious contract is implemented as an intermediary contract, 'tx.origin' will return the original sender and not the intermediary contract. This can allow the bad actor to trick a victim into initiating a transaction that calls into the malicious contract, letting the malicious contract make a call to the victim's contract and bypass any security checks that are solely based on 'tx.origin'. To mitigate this issue, use msg.sender for access control checks as it always represents the immediate sender of the transaction."
+}
+```

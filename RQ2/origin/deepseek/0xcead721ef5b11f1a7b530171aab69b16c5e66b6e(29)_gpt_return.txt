@@ -1,0 +1,9 @@
+```json
+{
+    "vulnerability": {
+        "type": "Reentrancy",
+        "location": "msg.sender.call.value(_am)() within the Collect function",
+        "description": "The contract performs an external call via low-level call() to msg.sender before updating the account's internal balance state (acc.balance-=_am). This violates the checks-effects-interactions pattern, allowing a malicious contract receiving Ether to re-enter the Collect function repeatedly before the state is updated, potentially draining funds from the contract. The vulnerability is exacerbated because (1) it uses the deprecated call.value()() syntax, (2) it occurs in Solidity ^0.4.25, which lacks built-in reentrancy guards, and (3) the contract tracks balances in an internal mapping (Acc[msg.sender].balance) that is updated after the external call, enabling reentrancy attacks."
+    }
+}
+```

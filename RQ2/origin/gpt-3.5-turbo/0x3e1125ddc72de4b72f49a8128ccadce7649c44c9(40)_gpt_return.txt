@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "creator.send(amountRaised);",
+    "description": "The function uses a low-level call to send 'amountRaised' to the 'creator'. This is a potential vulnerability as it does not check the success of the send operation or handle any errors that may occur during the transfer. This can result in funds being locked in the contract or lost if the 'send' operation fails."
+}
+```

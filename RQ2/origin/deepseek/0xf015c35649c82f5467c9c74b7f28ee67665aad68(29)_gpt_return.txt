@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)()) { acc.balance-=_am; ... }",
+    "description": "The contract makes an external call (msg.sender.call.value(_am)()) before updating the user's account balance (acc.balance-=_am). This violates the 'Checks-Effects-Interactions' pattern, allowing a malicious contract receiving the ETH to re-enter the Collect function before its balance is deducted. Since the condition 'acc.balance>=_am' would still hold true (as the deduction hasn't been applied yet), an attacker could repeatedly drain the contract's funds in a single transaction. This is a classic reentrancy vulnerability similar to the DAO attack."
+}
+```

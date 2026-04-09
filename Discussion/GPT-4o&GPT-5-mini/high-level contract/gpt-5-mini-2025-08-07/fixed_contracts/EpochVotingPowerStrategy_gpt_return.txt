@@ -1,0 +1,33 @@
+[{
+    "contract_name": "EpochVotingPowerStrategy",
+    "contract_version": "0.7.6",
+    "state_variables": [
+        {
+            "variable_name": "proposalIndex",
+            "fix_info": "Added a mapping to store each proposalId's 1-based index within its epochProposals array to allow O(1) removals and avoid gas griefing from linear scans.",
+            "variable_code": "mapping(uint256 => uint256) internal proposalIndex;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "handleProposalCreation",
+            "fix_info": "Store the proposal's index (1-based) when pushing into epochProposals to enable O(1) removal later.",
+            "corrected_code": "function handleProposalCreation(\n    uint256 proposalId,\n    uint256 startTime,\n    uint256 /*endTime*/\n  ) external override onlyGovernance {\n    uint256 epoch = getEpochNumber(startTime);\n\n    uint256[] storage props = epochProposals[epoch];\n    props.push(proposalId);\n    // store 1-based index to distinguish from default zero\n    proposalIndex[proposalId] = props.length;\n  }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "handleProposalCancellation",
+            "fix_info": "Use the stored index to remove the proposal in O(1) without looping. If index is missing, behave as no-op (preserve original non-reverting behavior). Update moved element's index and delete mapping for removed proposal.",
+            "corrected_code": "function handleProposalCancellation(uint256 proposalId) external override onlyGovernance {\n    IKyberGovernance.ProposalWithoutVote memory proposal = governance.getProposalById(proposalId);\n    uint256 epoch = getEpochNumber(proposal.startTime);\n\n    uint256[] storage proposalIds = epochProposals[epoch];\n\n    uint256 idx = proposalIndex[proposalId];\n    // if we don't have an index, nothing to remove (preserve previous behavior of silently doing nothing)\n    if (idx == 0) {\n      return;\n    }\n\n    // convert to 0-based index\n    uint256 index = idx - 1;\n    uint256 lastIndex = proposalIds.length - 1;\n\n    if (index != lastIndex) {\n      uint256 movedProposalId = proposalIds[lastIndex];\n      // replace removed slot with last element\n      proposalIds[index] = movedProposalId;\n      // update moved proposal's stored index (1-based)\n      proposalIndex[movedProposalId] = index + 1;\n    }\n\n    // remove last element and clear mapping for removed proposal\n    proposalIds.pop();\n    delete proposalIndex[proposalId];\n  }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "handleWithdrawal",
+            "fix_info": "Avoid passing an unbounded storage array directly to external contract which can be exploited to force high gas usage. Cap the proposals passed to governance.handleVotingPowerChanged to MAX_PROPOSAL_PER_EPOCH and copy to a small memory array.",
+            "corrected_code": "function handleWithdrawal(\n    address user,\n    uint256 /*reduceAmount*/\n  ) external override onlyStaking {\n    uint256 currentEpoch = getCurrentEpochNumber();\n    (uint256 stake, uint256 dStake, address representative) = staking.getStakerData(\n      user,\n      currentEpoch\n    );\n    uint256 votingPower = representative == user ? stake.add(dStake) : dStake;\n\n    uint256 total = epochProposals[currentEpoch].length;\n    uint256 cap = total > MAX_PROPOSAL_PER_EPOCH ? MAX_PROPOSAL_PER_EPOCH : total;\n    uint256[] memory proposals = new uint256[](cap);\n    for (uint256 i = 0; i < cap; i++) {\n      proposals[i] = epochProposals[currentEpoch][i];\n    }\n\n    governance.handleVotingPowerChanged(user, votingPower, proposals);\n  }",
+            "change_type": "modified"
+        }
+    ]
+}]

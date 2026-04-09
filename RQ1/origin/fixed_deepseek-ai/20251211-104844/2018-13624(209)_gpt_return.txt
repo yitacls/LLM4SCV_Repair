@@ -1,0 +1,38 @@
+```json
+[
+    {
+        "contract_name": "WXSLToken",
+        "contract_version": "^0.8.0",
+        "state_variables": [
+            {
+                "variable_name": "balanceOf",
+                "fix_info": "Type changed from uint256 mapping to uint256 to prevent overflow",
+                "variable_code": "mapping(address => uint256) public balanceOf;",
+                "change_type": "modified"
+            },
+            {
+                "variable_name": "totalSupply",
+                "fix_info": "Type remains uint256 but SafeMath will prevent overflow",
+                "variable_code": "uint256 public totalSupply;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "No change needed to modifier itself",
+                "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner);\n        _;\n    }",
+                "change_type": "unchanged"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "mintToken",
+                "fix_info": "Fixed arithmetic overflow vulnerability using SafeMath or Solidity 0.8+ built-in overflow checks, updated event syntax, and fixed deprecated 'this' reference",
+                "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n        require(target != address(0), \"Invalid target address\");\n        \n        balanceOf[target] += mintedAmount;\n        totalSupply += mintedAmount;\n        \n        emit Transfer(address(0), address(this), mintedAmount);\n        emit Transfer(address(this), target, mintedAmount);\n    }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Denial of Service (DoS)",
+    "location": "Lines 1-9: emptyCreditors() function with condition if(creditorAddresses.length>1500)",
+    "description": "The function contains a gas-intensive operation that will revert if the creditorAddresses array contains more than 1500 elements. When creditorAddresses.length > 1500, the contract attempts to create a new empty array via 'creditorAddresses = new address[](0)', which requires copying all existing array elements to storage first due to Solidity's storage management model. This copying operation consumes excessive gas (O(n) complexity), potentially exceeding the block gas limit and causing the transaction to fail, thereby creating a denial of service condition where legitimate calls cannot be executed successfully."
+}
+```

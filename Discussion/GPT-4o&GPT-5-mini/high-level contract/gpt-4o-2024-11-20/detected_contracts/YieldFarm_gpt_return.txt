@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-103-Floating Pragma",
+        "location": "pragma solidity ^0.6.0;",
+        "description": "The contract specifies a floating pragma (^0.6.0), which allows compilation with any Solidity version starting from 0.6.0 up to, but not including, 0.7.0. This can potentially introduce incompatibilities or unexpected behavior as different compiler versions may have varying implementations and bug fixes. It is recommended to use a fixed pragma version like `pragma solidity 0.6.12` to avoid such issues."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for (uint128 i = lastEpochIdHarvested[msg.sender] + 1; i <= epochId; i++) {",
+        "description": "The loop in the `massHarvest` function iterates through all unharvested epochs, potentially causing the transaction to exceed the gas limit if there are many iterations. This could result in a denial-of-service situation for users with a large number of unharvested epochs. Mitigation strategies include imposing a maximum limit on the number of epochs that can be harvested in a single transaction or optimizing the gas cost of each iteration."
+    }
+]
+```

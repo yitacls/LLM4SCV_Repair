@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic Overflow",
+    "location": "balanceOf[target] += mintedAmount;",
+    "description": "The addition operation on balanceOf[target] and totalSupply can cause an integer overflow when mintedAmount is large enough, leading to unexpected behavior and potential token manipulation. In Solidity ^0.4.13, arithmetic operations are not protected against overflow/underflow by default."
+}
+```

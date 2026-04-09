@@ -1,0 +1,25 @@
+```json
+[
+  {
+    "contract_name": "AM1OpenSTValue",
+    "contract_version": "^0.4.17",
+    "state_variables": [],
+    "modifiers": [
+      {
+        "modifier_name": "",
+        "fix_info": "",
+        "modifier_code": "",
+        "change_type": "deleted"
+      }
+    ],
+    "functions": [
+      {
+        "function_name": "stake",
+        "fix_info": "Replaced 'tx.origin' with 'msg.sender' for proper authentication and fixed allowance check vulnerability. The original code used tx.origin for authentication and transferFrom, which is vulnerable to phishing attacks where a malicious contract could call this function. Now msg.sender is used consistently, ensuring the actual caller is properly authenticated and the allowance is checked for the correct spender.",
+        "corrected_code": "function stake(\n        bytes32 _uuid,\n        uint256 _amountST,\n        address _beneficiary)\n        external\n        returns (\n        uint256 amountUT,\n        uint256 nonce,\n        uint256 unlockHeight,\n        bytes32 stakingIntentHash)\n    {\n        require(!deactivated);\n        require(_amountST > 0);\n        require(valueToken.allowance(msg.sender, address(this)) >= _amountST);\n        require(utilityTokens[_uuid].simpleStake != address(0));\n        require(_beneficiary != address(0));\n        UtilityToken storage utilityToken = utilityTokens[_uuid];\n        if (utilityToken.stakingAccount != address(0)) require(msg.sender == utilityToken.stakingAccount);\n        require(valueToken.transferFrom(msg.sender, address(this), _amountST));\n        amountUT = (_amountST.mul(utilityToken.conversionRate))\n            .div(10**uint256(utilityToken.conversionRateDecimals));\n        unlockHeight = block.number + blocksToWaitLong();\n        nonces[msg.sender]++;\n        nonce = nonces[msg.sender];\n        stakingIntentHash = hashStakingIntent(\n            _uuid,\n            msg.sender,\n            nonce,\n            _beneficiary,\n            _amountST,\n            amountUT,\n            unlockHeight\n        );\n        stakes[stakingIntentHash] = Stake({\n            uuid:         _uuid,\n            staker:       msg.sender,\n            beneficiary:  _beneficiary,\n            nonce:        nonce,\n            amountST:     _amountST,\n            amountUT:     amountUT,\n            unlockHeight: unlockHeight\n        });\n        StakingIntentDeclared(_uuid, msg.sender, nonce, _beneficiary,\n            _amountST, amountUT, unlockHeight, stakingIntentHash, utilityToken.chainIdUtility);\n        return (amountUT, nonce, unlockHeight, stakingIntentHash);\n    }",
+        "change_type": "modified"
+      }
+    ]
+  }
+]
+```

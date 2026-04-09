@@ -1,0 +1,16 @@
+```json
+[{
+    "contract_name": "PausableToken",
+    "contract_version": "^0.4.16",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "batchTransfer",
+            "fix_info": "Fixed potential overflows using SafeMath and added require statements to validate input to ensure safe arithmetic operations.",
+            "corrected_code": "function batchTransfer(address[] _receivers, uint256 _value) public whenNotPaused returns (bool) {\n    uint cnt = _receivers.length;\n    require(cnt > 0 && cnt <= 20, \"Invalid receiver count\"); // Validate receiver count\n    require(_value > 0, \"Value must be greater than zero\");\n\n    uint256 amount = cnt.mul(_value); // SafeMath used for multiplication\n    require(balances[msg.sender] >= amount, \"Insufficient balance\"); // Ensure balance sufficiency \n\n    balances[msg.sender] = balances[msg.sender].sub(amount); // Safe subtraction\n    for (uint i = 0; i < cnt; i++) {\n        require(_receivers[i] != address(0), \"Invalid receiver address\"); // Prevent sending to zero address\n        balances[_receivers[i]] = balances[_receivers[i]].add(_value); // Safe addition\n        emit Transfer(msg.sender, _receivers[i], _value); // Emit proper transfer event\n    }\n\n    return true;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+``` 

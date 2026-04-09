@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "function disperseEther(address[] recipients, uint256[] values) external payable",
+    "description": "The function lacks proper access control modifiers such as 'onlyOwner' or similar restrictions. This allows any external caller to invoke the function and potentially drain the contract's ether balance, as there are no checks to verify the caller's authorization to perform disbursement operations."
+}
+```

@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "FibonacciBalance",
+    "contract_version": "1.0",
+    "state_variables": [
+        {
+            "variable_name": "calculatedFibNumber",
+            "fix_info": "Added explicit visibility and type declaration",
+            "variable_code": "uint256 public calculatedFibNumber;",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "withdrawalCounter",
+            "fix_info": "Added explicit visibility and type declaration",
+            "variable_code": "uint256 public withdrawalCounter;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added access control modifier to restrict withdraw function",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == owner, \"Caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Fixed access control vulnerability by adding owner check, removed unsafe delegatecall, and added reentrancy protection",
+            "corrected_code": "function withdraw() external onlyOwner nonReentrant {\n        withdrawalCounter += 1;\n        \n        // Calculate Fibonacci number using safe internal function instead of delegatecall\n        calculatedFibNumber = calculateFibonacci(withdrawalCounter);\n        \n        uint256 amount = calculatedFibNumber * 1 ether;\n        require(address(this).balance >= amount, \"Insufficient contract balance\");\n        \n        // Use transfer with proper error handling (post-0.8.0)\n        (bool success, ) = msg.sender.call{value: amount}(\"\");\n        require(success, \"Transfer failed\");\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "calculateFibonacci",
+            "fix_info": "Added internal function to calculate Fibonacci numbers safely",
+            "corrected_code": "function calculateFibonacci(uint256 n) internal pure returns (uint256) {\n        if (n <= 1) return n;\n        \n        uint256 a = 0;\n        uint256 b = 1;\n        uint256 result = 0;\n        \n        for (uint256 i = 2; i <= n; i++) {\n            result = a + b;\n            a = b;\n            b = result;\n        }\n        \n        return result;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

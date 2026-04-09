@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "winner.send(winAmount);",
+    "description": "The send() function is a low-level call that returns a boolean value indicating success or failure, but this return value is not checked. In Solidity ^0.4.18, if the send() call fails (e.g., due to gas limitations or the recipient contract's fallback function reverting), the function will continue execution without handling the failure. This can lead to the payedOut flag being set to true even when the funds were not actually transferred to the winner, resulting in a loss of funds for the contract owner and the winner not receiving their prize."
+}
+```

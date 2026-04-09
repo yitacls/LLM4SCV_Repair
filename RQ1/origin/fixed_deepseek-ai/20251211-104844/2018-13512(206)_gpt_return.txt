@@ -1,0 +1,16 @@
+```json
+{
+  "contract_name": "SmartHomeCoin",
+  "contract_version": "^0.4.16",
+  "state_variables": [],
+  "modifiers": [],
+  "functions": [
+    {
+      "function_name": "mintToken",
+      "fix_info": "Fixed arithmetic overflow vulnerability by using SafeMath library to safely add numbers and prevent integer overflow/underflow. Added require statement to ensure mintedAmount is non-zero to prevent wasteful operations. Updated event emission syntax to comply with newer Solidity standards.",
+      "corrected_code": "function mintToken(address target, uint256 mintedAmount) onlyOwner public {\n    require(mintedAmount > 0, \"Minted amount must be greater than zero\");\n    require(target != address(0), \"Cannot mint to zero address\");\n    \n    balanceOf[target] = balanceOf[target].add(mintedAmount);\n    totalSupply = totalSupply.add(mintedAmount);\n    \n    emit Transfer(address(0), this, mintedAmount);\n    emit Transfer(this, target, mintedAmount);\n}",
+      "change_type": "modified"
+    }
+  ]
+}
+```

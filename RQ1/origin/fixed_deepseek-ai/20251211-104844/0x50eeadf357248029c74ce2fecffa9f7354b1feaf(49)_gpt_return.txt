@@ -1,0 +1,48 @@
+```json
+[{
+    "contract_name": "ERC20Standard",
+    "contract_version": "^0.8.0",
+    "state_variables": [
+        {
+            "variable_name": "owner",
+            "fix_info": "Private variable with getter function for better access control",
+            "variable_code": "address private _owner;",
+            "change_type": "modified"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "onlyOwner",
+            "fix_info": "Added ownership modifier to replace tx.origin check",
+            "modifier_code": "modifier onlyOwner() {\n        require(msg.sender == _owner, \"ERC20Standard: caller is not the owner\");\n        _;\n    }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "mint",
+            "fix_info": "Fixed access control vulnerability by replacing tx.origin with ownership modifier and removing redundant assertion",
+            "corrected_code": "function mint(uint256 amount) public onlyOwner {\n        require(amount > 0, \"ERC20Standard: amount must be greater than zero\");\n        balances[msg.sender] += amount;\n        totalSupply += amount;\n        emit Transfer(address(0), msg.sender, amount);\n    }",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "owner",
+            "fix_info": "Added getter function for owner address",
+            "corrected_code": "function owner() public view returns (address) {\n        return _owner;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "constructor",
+            "fix_info": "Added constructor to initialize owner",
+            "corrected_code": "constructor() {\n        _owner = msg.sender;\n    }",
+            "change_type": "added"
+        },
+        {
+            "function_name": "transferOwnership",
+            "fix_info": "Added ownership transfer function with proper access control",
+            "corrected_code": "function transferOwnership(address newOwner) public onlyOwner {\n        require(newOwner != address(0), \"ERC20Standard: new owner is the zero address\");\n        _owner = newOwner;\n    }",
+            "change_type": "added"
+        }
+    ]
+}]
+```

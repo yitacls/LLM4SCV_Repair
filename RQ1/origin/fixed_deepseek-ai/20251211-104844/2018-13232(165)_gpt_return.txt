@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "EnterCoin",
+        "contract_version": "^0.4.2",
+        "state_variables": [
+            {
+                "variable_name": "sellPrice",
+                "fix_info": "Added visibility specification and documentation for audit trail",
+                "variable_code": "uint256 public sellPrice;",
+                "change_type": "modified"
+            }
+        ],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "sell",
+                "fix_info": "Fixed arithmetic overflow by using SafeMath, replaced deprecated throw statements, fixed reentrancy issue by following checks-effects-interactions pattern, and improved event emission logic",
+                "corrected_code": "function sell(uint256 amount) public {\n    using SafeMath for uint256;\n    \n    require(balanceOf[msg.sender] >= amount, \"Insufficient balance\");\n    \n    uint256 etherAmount = amount.mul(sellPrice);\n    require(etherAmount / sellPrice == amount, \"Multiplication overflow detected\");\n    \n    balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);\n    balanceOf[this] = balanceOf[this].add(amount);\n    \n    Transfer(msg.sender, this, amount);\n    \n    require(msg.sender.send(etherAmount), \"Ether transfer failed\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

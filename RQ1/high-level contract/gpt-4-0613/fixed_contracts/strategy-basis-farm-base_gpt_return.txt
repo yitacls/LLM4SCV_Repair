@@ -1,0 +1,28 @@
+```json
+[{
+    "contract_name": "StrategyBasisFarmBase",
+    "contract_version": "^0.6.7",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "deposit",
+            "fix_info": "Add check to ensure safeApprove function calls do not fail",
+            "corrected_code": "function deposit() public override {\n\tuint256 _lp = IERC20(lp).balanceOf(address(this));\n\tif (_lp > 0) {\n\t\trequire(IERC20(lp).safeApprove(pool, 0), 'approve failed');\n\t\trequire(IERC20(lp).safeApprove(pool, _lp), 'approve failed');\n\t\tIStakingRewards(pool).deposit(poolId,_lp);\n\t}\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "_withdrawSome",
+            "fix_info": "Add check to ensure withdraw function call does not fail",
+            "corrected_code": "function _withdrawSome(uint256 _amount) internal override returns (uint256) {\n\trequire(IStakingRewards(pool).withdraw(poolId,_amount), 'withdraw failed');\n\treturn _amount;\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "harvest",
+            "fix_info": "Add checks to ensure function calls in harvest do not fail",
+            "corrected_code": "function harvest() public override onlyBenevolent {\n\t...\n\trequire(IStakingRewards(pool).claimReward(poolId), 'claimReward failed');\n\t...\n\trequire(IERC20(rewards).safeTransfer(IController(controller).treasury(), _keepRewards), 'transfer failed');\n\t...\n\trequire(IERC20(token1).safeApprove(univ2Router2, 0), 'approve failed');\n\trequire(IERC20(token1).safeApprove(univ2Router2, _token1), 'approve failed');\n\trequire(IERC20(token2).safeApprove(univ2Router2, 0), 'approve failed');\n\trequire(IERC20(token2).safeApprove(univ2Router2, _token2), 'approve failed');\n\t...\n\trequire(IERC20(token1).transfer(IController(controller).treasury(), IERC20(token1).balanceOf(address(this))), 'transfer failed');\n\trequire(IERC20(token2).safeTransfer(IController(controller).treasury(), IERC20(token2).balanceOf(address(this))), 'transfer failed');\n\t...\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

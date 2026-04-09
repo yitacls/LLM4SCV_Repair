@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint i = 0; i < holders.length(); i = i.add(1)){\n            _aux = holders.at(i);\n            rewardEnded[_aux] = getPendingRewards(_aux);\n            unclaimed[_aux] = 0;\n            stakingTime[_aux] = block.timestamp;\n            progressiveTime[_aux] = block.timestamp;\n            alreadyProgUnstaked[_aux] = 0;\n            amountPerInterval[_aux] = depositedTokens[_aux].div(number_intervals);\n        }",
+        "description": "The `end()` function iterates over all holders to update their state variables. If the number of holders is large, this loop may exceed the block gas limit, causing the function to fail and making it impossible to end the staking pool."
+    },
+    {
+        "type": "SWC-128-DoS With Block Gas Limit",
+        "location": "for(uint i = 0; i < holders.length(); i = i.add(1)){\n                totalPending = totalPending.add(getPendingRewards(holders.at(i)));\n            }",
+        "description": "The `getRewardsLeft()` function iterates over all holders to calculate the total pending rewards. If the number of holders is large, this loop may exceed the block gas limit, causing the function to fail and preventing users from checking the remaining rewards."
+    }
+]
+```

@@ -1,0 +1,7 @@
+```json
+{
+  "type": "SWC-107-Reentrancy",
+  "location": "updateReward, freezeEpoch, trade, claim, claimCurrentEpoch, claimFrozenEpoch functions",
+  "description": "The contract is vulnerable to reentrancy attacks as it makes an external call without taking necessary precautions to prevent the malicious contract from gaining control over the flow of execution. This could allow an attacker to potentially perform unexpected actions or cause a re-entrance into the smart contract leading to unexpected state changes."
+}
+```

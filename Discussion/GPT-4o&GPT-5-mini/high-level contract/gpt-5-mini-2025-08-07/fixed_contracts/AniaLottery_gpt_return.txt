@@ -1,0 +1,40 @@
+[{
+    "contract_name": "AniaLottery",
+    "contract_version": "pragma solidity 0.8.20;",
+    "state_variables": [
+        {
+            "variable_name": "locked",
+            "fix_info": "Added a reentrancy guard state variable to prevent reentrancy attacks on withdrawal and token-transfer functions.",
+            "variable_code": "bool private locked;",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "nonReentrant",
+            "fix_info": "Added a nonReentrant modifier using the 'locked' state variable to prevent reentrancy.",
+            "modifier_code": "modifier nonReentrant() {\n    require(!locked, \"Reentrant call\");\n    locked = true;\n    _;\n    locked = false;\n}",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "withdraw",
+            "fix_info": "Made withdraw non-payable, added nonReentrant protection, and switched to the recommended call pattern with proper success check.",
+            "corrected_code": "function withdraw() external onlyOwner nonReentrant {\n    uint256 balance = address(this).balance;\n    require(balance > 0, \"No ether to withdraw\");\n    (bool sent, ) = payable(msg.sender).call{value: balance}(\"\");\n    require(sent, \"Ether transfer failed\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawTokens",
+            "fix_info": "Added checks for project existence and token balance, applied nonReentrant protection, and validated ERC20 transfer return value to avoid silent failures.",
+            "corrected_code": "function withdrawTokens(uint projectId, address recipient) public onlyAdmin nonReentrant {\n    require(_checkProjectExistById(projectId), \"Project with this ID does not exist.\");\n    address contractAddress = projects[projectId].contractAddress;\n    require(contractAddress != address(0), \"Invalid token address\");\n\n    IERC20 token = IERC20(contractAddress);\n    uint256 balance = token.balanceOf(address(this));\n    require(balance > 0, \"No tokens to withdraw\");\n\n    bool ok = token.transfer(recipient, balance);\n    require(ok, \"Token transfer failed\");\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "buy",
+            "fix_info": "Applied nonReentrant protection, enforced project existence earlier, validated stable coin allowance/transfer before sending project tokens, and checked ERC20 transfer return values. This prevents paying out project tokens before successful payment and mitigates reentrancy risks.",
+            "corrected_code": "function buy(uint projectId, uint pay, address tokenForPayContractAddress) external nonReentrant {\n    require(stableCoins[tokenForPayContractAddress], \"This Token is not available for payment\");\n\n    // Payment must be greater than 0\n    require(pay > 0, \"You need to send some amount\");\n    require(getUserTicketValue(msg.sender) == pay, \"You need to pay the exact tier value before claiming the reward\");\n\n    require(projectId > 0, \"ProjectId must be selected\");\n    require(_checkProjectExistById(projectId), \"Project with this ID does not exist.\");\n\n    uint256 tokensToBuy = decimals * (pay * decimals) / projects[projectId].tokenPrice * projects[projectId].firstPayoutInPercent / 100;\n\n    // Check requirements before any state changes or external calls\n    checkBuy(projectId, tokensToBuy);\n\n    address billingAddress = projects[projectId].billingAddress;\n    address contractAddress = projects[projectId].contractAddress;\n    require(billingAddress != contractAddress, \"Billing Address must be different as Contract Address\");\n\n    // First transfer payment (pull payment) and ensure success\n    IERC20 stableCoin = IERC20(tokenForPayContractAddress);\n    bool paid = stableCoin.transferFrom(msg.sender, billingAddress, pay * decimals);\n    require(paid, \"Stable coin transfer failed\");\n\n    // Then transfer project tokens to the buyer\n    IERC20 token = IERC20(contractAddress);\n    bool sent = token.transfer(msg.sender, tokensToBuy);\n    require(sent, \"Token transfer to buyer failed\");\n\n    // Set the claimed attribute to true to avoid repeatedly withdrawn\n    setLotteryWinnerClaimedStatus(projectId, msg.sender);\n    projectRaisedAmount[projectId] += pay;\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

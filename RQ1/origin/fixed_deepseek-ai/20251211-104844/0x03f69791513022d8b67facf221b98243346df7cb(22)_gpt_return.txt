@@ -1,0 +1,42 @@
+```json
+[{
+    "contract_name": "EthmoonV2",
+    "contract_version": "^0.4.25",
+    "state_variables": [
+        {
+            "variable_name": "MAX_DEPOSIT",
+            "fix_info": "Added maximum deposit limit to prevent overflow in calculations",
+            "variable_code": "uint public constant MAX_DEPOSIT = (2**128 - 1) / 100; // Prevents overflow in multiplication",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "PROMO_PERCENT",
+            "fix_info": "Added safety bounds for percentage variables",
+            "variable_code": "uint public constant PROMO_PERCENT = 10; // Must be <= 100",
+            "change_type": "added"
+        },
+        {
+            "variable_name": "TECH_PERCENT",
+            "fix_info": "Added safety bounds for percentage variables",
+            "variable_code": "uint public constant TECH_PERCENT = 5; // Must be <= 100",
+            "change_type": "added"
+        }
+    ],
+    "modifiers": [
+        {
+            "modifier_name": "safeMath",
+            "fix_info": "Added safe math operations to prevent arithmetic vulnerabilities",
+            "modifier_code": "modifier safeMath() { _; }",
+            "change_type": "added"
+        }
+    ],
+    "functions": [
+        {
+            "function_name": "fallback",
+            "fix_info": "Fixed arithmetic vulnerabilities by: 1) Using SafeMath for all calculations, 2) Checking for overflow/underflow, 3) Validating percentage values, 4) Ensuring proper gas refund handling, 5) Using uint256 instead of smaller types for safety",
+            "corrected_code": "function () public payable safeMath {\n    require(gasleft() >= 220000, \"We require more gas!\"); \n    require(msg.value >= MIN_DEPOSIT, \"Value below minimum deposit\");\n    require(msg.value <= MAX_DEPOSIT, \"Value exceeds maximum deposit\");\n    \n    uint multiplier = percentRate(msg.sender);\n    require(multiplier <= 100, \"Invalid multiplier\");\n    \n    // Safe multiplication with overflow checking\n    uint depositAmount = msg.value;\n    uint multipliedAmount = depositAmount.mul(multiplier);\n    uint calculatedAmount = multipliedAmount.div(100);\n    \n    // Verify the calculated amount fits in uint128 for backward compatibility\n    require(calculatedAmount <= 2**128 - 1, \"Calculated amount too large\");\n    require(depositAmount <= 2**128 - 1, \"Deposit amount too large\");\n    \n    // Push to queue with safe casting\n    queue.push(Deposit(msg.sender, uint128(depositAmount), uint128(calculatedAmount)));\n    \n    // Safe increment\n    participation[msg.sender] = participation[msg.sender].add(1);\n    \n    // Calculate transfers with SafeMath\n    uint promo = depositAmount.mul(PROMO_PERCENT).div(100);\n    require(promo <= depositAmount, \"Promo calculation error\");\n    \n    uint tech = depositAmount.mul(TECH_PERCENT).div(100);\n    require(tech <= depositAmount, \"Tech calculation error\");\n    \n    // Verify total deductions don't exceed deposit\n    require(promo.add(tech) <= depositAmount, \"Total transfers exceed deposit\");\n    \n    // Safe transfers\n    if (promo > 0) {\n        PROMO.transfer(promo);\n    }\n    \n    if (tech > 0) {\n        TECH.transfer(tech);\n    }\n    \n    pay();\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

@@ -1,0 +1,14 @@
+[{
+    "contract_name": "HRWtoken",
+    "contract_version": "^0.4.13",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "mintToken",
+            "fix_info": "Added input validation and explicit overflow checks for balance and totalSupply. Replaced literal 0 with address(0) in Transfer event. Preserved original behavior while preventing arithmetic overflow and forbidding minting to the zero address.",
+            "corrected_code": "function mintToken(address target, uint256 mintedAmount) public onlyOwner {\n    // Disallow minting to the zero address\n    require(target != address(0));\n\n    // Safely compute and set the new balance (prevent overflow)\n    uint256 newBalance = balanceOf[target] + mintedAmount;\n    require(newBalance >= balanceOf[target]);\n    balanceOf[target] = newBalance;\n\n    // Safely compute and set the new total supply (prevent overflow)\n    uint256 newTotal = totalSupply + mintedAmount;\n    require(newTotal >= totalSupply);\n    totalSupply = newTotal;\n\n    // Emit the same Transfer semantics as original contract\n    Transfer(address(0), this, mintedAmount);\n    Transfer(this, target, mintedAmount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]

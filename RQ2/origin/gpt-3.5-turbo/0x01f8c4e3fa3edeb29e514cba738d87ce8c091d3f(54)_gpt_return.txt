@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Reentrancy",
+    "location": "if(msg.sender.call.value(_am)())",
+    "description": "The contract is vulnerable to reentrancy attack due to the potential re-entrancy in the Collect function where the transfer of funds to msg.sender occurs before updating the balances[msg.sender] which could allow an attacker to recursively call the Collect function to drain funds."
+}
+```

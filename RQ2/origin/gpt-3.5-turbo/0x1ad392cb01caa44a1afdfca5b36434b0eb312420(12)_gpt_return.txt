@@ -1,0 +1,7 @@
+```json
+{
+    "type": "Arithmetic",
+    "location": "balances[receiver] += amount;  // fault line",
+    "description": "The code directly updates the balance without checking for potential overflow/underflow issues, which can lead to arithmetic errors and vulnerabilities. It is recommended to implement proper checks to handle potential overflow/underflow scenarios."
+}
+```

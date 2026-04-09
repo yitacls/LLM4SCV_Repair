@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(_target.call.value(_value)(_data));  // fault line",
+    "description": "The `sendEthValue` function allows anyone to execute arbitrary code on the target contract with the specified value and data. There is no access control check implemented, meaning that any malicious actor can call this function and potentially exploit the target contract."
+}
+```

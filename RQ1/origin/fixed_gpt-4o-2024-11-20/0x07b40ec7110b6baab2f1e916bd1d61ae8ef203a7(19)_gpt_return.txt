@@ -1,0 +1,25 @@
+```json
+[
+    {
+        "contract_name": "CryptoRoses",
+        "contract_version": "^0.4.17",
+        "state_variables": [],
+        "modifiers": [
+            {
+                "modifier_name": "onlyOwner",
+                "fix_info": "Added a custom modifier `onlyOwner` to properly verify if the caller is the owner. This replaces the `tx.origin` check, which is insecure.",
+                "modifier_code": "modifier onlyOwner() { require(msg.sender == owner); _; }",
+                "change_type": "added"
+            }
+        ],
+        "functions": [
+            {
+                "function_name": "addAddWhitelist",
+                "fix_info": "The `tx.origin` check was replaced with the correct modifier `onlyOwner` to ensure only the owner can call this function. This prevents potential attacks like phishing.",
+                "corrected_code": "function addAddWhitelist(address s) public onlyOwner { addrWhitelist[s] = true; }",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

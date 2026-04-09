@@ -1,0 +1,22 @@
+```json
+[{
+    "contract_name": "WorthTokenSale",
+    "contract_version": "0.8.10",
+    "state_variables": [],
+    "modifiers": [],
+    "functions": [
+        {
+            "function_name": "withdrawTokens",
+            "fix_info": "The initial function directly transferred all token balances remaining after the sale.This was unsafe because no checks were made to ensure the intended beneficiaries received their tokens.Added an argument to allow specification of the exact amount to withdraw and added a require statement to ensure not more than the present token balance is attempted to be withdrawn.",
+            "corrected_code": "function withdrawTokens(address beneficiary, address _tokenAddr, uint256 _amount) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n   require(_amount <= Token(_tokenAddr).balanceOf(address(this)), \"Not enough tokens to withdraw\");\n   require(Token(_tokenAddr).transfer(beneficiary,_amount));\n   emit TokenWithdrawn(beneficiary, _amount);\n}",
+            "change_type": "modified"
+        },
+        {
+            "function_name": "withdrawCrypto",
+            "fix_info": "Added a check to ensure that the withdrawal is not more than the current balance of the contract. This prevents any possible reentrancy attacks.",
+            "corrected_code": "function withdrawCrypto(address payable beneficiary, uint256 _amount) external nonZeroAddress(beneficiary) onlyOwner _contractUp() _saleEnded() {\n    require(_amount <= address(this).balance, \"Not enough Crypto inside contract\");\n    (bool success, ) = beneficiary.call{value: _amount}(\"\");\n    require(success, \"Transfer failed.\");\n    emit CryptoWithdrawn(beneficiary, _amount);\n}",
+            "change_type": "modified"
+        }
+    ]
+}]
+```

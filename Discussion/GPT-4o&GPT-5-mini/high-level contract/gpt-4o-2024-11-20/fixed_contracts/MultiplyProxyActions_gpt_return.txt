@@ -1,0 +1,36 @@
+```json
+[
+    {
+        "contract_name": "MultiplyProxyActions",
+        "contract_version": ">=0.7.6",
+        "state_variables": [],
+        "modifiers": [],
+        "functions": [
+            {
+                "function_name": "convertTo18",
+                "fix_info": "Added `require` statements to handle overflow/underflow.",
+                "corrected_code": "function convertTo18(address gemJoin, uint256 amt) internal returns (uint256 wad) {\n  require(gemJoin != address(0), \"Invalid gemJoin address\");\n  require(amt > 0, \"Amount should be greater than zero\");\n  uint256 dec = IJoin(gemJoin).dec();\n  require(18 >= dec, \"Invalid decimal range\");\n  wad = amt.mul(10**(18 - dec));\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "increaseMultipleDepositCollateral",
+                "fix_info": "Added checks for transfer success and validated msg.value with the collateral amount deposited.",
+                "corrected_code": "function increaseMultipleDepositCollateral(\n  ExchangeData calldata exchangeData,\n  CdpData memory cdpData,\n  AddressRegistry calldata addressRegistry\n) public payable logMethodName(\n    \"increaseMultipleDepositCollateral\",\n    cdpData,\n    addressRegistry.multiplyProxyActions\n) {\n  IGem gem = IJoin(cdpData.gemJoin).gem();\n\n  if (address(gem) == WETH) {\n    require(msg.value == cdpData.depositCollateral, \"ETH value does not match collateral\");\n    gem.deposit{value: msg.value}();\n\n    if (!cdpData.skipFL) {\n      bool success = gem.transfer(addressRegistry.multiplyProxyActions, msg.value);\n      require(success, \"Transfer to proxyActions failed\");\n    }\n  } else {\n    uint256 previousBalance = IERC20(address(gem)).balanceOf(address(this));\n\n    if (!cdpData.skipFL) {\n      bool success = gem.transferFrom(\n        msg.sender,\n        addressRegistry.multiplyProxyActions,\n        cdpData.depositCollateral\n      );\n      require(success, \"Transfer to proxyActions failed\");\n    } else {\n      bool success = gem.transferFrom(msg.sender, address(this), cdpData.depositCollateral);\n      require(success, \"Collateral transfer failed\");\n    }\n\n    uint256 afterBalance = IERC20(address(gem)).balanceOf(address(this));\n    require(\n      afterBalance.sub(previousBalance) == cdpData.depositCollateral,\n      \"Incorrect collateral transferred\"\n    );\n  }\n  increaseMultipleInternal(exchangeData, cdpData, addressRegistry);\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "takeAFlashLoan",
+                "fix_info": "Added checks to ensure required allowances and approvals are correct.",
+                "corrected_code": "function takeAFlashLoan(\n  AddressRegistry memory addressRegistry,\n  CdpData memory cdpData,\n  bytes memory paramsData\n) internal {\n  require(addressRegistry.manager != address(0), \"Manager address not set\");\n  require(addressRegistry.multiplyProxyActions != address(0), \"Multiply proxy address required\");\n  require(cdpData.cdpId > 0, \"Invalid CDP ID\");\n  require(addressRegistry.lender != address(0), \"Lender address required\");\n\n  IManager(addressRegistry.manager).cdpAllow(\n    cdpData.cdpId,\n    addressRegistry.multiplyProxyActions,\n    1\n  );\n\n  uint256 currentAllowance = IERC20(DAI).allowance(address(this), addressRegistry.lender);\n  if (currentAllowance < cdpData.requiredDebt) {\n    IERC20(DAI).approve(addressRegistry.lender, cdpData.requiredDebt);\n  }\n\n  bool success = IERC3156FlashLender(addressRegistry.lender).flashLoan(\n    IERC3156FlashBorrower(addressRegistry.multiplyProxyActions),\n    DAI,\n    cdpData.requiredDebt,\n    paramsData\n  );\n  require(success, \"Flash loan failed\");\n\n  IManager(addressRegistry.manager).cdpAllow(\n    cdpData.cdpId,\n    addressRegistry.multiplyProxyActions,\n    0\n  );\n}",
+                "change_type": "modified"
+            },
+            {
+                "function_name": "drawDaiDebt",
+                "fix_info": "Added safety checks and `require` statements to minimize reentrancy risk and enforce conditions.",
+                "corrected_code": "function drawDaiDebt(\n  CdpData memory cdpData,\n  AddressRegistry calldata addressRegistry,\n  uint256 amount\n) internal {\n  require(amount > 0, \"Amount must be greater than zero\");\n  address urn = IManager(addressRegistry.manager).urns(cdpData.cdpId);\n  address vat = IManager(addressRegistry.manager).vat();\n\n  int256 dart = _getDrawDart(\n    vat,\n    addressRegistry.jug,\n    urn,\n    cdpData.ilk,\n    amount\n  );\n  require(dart > 0, \"Invalid dart calculation\");\n\n  IManager(addressRegistry.manager).frob(cdpData.cdpId, 0, dart);\n\n  uint256 vatBalanceBefore = IVat(vat).dai(address(this));\n  IManager(addressRegistry.manager).move(cdpData.cdpId, address(this), toRad(amount));\n  uint256 vatBalanceAfter = IVat(vat).dai(address(this));\n  require(\n    vatBalanceAfter.sub(vatBalanceBefore) == toRad(amount),\n    \"Unexpected DAI amount moved\"\n  );\n\n  if (IVat(vat).can(address(this), DAIJOIN) == 0) {\n    IVat(vat).hope(DAIJOIN);\n  }\n\n  uint256 balanceBefore = IERC20(DAI).balanceOf(address(this));\n  IJoin(DAIJOIN).exit(address(this), amount);\n  uint256 balanceAfter = IERC20(DAI).balanceOf(address(this));\n  require(balanceAfter.sub(balanceBefore) == amount, \"Unexpected DAI withdrawn\");\n}",
+                "change_type": "modified"
+            }
+        ]
+    }
+]
+```

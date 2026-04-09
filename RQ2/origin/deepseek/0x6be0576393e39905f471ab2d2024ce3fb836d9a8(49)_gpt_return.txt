@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The function 'mint' uses 'tx.origin' for authorization, which is vulnerable to phishing attacks. An attacker can trick the owner into calling a malicious contract that calls this function, causing 'tx.origin' to still be the owner's address, thereby bypassing the intended access control. This allows unauthorized minting. Additionally, 'assert(amount >= 0)' is redundant as 'uint256' cannot be negative, wasting gas. The contract should use 'msg.sender == owner' or a more robust access control pattern (e.g., OpenZeppelin's Ownable) instead."
+}
+```

@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(tx.origin == owner);",
+    "description": "The contract uses 'tx.origin' for authorization, which is considered a security risk and a bad practice. 'tx.origin' is the original address from where the current execution context originated from, and can be easily exploited when used for authorization. A safer best practice would be to make use of 'msg.sender' instead. In this case, any contract that is called by the owner can mint tokens, as well as the owner themselves."
+}
+```

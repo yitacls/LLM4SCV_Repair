@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "require(token.transfer(developer, token.balanceOf(address(this))));",
+    "description": "The withdrawal function allows the developer to withdraw both the balance of Ether and the entire token balance without any access control. This could lead to unauthorized withdrawals by the developer or other potential security risks."
+}
+```

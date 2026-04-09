@@ -1,0 +1,14 @@
+```json
+[
+    {
+        "type": "Arithmetic Overflow",
+        "location": "uint256 amount = uint256(cnt) * _value;",
+        "description": "The multiplication operation is performed before the SafeMath library is used, which may cause an arithmetic overflow. If cnt and _value are large enough, their product may exceed the maximum value of uint256, resulting in an overflow. Although there is a check 'require(balances[msg.sender] >= amount)' afterwards, the overflow may have already occurred before this check, causing the amount calculation to be incorrect."
+    },
+    {
+        "type": "Reentrancy Risk",
+        "location": "for (uint i = 0; i < cnt; i++) {\n        balances[_receivers[i]] = balances[_receivers[i]].add(_value);\n        Transfer(msg.sender, _receivers[i], _value);\n    }",
+        "description": "The function makes external calls (Transfer event emission) after modifying the state but within the same transaction. If the Transfer event is listened to by a malicious contract that tries to re-enter the batchTransfer function or other state-changing functions, it could potentially exploit this behavior. Although the balance update is done using SafeMath, external calls in the middle of state changes are generally risky."
+    }
+]
+```

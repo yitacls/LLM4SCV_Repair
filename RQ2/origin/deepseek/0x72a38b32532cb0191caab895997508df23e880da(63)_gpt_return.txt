@@ -1,0 +1,7 @@
+```json
+{
+    "type": "access_control",
+    "location": "if (tx.origin==devAddress) {   // fault line",
+    "description": "This function uses tx.origin for authorization instead of msg.sender, which makes it vulnerable to phishing attacks. An attacker could trick the owner into interacting with a malicious contract that calls this function, causing unintended changes to contract state. Additionally, the function lacks proper access control modifiers and allows a single address (devAddress) to control the critical balanceImportsComplete flag without additional safeguards."
+}
+```

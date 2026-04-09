@@ -1,0 +1,7 @@
+```json
+{
+    "type": "unchecked_low_level_calls",
+    "location": "hon1ninja.send(this.balance - 1 ether);",
+    "description": "In Solidity ^0.4.25, the `send()` method returns a boolean indicating success (true) or failure (false). The return value of the low-level call is not checked. If the send operation fails (e.g., due to the recipient being a contract that runs out of gas or reverts), the transaction will not revert, and the contract state will continue without the ether being transferred. This can leave funds locked in the contract without proper error handling."
+}
+```
