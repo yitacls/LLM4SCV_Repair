@@ -37,14 +37,14 @@ LLM4SCV_Repair/
 │  ├─ Prompt Optimization/
 │  │  └─ README.md
 │  ├─ Pass@k/ ...
-│  ├─ 不同重复次数检测结果/ ...
+│  ├─ repeat_count_detection_results/ ...
 │  └─ (other discussion experiment artifacts and CSV/SOL/TXT outputs)
 ├─ Dataset/
-│  ├─ 原合约.csv
-│  ├─ 高版本合约.csv
-│  ├─ 合约圈复杂度和函数数量/
-│  │  ├─ 原合约.csv
-│  │  └─ 高版本合约.csv
+│  ├─ original_contracts.csv
+│  ├─ high_version_contracts.csv
+│  ├─ contract_cyclomatic_complexity_and_function_count/
+│  │  ├─ original_contracts.csv
+│  │  └─ high_version_contracts.csv
 │  └─ Repaired Contract/
 │     └─ Origin/
 │        ├─ csv/
